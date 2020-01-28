@@ -1,0 +1,22 @@
+package ch.softappeal.yass2.transport.js
+
+import ch.softappeal.yass2.remote.*
+import ch.softappeal.yass2.transport.*
+import kotlinx.coroutines.*
+import org.khronos.webgl.*
+import org.w3c.fetch.*
+import kotlin.browser.*
+
+fun TransportConfig.tunnel(url: String): Tunnel = { request ->
+    val writer = writer()
+    write(writer, request)
+    val response = window.fetch(url, object : RequestInit {
+        override var method: String? = "POST"
+        override var body = (writer.buffer.asDynamic()).subarray(0, writer.current)
+    }).await()
+    val buffer = response.arrayBuffer().await()
+    val reader = BytesReader(Int8Array(buffer).asDynamic() as ByteArray)
+    val reply = read(reader) as Reply
+    check(reader.drained)
+    reply
+}
