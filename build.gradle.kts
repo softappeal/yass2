@@ -15,7 +15,7 @@ group = "ch.softappeal.yass2"
 
 repositories {
     mavenCentral()
-    jcenter() // TODO: needed for dokka
+    jcenter() // needed for dokka
 }
 
 tasks.register<Jar>("dokkaJar") {
@@ -44,7 +44,7 @@ kotlin {
         compilations.all {
             kotlinOptions {
                 allWarningsAsErrors = true
-                freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental" // TODO
+                freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"
             }
         }
     }

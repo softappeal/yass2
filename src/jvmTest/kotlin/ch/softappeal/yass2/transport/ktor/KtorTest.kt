@@ -27,7 +27,7 @@ const val Port = 28947
 const val Path = "/yass"
 private val Address = InetSocketAddress(Host, Port)
 
-@KtorExperimentalAPI // TODO
+@KtorExperimentalAPI
 class KtorTest {
     @AfterTest
     fun additionalWaitForServerSocketClose() {
@@ -92,7 +92,7 @@ class KtorTest {
         engine.start()
         try {
             runBlocking {
-                // TODO: CIO seems not to support keep-alive, however io.ktor.client.engine.apache.Apache does
+                // note: CIO seems not to support keep-alive, however io.ktor.client.engine.apache.Apache does
                 HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
                     client.tunnel(Config, "http://$Host:$Port$Path")
                         .test(1000)

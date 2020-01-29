@@ -12,7 +12,7 @@ import io.ktor.util.*
 import io.ktor.websocket.*
 import kotlin.coroutines.*
 
-@KtorExperimentalAPI // TODO
+@KtorExperimentalAPI
 fun main() {
     println("http://$Host:$Port/index.html")
     suspend fun serverContext() = "http-" + coroutineContext[CallCce]?.call?.request?.uri!!
