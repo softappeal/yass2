@@ -1,33 +1,68 @@
-# yass2 (Yet Another Service Solution)
+### yass2 (Yet Another Service Solution)
 
-* a [very small](doc/loc.md) [Kotlin Multiplatform](https://kotlinlang.org/docs/reference/multiplatform.html)
-  library for efficient asynchronous peer-to-peer communication
+* yass2 is
+  * a [small](doc/loc.md) [Kotlin](https://kotlinlang.org/)
+    [Multiplatform](https://kotlinlang.org/docs/reference/multiplatform.html) library
+  * for efficient asynchronous/non-blocking [Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html)
+    based peer-to-peer communication
+  * enforcing type-safe contracts with interfaces and data transfer objects
 
-* Open Source ([BSD-3-Clause license](license.txt))
+```
+                       +-----------------------------------------+
+                       | // contract definition                  |
+                       | interface Calculator {                  |
+                       |   suspend fun add(a: Int, b: Int): Int  |
+                       | }                                       |
+                       +-----------------------------------------+
 
-* asynchronous/non-blocking servers/clients with
-  [Kotlin Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html)
 
-* provides dumper, serializer, interceptor and remoting either with reflection or by generated code
-  * generated code works on any platform and is faster
-  * reflection works only on the Jvm platform and is slower
+  client process                                      server process
++-----------------------------------------+         +----------------------------------------------------+
+|            contract library             |         |                  contract library                  |
+|.........................................|         |....................................................|
+|     // contract usage                   |         | // contract implementation                         |
+|     val calculator: Calculator = ...    |         | class CalculatorImpl : Calculator {                |
+|     println(calculator.add(1, 2))       |         |   override suspend fun add(a: Int, b: Int) = a + b |
+|                                         |         | }                                                  |
+|.........................................|         |....................................................|
+|             yass2 library               |         |                  yass2 library                     |
+|.........................................|         |....................................................|
+|          transport library              | <-----> |                transport library                   |
++-----------------------------------------+         +----------------------------------------------------+
+
+
+                           yass2
+                         +--------------------------------------------+
+                         | remoting                                   |
+                         |   maps contract to messages                |
+                         |............................................|
+                         | serialize                                  |
+                         |   transforms messages to byte chunks       |
+                         |............................................|
+                         | transport adaptor                          |
+                         |   transports byte chunks between processes |
+                         +--------------------------------------------+
+```
 
 * provides unidirectional and session based bidirectional remoting
 
-* supports type-safe contracts with data transfer objects and interfaces
+* provides [Ktor](https://ktor.io) transport adaptors for Http, WebSocket and plain Socket                                                                                                                                                                
 
-* provides [Ktor](https://ktor.io) transport adaptors for Http, WebSocket and Socket
+* Javascript transport uses native fetch and WebSocket API instead of Ktor
 
-* Javascript transport uses native fetch and WebSocket Api instead of Ktor
+* provided either with reflection (works only on the JVM platform and is slower) or
+  by generated code (works on any platform and is faster)
+  * fast, compact and extendable binary serializer for high throughput and low latency
+  * dumper (generic object printer)
+  * interceptor (around advice, aspect-oriented programming)
+  * remoting (remote proxy and invoker)
 
-* provides a fast, compact and extendable binary serializer for high throughput and low latency
+* [Tutorial](https://github.com/softappeal/yass2-tutorial)
 
-* pick another multiplatform serializer if you don't like the provided one
-
-* uses [Semantic Versioning](https://semver.org)
+* Open Source ([BSD-3-Clause license](license.txt))
 
 * artifacts on [Maven Central](https://search.maven.org/search?q=g:ch.softappeal.yass2) (GroupId: ch.softappeal.yass2)
 
-* supersedes [yass](https://github.com/softappeal/yass/)
+* uses [Semantic Versioning](https://semver.org)
 
-* [Tutorial](https://github.com/softappeal/yass2-tutorial)
+* supersedes [yass](https://github.com/softappeal/yass/)
