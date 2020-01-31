@@ -13,8 +13,6 @@ interface Connection {
     suspend fun closed()
 }
 
-class SessionClosedException : RuntimeException()
-
 abstract class Session {
     open fun opened() {}
     open suspend fun closed(e: Exception?) {}
@@ -22,7 +20,6 @@ abstract class Session {
     suspend fun isClosed(): Boolean = closed.get()
 
     val clientTunnel: Tunnel = { request ->
-        if (isClosed()) throw SessionClosedException()
         suspendCancellableCoroutine { continuation ->
             CoroutineScope(continuation.context).launch {
                 try {
