@@ -4,7 +4,6 @@ import ch.softappeal.yass2.remote.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.*
 import kotlin.coroutines.*
-import kotlin.coroutines.intrinsics.*
 
 class Packet(val requestNumber: Int, val message: Message)
 
@@ -30,7 +29,6 @@ abstract class Session {
                     close(e)
                 }
             }
-            COROUTINE_SUSPENDED
         }
     }
 
