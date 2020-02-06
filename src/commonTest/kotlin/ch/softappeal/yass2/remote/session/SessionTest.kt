@@ -6,7 +6,6 @@ import ch.softappeal.yass2.contract.generated.*
 import ch.softappeal.yass2.remote.*
 import kotlinx.coroutines.*
 import kotlin.coroutines.*
-import kotlin.coroutines.intrinsics.*
 import kotlin.test.*
 
 fun CoroutineScope.acceptorSessionFactory(context: suspend Session.() -> Any): SessionFactory = {
@@ -73,7 +72,6 @@ class SessionTest {
             continuation = c
             println(continuation)
             CoroutineScope(continuation.context).launch { delay(200) }
-            COROUTINE_SUSPENDED
         }
         launch {
             delay(100)
