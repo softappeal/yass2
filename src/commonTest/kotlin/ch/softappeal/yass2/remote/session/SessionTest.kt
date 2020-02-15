@@ -99,32 +99,38 @@ class SessionTest {
     }
 
     @Test
-    fun sessionWatcher() = yassRunBlocking {
-        val serverTunnel = ::generatedInvoker.tunnel(listOf(EchoId(EchoImpl)))
-        val session1 = object : Session() {
+    fun connect() = yassRunBlocking {
+        class InitiatorSession : Session() {
+            private val echo = generatedRemoteProxyFactoryCreator(clientTunnel)(EchoId)
+            private var timeout = 25
+            suspend fun checkAlive() {
+                println("checkAlive")
+                echo.delay(timeout)
+                timeout += 10
+            }
+
             override fun opened() {
-                launch {
-                    val echo = generatedRemoteProxyFactoryCreator(clientTunnel)(EchoId)
-                    var timeout = 20
-                    watch(200, 40) {
-                        println("check")
-                        echo.delay(timeout)
-                        timeout += 4
-                    }
-                    println(echo.echo("hello"))
-                }
+                launch { println(echo.echo("hello")) }
             }
 
             override suspend fun closed(e: Exception?) {
-                println("session1 closed: $e")
+                println("initiatorSession closed: $e")
             }
         }
-        val session2 = object : Session() {
-            override val serverTunnel = serverTunnel
-            override suspend fun closed(e: Exception?) {
-                println("session2 closed: $e")
+
+        val serverTunnel = ::generatedInvoker.tunnel(listOf(EchoId(EchoImpl)))
+        val acceptorSessionFactory = {
+            object : Session() {
+                override val serverTunnel = serverTunnel
+                override suspend fun closed(e: Exception?) {
+                    println("acceptorSession closed: $e")
+                }
             }
         }
-        connect(session1, session2)
+        val job = connect(200, 40, { it.checkAlive() }, { InitiatorSession() }) {
+            connect(it(), acceptorSessionFactory())
+        }
+        delay(2000)
+        job.cancel()
     }
 }
