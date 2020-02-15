@@ -49,19 +49,20 @@ fun CoroutineScope.initiatorSessionFactory(iterations: Int): SessionFactory = {
     }
 }
 
+private fun connect(session1: Session, session2: Session) {
+    class LocalConnection(val session: Session) : Connection {
+        override suspend fun write(packet: Packet?) = session.received(packet)
+        override suspend fun closed() = session.close()
+    }
+    session1.connection = LocalConnection(session2)
+    session2.connection = LocalConnection(session1)
+    session1.opened()
+    session2.opened()
+}
+
 class SessionTest {
     @Test
     fun test() = yassRunBlocking {
-        fun connect(session1: Session, session2: Session) {
-            class LocalConnection(val session: Session) : Connection {
-                override suspend fun write(packet: Packet?) = session.received(packet)
-                override suspend fun closed() = session.close()
-            }
-            session1.connection = LocalConnection(session2)
-            session2.connection = LocalConnection(session1)
-            session1.opened()
-            session2.opened()
-        }
         connect(initiatorSessionFactory(1000)(), acceptorSessionFactory { connection }())
     }
 
@@ -95,5 +96,35 @@ class SessionTest {
             println(e)
         }
         println("done")
+    }
+
+    @Test
+    fun sessionWatcher() = yassRunBlocking {
+        val serverTunnel = ::generatedInvoker.tunnel(listOf(EchoId(EchoImpl)))
+        val session1 = object : Session() {
+            override fun opened() {
+                launch {
+                    val echo = generatedRemoteProxyFactoryCreator(clientTunnel)(EchoId)
+                    var timeout = 20
+                    watch(200, 40) {
+                        println("check")
+                        echo.delay(timeout)
+                        timeout += 4
+                    }
+                    println(echo.echo("hello"))
+                }
+            }
+
+            override suspend fun closed(e: Exception?) {
+                println("session1 closed: $e")
+            }
+        }
+        val session2 = object : Session() {
+            override val serverTunnel = serverTunnel
+            override suspend fun closed(e: Exception?) {
+                println("session2 closed: $e")
+            }
+        }
+        connect(session1, session2)
     }
 }

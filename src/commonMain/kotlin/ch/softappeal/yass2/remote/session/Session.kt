@@ -14,7 +14,10 @@ interface Connection {
 
 abstract class Session {
     open fun opened() {}
+
+    /** [e] is `null` for regular close. */
     open suspend fun closed(e: Exception?) {}
+
     suspend fun close(): Unit = close(true, null)
     suspend fun isClosed(): Boolean = closed.get()
 
@@ -65,6 +68,26 @@ abstract class Session {
             is Request -> write(Packet(packet.requestNumber, serverTunnel(message)))
             is Reply -> requestNumber2continuation.remove(packet.requestNumber)!!.resume(message)
             else -> error("unexpected '$message'")
+        }
+    }
+
+    /**
+     * Launches a new coroutine that closes the session
+     * if [check] throws an exception or doesn't return within [timeoutMillis].
+     */
+    fun CoroutineScope.watch(intervalMillis: Long = 10_000, timeoutMillis: Long = 1000, check: suspend () -> Unit): Job {
+        require(intervalMillis > 0)
+        require(timeoutMillis > 0)
+        return launch {
+            while (isActive) {
+                try {
+                    withTimeout(timeoutMillis) { check() }
+                } catch (e: Exception) {
+                    close(e)
+                    return@launch
+                }
+                delay(intervalMillis)
+            }
         }
     }
 }
