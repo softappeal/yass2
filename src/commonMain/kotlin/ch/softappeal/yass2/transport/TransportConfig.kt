@@ -3,7 +3,7 @@ package ch.softappeal.yass2.transport
 import ch.softappeal.yass2.serialize.*
 
 class TransportConfig(
-    serializer: Serializer, private val initialWriterCapacity: Int, private val maxReadBytesInitialSize: Int = 1
+    serializer: Serializer, private val initialWriterCapacity: Int, private val maxReadBytesInitialSize: Int = 500
 ) : Serializer by serializer {
     init {
         require(initialWriterCapacity > 0)
