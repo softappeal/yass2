@@ -16,12 +16,14 @@ abstract class Session {
     open fun opened() {}
 
     /** [e] is `null` for regular close. */
-    open suspend fun closed(e: Exception?) {}
+    protected open suspend fun closed(e: Exception?) {}
 
+    /** Is idempotent. */
     suspend fun close(): Unit = close(true, null)
+
     suspend fun isClosed(): Boolean = closed.get()
 
-    val clientTunnel: Tunnel = { request ->
+    protected val clientTunnel: Tunnel = { request ->
         suspendCancellableCoroutine { continuation ->
             CoroutineScope(continuation.context).launch {
                 try {
@@ -35,7 +37,7 @@ abstract class Session {
         }
     }
 
-    open val serverTunnel: Tunnel = { throw UnsupportedOperationException() }
+    protected open val serverTunnel: Tunnel = { throw UnsupportedOperationException() }
 
     lateinit var connection: Connection
         internal set
