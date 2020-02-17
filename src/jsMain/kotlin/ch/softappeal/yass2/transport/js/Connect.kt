@@ -39,7 +39,7 @@ fun TransportConfig.connect(url: String, sessionFactory: SessionFactory) {
             }
             onclose = { close("onclose") }
             onerror = { close("onerror") }
-            session.opened()
+            session.internalOpened()
         }
     }
 }

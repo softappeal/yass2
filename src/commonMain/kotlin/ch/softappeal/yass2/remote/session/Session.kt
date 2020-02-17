@@ -13,7 +13,8 @@ interface Connection {
 }
 
 abstract class Session {
-    open fun opened() {}
+    protected open fun opened() {}
+    internal fun internalOpened(): Unit = opened()
 
     /** [e] is `null` for regular close. */
     protected open suspend fun closed(e: Exception?) {}
@@ -80,7 +81,7 @@ suspend fun Connection.receiveLoop(sessionFactory: SessionFactory, receive: susp
     val session = sessionFactory()
     session.connection = this
     try {
-        session.opened()
+        session.internalOpened()
         while (true) {
             val packet = receive()
             session.received(packet)

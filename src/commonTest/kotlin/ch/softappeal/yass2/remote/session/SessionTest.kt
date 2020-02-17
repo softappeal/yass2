@@ -56,8 +56,8 @@ private fun connect(session1: Session, session2: Session) {
     }
     session1.connection = LocalConnection(session2)
     session2.connection = LocalConnection(session1)
-    session1.opened()
-    session2.opened()
+    session1.internalOpened()
+    session2.internalOpened()
 }
 
 class SessionTest {
