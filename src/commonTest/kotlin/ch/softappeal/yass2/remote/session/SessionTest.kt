@@ -148,7 +148,7 @@ class SessionTest {
                 override suspend fun closed(e: Exception?) = println("acceptorSession closed: $e")
             }
         }
-        val job = connect(200, initiatorSessionFactory) { connect(it(), acceptorSessionFactory()) }
+        val job = connect(initiatorSessionFactory, 200) { connect(it(), acceptorSessionFactory()) }
         delay(600)
         job.cancel()
     }

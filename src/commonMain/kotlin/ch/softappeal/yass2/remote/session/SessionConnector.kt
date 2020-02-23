@@ -6,7 +6,7 @@ typealias SessionConnector = suspend (sessionFactory: SessionFactory) -> Unit
 
 /** Launches a new coroutine that maintains a session. */
 fun CoroutineScope.connect(
-    intervalMillis: Long = 10_000, sessionFactory: SessionFactory, sessionConnector: SessionConnector
+    sessionFactory: SessionFactory, intervalMillis: Long = 10_000, sessionConnector: SessionConnector
 ): Job {
     require(intervalMillis > 0)
     return launch {
