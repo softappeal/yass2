@@ -73,6 +73,26 @@ abstract class Session {
             else -> error("unexpected '$message'")
         }
     }
+
+    /**
+     * Launches a new coroutine that closes the session
+     * if [check] throws an exception or doesn't return within [timeoutMillis].
+     */
+    fun CoroutineScope.watch(intervalMillis: Long = 10_000, timeoutMillis: Long = 1000, check: suspend () -> Unit): Job {
+        require(intervalMillis > 0)
+        require(timeoutMillis > 0)
+        return launch {
+            while (isActive) {
+                try {
+                    withTimeout(timeoutMillis) { check() }
+                } catch (e: Exception) {
+                    close(e)
+                    break
+                }
+                delay(intervalMillis)
+            }
+        }
+    }
 }
 
 typealias SessionFactory = () -> Session

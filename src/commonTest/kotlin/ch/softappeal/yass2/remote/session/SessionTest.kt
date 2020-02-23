@@ -99,22 +99,45 @@ class SessionTest {
     }
 
     @Test
-    fun connect() = yassRunBlocking {
-        class InitiatorSession : Session() {
-            private val echo = generatedRemoteProxyFactoryCreator(clientTunnel)(EchoId)
-            private var timeout = 25
-            suspend fun checkAlive() {
-                println("checkAlive")
-                echo.delay(timeout)
-                timeout += 10
-            }
-
+    fun watch() = yassRunBlocking {
+        val session1 = object : Session() {
             override fun opened() {
-                launch { println(echo.echo("hello")) }
+                launch {
+                    val echo = generatedRemoteProxyFactoryCreator(clientTunnel)(EchoId)
+                    var timeout = 20
+                    val job = watch(200, 40) {
+                        println("check")
+                        echo.delay(timeout)
+                        timeout += 4
+                    }
+                    println(echo.echo("hello"))
+                    println(job)
+                }
             }
 
-            override suspend fun closed(e: Exception?) {
-                println("initiatorSession closed: $e")
+            override suspend fun closed(e: Exception?) = println("session1 closed: $e")
+        }
+        val serverTunnel = ::generatedInvoker.tunnel(listOf(EchoId(EchoImpl)))
+        val session2 = object : Session() {
+            override val serverTunnel = serverTunnel
+            override suspend fun closed(e: Exception?) = println("session2 closed: $e")
+        }
+        connect(session1, session2)
+    }
+
+    @Test
+    fun connect() = yassRunBlocking {
+        val initiatorSessionFactory = {
+            object : Session() {
+                override fun opened() {
+                    launch {
+                        val echo = generatedRemoteProxyFactoryCreator(clientTunnel)(EchoId)
+                        println(echo.echo("hello"))
+                        close()
+                    }
+                }
+
+                override suspend fun closed(e: Exception?) = println("initiatorSession closed: $e")
             }
         }
 
@@ -122,15 +145,11 @@ class SessionTest {
         val acceptorSessionFactory = {
             object : Session() {
                 override val serverTunnel = serverTunnel
-                override suspend fun closed(e: Exception?) {
-                    println("acceptorSession closed: $e")
-                }
+                override suspend fun closed(e: Exception?) = println("acceptorSession closed: $e")
             }
         }
-        val job = connect(200, 40, { it.checkAlive() }, { InitiatorSession() }) {
-            connect(it(), acceptorSessionFactory())
-        }
-        delay(2000)
+        val job = connect(200, initiatorSessionFactory) { connect(it(), acceptorSessionFactory()) }
+        delay(600)
         job.cancel()
     }
 }
