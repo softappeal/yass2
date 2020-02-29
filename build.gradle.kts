@@ -2,11 +2,11 @@
 
 fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.3.3"
 
-fun ktor(module: String) = "io.ktor:ktor-$module:1.3.0"
+fun ktor(module: String) = "io.ktor:ktor-$module:1.3.1"
 
 plugins {
     kotlin("multiplatform") version "1.3.61"
-    id("org.jetbrains.dokka") version "0.10.0"
+    id("org.jetbrains.dokka") version "0.10.1"
     id("maven-publish")
     signing
 }
@@ -15,7 +15,14 @@ group = "ch.softappeal.yass2"
 
 repositories {
     mavenCentral()
-    jcenter() // needed for dokka
+    exclusiveContent {
+        forRepository {
+            jcenter()
+        }
+        filter {
+            includeGroup("org.jetbrains.dokka")
+        }
+    }
 }
 
 tasks.register<Jar>("dokkaJar") {
