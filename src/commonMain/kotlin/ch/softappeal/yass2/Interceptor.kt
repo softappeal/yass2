@@ -26,6 +26,7 @@ inline operator fun <reified S : Any> ProxyFactory.invoke(
 
 @PublishedApi
 internal val MissingInterceptor: Interceptor = { _, _, _ -> throw RuntimeException("missing Interceptor") }
+
 @PublishedApi
 internal val MissingSuspendInterceptor: SuspendInterceptor = { _, _, _ -> throw RuntimeException("missing SuspendInterceptor") }
 

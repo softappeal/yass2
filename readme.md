@@ -1,7 +1,7 @@
 ### yass2 (Yet Another Service Solution)
 
 * yass2 is
-  * a [small](doc/loc.md) [Kotlin](https://kotlinlang.org/)
+  * a small [Kotlin](https://kotlinlang.org/)
     [Multiplatform](https://kotlinlang.org/docs/reference/multiplatform.html) library
   * for efficient asynchronous/non-blocking [Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html)
     based peer-to-peer communication

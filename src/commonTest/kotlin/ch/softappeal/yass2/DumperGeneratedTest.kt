@@ -1,11 +1,13 @@
 package ch.softappeal.yass2
 
 import ch.softappeal.yass2.contract.*
+import ch.softappeal.yass2.contract.generated.*
 import ch.softappeal.yass2.serialize.binary.*
 import kotlin.test.*
 
 open class DumperGeneratedTest {
-    protected open val dumper: Dumper = generatedDumper()
+    private val generatedDumper = dumper(GeneratedDumperProperties, BaseDumper)
+    protected open val dumper: Dumper = generatedDumper
 
     @Test
     fun missingClass() {

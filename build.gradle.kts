@@ -1,15 +1,19 @@
 // https://kotlinlang.org/docs/reference/building-mpp-with-gradle.html
 
-fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.3.3"
+fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.3.4"
 
-fun ktor(module: String) = "io.ktor:ktor-$module:1.3.1"
+fun ktor(module: String) = "io.ktor:ktor-$module:1.3.2"
 
 plugins {
-    kotlin("multiplatform") version "1.3.61"
+    kotlin("multiplatform") version "1.3.70"
     id("org.jetbrains.dokka") version "0.10.1"
     id("maven-publish")
     signing
 }
+
+val windows = true
+
+configurations.all { resolutionStrategy.failOnVersionConflict() }
 
 group = "ch.softappeal.yass2"
 
@@ -21,6 +25,7 @@ repositories {
         }
         filter {
             includeGroup("org.jetbrains.dokka")
+            includeGroup("io.ktor")
         }
     }
 }
@@ -45,13 +50,13 @@ kotlin {
         nodejs()
     }
 
-    mingwX64("windows")
+    if (windows) mingwX64("windows")
 
     targets.all {
         compilations.all {
             kotlinOptions {
                 allWarningsAsErrors = true
-                freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"
+                freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
             }
         }
     }
@@ -89,7 +94,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(kotlin("stdlib-common"))
-                implementation(coroutines("core-common"))
+                api(coroutines("core-common"))
             }
         }
         val commonTest by getting {
@@ -103,7 +108,7 @@ kotlin {
             dependencies {
                 api(kotlin("stdlib"))
                 implementation(kotlin("reflect"))
-                implementation(coroutines("core"))
+                api(coroutines("core"))
                 api(ktor("client-core-jvm"))
                 api(ktor("server-core"))
             }
@@ -120,7 +125,7 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 api(kotlin("stdlib-js"))
-                implementation(coroutines("core-js"))
+                api(coroutines("core-js"))
             }
         }
         val jsTest by getting {
@@ -129,13 +134,15 @@ kotlin {
             }
         }
 
-        val windowsMain by getting {
-            dependencies {
-                implementation(coroutines("core-native"))
+        if (windows) {
+            val windowsMain by getting {
+                dependencies {
+                    api(coroutines("core-native"))
+                }
             }
-        }
-        val windowsTest by getting {
-            dependencies {
+            val windowsTest by getting {
+                dependencies {
+                }
             }
         }
     }

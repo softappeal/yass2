@@ -27,9 +27,3 @@ val BaseDumper: BaseDumper = { value ->
         is Color -> append(value.name)
     }
 }
-
-@Suppress("unused")
-private val GeneratedDumper = dumper(GeneratedDumperProperties, BaseDumper)
-// fun generatedDumper() = GeneratedDumper // TODO: only works on JVM; probably a compiler bug
-
-fun generatedDumper() = dumper(GeneratedDumperProperties, BaseDumper)
