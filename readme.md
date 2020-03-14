@@ -8,13 +8,13 @@
   * enforcing type-safe contracts with interfaces and data transfer objects
 
 ```
+                         contract library
                        +-----------------------------------------+
                        | // contract definition                  |
                        | interface Calculator {                  |
                        |   suspend fun add(a: Int, b: Int): Int  |
                        | }                                       |
                        +-----------------------------------------+
-
 
   client process                                      server process
 +-----------------------------------------+         +----------------------------------------------------+
@@ -29,19 +29,6 @@
 |.........................................|         |....................................................|
 |          transport library              | <-----> |                transport library                   |
 +-----------------------------------------+         +----------------------------------------------------+
-
-
-                           yass2
-                         +--------------------------------------------+
-                         | remoting                                   |
-                         |   maps contract to messages                |
-                         |............................................|
-                         | serialize                                  |
-                         |   transforms messages to byte chunks       |
-                         |............................................|
-                         | transport adaptor                          |
-                         |   transports byte chunks between processes |
-                         +--------------------------------------------+
 ```
 
 * provides unidirectional and session based bidirectional remoting
