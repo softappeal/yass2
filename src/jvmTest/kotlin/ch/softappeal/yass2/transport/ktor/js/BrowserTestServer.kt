@@ -8,6 +8,7 @@ import io.ktor.http.content.*
 import io.ktor.request.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
+import io.ktor.server.netty.*
 import io.ktor.util.*
 import io.ktor.websocket.*
 import kotlin.coroutines.*
@@ -17,7 +18,7 @@ fun main() {
     println("http://$Host:$Port/index.html")
     suspend fun serverContext() = "http-" + coroutineContext[CallCce]?.call?.request?.uri!!
     fun Session.acceptorContext() = "ws-" + ((connection as WebSocketConnection).session as WebSocketServerSession).call.request.uri
-    embeddedServer(io.ktor.server.cio.CIO, Port) {
+    embeddedServer(Netty, Port) {
         install(WebSockets)
         routing {
             static {

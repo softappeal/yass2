@@ -6,6 +6,8 @@ import ch.softappeal.yass2.remote.session.*
 import ch.softappeal.yass2.transport.*
 import io.ktor.application.*
 import io.ktor.client.*
+import io.ktor.client.engine.apache.*
+import io.ktor.client.engine.cio.*
 import io.ktor.client.features.websocket.*
 import io.ktor.http.*
 import io.ktor.network.selector.*
@@ -13,6 +15,7 @@ import io.ktor.network.sockets.*
 import io.ktor.request.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
+import io.ktor.server.netty.*
 import io.ktor.util.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
@@ -84,7 +87,7 @@ class KtorTest {
     @Test
     fun http() {
         suspend fun serverContext() = coroutineContext[CallCce]?.call?.request?.uri!!
-        val engine = embeddedServer(io.ktor.server.cio.CIO, Port) {
+        val engine = embeddedServer(Netty, Port) {
             routing {
                 route(Config, Path, tunnel(::serverContext))
             }
@@ -92,8 +95,7 @@ class KtorTest {
         engine.start()
         try {
             runBlocking {
-                // note: CIO seems not to support keep-alive, however io.ktor.client.engine.apache.Apache does
-                HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
+                HttpClient(Apache).use { client ->
                     client.tunnel(Config, "http://$Host:$Port$Path")
                         .test(1000)
                 }
@@ -106,7 +108,7 @@ class KtorTest {
     @Test
     fun webSocket() {
         fun Session.acceptorContext() = ((connection as WebSocketConnection).session as WebSocketServerSession).call.request.uri
-        val engine = embeddedServer(io.ktor.server.cio.CIO, Port) {
+        val engine = embeddedServer(Netty, Port) {
             install(io.ktor.websocket.WebSockets)
             routing {
                 webSocket(Path) {
@@ -117,7 +119,7 @@ class KtorTest {
         engine.start()
         try {
             runBlocking {
-                HttpClient {
+                HttpClient(CIO) {
                     install(io.ktor.client.features.websocket.WebSockets)
                 }.use { client ->
                     client.ws(HttpMethod.Get, Host, Port, Path) { receiveLoop(Config, initiatorSessionFactory(1000)) }

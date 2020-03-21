@@ -1,6 +1,6 @@
 // https://kotlinlang.org/docs/reference/building-mpp-with-gradle.html
 
-fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.3.4"
+fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.3.5"
 
 fun ktor(module: String) = "io.ktor:ktor-$module:1.3.2"
 
@@ -13,7 +13,7 @@ plugins {
 
 val windows = true
 
-configurations.all { resolutionStrategy.failOnVersionConflict() }
+// TODO configurations.all { resolutionStrategy.failOnVersionConflict() }
 
 group = "ch.softappeal.yass2"
 
@@ -116,8 +116,9 @@ kotlin {
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
+                implementation(ktor("server-netty"))
+                implementation(ktor("client-apache"))
                 implementation(ktor("client-cio"))
-                implementation(ktor("server-cio"))
                 implementation(ktor("websockets"))
             }
         }
