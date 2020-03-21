@@ -1,4 +1,4 @@
-FROM amazoncorretto:11.0.6
+FROM adoptopenjdk:11.0.6_10-jdk-hotspot
 
 COPY  . /project
 WORKDIR /project
