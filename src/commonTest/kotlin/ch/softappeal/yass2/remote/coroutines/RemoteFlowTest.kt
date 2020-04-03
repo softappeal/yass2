@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.remote
+package ch.softappeal.yass2.remote.coroutines
 
 import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*

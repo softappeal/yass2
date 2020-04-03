@@ -36,7 +36,6 @@ public val ByteArrayEncoder: BaseEncoder<ByteArray> = BaseEncoder(ByteArray::cla
     { reader -> reader.readBytes(reader.readVarInt()) }
 )
 
-@OptIn(ExperimentalStdlibApi::class)
 public val StringEncoder: BaseEncoder<String> = BaseEncoder(String::class,
     { writer, value -> ByteArrayEncoder.write(writer, value.encodeToByteArray(throwOnInvalidSequence = true)) },
     { reader -> ByteArrayEncoder.read(reader).decodeToString(throwOnInvalidSequence = true) }

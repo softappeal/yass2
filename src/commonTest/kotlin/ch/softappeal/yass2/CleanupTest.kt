@@ -23,7 +23,7 @@ class CleanupTest {
         }
         assertTrue(called)
         assertSame(e, e2)
-        // TODO: check if blockException in suppressed
+        assertEquals(listOf(blockException), e.suppressedExceptions)
     }
 
     @Test
@@ -116,7 +116,7 @@ class CleanupTest {
         )
         assertTrue(tryCalled)
         assertTrue(finallyCalled)
-        // TODO: check if finallyException in tryException.suppressed
+        assertEquals(listOf(finallyException), tryException.suppressedExceptions)
     }
 
     @Test

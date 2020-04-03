@@ -2,7 +2,7 @@ package ch.softappeal.yass2.transport.ktor
 
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.remote.*
-import ch.softappeal.yass2.remote.session.*
+import ch.softappeal.yass2.remote.coroutines.session.*
 import ch.softappeal.yass2.transport.*
 import io.ktor.application.*
 import io.ktor.client.*
@@ -45,9 +45,9 @@ class KtorTest {
                 val listenerJob = launch {
                     val serverTunnel = tunnel { currentCoroutineContext()[SocketCce]?.socket?.remoteAddress!! }
                     while (true) {
-                        val clientSocket = serverSocket.accept()
+                        val socket = serverSocket.accept()
                         launch {
-                            clientSocket.handleRequest(Config, serverTunnel)
+                            socket.handleRequest(Config, serverTunnel)
                         }
                     }
                 }
@@ -67,11 +67,13 @@ class KtorTest {
             runBlocking {
                 val acceptorJob = launch {
                     while (true) {
-                        serverSocket.accept()
-                            .receiveLoop(
+                        val socket = serverSocket.accept()
+                        launch {
+                            socket.receiveLoop(
                                 Config,
                                 acceptorSessionFactory { (connection as SocketConnection).socket.remoteAddress }
                             )
+                        }
                     }
                 }
                 try {

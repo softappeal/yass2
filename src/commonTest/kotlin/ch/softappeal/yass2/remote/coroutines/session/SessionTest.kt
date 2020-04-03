@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.remote.session
+package ch.softappeal.yass2.remote.coroutines.session
 
 import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
@@ -58,8 +58,8 @@ private fun connect(session1: Session, session2: Session) {
     }
     session1.connection = LocalConnection(session2)
     session2.connection = LocalConnection(session1)
-    session1.internalOpened()
-    session2.internalOpened()
+    session1.opened()
+    session2.opened()
 }
 
 class SessionTest {

@@ -86,5 +86,5 @@ fun Reader.fromUtf8(utf8Length: Int): String {
         }
         chars[c++] = codePoint.toChar()
     }
-    return String(chars, 0, c)
+    return chars.concatToString(0, c)
 }

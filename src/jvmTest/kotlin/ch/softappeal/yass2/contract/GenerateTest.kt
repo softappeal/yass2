@@ -19,7 +19,7 @@ class GenerateTest {
 
     @Test
     fun generateRemote() {
-        generate("GeneratedRemote.kt", generateRemote(ServiceIds))
+        generate("GeneratedRemote.kt", generateRemoteProxyFactoryCreator(ServiceIds) + "\n" + generateInvoker(ServiceIds))
     }
 
     @Test

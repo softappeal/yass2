@@ -2,6 +2,7 @@ package ch.softappeal.yass2
 
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.generate.*
+import kotlinx.coroutines.*
 import kotlin.reflect.full.*
 import kotlin.test.*
 
@@ -31,7 +32,7 @@ class InterceptorReflectionTest : InterceptorGeneratedTest() {
     }
 
     @Test
-    fun annotation() = yassRunBlocking {
+    fun annotation() = runBlocking {
         var annotated: Boolean
         val echo: Echo = ReflectionProxyFactory(EchoImpl) { function, parameters, invocation: SuspendInvocation ->
             annotated = function.findAnnotation<TestAnnotation>() != null

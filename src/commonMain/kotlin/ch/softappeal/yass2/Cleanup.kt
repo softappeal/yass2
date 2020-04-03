@@ -4,7 +4,7 @@ public inline fun Exception.addSuppressed(block: () -> Unit): Exception {
     try {
         block()
     } catch (e: Exception) {
-        // TODO Kotlin 1.4: addSuppressed(e)
+        addSuppressed(e)
     }
     return this
 }

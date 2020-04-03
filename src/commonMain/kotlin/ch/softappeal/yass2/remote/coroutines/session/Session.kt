@@ -1,7 +1,8 @@
-package ch.softappeal.yass2.remote.session
+package ch.softappeal.yass2.remote.coroutines.session
 
 import ch.softappeal.yass2.*
 import ch.softappeal.yass2.remote.*
+import ch.softappeal.yass2.remote.coroutines.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.*
 import kotlin.coroutines.*
@@ -14,8 +15,7 @@ public interface Connection {
 }
 
 public abstract class Session {
-    protected open fun opened() {}
-    internal fun internalOpened(): Unit = opened()
+    public open fun opened() {}
 
     /** [e] is `null` for regular close. */
     protected open suspend fun closed(e: Exception?) {}
@@ -42,7 +42,6 @@ public abstract class Session {
     protected open val serverTunnel: Tunnel = { throw UnsupportedOperationException() }
 
     public lateinit var connection: Connection
-        internal set
 
     private val closed = AtomicBoolean(false)
     private val nextRequestNumber = AtomicInteger(0)
@@ -61,9 +60,9 @@ public abstract class Session {
         }
     }
 
-    internal suspend fun close(e: Exception): Unit = close(false, e)
+    public suspend fun close(e: Exception): Unit = close(false, e)
 
-    internal suspend fun received(packet: Packet?) {
+    public suspend fun received(packet: Packet?) {
         if (packet == null) {
             close(false, null)
             return
@@ -104,7 +103,7 @@ public suspend fun Connection.receiveLoop(sessionFactory: SessionFactory, receiv
     val session = sessionFactory()
     session.connection = this
     try {
-        session.internalOpened()
+        session.opened()
         while (true) {
             val packet = receive()
             session.received(packet)

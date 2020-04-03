@@ -18,10 +18,6 @@ public fun dumper(properties: DumperProperties, baseDumper: BaseDumper): Dumper 
     var indent = 0
 
     fun dump(value: Any?) {
-        fun appendLine() {
-            append('\n')
-        }
-
         fun appendIndent() {
             append("    ".repeat(indent))
         }

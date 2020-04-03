@@ -1,7 +1,7 @@
 package ch.softappeal.yass2.transport.ktor
 
 import ch.softappeal.yass2.remote.*
-import ch.softappeal.yass2.remote.session.*
+import ch.softappeal.yass2.remote.coroutines.session.*
 import io.ktor.application.*
 import io.ktor.http.content.*
 import io.ktor.request.*

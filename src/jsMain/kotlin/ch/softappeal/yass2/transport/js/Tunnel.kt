@@ -2,10 +2,10 @@ package ch.softappeal.yass2.transport.js
 
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.transport.*
+import kotlinx.browser.*
 import kotlinx.coroutines.*
 import org.khronos.webgl.*
 import org.w3c.fetch.*
-import kotlin.browser.*
 
 public fun TransportConfig.tunnel(url: String): Tunnel = { request ->
     val writer = writer()

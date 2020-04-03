@@ -7,8 +7,8 @@ import kotlin.reflect.full.*
 public fun generateProxyFactory(services: List<KClass<*>>, name: String = "GeneratedProxyFactory"): String = writer {
     require(services.toSet().size == services.size) { "duplicated services" }
     write("""
-        @Suppress("UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection")
-        object $name : ${ProxyFactory::class.qualifiedName} {
+        @Suppress("UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
+        public object $name : ${ProxyFactory::class.qualifiedName} {
             override fun <S : Any> create(
                 service: ${KClass::class.qualifiedName}<S>, implementation: S,
                 interceptor: $CSY.Interceptor, suspendInterceptor: $CSY.SuspendInterceptor
@@ -26,8 +26,8 @@ public fun generateProxyFactory(services: List<KClass<*>>, name: String = "Gener
         """, 2)
         functions.forEach {
             with(it) {
-                append('\n')
-                writeFunctionSignature(this)
+                appendLine()
+                writeFunctionSignature("            ", this)
                 if (hasResult()) append(": $returnType")
                 val interceptor = if (isSuspend) "suspendInterceptor" else "interceptor"
                 val hasResult = if (hasResult()) "return " else ""

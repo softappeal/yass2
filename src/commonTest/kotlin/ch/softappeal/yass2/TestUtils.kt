@@ -1,14 +1,16 @@
 package ch.softappeal.yass2
 
 import kotlin.test.*
+import kotlin.time.*
 
+@OptIn(ExperimentalTime::class)
 inline fun performance(iterations: Int, action: () -> Unit) {
     println("iterations: $iterations")
     repeat(2) {
-        val time = yassMeasureTimeMillis {
+        val timeMs = measureTime {
             repeat(iterations) { action() }
-        }
-        println("  one sample: ${1_000_000 * time / iterations}ns total time: ${time}ms")
+        }.inMilliseconds
+        println("  one sample: ${1_000_000 * timeMs / iterations}ns total time: ${timeMs}ms")
     }
 }
 

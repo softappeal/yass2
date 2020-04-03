@@ -1,9 +1,9 @@
 package ch.softappeal.yass2.remote
 
-import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.contract.generated.*
 import ch.softappeal.yass2.generate.*
+import kotlinx.coroutines.*
 import kotlin.test.*
 
 class RemoteReflectionTest : RemoteGeneratedTest() {
@@ -11,17 +11,17 @@ class RemoteReflectionTest : RemoteGeneratedTest() {
     override val invoker = ::reflectionInvoker
 
     @Test
-    fun generatedAndReflection() = yassRunBlocking {
+    fun generatedAndReflection() = runBlocking {
         generatedRemoteProxyFactoryCreator(::reflectionInvoker.tunnel(Services)).test()
     }
 
     @Test
-    fun reflectionAndGenerated() = yassRunBlocking {
+    fun reflectionAndGenerated() = runBlocking {
         reflectionRemoteProxyFactoryCreator(::generatedInvoker.tunnel(Services)).test()
     }
 
     @Test
-    fun functionMapper() = yassRunBlocking {
+    fun functionMapper() = runBlocking {
         val functionMapper = FunctionMapper(Calculator::class)
         assertEquals("add", functionMapper.toFunction(0).name)
         assertEquals("divide", functionMapper.toFunction(1).name)
@@ -45,7 +45,7 @@ class RemoteReflectionTest : RemoteGeneratedTest() {
     fun duplicatedServiceId() {
         assertEquals(
             "duplicated service id's",
-            assertFailsWith<IllegalArgumentException> { generateRemote(listOf(EchoId, EchoId)) }.message
+            assertFailsWith<IllegalArgumentException> { generateInvoker(listOf(EchoId, EchoId)) }.message
         )
     }
 }

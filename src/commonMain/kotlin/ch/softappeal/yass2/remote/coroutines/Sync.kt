@@ -1,4 +1,4 @@
-package ch.softappeal.yass2
+package ch.softappeal.yass2.remote.coroutines
 
 import kotlinx.coroutines.sync.*
 

@@ -1,7 +1,7 @@
 package ch.softappeal.yass2.contract.generated
 
-@Suppress("UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection")
-object GeneratedProxyFactory : ch.softappeal.yass2.ProxyFactory {
+@Suppress("UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
+public object GeneratedProxyFactory : ch.softappeal.yass2.ProxyFactory {
     override fun <S : Any> create(
         service: kotlin.reflect.KClass<S>, implementation: S,
         interceptor: ch.softappeal.yass2.Interceptor, suspendInterceptor: ch.softappeal.yass2.SuspendInterceptor
@@ -40,21 +40,21 @@ object GeneratedProxyFactory : ch.softappeal.yass2.ProxyFactory {
                 suspendInterceptor(ch.softappeal.yass2.contract.Echo::noParametersNoResult, emptyArray()) { (implementation as ch.softappeal.yass2.contract.Echo).noParametersNoResult() }
             }
         } as S
-        ch.softappeal.yass2.remote.FlowService::class -> object : ch.softappeal.yass2.remote.FlowService {
+        ch.softappeal.yass2.remote.coroutines.FlowService::class -> object : ch.softappeal.yass2.remote.coroutines.FlowService {
             init {
                 ch.softappeal.yass2.checkInterceptors(interceptor, suspendInterceptor, needsInterceptor = false, needsSuspendInterceptor = true)
             }
 
             override suspend fun cancel(p1: kotlin.Int) {
-                suspendInterceptor(ch.softappeal.yass2.remote.FlowService::cancel, arrayOf(p1)) { (implementation as ch.softappeal.yass2.remote.FlowService).cancel(p1) }
+                suspendInterceptor(ch.softappeal.yass2.remote.coroutines.FlowService::cancel, arrayOf(p1)) { (implementation as ch.softappeal.yass2.remote.coroutines.FlowService).cancel(p1) }
             }
 
             override suspend fun create(p1: kotlin.Any): kotlin.Int {
-                return suspendInterceptor(ch.softappeal.yass2.remote.FlowService::create, arrayOf(p1)) { (implementation as ch.softappeal.yass2.remote.FlowService).create(p1) } as kotlin.Int
+                return suspendInterceptor(ch.softappeal.yass2.remote.coroutines.FlowService::create, arrayOf(p1)) { (implementation as ch.softappeal.yass2.remote.coroutines.FlowService).create(p1) } as kotlin.Int
             }
 
             override suspend fun next(p1: kotlin.Int): kotlin.Any? {
-                return suspendInterceptor(ch.softappeal.yass2.remote.FlowService::next, arrayOf(p1)) { (implementation as ch.softappeal.yass2.remote.FlowService).next(p1) }
+                return suspendInterceptor(ch.softappeal.yass2.remote.coroutines.FlowService::next, arrayOf(p1)) { (implementation as ch.softappeal.yass2.remote.coroutines.FlowService).next(p1) }
             }
         } as S
         ch.softappeal.yass2.contract.Mixed::class -> object : ch.softappeal.yass2.contract.Mixed {

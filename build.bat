@@ -8,7 +8,7 @@ set /p version=Version [ MAJOR.MINOR.PATCH or 'enter' for no-release ]?:
 if "%version%" == "" goto norelease
 
 docker build  --tag  project https://github.com/softappeal/yass2.git#v%version%
-docker create --name project project ./gradlew -Dorg.gradle.internal.publish.checksums.insecure=true -Pversion=%version% build publishAllPublicationsToMavenRepository
+docker create --name project project ./gradlew -Dorg.gradle.internal.publish.checksums.insecure=true -Pversion=%version% build publishAllPublicationsToOssrhRepository
 goto continue
 
 :norelease

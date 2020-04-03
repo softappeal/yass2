@@ -1,6 +1,6 @@
 package ch.softappeal.yass2.transport.js
 
-import ch.softappeal.yass2.remote.session.*
+import ch.softappeal.yass2.remote.coroutines.session.*
 import ch.softappeal.yass2.transport.*
 import kotlinx.coroutines.*
 import org.khronos.webgl.*
@@ -39,7 +39,7 @@ public fun TransportConfig.connect(url: String, sessionFactory: SessionFactory) 
             }
             onclose = { close("onclose") }
             onerror = { close("onerror") }
-            session.internalOpened()
+            session.opened()
         }
     }
 }

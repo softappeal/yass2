@@ -22,7 +22,7 @@ open class DumperGeneratedTest {
     fun test() {
         val s = StringBuilder()
         fun dump(value: Any?) {
-            s.dumper(value).append('\n')
+            s.dumper(value).appendLine()
         }
 
         dump(null)

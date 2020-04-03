@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.remote.session
+package ch.softappeal.yass2.remote.coroutines.session
 
 import kotlinx.coroutines.*
 

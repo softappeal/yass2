@@ -1,26 +1,26 @@
 // https://kotlinlang.org/docs/reference/building-mpp-with-gradle.html
 
-fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.3.8"
+val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9"
 
-fun ktor(module: String) = "io.ktor:ktor-$module:1.3.2"
+fun ktor(module: String) = "io.ktor:ktor-$module:1.4.0"
 
 plugins {
-    kotlin("multiplatform") version "1.3.72"
-    id("org.jetbrains.dokka") version "0.10.1"
+    kotlin("multiplatform") version "1.4.0"
+    id("org.jetbrains.dokka") version "1.4.0-rc"
     id("maven-publish")
     signing
 }
 
-val windows = true
-
-group = "ch.softappeal.yass2"
+// configurations.all { resolutionStrategy.failOnVersionConflict() }
 
 repositories {
     jcenter()
 }
 
+group = "ch.softappeal.yass2"
+
 tasks.register<Jar>("dokkaJar") {
-    dependsOn(tasks.dokka)
+    dependsOn(tasks.dokkaHtml)
     archiveClassifier.set("javadoc")
     from("$buildDir/dokka")
 }
@@ -39,10 +39,11 @@ kotlin {
         nodejs()
     }
 
-    if (windows) mingwX64("windows")
+    mingwX64("windows")
 
     targets.all {
         compilations.all {
+            explicitApi()
             kotlinOptions {
                 allWarningsAsErrors = true
                 freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
@@ -66,11 +67,9 @@ kotlin {
         }
         repositories {
             maven {
+                name = "ossrh"
+                credentials(PasswordCredentials::class)
                 url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2")
-                credentials {
-                    username = (project.findProperty("ossrhUsername") as String?) ?: "dummy"
-                    password = (project.findProperty("ossrhPassword") as String?) ?: "dummy"
-                }
             }
         }
     }
@@ -82,8 +81,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(kotlin("stdlib-common"))
-                api(coroutines("core-common"))
+                api(coroutinesCore)
             }
         }
         val commonTest by getting {
@@ -95,9 +93,7 @@ kotlin {
 
         val jvmMain by getting {
             dependencies {
-                api(kotlin("stdlib"))
                 implementation(kotlin("reflect"))
-                api(coroutines("core"))
                 api(ktor("client-core-jvm"))
                 api(ktor("server-core"))
             }
@@ -112,28 +108,22 @@ kotlin {
             }
         }
 
-        val jsMain by getting {
-            dependencies {
-                api(kotlin("stdlib-js"))
-                api(coroutines("core-js"))
-            }
-        }
+        val jsMain by getting
         val jsTest by getting {
             dependencies {
                 implementation(kotlin("test-js"))
             }
         }
 
-        if (windows) {
-            val windowsMain by getting {
-                dependencies {
-                    api(coroutines("core-native"))
-                }
-            }
-            val windowsTest by getting {
-                dependencies {
-                }
-            }
-        }
+        val windowsMain by getting
+        val windowsTest by getting
+    }
+}
+
+tasks.withType<org.jetbrains.dokka.gradle.DokkaTask> {
+    dokkaSourceSets {
+        val commonMain by creating
+        val jvmMain by creating
+        val jsMain by creating
     }
 }

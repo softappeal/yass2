@@ -8,8 +8,8 @@ public fun generateDumperProperties(
 ): String = writer {
     require(concreteClasses.toSet().size == concreteClasses.size) { "duplicated concreteClass" }
     write("""
-        @Suppress("UNCHECKED_CAST")
-        val $name = $CSY.dumperProperties(
+        @Suppress("UNCHECKED_CAST", "RedundantVisibilityModifier")
+        public val $name: $CSY.DumperProperties = $CSY.dumperProperties(
     """)
     concreteClasses.withIndex().forEach { (classIndex, klass) ->
         write("""
