@@ -6,7 +6,7 @@ import ch.softappeal.yass2.serialize.binary.*
 import kotlin.test.*
 
 open class DumperGeneratedTest {
-    private val generatedDumper = dumper(GeneratedDumperProperties, BaseDumper) // TODO: fails on Windows if moved to global; compiler bug
+    private val generatedDumper = dumper(GeneratedDumperProperties, BaseDumper) // note: fails if moved to global due to https://youtrack.jetbrains.com/issue/KT-38017
     protected open val dumper: Dumper = generatedDumper
 
     @Test
