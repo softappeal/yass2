@@ -5,7 +5,7 @@ fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$modu
 fun ktor(module: String) = "io.ktor:ktor-$module:1.3.2"
 
 plugins {
-    kotlin("multiplatform") version "1.3.71"
+    kotlin("multiplatform") version "1.3.72"
     id("org.jetbrains.dokka") version "0.10.1"
     id("maven-publish")
     signing
