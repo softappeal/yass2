@@ -129,4 +129,26 @@ class KtorTest {
             engine.stop(0, 0, TimeUnit.SECONDS)
         }
     }
+
+    @Test
+    fun flowTest() {
+        tcp.bind(Address).use { serverSocket ->
+            runBlocking {
+                val acceptorJob = launch {
+                    while (true) {
+                        serverSocket.accept()
+                            .receiveLoop(Config, flowAcceptorSessionFactory())
+                    }
+                }
+                try {
+                    launch {
+                        tcp.connect(Address)
+                            .receiveLoop(Config, flowInitiatorSessionFactory())
+                    }.join()
+                } finally {
+                    acceptorJob.cancel()
+                }
+            }
+        }
+    }
 }
