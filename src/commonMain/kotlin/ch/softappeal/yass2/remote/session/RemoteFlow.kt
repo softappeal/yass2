@@ -31,9 +31,12 @@ fun flowService(flowFactory: FlowFactory): FlowService {
             val channel = Channel<Any?>()
             collectId2channel.put(collectId, channel)
             CoroutineScope(coroutineContext).launch {
-                flow.collect { value -> channel.send(value) }
-                channel.send(null)
-                collectId2channel.remove(collectId)
+                try {
+                    flow.collect { value -> channel.send(value) }
+                    channel.send(null)
+                } finally {
+                    collectId2channel.remove(collectId)
+                }
             }
             return collectId
         }
