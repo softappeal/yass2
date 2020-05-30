@@ -5,6 +5,7 @@ import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.contract.generated.*
 import ch.softappeal.yass2.remote.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import kotlin.coroutines.*
 import kotlin.test.*
 
@@ -37,6 +38,9 @@ fun CoroutineScope.initiatorSessionFactory(iterations: Int): SessionFactory = {
             launch {
                 assertFalse(isClosed())
                 clientTunnel.test(iterations)
+                generatedRemoteProxyFactoryCreator(clientTunnel)(FlowServiceId)
+                    .createFlow<Int>(2)
+                    .collect { value -> println("collect($value)") }
                 close()
                 assertTrue(isClosed())
             }

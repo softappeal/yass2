@@ -1,47 +1,9 @@
 package ch.softappeal.yass2.remote.session
 
 import ch.softappeal.yass2.*
-import ch.softappeal.yass2.contract.*
-import ch.softappeal.yass2.contract.generated.*
-import ch.softappeal.yass2.remote.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlin.test.*
-
-fun CoroutineScope.flowInitiatorSessionFactory(): SessionFactory = {
-    object : Session() {
-        override fun opened() {
-            launch {
-                val remoteProxyFactory = generatedRemoteProxyFactoryCreator(clientTunnel)
-                val flowService = remoteProxyFactory(FlowServiceId)
-                val flow = flowService.createFlow<Int>("flowId")
-                coroutineScope {
-                    launch {
-                        flow.collect { value -> println("collect($value)") }
-                    }
-                }
-                close()
-            }
-        }
-
-        override suspend fun closed(e: Exception?) = println("initiatorSessionFactory closed: $e")
-    }
-}
-
-fun flowAcceptorSessionFactory(): SessionFactory = {
-    object : Session() {
-        override val serverTunnel = ::generatedInvoker.tunnel(listOf(
-            FlowServiceId(flowService { flowId ->
-                when (flowId) {
-                    "flowId" -> (1..10).asFlow()
-                    else -> error("unexpected flowId")
-                }
-            })
-        ))
-
-        override suspend fun closed(e: Exception?) = println("acceptorSessionFactory closed: $e")
-    }
-}
 
 class RemoteFlowTest {
     @Test

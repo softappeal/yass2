@@ -3,6 +3,9 @@ package ch.softappeal.yass2.remote
 import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.contract.generated.*
+import ch.softappeal.yass2.remote.session.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import kotlin.test.*
 
 class RemoteTest {
@@ -95,6 +98,15 @@ fun tunnel(context: suspend () -> Any) = ::generatedInvoker.tunnel(listOf(
     EchoId(GeneratedProxyFactory(EchoImpl) { _, _, invocation: SuspendInvocation ->
         println("context<${context()}>")
         invocation()
+    }),
+    FlowServiceId(flowService { flowId ->
+        flow {
+            for (i in 1..flowId as Int) {
+                delay(1000)
+                println("emitting $i")
+                emit(i)
+            }
+        }
     })
 ))
 
