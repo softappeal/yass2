@@ -1,5 +1,6 @@
-package ch.softappeal.yass2.remote.session
+package ch.softappeal.yass2.remote.session // TODO: move to main
 
+import ch.softappeal.yass2.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
 import kotlinx.coroutines.flow.*
@@ -30,13 +31,17 @@ fun flowService(flowFactory: FlowFactory): FlowService {
             val collectId = nextCollectId.incrementAndGet()
             val channel = Channel<Any?>()
             collectId2channel.put(collectId, channel)
-            CoroutineScope(coroutineContext).launch {
-                try {
-                    flow.collect { value -> channel.send(value) }
-                    channel.send(null)
-                } finally {
-                    collectId2channel.remove(collectId)
+            try {
+                CoroutineScope(coroutineContext).launch {
+                    tryFinally({
+                        flow.collect { value -> channel.send(value) }
+                        channel.send(null)
+                    }) {
+                        collectId2channel.remove(collectId)
+                    }
                 }
+            } catch (e: Exception) {
+                throw e.addSuppressed { collectId2channel.remove(collectId) }
             }
             return collectId
         }

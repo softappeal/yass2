@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.remote.session
 
+import ch.softappeal.yass2.*
 import ch.softappeal.yass2.remote.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.*
@@ -52,10 +53,10 @@ abstract class Session {
 
     private suspend fun close(sendEnd: Boolean, e: Exception?) {
         if (closed.getAndSet(true)) return
-        try {
+        tryFinally({
             closed(e)
             if (sendEnd) write(null)
-        } finally {
+        }) {
             connection.closed()
         }
     }
