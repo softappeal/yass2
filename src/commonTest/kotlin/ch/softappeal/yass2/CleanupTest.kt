@@ -86,7 +86,6 @@ class CleanupTest {
             assertFails {
                 tryFinally({
                     tryCalled = true
-                    123
                 }) {
                     finallyCalled = true
                     throw finallyException
