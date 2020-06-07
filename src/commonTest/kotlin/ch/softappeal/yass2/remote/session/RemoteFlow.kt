@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.remote.session // TODO: move to main
+package ch.softappeal.yass2.remote.session
 
 import ch.softappeal.yass2.*
 import kotlinx.coroutines.*
@@ -21,6 +21,8 @@ fun <T> FlowService.createFlow(flowId: Any): Flow<T> = object : Flow<T> {
 }
 
 typealias FlowFactory = (flowId: Any) -> Flow<*>
+
+// note: how to cancel a collect?
 
 fun flowService(flowFactory: FlowFactory): FlowService {
     val nextCollectId = AtomicInteger(0)
