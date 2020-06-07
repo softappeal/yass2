@@ -21,7 +21,6 @@ import io.ktor.websocket.*
 import kotlinx.coroutines.*
 import java.net.*
 import java.util.concurrent.*
-import kotlin.coroutines.*
 import kotlin.test.*
 
 val Config = TransportConfig(GeneratedSerializer, 100, 100)
@@ -41,13 +40,15 @@ class KtorTest {
 
     @Test
     fun socket() {
-        suspend fun serverContext() = coroutineContext[SocketCce]?.socket?.remoteAddress!!
         tcp.bind(Address).use { serverSocket ->
             runBlocking {
                 val listenerJob = launch {
                     while (true) {
                         serverSocket.accept()
-                            .handleRequest(Config, tunnel(::serverContext))
+                            .handleRequest(
+                                Config,
+                                tunnel { currentCoroutineContext()[SocketCce]?.socket?.remoteAddress!! }
+                            )
                     }
                 }
                 try {
@@ -63,13 +64,15 @@ class KtorTest {
 
     @Test
     fun socketSession() {
-        fun Session.acceptorContext() = (connection as SocketConnection).socket.remoteAddress
         tcp.bind(Address).use { serverSocket ->
             runBlocking {
                 val acceptorJob = launch {
                     while (true) {
                         serverSocket.accept()
-                            .receiveLoop(Config, acceptorSessionFactory { acceptorContext() })
+                            .receiveLoop(
+                                Config,
+                                acceptorSessionFactory { (connection as SocketConnection).socket.remoteAddress }
+                            )
                     }
                 }
                 try {
@@ -86,10 +89,13 @@ class KtorTest {
 
     @Test
     fun http() {
-        suspend fun serverContext() = coroutineContext[CallCce]?.call?.request?.uri!!
         val engine = embeddedServer(Netty, Port) {
             routing {
-                route(Config, Path, tunnel(::serverContext))
+                route(
+                    Config,
+                    Path,
+                    tunnel { currentCoroutineContext()[CallCce]?.call?.request?.uri!! }
+                )
             }
         }
         engine.start()
@@ -107,12 +113,14 @@ class KtorTest {
 
     @Test
     fun webSocket() {
-        fun Session.acceptorContext() = ((connection as WebSocketConnection).session as WebSocketServerSession).call.request.uri
         val engine = embeddedServer(Netty, Port) {
             install(io.ktor.websocket.WebSockets)
             routing {
                 webSocket(Path) {
-                    receiveLoop(Config, acceptorSessionFactory { acceptorContext() })
+                    receiveLoop(
+                        Config,
+                        acceptorSessionFactory { ((connection as WebSocketConnection).session as WebSocketServerSession).call.request.uri }
+                    )
                 }
             }
         }

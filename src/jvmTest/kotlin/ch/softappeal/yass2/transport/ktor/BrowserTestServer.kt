@@ -10,13 +10,11 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.util.*
 import io.ktor.websocket.*
-import kotlin.coroutines.*
+import kotlinx.coroutines.*
 
 @KtorExperimentalAPI
 fun main() {
     println("http://$Host:$Port/index.html")
-    suspend fun serverContext() = "http-" + coroutineContext[CallCce]?.call?.request?.uri!!
-    fun Session.acceptorContext() = "ws-" + ((connection as WebSocketConnection).session as WebSocketServerSession).call.request.uri
     embeddedServer(Netty, Port) {
         install(WebSockets)
         routing {
@@ -25,9 +23,16 @@ fun main() {
                 files("./src/jsTest/resources")
                 files("./build/js/node_modules")
             }
-            route(Config, Path, tunnel(::serverContext))
+            route(
+                Config,
+                Path,
+                tunnel { "http-" + currentCoroutineContext()[CallCce]?.call?.request?.uri!! }
+            )
             webSocket(Path) {
-                receiveLoop(Config, acceptorSessionFactory { acceptorContext() })
+                receiveLoop(
+                    Config,
+                    acceptorSessionFactory { "ws-" + ((connection as WebSocketConnection).session as WebSocketServerSession).call.request.uri }
+                )
             }
         }
     }.start(wait = true)
