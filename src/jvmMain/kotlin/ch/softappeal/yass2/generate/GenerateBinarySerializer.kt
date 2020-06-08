@@ -3,7 +3,7 @@ package ch.softappeal.yass2.generate
 import ch.softappeal.yass2.serialize.binary.*
 import kotlin.reflect.*
 
-fun generateBinarySerializer(
+public fun generateBinarySerializer(
     baseEncoders: List<BaseEncoder<*>>, concreteClasses: List<KClass<*>>, name: String = "generatedBinarySerializer"
 ): String = writer {
     write("""

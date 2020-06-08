@@ -2,13 +2,13 @@ package ch.softappeal.yass2.transport
 
 import ch.softappeal.yass2.serialize.*
 
-class BytesWriter internal constructor(initialBuffer: ByteArray) : Writer {
-    constructor(initialCapacity: Int) : this(ByteArray(initialCapacity))
+public class BytesWriter internal constructor(initialBuffer: ByteArray) : Writer {
+    public constructor(initialCapacity: Int) : this(ByteArray(initialCapacity))
 
-    var buffer: ByteArray = initialBuffer
+    public var buffer: ByteArray = initialBuffer
         private set
 
-    var current: Int = 0
+    public var current: Int = 0
         private set
 
     override fun writeByte(byte: Byte) {
@@ -24,11 +24,11 @@ class BytesWriter internal constructor(initialBuffer: ByteArray) : Writer {
     }
 }
 
-class BytesReader(private val buffer: ByteArray) : Reader {
+public class BytesReader(private val buffer: ByteArray) : Reader {
     internal var current: Int = 0
         private set
 
-    val drained: Boolean get() = current >= buffer.size
+    public val drained: Boolean get() = current >= buffer.size
 
     override fun readByte(): Byte {
         check(current < buffer.size)

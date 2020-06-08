@@ -3,7 +3,9 @@ package ch.softappeal.yass2.generate
 import ch.softappeal.yass2.*
 import kotlin.reflect.*
 
-fun generateDumperProperties(concreteClasses: List<KClass<*>>, name: String = "GeneratedDumperProperties"): String = writer {
+public fun generateDumperProperties(
+    concreteClasses: List<KClass<*>>, name: String = "GeneratedDumperProperties"
+): String = writer {
     require(concreteClasses.toSet().size == concreteClasses.size) { "duplicated concreteClass" }
     write("""
         @Suppress("UNCHECKED_CAST")

@@ -6,7 +6,7 @@ import ch.softappeal.yass2.serialize.*
 
 private const val IntInv7F: Int = 0x7F.inv()
 
-fun Writer.writeVarInt(value: Int) {
+public fun Writer.writeVarInt(value: Int) {
     var v = value
     while (true) {
         if (v and IntInv7F == 0) {
@@ -18,7 +18,7 @@ fun Writer.writeVarInt(value: Int) {
     }
 }
 
-fun Reader.readVarInt(): Int {
+public fun Reader.readVarInt(): Int {
     var shift = 0
     var value = 0
     while (true) {
@@ -31,7 +31,7 @@ fun Reader.readVarInt(): Int {
 
 private const val LongInv7F: Long = 0x7FL.inv()
 
-fun Writer.writeVarLong(value: Long) {
+public fun Writer.writeVarLong(value: Long) {
     var v = value
     while (true) {
         if (v and LongInv7F == 0L) {
@@ -43,7 +43,7 @@ fun Writer.writeVarLong(value: Long) {
     }
 }
 
-fun Reader.readVarLong(): Long {
+public fun Reader.readVarLong(): Long {
     var shift = 0
     var value = 0L
     while (true) {
@@ -56,10 +56,10 @@ fun Reader.readVarLong(): Long {
 
 // see https://developers.google.com/protocol-buffers/docs/encoding#signed-integers
 
-fun Int.toZigZag(): Int = (this shl 1) xor (this shr 31)
+public fun Int.toZigZag(): Int = (this shl 1) xor (this shr 31)
 
-fun Int.fromZigZag(): Int = (this ushr 1) xor -(this and 1)
+public fun Int.fromZigZag(): Int = (this ushr 1) xor -(this and 1)
 
-fun Long.toZigZag(): Long = (this shl 1) xor (this shr 63)
+public fun Long.toZigZag(): Long = (this shl 1) xor (this shr 63)
 
-fun Long.fromZigZag(): Long = (this ushr 1) xor -(this and 1)
+public fun Long.fromZigZag(): Long = (this ushr 1) xor -(this and 1)

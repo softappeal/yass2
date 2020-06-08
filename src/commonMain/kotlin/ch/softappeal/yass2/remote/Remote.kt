@@ -2,25 +2,25 @@ package ch.softappeal.yass2.remote
 
 import kotlin.reflect.*
 
-class ServiceId<S : Any> @PublishedApi internal constructor(val service: KClass<S>, val id: Int)
+public class ServiceId<S : Any> @PublishedApi internal constructor(public val service: KClass<S>, public val id: Int)
 
-inline fun <reified S : Any> serviceId(id: Int): ServiceId<S> = ServiceId(S::class, id)
+public inline fun <reified S : Any> serviceId(id: Int): ServiceId<S> = ServiceId(S::class, id)
 
-interface RemoteProxyFactory {
-    fun <S : Any> create(serviceId: ServiceId<S>): S
+public interface RemoteProxyFactory {
+    public fun <S : Any> create(serviceId: ServiceId<S>): S
 }
 
-operator fun <S : Any> RemoteProxyFactory.invoke(serviceId: ServiceId<S>): S = create(serviceId)
+public operator fun <S : Any> RemoteProxyFactory.invoke(serviceId: ServiceId<S>): S = create(serviceId)
 
-class Service internal constructor(val serviceId: ServiceId<*>, val implementation: Any)
+public class Service internal constructor(public val serviceId: ServiceId<*>, public val implementation: Any)
 
-operator fun <S : Any> ServiceId<S>.invoke(service: S): Service = Service(this, service)
+public operator fun <S : Any> ServiceId<S>.invoke(service: S): Service = Service(this, service)
 
-typealias Tunnel = suspend (request: Request) -> Reply
+public typealias Tunnel = suspend (request: Request) -> Reply
 
-typealias Invoker = suspend (request: Request, service: Service) -> Any?
+public typealias Invoker = suspend (request: Request, service: Service) -> Any?
 
-fun Invoker.tunnel(services: Collection<Service>): Tunnel {
+public fun Invoker.tunnel(services: Collection<Service>): Tunnel {
     val id2service = services.associateBy { it.serviceId.id }
     require(id2service.size == services.size) { "duplicated service id's" }
     return { request ->
@@ -33,6 +33,8 @@ fun Invoker.tunnel(services: Collection<Service>): Tunnel {
     }
 }
 
-typealias RemoteProxyFactoryCreator = (tunnel: Tunnel) -> RemoteProxyFactory
+public typealias RemoteProxyFactoryCreator = (tunnel: Tunnel) -> RemoteProxyFactory
 
-fun missingFunction(request: Request): Unit = error("no function id ${request.functionId} for service id ${request.serviceId}")
+public fun missingFunction(request: Request) {
+    error("no function id ${request.functionId} for service id ${request.serviceId}")
+}

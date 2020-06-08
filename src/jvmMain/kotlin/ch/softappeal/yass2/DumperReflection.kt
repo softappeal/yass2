@@ -11,8 +11,8 @@ private fun KClass<*>.properties(): List<KProperty1<Any, Any?>> = memberProperti
     .map { it as KProperty1<Any, Any?> }
 
 private val Class2dumperProperties = ConcurrentHashMap<KClass<*>, List<KProperty1<Any, Any?>>>()
-val ReflectionDumperProperties: DumperProperties = { type ->
+public val ReflectionDumperProperties: DumperProperties = { type ->
     Class2dumperProperties.computeIfAbsent(type) { type.properties() }
 }
 
-fun reflectionDumper(baseDumper: BaseDumper): Dumper = dumper(ReflectionDumperProperties, baseDumper)
+public fun reflectionDumper(baseDumper: BaseDumper): Dumper = dumper(ReflectionDumperProperties, baseDumper)

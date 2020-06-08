@@ -2,18 +2,18 @@ package ch.softappeal.yass2
 
 import kotlin.reflect.*
 
-typealias DumperProperties = (type: KClass<*>) -> List<KProperty1<Any, Any?>>
+public typealias DumperProperties = (type: KClass<*>) -> List<KProperty1<Any, Any?>>
 
 /** Writes value (without line breaks) if responsible else does nothing. */
-typealias BaseDumper = StringBuilder.(value: Any) -> Unit
+public typealias BaseDumper = StringBuilder.(value: Any) -> Unit
 
-typealias Dumper = StringBuilder.(value: Any?) -> StringBuilder
+public typealias Dumper = StringBuilder.(value: Any?) -> StringBuilder
 
 /**
  * Supports the following types out-of-the-box:
  * `null`, [Boolean], [Number], [CharSequence], [List] and classes with its properties.
  */
-fun dumper(properties: DumperProperties, baseDumper: BaseDumper): Dumper = { value ->
+public fun dumper(properties: DumperProperties, baseDumper: BaseDumper): Dumper = { value ->
     var indent = 0
 
     fun dump(value: Any?) {
@@ -77,7 +77,7 @@ fun dumper(properties: DumperProperties, baseDumper: BaseDumper): Dumper = { val
     this
 }
 
-fun dumperProperties(vararg mappings: Pair<KClass<*>, List<KProperty1<Any, Any?>>>): DumperProperties {
+public fun dumperProperties(vararg mappings: Pair<KClass<*>, List<KProperty1<Any, Any?>>>): DumperProperties {
     val map = mapOf(*mappings)
     return { type -> map[type] ?: error("missing mapping for '$type'") }
 }

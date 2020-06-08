@@ -23,9 +23,9 @@ private suspend fun ByteReadChannel.read(config: TransportConfig): Any? {
     return value
 }
 
-typealias SocketConnector = suspend () -> Socket
+public typealias SocketConnector = suspend () -> Socket
 
-fun TransportConfig.socketTunnel(socketConnector: SocketConnector): Tunnel = { request ->
+public fun TransportConfig.socketTunnel(socketConnector: SocketConnector): Tunnel = { request ->
     socketConnector().use { socket ->
         val writeChannel = socket.openWriteChannel()
         writeChannel.write(this, request)
@@ -34,17 +34,17 @@ fun TransportConfig.socketTunnel(socketConnector: SocketConnector): Tunnel = { r
     }
 }
 
-class SocketCce(val socket: Socket) : AbstractCoroutineContextElement(SocketCce) {
-    companion object Key : CoroutineContext.Key<SocketCce>
+public class SocketCce(public val socket: Socket) : AbstractCoroutineContextElement(SocketCce) {
+    public companion object Key : CoroutineContext.Key<SocketCce>
 }
 
-suspend fun Socket.handleRequest(config: TransportConfig, tunnel: Tunnel): Unit = use {
+public suspend fun Socket.handleRequest(config: TransportConfig, tunnel: Tunnel): Unit = use {
     withContext(SocketCce(this)) {
         openWriteChannel().write(config, tunnel(openReadChannel().read(config) as Request))
     }
 }
 
-class SocketConnection internal constructor(private val config: TransportConfig, val socket: Socket) : Connection {
+public class SocketConnection internal constructor(private val config: TransportConfig, public val socket: Socket) : Connection {
     private val writeChannel = socket.openWriteChannel()
     override suspend fun write(packet: Packet?) {
         writeChannel.write(config, packet)
@@ -52,10 +52,10 @@ class SocketConnection internal constructor(private val config: TransportConfig,
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    override suspend fun closed() = socket.close()
+    override suspend fun closed(): Unit = socket.close()
 }
 
-suspend fun Socket.receiveLoop(config: TransportConfig, sessionFactory: SessionFactory): Unit = use {
+public suspend fun Socket.receiveLoop(config: TransportConfig, sessionFactory: SessionFactory): Unit = use {
     val readChannel = openReadChannel()
     SocketConnection(config, this).receiveLoop(sessionFactory) { readChannel.read(config) as Packet? }
 }

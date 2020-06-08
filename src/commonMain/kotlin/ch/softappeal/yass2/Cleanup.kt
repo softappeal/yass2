@@ -1,6 +1,6 @@
 package ch.softappeal.yass2
 
-inline fun Exception.addSuppressed(block: () -> Unit): Exception {
+public inline fun Exception.addSuppressed(block: () -> Unit): Exception {
     try {
         block()
     } catch (e: Exception) {
@@ -9,7 +9,7 @@ inline fun Exception.addSuppressed(block: () -> Unit): Exception {
     return this
 }
 
-inline fun <R> tryFinally(tryBlock: () -> R, finallyBlock: () -> Unit): R {
+public inline fun <R> tryFinally(tryBlock: () -> R, finallyBlock: () -> Unit): R {
     var exception: Exception? = null
     try {
         return tryBlock()

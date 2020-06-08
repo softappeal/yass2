@@ -20,7 +20,7 @@ internal fun KClass<*>.metaClass(baseEncoderTypes: List<KClass<*>>, concreteClas
     )
 }
 
-fun reflectionBinarySerializer(baseEncoders: List<BaseEncoder<*>>, concreteClasses: List<KClass<*>>): BinarySerializer {
+public fun reflectionBinarySerializer(baseEncoders: List<BaseEncoder<*>>, concreteClasses: List<KClass<*>>): BinarySerializer {
     val baseEncoderTypes = baseEncoders.map { it.type }
     val encoders = mutableListOf<Encoder>()
     encoders.addAll(baseEncoders)

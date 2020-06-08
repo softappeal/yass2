@@ -36,7 +36,7 @@ internal fun invokeSuspendFunction(continuation: Continuation<*>, suspendFunctio
         )
     }
 
-object ReflectionProxyFactory : ProxyFactory {
+public object ReflectionProxyFactory : ProxyFactory {
     override fun <S : Any> create(
         service: KClass<S>, implementation: S, interceptor: Interceptor, suspendInterceptor: SuspendInterceptor
     ): S {

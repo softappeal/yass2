@@ -6,14 +6,14 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.*
 import kotlin.coroutines.*
 
-class Packet(val requestNumber: Int, val message: Message)
+public class Packet(public val requestNumber: Int, public val message: Message)
 
-interface Connection {
-    suspend fun write(packet: Packet?)
-    suspend fun closed()
+public interface Connection {
+    public suspend fun write(packet: Packet?)
+    public suspend fun closed()
 }
 
-abstract class Session {
+public abstract class Session {
     protected open fun opened() {}
     internal fun internalOpened(): Unit = opened()
 
@@ -21,9 +21,9 @@ abstract class Session {
     protected open suspend fun closed(e: Exception?) {}
 
     /** Is idempotent. */
-    suspend fun close(): Unit = close(true, null)
+    public suspend fun close(): Unit = close(true, null)
 
-    suspend fun isClosed(): Boolean = closed.get()
+    public suspend fun isClosed(): Boolean = closed.get()
 
     protected val clientTunnel: Tunnel = { request ->
         suspendCancellableCoroutine { continuation ->
@@ -41,7 +41,7 @@ abstract class Session {
 
     protected open val serverTunnel: Tunnel = { throw UnsupportedOperationException() }
 
-    lateinit var connection: Connection
+    public lateinit var connection: Connection
         internal set
 
     private val closed = AtomicBoolean(false)
@@ -79,7 +79,9 @@ abstract class Session {
      * Launches a new coroutine that closes the session
      * if [check] throws an exception or doesn't return within [timeoutMillis].
      */
-    fun CoroutineScope.watch(intervalMillis: Long = 10_000, timeoutMillis: Long = 1000, check: suspend () -> Unit): Job {
+    public fun CoroutineScope.watch(
+        intervalMillis: Long = 10_000, timeoutMillis: Long = 1000, check: suspend () -> Unit
+    ): Job {
         require(intervalMillis > 0)
         require(timeoutMillis > 0)
         return launch {
@@ -96,9 +98,9 @@ abstract class Session {
     }
 }
 
-typealias SessionFactory = () -> Session
+public typealias SessionFactory = () -> Session
 
-suspend fun Connection.receiveLoop(sessionFactory: SessionFactory, receive: suspend () -> Packet?) {
+public suspend fun Connection.receiveLoop(sessionFactory: SessionFactory, receive: suspend () -> Packet?) {
     val session = sessionFactory()
     session.connection = this
     try {

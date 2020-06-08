@@ -2,25 +2,27 @@ package ch.softappeal.yass2
 
 import kotlin.reflect.*
 
-typealias Invocation = () -> Any?
-typealias Interceptor = (function: KFunction<*>, parameters: Array<Any?>, invocation: Invocation) -> Any?
+public typealias Invocation = () -> Any?
+public typealias Interceptor = (function: KFunction<*>, parameters: Array<Any?>, invocation: Invocation) -> Any?
 
-typealias SuspendInvocation = suspend () -> Any?
-typealias SuspendInterceptor = suspend (function: KFunction<*>, parameters: Array<Any?>, invocation: SuspendInvocation) -> Any?
+public typealias SuspendInvocation = suspend () -> Any?
+public typealias SuspendInterceptor = suspend (function: KFunction<*>, parameters: Array<Any?>, invocation: SuspendInvocation) -> Any?
 
-operator fun Interceptor.plus(second: Interceptor): Interceptor = { function, parameters, invocation ->
+public operator fun Interceptor.plus(second: Interceptor): Interceptor = { function, parameters, invocation ->
     this(function, parameters) { second(function, parameters, invocation) }
 }
 
-operator fun SuspendInterceptor.plus(second: SuspendInterceptor): SuspendInterceptor = { function, parameters, invocation ->
+public operator fun SuspendInterceptor.plus(second: SuspendInterceptor): SuspendInterceptor = { function, parameters, invocation ->
     this(function, parameters) { second(function, parameters, invocation) }
 }
 
-interface ProxyFactory {
-    fun <S : Any> create(service: KClass<S>, implementation: S, interceptor: Interceptor, suspendInterceptor: SuspendInterceptor): S
+public interface ProxyFactory {
+    public fun <S : Any> create(
+        service: KClass<S>, implementation: S, interceptor: Interceptor, suspendInterceptor: SuspendInterceptor
+    ): S
 }
 
-inline operator fun <reified S : Any> ProxyFactory.invoke(
+public inline operator fun <reified S : Any> ProxyFactory.invoke(
     implementation: S, noinline interceptor: Interceptor, noinline suspendInterceptor: SuspendInterceptor
 ): S = create(S::class, implementation, interceptor, suspendInterceptor)
 
@@ -30,13 +32,13 @@ internal val MissingInterceptor: Interceptor = { _, _, _ -> throw RuntimeExcepti
 @PublishedApi
 internal val MissingSuspendInterceptor: SuspendInterceptor = { _, _, _ -> throw RuntimeException("missing SuspendInterceptor") }
 
-inline operator fun <reified S : Any> ProxyFactory.invoke(implementation: S, noinline interceptor: Interceptor): S =
+public inline operator fun <reified S : Any> ProxyFactory.invoke(implementation: S, noinline interceptor: Interceptor): S =
     this(implementation, interceptor, MissingSuspendInterceptor)
 
-inline operator fun <reified S : Any> ProxyFactory.invoke(implementation: S, noinline interceptor: SuspendInterceptor): S =
+public inline operator fun <reified S : Any> ProxyFactory.invoke(implementation: S, noinline interceptor: SuspendInterceptor): S =
     this(implementation, MissingInterceptor, interceptor)
 
-fun checkInterceptors(
+public fun checkInterceptors(
     interceptor: Interceptor, suspendInterceptor: SuspendInterceptor,
     needsInterceptor: Boolean, needsSuspendInterceptor: Boolean
 ) {

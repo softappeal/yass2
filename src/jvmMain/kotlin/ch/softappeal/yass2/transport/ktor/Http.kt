@@ -32,7 +32,7 @@ private fun TransportConfig.write(message: Message): OutgoingContent.WriteChanne
     }
 }
 
-fun HttpClient.tunnel(config: TransportConfig, url: String): Tunnel = { request ->
+public fun HttpClient.tunnel(config: TransportConfig, url: String): Tunnel = { request ->
     val response = request<HttpResponse>(url) {
         method = HttpMethod.Post
         body = config.write(request)
@@ -41,11 +41,11 @@ fun HttpClient.tunnel(config: TransportConfig, url: String): Tunnel = { request 
     response.content.read(config, length) as Reply
 }
 
-class CallCce(val call: ApplicationCall) : AbstractCoroutineContextElement(CallCce) {
-    companion object Key : CoroutineContext.Key<CallCce>
+public class CallCce(public val call: ApplicationCall) : AbstractCoroutineContextElement(CallCce) {
+    public companion object Key : CoroutineContext.Key<CallCce>
 }
 
-fun Route.route(config: TransportConfig, path: String, tunnel: Tunnel) {
+public fun Route.route(config: TransportConfig, path: String, tunnel: Tunnel) {
     route(path) {
         post {
             withContext(CallCce(call)) {

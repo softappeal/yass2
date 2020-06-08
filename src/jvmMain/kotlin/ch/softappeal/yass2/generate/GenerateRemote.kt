@@ -3,7 +3,7 @@ package ch.softappeal.yass2.generate
 import ch.softappeal.yass2.remote.*
 import kotlin.reflect.full.*
 
-fun generateRemote(
+public fun generateRemote(
     serviceIds: List<ServiceId<*>>,
     remoteProxyFactoryCreator: String = "generatedRemoteProxyFactoryCreator", invoker: String = "generatedInvoker"
 ): String = writer {

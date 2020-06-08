@@ -6,7 +6,7 @@ import kotlinx.coroutines.*
 import org.khronos.webgl.*
 import org.w3c.dom.*
 
-fun TransportConfig.connect(url: String, sessionFactory: SessionFactory) {
+public fun TransportConfig.connect(url: String, sessionFactory: SessionFactory) {
     WebSocket(url).apply {
         binaryType = BinaryType.ARRAYBUFFER
         onopen = {

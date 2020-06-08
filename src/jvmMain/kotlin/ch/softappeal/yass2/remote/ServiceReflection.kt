@@ -23,7 +23,7 @@ internal class FunctionMapper(private val service: KClass<*>) {
 private val FunctionMappers = ConcurrentHashMap<KClass<*>, FunctionMapper>(16)
 private fun functionMapper(service: KClass<*>): FunctionMapper = FunctionMappers.computeIfAbsent(service) { FunctionMapper(service) }
 
-fun reflectionRemoteProxyFactoryCreator(tunnel: Tunnel): RemoteProxyFactory = object : RemoteProxyFactory {
+public fun reflectionRemoteProxyFactoryCreator(tunnel: Tunnel): RemoteProxyFactory = object : RemoteProxyFactory {
     override fun <S : Any> create(serviceId: ServiceId<S>): S {
         val functionMapper = functionMapper(serviceId.service)
         val javaService = serviceId.service.java
@@ -38,7 +38,7 @@ fun reflectionRemoteProxyFactoryCreator(tunnel: Tunnel): RemoteProxyFactory = ob
     }
 }
 
-suspend fun reflectionInvoker(request: Request, service: Service): Any? = handleInvocationTargetException {
+public suspend fun reflectionInvoker(request: Request, service: Service): Any? = handleInvocationTargetException {
     functionMapper(service.serviceId.service)
         .toFunction(request.functionId)
         .callSuspend(service.implementation, *request.parameters.toTypedArray())

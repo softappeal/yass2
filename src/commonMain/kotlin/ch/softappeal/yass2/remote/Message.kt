@@ -1,17 +1,17 @@
 package ch.softappeal.yass2.remote
 
-sealed class Message
+public sealed class Message
 
-class Request(val serviceId: Int, val functionId: Int, val parameters: List<Any?>) : Message()
+public class Request(public val serviceId: Int, public val functionId: Int, public val parameters: List<Any?>) : Message()
 
-sealed class Reply : Message() {
-    abstract fun process(): Any?
+public sealed class Reply : Message() {
+    public abstract fun process(): Any?
 }
 
-class ValueReply(val value: Any?) : Reply() {
-    override fun process() = value
+public class ValueReply(public val value: Any?) : Reply() {
+    override fun process(): Any? = value
 }
 
-class ExceptionReply(val exception: Exception) : Reply() {
-    override fun process() = throw exception
+public class ExceptionReply(public val exception: Exception) : Reply() {
+    override fun process(): Nothing = throw exception
 }
