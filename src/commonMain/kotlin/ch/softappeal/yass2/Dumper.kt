@@ -2,6 +2,8 @@ package ch.softappeal.yass2
 
 import kotlin.reflect.*
 
+// TODO: add graph dumper
+
 public typealias DumperProperties = (type: KClass<*>) -> List<KProperty1<Any, Any?>>
 
 /** Writes value (without line breaks) if responsible else does nothing. */

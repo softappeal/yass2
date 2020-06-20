@@ -58,5 +58,9 @@ val GeneratedDumperProperties = ch.softappeal.yass2.dumperProperties(
     ch.softappeal.yass2.remote.session.Packet::class to listOf(
         ch.softappeal.yass2.remote.session.Packet::message as kotlin.reflect.KProperty1<Any, Any?>,
         ch.softappeal.yass2.remote.session.Packet::requestNumber as kotlin.reflect.KProperty1<Any, Any?>
+    ),
+    ch.softappeal.yass2.contract.Node::class to listOf(
+        ch.softappeal.yass2.contract.Node::id as kotlin.reflect.KProperty1<Any, Any?>,
+        ch.softappeal.yass2.contract.Node::link as kotlin.reflect.KProperty1<Any, Any?>
     )
 )

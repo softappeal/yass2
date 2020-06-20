@@ -21,9 +21,7 @@ internal class MetaProperty(val property: KProperty1<Any, Any?>, val kind: Prope
 }
 
 internal fun KClass<*>.metaProperty(
-    property: KProperty1<Any, Any?>,
-    baseEncoderTypes: List<KClass<*>>, concreteClasses: List<KClass<*>>,
-    optional: Boolean, isStrictSubclassOf: KClass<*>.(base: KClass<*>) -> Boolean
+    property: KProperty1<Any, Any?>, baseEncoderTypes: List<KClass<*>>, optional: Boolean
 ): MetaProperty {
     val kind = if (optional) PropertyKind.NoIdOptional else PropertyKind.NoIdRequired
     return if (this == List::class) {
@@ -33,38 +31,36 @@ internal fun KClass<*>.metaProperty(
         if (baseEncoderIndex >= 0) {
             MetaProperty(property, kind, baseEncoderIndex + FirstEncoderId)
         } else {
-            val concreteClassIndex = concreteClasses.indexOfFirst { it == this }
-            if (concreteClassIndex >= 0 && concreteClasses.none { it.isStrictSubclassOf(concreteClasses[concreteClassIndex]) }) {
-                MetaProperty(property, kind, concreteClassIndex + baseEncoderTypes.size + FirstEncoderId)
-            } else {
-                MetaProperty(property, PropertyKind.WithId)
-            }
+            MetaProperty(property, PropertyKind.WithId)
         }
     }
 }
 
-internal class MetaClass(klass: KClass<*>, val properties: List<MetaProperty>, val parameterNames: List<String>) {
-    val parameterIndices: List<Int>
-    val varIndices: List<Int>
+internal class MetaClass(klass: KClass<*>, properties: List<MetaProperty>, parameterNames: List<String>) {
+    val parameterProperties: List<MetaProperty>
+    val bodyProperties: List<MetaProperty>
+    val properties: List<MetaProperty>
 
     init {
-        parameterIndices = mutableListOf()
-        varIndices = mutableListOf()
+        parameterProperties = mutableListOf()
+        bodyProperties = mutableListOf()
         val propertyNames = properties.map { it.property.name }
-        parameterNames.forEach { parameter ->
-            val propertyIndex = propertyNames.indexOf(parameter)
-            require(propertyIndex >= 0) { "primary constructor parameter '$parameter' of '$klass' is not a property" }
-            parameterIndices.add(propertyIndex)
+        parameterNames.forEach { parameterName ->
+            require(propertyNames.indexOf(parameterName) >= 0) {
+                "primary constructor parameter '$parameterName' of '$klass' is not a property"
+            }
+            parameterProperties.add(properties.first { it.property.name == parameterName })
         }
-        properties.withIndex().forEach { (index, property) ->
+        properties.forEach { property ->
             if (property.property.name !in parameterNames) {
                 try {
                     property.mutableProperty()
                 } catch (e: Exception) {
                     throw IllegalArgumentException("body property '${property.property.name}' of '$klass' is not 'var'")
                 }
-                varIndices.add(index)
+                bodyProperties.add(property)
             }
         }
+        this.properties = parameterProperties + bodyProperties
     }
 }

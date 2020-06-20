@@ -22,7 +22,7 @@ fun <T> FlowService.createFlow(flowId: Any): Flow<T> = object : Flow<T> {
 
 typealias FlowFactory = (flowId: Any) -> Flow<*>
 
-// note: how to cancel a collect?
+// TODO: how to cancel a collect?
 
 fun flowService(flowFactory: FlowFactory): FlowService {
     val nextCollectId = AtomicInteger(0)

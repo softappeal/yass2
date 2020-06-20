@@ -52,6 +52,10 @@ class ManyProperties(
     var i: Int = 0
 }
 
+class Node(val id: Int) {
+    var link: Node? = null
+}
+
 class DivideByZeroException : RuntimeException()
 
 @Target(AnnotationTarget.FUNCTION)

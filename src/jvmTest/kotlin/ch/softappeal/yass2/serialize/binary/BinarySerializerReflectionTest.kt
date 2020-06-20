@@ -96,7 +96,7 @@ class BinarySerializerReflectionTest : BinarySerializerGeneratedTest() {
 
         val bEncoder = BaseEncoder(B::class, { _, _ -> }, { B() })
         val serializer = reflectionBinarySerializer(listOf(bEncoder), listOf(C::class, X::class))
-        assertTrue(serializer.copy(X(B()), intArrayOf(4, 2)).a is B)
-        assertTrue(serializer.copy(X(C()), intArrayOf(4, 3)).a is C)
+        assertTrue(serializer.copy(X(B()), intArrayOf(5, 3)).a is B)
+        assertTrue(serializer.copy(X(C()), intArrayOf(5, 4)).a is C)
     }
 }

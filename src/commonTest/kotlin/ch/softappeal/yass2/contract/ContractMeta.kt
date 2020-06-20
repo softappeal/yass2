@@ -11,7 +11,8 @@ val BaseEncoders = listOf(IntEncoder, StringEncoder, ByteArrayEncoder)
 val ConcreteClasses = listOf(
     IntException::class, PlainId::class, ComplexId::class, Lists::class,
     Id2::class, Id3::class, IdWrapper::class, ManyProperties::class,
-    Request::class, ValueReply::class, ExceptionReply::class, DivideByZeroException::class, Packet::class
+    Request::class, ValueReply::class, ExceptionReply::class, DivideByZeroException::class, Packet::class,
+    Node::class
 )
 
 val GeneratedSerializer = generatedBinarySerializer(BaseEncoders)
