@@ -2,8 +2,6 @@ package ch.softappeal.yass2
 
 import kotlin.reflect.*
 
-// TODO: add graph dumper
-
 public typealias DumperProperties = (type: KClass<*>) -> List<KProperty1<Any, Any?>>
 
 /** Writes value (without line breaks) if responsible else does nothing. */
@@ -16,6 +14,7 @@ public typealias Dumper = StringBuilder.(value: Any?) -> StringBuilder
  * `null`, [Boolean], [Number], [CharSequence], [List] and classes with its properties.
  */
 public fun dumper(properties: DumperProperties, baseDumper: BaseDumper): Dumper = { value ->
+    val object2reference = HashMap<Any, Int>(16)
     var indent = 0
 
     fun dump(value: Any?) {
@@ -50,6 +49,13 @@ public fun dumper(properties: DumperProperties, baseDumper: BaseDumper): Dumper 
         }
 
         fun dumpObject(obj: Any) {
+            val reference = object2reference[obj]
+            if (reference != null) {
+                append("#$reference")
+                return
+            }
+            val index = object2reference.size
+            object2reference[obj] = index
             val type = obj::class
             inc("${type.simpleName}(")
             for (property in properties(type)) property.get(obj)?.let { propertyValue ->
@@ -58,7 +64,7 @@ public fun dumper(properties: DumperProperties, baseDumper: BaseDumper): Dumper 
                 dump(propertyValue)
                 appendLine()
             }
-            dec(")")
+            dec(")#$index")
         }
 
         when (value) {

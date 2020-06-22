@@ -42,6 +42,7 @@ open class DumperGeneratedTest {
         dump(ComplexId())
         dump(Lists(list = listOf(PlainId(), PlainId()), mutableList = mutableListOf(PlainId(61))))
         dump(DivideByZeroException())
+        dump(createGraph())
 
         println(">$s<")
         assertEquals(Output, s.toString())
@@ -76,44 +77,54 @@ private val Output = """
         h = 8
         i = 9
         j = 10
-    )
+    )#0
     ComplexId(
         baseId = PlainId(
             id = 60
-        )
+        )#1
         id = 58
         plainId = PlainId(
             id = 59
-        )
+        )#2
         plainIdOptional = PlainId(
             id = 61
-        )
-    )
+        )#3
+    )#0
     ComplexId(
         baseId = PlainId(
             id = 60
-        )
+        )#1
         id = 58
         plainId = PlainId(
             id = 59
-        )
-    )
+        )#2
+    )#0
     Lists(
         list = [
             PlainId(
                 id = 60
-            )
+            )#1
             PlainId(
                 id = 60
-            )
+            )#2
         ]
         mutableList = [
             PlainId(
                 id = 61
-            )
+            )#3
         ]
-    )
+    )#0
     DivideByZeroException(
-    )
+    )#0
+    Node(
+        id = 1
+        link = Node(
+            id = 2
+            link = Node(
+                id = 3
+                link = #1
+            )#2
+        )#1
+    )#0
 
 """.trimIndent()
