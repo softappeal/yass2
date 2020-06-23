@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.remote.session
+package ch.softappeal.yass2.remote
 
 import ch.softappeal.yass2.*
 import kotlinx.coroutines.*
@@ -6,12 +6,12 @@ import kotlinx.coroutines.channels.*
 import kotlinx.coroutines.flow.*
 import kotlin.coroutines.*
 
-interface FlowService {
-    suspend fun create(flowId: Any): Int
-    suspend fun next(collectId: Int): Any?
+public interface FlowService {
+    public suspend fun create(flowId: Any): Int
+    public suspend fun next(collectId: Int): Any?
 }
 
-fun <T> FlowService.createFlow(flowId: Any): Flow<T> = object : Flow<T> {
+public fun <T> FlowService.createFlow(flowId: Any): Flow<T> = object : Flow<T> {
     @OptIn(InternalCoroutinesApi::class)
     override suspend fun collect(collector: FlowCollector<T>) {
         val collectId = create(flowId)
@@ -20,11 +20,11 @@ fun <T> FlowService.createFlow(flowId: Any): Flow<T> = object : Flow<T> {
     }
 }
 
-typealias FlowFactory = (flowId: Any) -> Flow<*>
+public typealias FlowFactory = (flowId: Any) -> Flow<*>
 
 // TODO: how to cancel a collect?
 
-fun flowService(flowFactory: FlowFactory): FlowService {
+public fun flowService(flowFactory: FlowFactory): FlowService {
     val nextCollectId = AtomicInteger(0)
     val collectId2channel = ThreadSafeMap<Int, Channel<Any?>>(16)
     return object : FlowService {

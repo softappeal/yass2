@@ -3,7 +3,6 @@ package ch.softappeal.yass2.remote
 import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.contract.generated.*
-import ch.softappeal.yass2.remote.session.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlin.test.*
@@ -114,4 +113,8 @@ suspend fun Tunnel.test(iterations: Int) = with(generatedRemoteProxyFactoryCreat
     val calculator = this(CalculatorId)
     GeneratedProxyFactory.test(calculator, this(EchoId))
     performance(iterations) { assertEquals(5, calculator.add(2, 3)) }
+    val flowService = this(FlowServiceId)
+    flowService
+        .createFlow<Int>(2)
+        .collect { value -> println("collect($value)") }
 }
