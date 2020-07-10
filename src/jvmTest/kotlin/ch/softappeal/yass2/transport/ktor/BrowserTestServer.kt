@@ -8,11 +8,9 @@ import io.ktor.request.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import io.ktor.util.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
 
-@KtorExperimentalAPI
 fun main() {
     println("http://$Host:$Port/index.html")
     embeddedServer(Netty, Port) {

@@ -15,9 +15,19 @@ class RemoteFlowTest {
         }
         val flow1 = flowService.createFlow<Int>(1)
         val flow2 = flowService.createFlow<Int>(2)
-        repeat(2) {
-            launch { assertEquals(range1.toList(), flow1.toList()) }
-            launch { assertEquals(range2.toList(), flow2.toList()) }
+        val counter = AtomicInteger(0)
+        coroutineScope {
+            repeat(2) {
+                launch {
+                    assertEquals(range1.toList(), flow1.toList())
+                    counter.incrementAndGet()
+                }
+                launch {
+                    assertEquals(range2.toList(), flow2.toList())
+                    counter.incrementAndGet()
+                }
+            }
         }
+        assertEquals(5, counter.incrementAndGet())
     }
 }
