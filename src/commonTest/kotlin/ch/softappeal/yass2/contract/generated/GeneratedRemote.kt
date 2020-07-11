@@ -24,6 +24,15 @@ fun generatedRemoteProxyFactoryCreator(tunnel: ch.softappeal.yass2.remote.Tunnel
                 tunnel(2, 3)
             }
         } as S
+        3 -> object : ch.softappeal.yass2.remote.FlowService {
+            override suspend fun cancel(p1: kotlin.Int) {
+                tunnel(3, 0, p1)
+            }
+
+            override suspend fun create(p1: kotlin.Any) = tunnel(3, 1, p1) as kotlin.Int
+
+            override suspend fun next(p1: kotlin.Int) = tunnel(3, 2, p1)
+        } as S
         else -> error("no service id ${serviceId.id}")
     }
 }
@@ -47,6 +56,15 @@ suspend fun generatedInvoker(request: ch.softappeal.yass2.remote.Request, servic
                 1 -> i.echo(p[0])
                 2 -> i.echoRequired(p[0] as kotlin.Any)
                 3 -> i.noParametersNoResult()
+                else -> ch.softappeal.yass2.remote.missingFunction(request)
+            }
+        }
+        3 -> {
+            val i = service.implementation as ch.softappeal.yass2.remote.FlowService
+            when (request.functionId) {
+                0 -> i.cancel(p[0] as kotlin.Int)
+                1 -> i.create(p[0] as kotlin.Any)
+                2 -> i.next(p[0] as kotlin.Int)
                 else -> ch.softappeal.yass2.remote.missingFunction(request)
             }
         }

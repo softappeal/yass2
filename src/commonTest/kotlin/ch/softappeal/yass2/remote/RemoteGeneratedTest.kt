@@ -95,11 +95,13 @@ fun tunnel(context: suspend () -> Any) = ::generatedInvoker.tunnel(listOf(
     EchoId(GeneratedProxyFactory(EchoImpl) { _, _, invocation: SuspendInvocation ->
         println("context<${context()}>")
         invocation()
-    })
+    }),
+    FlowServiceId(FlowServiceImpl)
 ))
 
 suspend fun Tunnel.test(iterations: Int) = with(generatedRemoteProxyFactoryCreator(this)) {
     val calculator = this(CalculatorId)
     GeneratedProxyFactory.test(calculator, this(EchoId))
     performance(iterations) { assertEquals(5, calculator.add(2, 3)) }
+    this(FlowServiceId).test()
 }

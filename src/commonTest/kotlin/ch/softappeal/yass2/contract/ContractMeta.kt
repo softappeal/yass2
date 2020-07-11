@@ -19,8 +19,9 @@ val GeneratedSerializer = generatedBinarySerializer(BaseEncoders)
 
 val CalculatorId = serviceId<Calculator>(1)
 val EchoId = serviceId<Echo>(2)
+val FlowServiceId = serviceId<FlowService>(3)
 
-val ServiceIds = listOf(CalculatorId, EchoId)
+val ServiceIds = listOf(CalculatorId, EchoId, FlowServiceId)
 
 val BaseDumper: BaseDumper = { value ->
     when (value) {

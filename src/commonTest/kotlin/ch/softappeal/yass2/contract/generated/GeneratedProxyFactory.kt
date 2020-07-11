@@ -40,6 +40,23 @@ object GeneratedProxyFactory : ch.softappeal.yass2.ProxyFactory {
                 suspendInterceptor(ch.softappeal.yass2.contract.Echo::noParametersNoResult, emptyArray()) { (implementation as ch.softappeal.yass2.contract.Echo).noParametersNoResult() }
             }
         } as S
+        ch.softappeal.yass2.remote.FlowService::class -> object : ch.softappeal.yass2.remote.FlowService {
+            init {
+                ch.softappeal.yass2.checkInterceptors(interceptor, suspendInterceptor, needsInterceptor = false, needsSuspendInterceptor = true)
+            }
+
+            override suspend fun cancel(p1: kotlin.Int) {
+                suspendInterceptor(ch.softappeal.yass2.remote.FlowService::cancel, arrayOf(p1)) { (implementation as ch.softappeal.yass2.remote.FlowService).cancel(p1) }
+            }
+
+            override suspend fun create(p1: kotlin.Any): kotlin.Int {
+                return suspendInterceptor(ch.softappeal.yass2.remote.FlowService::create, arrayOf(p1)) { (implementation as ch.softappeal.yass2.remote.FlowService).create(p1) } as kotlin.Int
+            }
+
+            override suspend fun next(p1: kotlin.Int): kotlin.Any? {
+                return suspendInterceptor(ch.softappeal.yass2.remote.FlowService::next, arrayOf(p1)) { (implementation as ch.softappeal.yass2.remote.FlowService).next(p1) }
+            }
+        } as S
         ch.softappeal.yass2.contract.Mixed::class -> object : ch.softappeal.yass2.contract.Mixed {
             init {
                 ch.softappeal.yass2.checkInterceptors(interceptor, suspendInterceptor, needsInterceptor = true, needsSuspendInterceptor = true)

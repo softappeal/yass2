@@ -40,7 +40,9 @@ public class SocketCce(public val socket: Socket) : AbstractCoroutineContextElem
 
 public suspend fun Socket.handleRequest(config: TransportConfig, tunnel: Tunnel): Unit = use {
     withContext(SocketCce(this)) {
-        openWriteChannel().write(config, tunnel(openReadChannel().read(config) as Request))
+        val writeChannel = openWriteChannel()
+        writeChannel.write(config, tunnel(openReadChannel().read(config) as Request))
+        writeChannel.flush()
     }
 }
 
