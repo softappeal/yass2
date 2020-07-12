@@ -25,6 +25,7 @@ fun CoroutineScope.acceptorSessionFactory(context: suspend Session.() -> Any): S
         override suspend fun closed(e: Exception?) {
             assertTrue(isClosed())
             println("acceptorSessionFactory closed: $e")
+            assertNull(e)
         }
     }
 }
@@ -45,6 +46,7 @@ fun CoroutineScope.initiatorSessionFactory(iterations: Int): SessionFactory = {
         override suspend fun closed(e: Exception?) {
             assertTrue(isClosed())
             println("initiatorSessionFactory closed: $e")
+            assertNull(e)
         }
     }
 }

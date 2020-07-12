@@ -43,13 +43,8 @@ class KtorTest {
         tcp.bind(Address).use { serverSocket ->
             runBlocking {
                 val listenerJob = launch {
-                    while (true) {
-                        serverSocket.accept()
-                            .handleRequest(
-                                Config,
-                                tunnel { currentCoroutineContext()[SocketCce]?.socket?.remoteAddress!! }
-                            )
-                    }
+                    val serverTunnel = tunnel { currentCoroutineContext()[SocketCce]?.socket?.remoteAddress!! }
+                    while (true) serverSocket.accept().handleRequest(Config, serverTunnel)
                 }
                 try {
                     val socketConnector: SocketConnector = { tcp.connect(Address) }
