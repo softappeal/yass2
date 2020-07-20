@@ -47,8 +47,7 @@ class KtorTest {
                     while (true) serverSocket.accept().handleRequest(Config, serverTunnel)
                 }
                 try {
-                    val socketConnector: SocketConnector = { tcp.connect(Address) }
-                    val clientTunnel = Config.socketTunnel(socketConnector)
+                    val clientTunnel = Config.socketTunnel { tcp.connect(Address) }
                     clientTunnel.test(1000)
                 } finally {
                     listenerJob.cancel()

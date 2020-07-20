@@ -1,6 +1,6 @@
 // https://kotlinlang.org/docs/reference/building-mpp-with-gradle.html
 
-fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.3.7"
+fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.3.8"
 
 fun ktor(module: String) = "io.ktor:ktor-$module:1.3.2"
 

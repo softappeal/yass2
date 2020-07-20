@@ -16,7 +16,7 @@ docker build  --tag  project .
 docker create --name project --tty --interactive project /bin/bash
 
 :continue
-pushd %HOMEPATH%\OneDrive\data\essential\development\AngeloSalvade.MavenCentral.SigningKey
+pushd %HOMEPATH%\OneDrive\data\major\development\AngeloSalvade.MavenCentral.SigningKey
 docker cp gradle.docker.properties project:/root/.gradle/gradle.properties
 docker cp maven.central.key.gpg    project:/
 popd
