@@ -13,21 +13,10 @@ plugins {
 
 val windows = true
 
-// TODO configurations.all { resolutionStrategy.failOnVersionConflict() }
-
 group = "ch.softappeal.yass2"
 
 repositories {
-    mavenCentral()
-    exclusiveContent {
-        forRepository {
-            jcenter()
-        }
-        filter {
-            includeGroup("org.jetbrains.dokka")
-            includeGroup("io.ktor")
-        }
-    }
+    jcenter()
 }
 
 tasks.register<Jar>("dokkaJar") {
