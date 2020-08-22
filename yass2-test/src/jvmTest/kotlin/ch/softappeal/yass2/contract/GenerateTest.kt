@@ -1,0 +1,34 @@
+package ch.softappeal.yass2.contract
+
+import ch.softappeal.yass2.generate.*
+import java.io.*
+import kotlin.test.*
+
+private fun generate(fileName: String, code: String) {
+    val text = "package ch.softappeal.yass2.contract.generated\n\n$code"
+    print(text)
+    val filePath = "../yass2-test/src/commonTest/kotlin/ch/softappeal/yass2/contract/generated/$fileName"
+    assertEquals(text, File(filePath).readText().replace("\r\n", "\n"))
+}
+
+class GenerateTest {
+    @Test
+    fun generateProxyFactory() {
+        generate("GeneratedProxyFactory.kt", generateProxyFactory(ServiceIds.map { it.service } + Mixed::class))
+    }
+
+    @Test
+    fun generateRemote() {
+        generate("GeneratedRemote.kt", generateRemoteProxyFactoryCreator(ServiceIds) + "\n" + generateInvoker(ServiceIds))
+    }
+
+    @Test
+    fun generateBinarySerializer() {
+        generate("GeneratedBinarySerializer.kt", generateBinarySerializer(BaseEncoders, ConcreteClasses))
+    }
+
+    @Test
+    fun generateDumper() {
+        generate("GeneratedDumper.kt", generateDumperProperties(ConcreteClasses))
+    }
+}
