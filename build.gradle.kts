@@ -152,7 +152,6 @@ project("yass2-test") {
             }
             val jvmTest by getting {
                 dependencies {
-                    implementation(reflectProject)
                     implementation(generateProject)
                     implementation(ktorProject)
                     implementation(ktor("server-netty"))

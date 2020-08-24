@@ -48,6 +48,24 @@
 
 * Open Source ([BSD-3-Clause license](license.txt))
 
+* yass2 has multiple artifacts with the following dependencies
+
+```
+yass2-core
+     ^
+     |
+     +--- yass2-coroutines ---> kotlinx-coroutines-core
+     |         ^
+     |         |
+     |    yass2-ktor ---> io.ktor
+     |
+     |
+     +--- yass2-reflect ---> kotlin-reflect
+               ^
+               |
+          yass2-generate
+```
+
 * artifacts on [Maven Central](https://search.maven.org/search?q=g:ch.softappeal.yass2) (GroupId: ch.softappeal.yass2)
 
 * uses [Semantic Versioning](https://semver.org)
