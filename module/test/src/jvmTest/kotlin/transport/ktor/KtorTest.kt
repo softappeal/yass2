@@ -1,8 +1,11 @@
 package ch.softappeal.yass2.transport.ktor
 
 import ch.softappeal.yass2.contract.*
+import ch.softappeal.yass2.contract.generated.*
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.coroutines.session.*
+import ch.softappeal.yass2.serialize.binary.*
+import ch.softappeal.yass2.transport.*
 import io.ktor.application.*
 import io.ktor.client.*
 import io.ktor.client.engine.java.*
@@ -136,6 +139,48 @@ class KtorTest {
             }
         } finally {
             engine.stop(0, 0, TimeUnit.SECONDS)
+        }
+    }
+
+    @Test
+    fun context() {
+        var context: String? = null
+        val transportConfig = TransportConfig(
+            ContextMessageSerializer(
+                BinarySerializer(listOf(StringEncoder)), MessageSerializer,
+                { context }, { context = it },
+            ),
+            100, 100,
+        )
+        tcp.bind(Address).use { serverSocket ->
+            runBlocking {
+                val listenerJob = launch {
+                    val serverTunnel = ::generatedInvoker.tunnel(listOf(
+                        CalculatorId(object : Calculator {
+                            override suspend fun add(a: Int, b: Int): Int {
+                                assertEquals("client", context)
+                                context = "server"
+                                return a + b
+                            }
+
+                            override suspend fun divide(a: Int, b: Int): Int = error("not needed")
+                        })
+                    ))
+                    while (true) {
+                        val socket = serverSocket.accept()
+                        socket.handleRequest(transportConfig, serverTunnel)
+                    }
+                }
+                try {
+                    val clientTunnel = transportConfig.socketTunnel { tcp.connect(Address) }
+                    val calculator = generatedRemoteProxyFactoryCreator(clientTunnel)(CalculatorId)
+                    context = "client"
+                    assertEquals(5, calculator.add(2, 3))
+                    assertEquals("server", context)
+                } finally {
+                    listenerJob.cancel()
+                }
+            }
         }
     }
 }
