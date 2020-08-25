@@ -3,7 +3,6 @@ package ch.softappeal.yass2.transport.ktor
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.coroutines.session.*
-import ch.softappeal.yass2.transport.*
 import io.ktor.application.*
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
@@ -23,7 +22,6 @@ import java.net.*
 import java.util.concurrent.*
 import kotlin.test.*
 
-val Config = TransportConfig(GeneratedSerializer, 100, 100)
 const val Host = "localhost"
 const val Port = 28947
 const val Path = "/yass"
@@ -47,12 +45,12 @@ class KtorTest {
                     while (true) {
                         val socket = serverSocket.accept()
                         launch {
-                            socket.handleRequest(Config, serverTunnel)
+                            socket.handleRequest(MessageConfig, serverTunnel)
                         }
                     }
                 }
                 try {
-                    val clientTunnel = Config.socketTunnel { tcp.connect(Address) }
+                    val clientTunnel = MessageConfig.socketTunnel { tcp.connect(Address) }
                     clientTunnel.test(1000)
                 } finally {
                     listenerJob.cancel()
@@ -70,7 +68,7 @@ class KtorTest {
                         val socket = serverSocket.accept()
                         launch {
                             socket.receiveLoop(
-                                Config,
+                                PacketConfig,
                                 acceptorSessionFactory { (connection as SocketConnection).socket.remoteAddress }
                             )
                         }
@@ -79,7 +77,7 @@ class KtorTest {
                 try {
                     launch {
                         tcp.connect(Address)
-                            .receiveLoop(Config, initiatorSessionFactory(1000))
+                            .receiveLoop(PacketConfig, initiatorSessionFactory(1000))
                     }.join()
                 } finally {
                     acceptorJob.cancel()
@@ -93,7 +91,7 @@ class KtorTest {
         val engine = embeddedServer(Netty, Port) {
             routing {
                 route(
-                    Config,
+                    MessageConfig,
                     Path,
                     tunnel { currentCoroutineContext()[CallCce]?.call?.request?.uri!! }
                 )
@@ -103,7 +101,7 @@ class KtorTest {
         try {
             runBlocking {
                 HttpClient(Apache).use { client ->
-                    client.tunnel(Config, "http://$Host:$Port$Path")
+                    client.tunnel(MessageConfig, "http://$Host:$Port$Path")
                         .test(1000)
                 }
             }
@@ -119,7 +117,7 @@ class KtorTest {
             routing {
                 webSocket(Path) {
                     receiveLoop(
-                        Config,
+                        PacketConfig,
                         acceptorSessionFactory { ((connection as WebSocketConnection).session as WebSocketServerSession).call.request.uri }
                     )
                 }
@@ -131,7 +129,7 @@ class KtorTest {
                 HttpClient(CIO) {
                     install(io.ktor.client.features.websocket.WebSockets)
                 }.use { client ->
-                    client.ws(HttpMethod.Get, Host, Port, Path) { receiveLoop(Config, initiatorSessionFactory(1000)) }
+                    client.ws(HttpMethod.Get, Host, Port, Path) { receiveLoop(PacketConfig, initiatorSessionFactory(1000)) }
                 }
             }
         } finally {

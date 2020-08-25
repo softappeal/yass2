@@ -125,44 +125,7 @@ public fun generatedBinarySerializer(
                 i
             }
         ),
-        ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.remote.Request::class, // 14
-            { w, i ->
-                w.writeNoIdRequired(3, i.serviceId)
-                w.writeNoIdRequired(3, i.functionId)
-                w.writeNoIdRequired(1, i.parameters)
-            },
-            { r ->
-                val i = r.created(ch.softappeal.yass2.remote.Request(
-                    r.readNoIdRequired(3) as kotlin.Int,
-                    r.readNoIdRequired(3) as kotlin.Int,
-                    r.readNoIdRequired(1) as kotlin.collections.List<kotlin.Any?>
-                ))
-                i
-            }
-        ),
-        ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.remote.ValueReply::class, // 15
-            { w, i ->
-                w.writeWithId(i.value)
-            },
-            { r ->
-                val i = r.created(ch.softappeal.yass2.remote.ValueReply(
-                    r.readWithId()
-                ))
-                i
-            }
-        ),
-        ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.remote.ExceptionReply::class, // 16
-            { w, i ->
-                w.writeWithId(i.exception)
-            },
-            { r ->
-                val i = r.created(ch.softappeal.yass2.remote.ExceptionReply(
-                    r.readWithId() as kotlin.Exception /* = java.lang.Exception */
-                ))
-                i
-            }
-        ),
-        ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.contract.DivideByZeroException::class, // 17
+        ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.contract.DivideByZeroException::class, // 14
             { _, _ -> },
             { r ->
                 val i = r.created(ch.softappeal.yass2.contract.DivideByZeroException(
@@ -170,20 +133,7 @@ public fun generatedBinarySerializer(
                 i
             }
         ),
-        ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.remote.coroutines.session.Packet::class, // 18
-            { w, i ->
-                w.writeNoIdRequired(3, i.requestNumber)
-                w.writeWithId(i.message)
-            },
-            { r ->
-                val i = r.created(ch.softappeal.yass2.remote.coroutines.session.Packet(
-                    r.readNoIdRequired(3) as kotlin.Int,
-                    r.readWithId() as ch.softappeal.yass2.remote.Message
-                ))
-                i
-            }
-        ),
-        ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.contract.Node::class, // 19
+        ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.contract.Node::class, // 15
             { w, i ->
                 w.writeNoIdRequired(3, i.id)
                 w.writeWithId(i.link)

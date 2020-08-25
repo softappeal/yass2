@@ -42,22 +42,7 @@ public val GeneratedDumperProperties: ch.softappeal.yass2.DumperProperties = ch.
         ch.softappeal.yass2.contract.ManyProperties::i as kotlin.reflect.KProperty1<Any, Any?>,
         ch.softappeal.yass2.contract.ManyProperties::j as kotlin.reflect.KProperty1<Any, Any?>
     ),
-    ch.softappeal.yass2.remote.Request::class to listOf(
-        ch.softappeal.yass2.remote.Request::functionId as kotlin.reflect.KProperty1<Any, Any?>,
-        ch.softappeal.yass2.remote.Request::parameters as kotlin.reflect.KProperty1<Any, Any?>,
-        ch.softappeal.yass2.remote.Request::serviceId as kotlin.reflect.KProperty1<Any, Any?>
-    ),
-    ch.softappeal.yass2.remote.ValueReply::class to listOf(
-        ch.softappeal.yass2.remote.ValueReply::value as kotlin.reflect.KProperty1<Any, Any?>
-    ),
-    ch.softappeal.yass2.remote.ExceptionReply::class to listOf(
-        ch.softappeal.yass2.remote.ExceptionReply::exception as kotlin.reflect.KProperty1<Any, Any?>
-    ),
     ch.softappeal.yass2.contract.DivideByZeroException::class to listOf(
-    ),
-    ch.softappeal.yass2.remote.coroutines.session.Packet::class to listOf(
-        ch.softappeal.yass2.remote.coroutines.session.Packet::message as kotlin.reflect.KProperty1<Any, Any?>,
-        ch.softappeal.yass2.remote.coroutines.session.Packet::requestNumber as kotlin.reflect.KProperty1<Any, Any?>
     ),
     ch.softappeal.yass2.contract.Node::class to listOf(
         ch.softappeal.yass2.contract.Node::id as kotlin.reflect.KProperty1<Any, Any?>,

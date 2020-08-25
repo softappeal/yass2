@@ -197,7 +197,7 @@ open class BinarySerializerGeneratedTest {
 
     @Test
     fun graph() {
-        checkGraph(copy(createGraph(), 19, 2, 19, 4, 19, 6, 2, 1))
+        checkGraph(copy(createGraph(), 15, 2, 15, 4, 15, 6, 2, 1))
     }
 
     @Test

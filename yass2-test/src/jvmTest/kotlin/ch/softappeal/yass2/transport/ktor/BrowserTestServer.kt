@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.transport.ktor
 
+import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.coroutines.session.*
 import io.ktor.application.*
@@ -22,13 +23,13 @@ fun main() {
                 files("./build/js/node_modules")
             }
             route(
-                Config,
+                MessageConfig,
                 Path,
                 tunnel { "http-" + currentCoroutineContext()[CallCce]?.call?.request?.uri!! }
             )
             webSocket(Path) {
                 receiveLoop(
-                    Config,
+                    PacketConfig,
                     acceptorSessionFactory { "ws-" + ((connection as WebSocketConnection).session as WebSocketServerSession).call.request.uri }
                 )
             }
