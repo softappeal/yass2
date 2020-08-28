@@ -10,21 +10,6 @@ private const val ExceptionReplyType = 2.toByte()
 
 /** [contractSerializer] must be able to serialize [List]. */
 public fun binaryMessageSerializer(contractSerializer: Serializer): Serializer = object : Serializer {
-    override fun read(reader: Reader): Message = when (val type = reader.readByte()) {
-        RequestType -> Request(
-            reader.readVarInt(),
-            reader.readVarInt(),
-            contractSerializer.read(reader) as List<Any?>
-        )
-        ValueReplyType -> ValueReply(
-            contractSerializer.read(reader)
-        )
-        ExceptionReplyType -> ExceptionReply(
-            contractSerializer.read(reader) as Exception
-        )
-        else -> error("unexpected type $type")
-    }
-
     override fun write(writer: Writer, value: Any?) = when (value) {
         is Request -> {
             writer.writeByte(RequestType)
@@ -41,5 +26,20 @@ public fun binaryMessageSerializer(contractSerializer: Serializer): Serializer =
             contractSerializer.write(writer, value.exception)
         }
         else -> error("unexpected value '$value'")
+    }
+
+    override fun read(reader: Reader): Message = when (val type = reader.readByte()) {
+        RequestType -> Request(
+            reader.readVarInt(),
+            reader.readVarInt(),
+            contractSerializer.read(reader) as List<Any?>
+        )
+        ValueReplyType -> ValueReply(
+            contractSerializer.read(reader)
+        )
+        ExceptionReplyType -> ExceptionReply(
+            contractSerializer.read(reader) as Exception
+        )
+        else -> error("unexpected type $type")
     }
 }
