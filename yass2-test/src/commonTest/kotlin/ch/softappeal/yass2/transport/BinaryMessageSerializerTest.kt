@@ -5,7 +5,7 @@ import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.serialize.*
 import kotlin.test.*
 
-fun <T : Any?> Serializer.copy(value: T): T {
+fun <T> Serializer.copy(value: T): T {
     val writer = BytesWriter(1000)
     var size: Int
     with(writer) {

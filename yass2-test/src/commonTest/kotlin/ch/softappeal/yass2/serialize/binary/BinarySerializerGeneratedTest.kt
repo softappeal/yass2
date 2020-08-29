@@ -24,7 +24,7 @@ class BinarySerializerTest {
     }
 }
 
-fun <T : Any?> Serializer.copy(value: T, bytes: IntArray): T {
+fun <T> Serializer.copy(value: T, bytes: IntArray): T {
     val writer = BytesWriter(1000)
     with(writer) {
         write(this, value)
@@ -83,7 +83,7 @@ private fun checkGraph(n1: Node) {
 open class BinarySerializerGeneratedTest {
     protected open val serializer: Serializer = GeneratedSerializer
 
-    private fun <T : Any?> copy(value: T, vararg bytes: Int): T = serializer.copy(value, bytes)
+    private fun <T> copy(value: T, vararg bytes: Int): T = serializer.copy(value, bytes)
 
     @Test
     fun testNull() {
