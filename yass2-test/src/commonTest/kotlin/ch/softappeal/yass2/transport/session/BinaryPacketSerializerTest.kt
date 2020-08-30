@@ -22,4 +22,12 @@ class BinaryPacketSerializerTest {
         assertEquals(packet.requestNumber, reply.requestNumber)
         assertEquals(value, (reply.message as ValueReply).value)
     }
+
+    @Test
+    fun writeString() = assertEquals(
+        "unexpected value 's'",
+        assertFailsWith<IllegalStateException> {
+            PacketSerializer.write(BytesWriter(100), "s")
+        }.message
+    )
 }

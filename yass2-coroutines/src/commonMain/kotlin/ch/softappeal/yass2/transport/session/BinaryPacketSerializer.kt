@@ -6,15 +6,14 @@ import ch.softappeal.yass2.serialize.*
 import ch.softappeal.yass2.serialize.binary.*
 
 public fun binaryPacketSerializer(messageSerializer: Serializer): Serializer = object : Serializer {
-    override fun write(writer: Writer, value: Any?) {
-        if (value == null) {
-            writer.writeBoolean(false)
-        } else {
+    override fun write(writer: Writer, value: Any?) = when (value) {
+        null -> writer.writeBoolean(false)
+        is Packet -> {
             writer.writeBoolean(true)
-            val packet = value as Packet
-            writer.writeInt(packet.requestNumber)
-            messageSerializer.write(writer, packet.message)
+            writer.writeInt(value.requestNumber)
+            messageSerializer.write(writer, value.message)
         }
+        else -> error("unexpected value '$value'")
     }
 
     override fun read(reader: Reader): Packet? =
