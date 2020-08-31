@@ -8,10 +8,10 @@ import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.websocket.*
+import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
-import io.ktor.request.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -41,7 +41,7 @@ class KtorTest {
         tcp.bind(Address).use { serverSocket ->
             runBlocking {
                 val listenerJob = launch {
-                    val serverTunnel = tunnel { currentCoroutineContext()[SocketCce]?.socket?.remoteAddress!! }
+                    val serverTunnel = tunnel { currentCoroutineContext()[SocketCce]!!.socket.remoteAddress }
                     while (true) {
                         val socket = serverSocket.accept()
                         launch {
@@ -93,7 +93,7 @@ class KtorTest {
                 route(
                     MessageConfig,
                     Path,
-                    tunnel { currentCoroutineContext()[CallCce]?.call?.request?.uri!! }
+                    tunnel { currentCoroutineContext()[CallCce]!!.call.request.headers[DemoHeaderKey]!! }
                 )
             }
         }
@@ -101,7 +101,7 @@ class KtorTest {
         try {
             runBlocking {
                 HttpClient(Apache).use { client ->
-                    client.tunnel(MessageConfig, "http://$Host:$Port$Path")
+                    client.tunnel(MessageConfig, "http://$Host:$Port$Path", headersOf(DemoHeaderKey, DemoHeaderValue))
                         .test(1000)
                 }
             }
@@ -118,7 +118,10 @@ class KtorTest {
                 webSocket(Path) {
                     receiveLoop(
                         PacketConfig,
-                        acceptorSessionFactory { ((connection as WebSocketConnection).session as WebSocketServerSession).call.request.uri }
+                        acceptorSessionFactory {
+                            ((connection as WebSocketConnection).session as WebSocketServerSession)
+                                .call.request.headers[DemoHeaderKey]!!
+                        }
                     )
                 }
             }
@@ -129,7 +132,9 @@ class KtorTest {
                 HttpClient(CIO) {
                     install(io.ktor.client.features.websocket.WebSockets)
                 }.use { client ->
-                    client.ws(HttpMethod.Get, Host, Port, Path) { receiveLoop(PacketConfig, initiatorSessionFactory(1000)) }
+                    client.ws(HttpMethod.Get, Host, Port, Path, { header(DemoHeaderKey, DemoHeaderValue) }) {
+                        receiveLoop(PacketConfig, initiatorSessionFactory(1000))
+                    }
                 }
             }
         } finally {

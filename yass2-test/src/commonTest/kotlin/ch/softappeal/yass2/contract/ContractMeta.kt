@@ -35,3 +35,6 @@ val BaseDumper: BaseDumper = { value ->
 
 val MessageConfig = TransportConfig(MessageSerializer, 100, 100)
 val PacketConfig = TransportConfig(PacketSerializer, 100, 100)
+
+const val DemoHeaderKey = "Demo-Header-Key"
+const val DemoHeaderValue = "Demo-Header-Value"
