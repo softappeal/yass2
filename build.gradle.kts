@@ -5,7 +5,7 @@ val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9"
 fun ktor(module: String) = "io.ktor:ktor-$module:1.4.0"
 
 plugins {
-    kotlin("multiplatform") version "1.4.0"
+    kotlin("multiplatform") version "1.4.10"
     id("maven-publish")
     signing
 }
