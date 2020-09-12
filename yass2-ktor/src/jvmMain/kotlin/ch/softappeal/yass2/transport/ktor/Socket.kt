@@ -8,20 +8,7 @@ import io.ktor.utils.io.*
 import kotlinx.coroutines.*
 import kotlin.coroutines.*
 
-private suspend fun ByteWriteChannel.write(config: TransportConfig, value: Any?) {
-    val writer = config.writer()
-    config.write(writer, value)
-    writeInt(writer.current)
-    writeFully(writer.buffer, 0, writer.current)
-}
-
-private suspend fun ByteReadChannel.read(config: TransportConfig): Any? {
-    val buffer = config.readBytes(readInt()) { bytes, offset, length -> readFully(bytes, offset, length) }
-    val reader = BytesReader(buffer)
-    val value = config.read(reader)
-    check(reader.drained)
-    return value
-}
+private suspend fun ByteReadChannel.read(config: TransportConfig): Any? = read(config, readInt())
 
 public typealias SocketConnector = suspend () -> Socket
 

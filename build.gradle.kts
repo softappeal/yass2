@@ -129,10 +129,14 @@ val generateProject = project("yass2-generate") {
 val ktorProject = project("yass2-ktor") {
     kotlin {
         sourceSets {
-            val jvmMain by getting {
+            val commonMain by getting {
                 dependencies {
                     api(coroutinesProject)
-                    api(ktor("client-core-jvm"))
+                    api(ktor("client-core"))
+                }
+            }
+            val jvmMain by getting {
+                dependencies {
                     api(ktor("server-core"))
                 }
             }
