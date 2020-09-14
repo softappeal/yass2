@@ -7,6 +7,7 @@ import kotlinx.coroutines.channels.*
 import kotlinx.coroutines.flow.*
 import kotlin.coroutines.*
 
+/** The used serializer must be able to serialize [Int], the involved flowId and optional [Flow] types. */
 public interface FlowService {
     public suspend fun create(flowId: Any): Int
     public suspend fun next(collectId: Int): Any?

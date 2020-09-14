@@ -8,7 +8,10 @@ private const val RequestType = 0.toByte()
 private const val ValueReplyType = 1.toByte()
 private const val ExceptionReplyType = 2.toByte()
 
-/** [contractSerializer] must be able to serialize [List]. */
+/**
+ * Returns a binary [Serializer] for [Message].
+ * [contractSerializer] must be able to serialize [List] and the used contract.
+ */
 public fun binaryMessageSerializer(contractSerializer: Serializer): Serializer = object : Serializer {
     override fun write(writer: Writer, value: Any?) = when (value) {
         is Request -> {
