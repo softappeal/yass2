@@ -4,6 +4,7 @@ import java.util.regex.*
 
 plugins {
     kotlin("multiplatform") version "1.5.21"
+    id("org.jetbrains.dokka") version "1.5.0"
     id("maven-publish")
     signing
 }
@@ -15,6 +16,7 @@ val jsTarget = true
 
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
+    apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "maven-publish")
     apply(plugin = "signing")
 
@@ -25,7 +27,9 @@ allprojects {
     }
 
     tasks.register<Jar>("javadocJar") {
+        dependsOn(tasks.dokkaHtml)
         archiveClassifier.set("javadoc")
+        from("$buildDir/dokka/html")
     }
 
     kotlin {
