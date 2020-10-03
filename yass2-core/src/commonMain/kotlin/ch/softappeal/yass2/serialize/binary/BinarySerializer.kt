@@ -16,15 +16,6 @@ public class EncoderId internal constructor(public val id: Int, internal val enc
     internal fun write(writer: EncoderWriter, value: Any?) = encoder.write(writer, id, value)
 }
 
-public class BaseEncoder<T : Any>(
-    type: KClass<T>, public val write: (writer: Writer, value: T) -> Unit, public val read: (reader: Reader) -> T
-) : Encoder(type) {
-    @Suppress("UNCHECKED_CAST")
-    override fun write(writer: EncoderWriter, value: Any?) = write(writer.writer, value as T)
-
-    override fun read(reader: EncoderReader) = read(reader.reader)
-}
-
 public class EncoderWriter internal constructor(internal val writer: Writer, private val serializer: BinarySerializer) {
     internal val object2reference = HashMap<Any, Int>(16)
 
@@ -103,6 +94,15 @@ public class BinarySerializer(encoders: List<Encoder>) : Serializer {
 
     override fun write(writer: Writer, value: Any?): Unit = EncoderWriter(writer, this).writeWithId(value)
     override fun read(reader: Reader): Any? = EncoderReader(reader, encoders).readWithId()
+}
+
+public class BaseEncoder<T : Any>(
+    type: KClass<T>, public val write: (writer: Writer, value: T) -> Unit, public val read: (reader: Reader) -> T
+) : Encoder(type) {
+    @Suppress("UNCHECKED_CAST")
+    override fun write(writer: EncoderWriter, value: Any?) = write(writer.writer, value as T)
+
+    override fun read(reader: EncoderReader) = read(reader.reader)
 }
 
 /**
