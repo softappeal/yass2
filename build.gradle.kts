@@ -104,9 +104,13 @@ val coroutinesProject = project("yass2-coroutines") {
 val reflectProject = project("yass2-reflect") {
     kotlin {
         sourceSets {
-            val jvmMain by getting {
+            val commonMain by getting {
                 dependencies {
                     api(coreProject)
+                }
+            }
+            val jvmMain by getting {
+                dependencies {
                     api(kotlin("reflect"))
                 }
             }

@@ -1,5 +1,6 @@
-package ch.softappeal.yass2.serialize.binary
+package ch.softappeal.yass2.serialize.binary.reflect
 
+import ch.softappeal.yass2.serialize.binary.*
 import kotlin.reflect.*
 
 public enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
@@ -7,22 +8,22 @@ public enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
 public class MetaProperty(
     public val property: KProperty1<Any, Any?>, public val kind: PropertyKind, public val encoderId: Int = -1
 ) {
-    public fun mutableProperty(): KMutableProperty1<Any, Any?> = property as KMutableProperty1<Any, Any?>
+    internal fun mutableProperty(): KMutableProperty1<Any, Any?> = property as KMutableProperty1<Any, Any?>
 
-    public fun write(writer: EncoderWriter, value: Any?): Unit = when (kind) {
+    internal fun write(writer: EncoderWriter, value: Any?): Unit = when (kind) {
         PropertyKind.WithId -> writer.writeWithId(value)
         PropertyKind.NoIdRequired -> writer.writeNoIdRequired(encoderId, value!!)
         PropertyKind.NoIdOptional -> writer.writeNoIdOptional(encoderId, value)
     }
 
-    public fun read(reader: EncoderReader): Any? = when (kind) {
+    internal fun read(reader: EncoderReader): Any? = when (kind) {
         PropertyKind.WithId -> reader.readWithId()
         PropertyKind.NoIdRequired -> reader.readNoIdRequired(encoderId)
         PropertyKind.NoIdOptional -> reader.readNoIdOptional(encoderId)
     }
 }
 
-public fun KClass<*>.metaProperty(
+internal fun KClass<*>.metaProperty(
     property: KProperty1<Any, Any?>, baseEncoderTypes: List<KClass<*>>, optional: Boolean
 ): MetaProperty {
     val kind = if (optional) PropertyKind.NoIdOptional else PropertyKind.NoIdRequired

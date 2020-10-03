@@ -12,8 +12,8 @@ public abstract class Encoder internal constructor(public val type: KClass<*>) {
     }
 }
 
-internal class EncoderId(val id: Int, val encoder: Encoder) {
-    fun write(writer: EncoderWriter, value: Any?) = encoder.write(writer, id, value)
+public class EncoderId(public val id: Int, internal val encoder: Encoder) {
+    internal fun write(writer: EncoderWriter, value: Any?) = encoder.write(writer, id, value)
 }
 
 public class BaseEncoder<T : Any>(
@@ -64,7 +64,7 @@ private val NullEncoderId = EncoderId(0, object : Encoder(Unit::class) {
     override fun read(reader: EncoderReader): Any? = null
 })
 
-internal val ListEncoderId = EncoderId(1, object : Encoder(List::class) {
+public val ListEncoderId: EncoderId = EncoderId(1, object : Encoder(List::class) {
     override fun write(writer: EncoderWriter, value: Any?) {
         val list = value as List<*>
         writer.writer.writeVarInt(list.size)
