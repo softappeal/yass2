@@ -21,23 +21,30 @@ public fun KClass<*>.metaClass(baseEncoderTypes: List<KClass<*>>): MetaClass {
     )
 }
 
-public fun reflectionBinarySerializer(baseEncoders: List<BaseEncoder<*>>, concreteClasses: List<KClass<*>>): BinarySerializer {
+public fun reflectionBinarySerializer(
+    baseEncoders: List<BaseEncoder<*>>,
+    treeConcreteClasses: List<KClass<*>>,
+    graphConcreteClasses: List<KClass<*>> = emptyList()
+): BinarySerializer {
     val baseEncoderTypes = baseEncoders.map { it.type }
     val encoders = mutableListOf<Encoder>()
     encoders.addAll(baseEncoders)
-    concreteClasses.forEach { klass ->
+    fun List<KClass<*>>.add(graph: Boolean) = forEach { klass ->
         val metaClass = klass.metaClass(baseEncoderTypes)
-        @Suppress("UNCHECKED_CAST") encoders.add(ClassEncoder(klass as KClass<Any>,
+        @Suppress("UNCHECKED_CAST") encoders.add(ClassEncoder(klass as KClass<Any>, graph,
             { writer, instance ->
                 metaClass.properties.forEach { it.write(writer, it.property.get(instance)) }
             },
             { reader ->
                 val parameterProperties = Array(metaClass.parameterProperties.size) { metaClass.parameterProperties[it].read(reader) }
-                val instance = reader.created(klass.primaryConstructor!!.call(*parameterProperties))
+                val created = klass.primaryConstructor!!.call(*parameterProperties)
+                val instance = if (graph) reader.created(created) else created
                 metaClass.bodyProperties.forEach { it.mutableProperty().set(instance, it.read(reader)) }
                 instance
             }
         ))
     }
+    treeConcreteClasses.add(false)
+    graphConcreteClasses.add(true)
     return BinarySerializer(encoders)
 }

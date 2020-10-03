@@ -6,7 +6,7 @@ import ch.softappeal.yass2.serialize.binary.reflect.*
 import kotlin.reflect.full.*
 import kotlin.test.*
 
-private val ReflectionSerializer = reflectionBinarySerializer(BaseEncoders, ConcreteClasses)
+private val ReflectionSerializer = reflectionBinarySerializer(BaseEncoders, TreeConcreteClasses, GraphConcreteClasses)
 
 class BinarySerializerReflectionTest : BinarySerializerGeneratedTest() {
     override val serializer = ReflectionSerializer
@@ -70,7 +70,7 @@ class BinarySerializerReflectionTest : BinarySerializerGeneratedTest() {
         class X(val cause: Int, val message: Int)
         class Y : Exception()
         class Z(val z: Int) : Exception()
-        println(generateBinarySerializer(listOf(IntEncoder), listOf(X::class, Y::class, Z::class), "dummy"))
+        println(generateBinarySerializer(listOf(IntEncoder), listOf(X::class, Y::class, Z::class)))
     }
 
     @Test

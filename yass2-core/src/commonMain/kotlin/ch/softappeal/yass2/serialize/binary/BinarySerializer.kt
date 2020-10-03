@@ -17,7 +17,7 @@ public class EncoderId internal constructor(public val id: Int, internal val enc
 }
 
 public class EncoderWriter internal constructor(internal val writer: Writer, private val serializer: BinarySerializer) {
-    internal val object2reference = HashMap<Any, Int>(16)
+    internal val object2reference: HashMap<Any, Int> by lazy(LazyThreadSafetyMode.NONE) { HashMap(16) }
 
     public fun writeWithId(value: Any?) {
         when (value) {
@@ -37,7 +37,7 @@ public class EncoderWriter internal constructor(internal val writer: Writer, pri
 }
 
 public class EncoderReader internal constructor(internal val reader: Reader, private val encoders: Array<Encoder>) {
-    internal val objects = ArrayList<Any>(16)
+    internal val objects: ArrayList<Any> by lazy(LazyThreadSafetyMode.NONE) { ArrayList(16) }
 
     public fun <T : Any> created(value: T): T {
         objects.add(value)
@@ -112,6 +112,7 @@ public class BaseEncoder<T : Any>(
  */
 public class ClassEncoder<T : Any>(
     type: KClass<T>,
+    private val graph: Boolean,
     private val writeProperties: (writer: EncoderWriter, instance: T) -> Unit,
     private val readInstance: (reader: EncoderReader) -> T
 ) : Encoder(type) {
@@ -121,13 +122,15 @@ public class ClassEncoder<T : Any>(
     override fun read(reader: EncoderReader) = readInstance(reader)
 
     override fun write(writer: EncoderWriter, id: Int, value: Any?) {
-        val object2reference = writer.object2reference
-        val reference = object2reference[value]
-        if (reference != null) {
-            ReferenceEncoderId.write(writer, reference)
-            return
+        if (graph) {
+            val object2reference = writer.object2reference
+            val reference = object2reference[value]
+            if (reference != null) {
+                ReferenceEncoderId.write(writer, reference)
+                return
+            }
+            object2reference[value!!] = object2reference.size
         }
-        object2reference[value!!] = object2reference.size
         super.write(writer, id, value)
     }
 }
