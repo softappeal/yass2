@@ -12,7 +12,7 @@ public abstract class Encoder internal constructor(public val type: KClass<*>) {
     }
 }
 
-public class EncoderId(public val id: Int, internal val encoder: Encoder) {
+public class EncoderId internal constructor(public val id: Int, internal val encoder: Encoder) {
     internal fun write(writer: EncoderWriter, value: Any?) = encoder.write(writer, id, value)
 }
 
@@ -25,7 +25,7 @@ public class BaseEncoder<T : Any>(
     override fun read(reader: EncoderReader) = read(reader.reader)
 }
 
-public class EncoderWriter(internal val writer: Writer, private val serializer: BinarySerializer) {
+public class EncoderWriter internal constructor(internal val writer: Writer, private val serializer: BinarySerializer) {
     internal val object2reference = HashMap<Any, Int>(16)
 
     public fun writeWithId(value: Any?) {
@@ -45,7 +45,7 @@ public class EncoderWriter(internal val writer: Writer, private val serializer: 
     }
 }
 
-public class EncoderReader(internal val reader: Reader, private val serializer: BinarySerializer) {
+public class EncoderReader internal constructor(internal val reader: Reader, private val encoders: Array<Encoder>) {
     internal val objects = ArrayList<Any>(16)
 
     public fun <T : Any> created(value: T): T {
@@ -53,9 +53,9 @@ public class EncoderReader(internal val reader: Reader, private val serializer: 
         return value
     }
 
-    public fun readWithId(): Any? = serializer.encoders[reader.readVarInt()].read(this)
+    public fun readWithId(): Any? = encoders[reader.readVarInt()].read(this)
 
-    public fun readNoIdRequired(encoderId: Int): Any = serializer.encoders[encoderId].read(this)!!
+    public fun readNoIdRequired(encoderId: Int): Any = encoders[encoderId].read(this)!!
     public fun readNoIdOptional(encoderId: Int): Any? = if (reader.readBoolean()) readNoIdRequired(encoderId) else null
 }
 
@@ -102,7 +102,7 @@ public class BinarySerializer(encoders: List<Encoder>) : Serializer {
     }
 
     override fun write(writer: Writer, value: Any?): Unit = EncoderWriter(writer, this).writeWithId(value)
-    override fun read(reader: Reader): Any? = EncoderReader(reader, this).readWithId()
+    override fun read(reader: Reader): Any? = EncoderReader(reader, encoders).readWithId()
 }
 
 /**
