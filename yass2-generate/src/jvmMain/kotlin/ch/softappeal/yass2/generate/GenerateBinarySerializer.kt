@@ -15,9 +15,9 @@ public fun generateBinarySerializer(
             ${BinarySerializer::class.qualifiedName}(baseEncoders + listOf(
     """)
     val baseEncoderTypes = baseEncoders.map { it.type }
-    concreteClasses.withIndex().forEach { (classIndex, klass) ->
+    concreteClasses.forEach { klass ->
         write("""
-            ${ClassEncoder::class.qualifiedName}(${klass.qualifiedName}::class, // ${classIndex + baseEncoders.size + FirstEncoderId}
+            ${ClassEncoder::class.qualifiedName}(${klass.qualifiedName}::class,
         """, 2)
         val metaClass = klass.metaClass(baseEncoderTypes)
         fun MetaProperty.encoderId(tail: String = ""): String = if (kind != PropertyKind.WithId) encoderId.toString() + tail else ""
@@ -39,9 +39,7 @@ public fun generateBinarySerializer(
             val i = r.created(${klass.qualifiedName}(
         """, 4)
         fun cast(p: MetaProperty) = if (p.property.returnType.needsCast()) " as ${p.property.returnType}" else ""
-        metaClass.parameterProperties.withIndex().forEach { (pIndex, p) ->
-            write("r.read${p.kind}(${p.encoderId()})${cast(p)}${separator(pIndex, metaClass.parameterProperties)}", 5)
-        }
+        metaClass.parameterProperties.forEach { write("r.read${it.kind}(${it.encoderId()})${cast(it)},", 5) }
         write("""
             ))
         """, 4)
@@ -51,7 +49,7 @@ public fun generateBinarySerializer(
         write("""
                     i
                 }
-            )${separator(classIndex, concreteClasses)}
+            ),
         """, 2)
     }
     write("""

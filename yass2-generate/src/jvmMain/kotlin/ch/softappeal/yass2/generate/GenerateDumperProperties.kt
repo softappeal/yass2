@@ -11,18 +11,17 @@ public fun generateDumperProperties(
         @Suppress("UNCHECKED_CAST", "RedundantVisibilityModifier")
         public val $name: $CSY.DumperProperties = $CSY.dumperProperties(
     """)
-    concreteClasses.withIndex().forEach { (classIndex, klass) ->
+    concreteClasses.forEach { klass ->
         write("""
             ${klass.qualifiedName}::class to listOf(
         """, 1)
-        val properties = ReflectionDumperProperties(klass)
-        properties.withIndex().forEach { (propertyIndex, property) ->
+        ReflectionDumperProperties(klass).forEach { property ->
             write("""
-                ${klass.qualifiedName}::${property.name} as kotlin.reflect.KProperty1<Any, Any?>${separator(propertyIndex, properties)}
+                ${klass.qualifiedName}::${property.name} as kotlin.reflect.KProperty1<Any, Any?>,
             """, 2)
         }
         write("""
-            )${separator(classIndex, concreteClasses)}
+            ),
         """, 1)
     }
     write("""

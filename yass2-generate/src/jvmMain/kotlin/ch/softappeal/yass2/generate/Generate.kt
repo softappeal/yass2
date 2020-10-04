@@ -23,5 +23,3 @@ internal fun StringBuilder.write(s: String, level: Int = 0) {
 internal fun writer(action: StringBuilder.() -> Unit): String = StringBuilder(10_000).apply { action() }.toString()
 
 internal const val CSY = "ch.softappeal.yass2"
-
-internal fun separator(index: Int, list: List<*>): String = if (index + 1 == list.size) "" else ","
