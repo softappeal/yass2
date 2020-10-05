@@ -6,7 +6,7 @@ import kotlin.reflect.*
 
 public fun generateBinarySerializer(
     baseEncoders: List<BaseEncoder<*>>,
-    treeConcreteClasses: List<KClass<*>>,
+    treeConcreteClasses: List<KClass<*>> = emptyList(),
     graphConcreteClasses: List<KClass<*>> = emptyList(),
     name: String = "generatedBinarySerializer"
 ): String = writer {
