@@ -6,13 +6,14 @@ import ch.softappeal.yass2.serialize.binary.*
 import kotlin.test.*
 
 open class DumperGeneratedTest {
-    private val generatedDumper = dumper(GeneratedDumperProperties, BaseDumper) // note: fails if moved to global due to https://youtrack.jetbrains.com/issue/KT-38017
-    protected open val dumper: Dumper = generatedDumper
+    protected open val dumperProperties = GeneratedDumperProperties
+
+    private fun getDumper() = dumper(dumperProperties, BaseDumper, GraphConcreteClasses.toSet())
 
     @Test
     fun missingClass() {
         try {
-            StringBuilder().dumper(Any())
+            StringBuilder().(getDumper())(Any())
         } catch (e: IllegalStateException) {
             println(e)
         }
@@ -22,7 +23,7 @@ open class DumperGeneratedTest {
     fun test() {
         val s = StringBuilder()
         fun dump(value: Any?) {
-            s.dumper(value).appendLine()
+            s.(getDumper())(value).appendLine()
         }
 
         dump(null)
@@ -77,45 +78,45 @@ private val Output = """
         h = 8
         i = 9
         j = 10
-    )#0
+    )
     ComplexId(
         baseId = PlainId(
             id = 60
-        )#1
+        )
         id = 58
         plainId = PlainId(
             id = 59
-        )#2
+        )
         plainIdOptional = PlainId(
             id = 61
-        )#3
-    )#0
+        )
+    )
     ComplexId(
         baseId = PlainId(
             id = 60
-        )#1
+        )
         id = 58
         plainId = PlainId(
             id = 59
-        )#2
-    )#0
+        )
+    )
     Lists(
         list = [
             PlainId(
                 id = 60
-            )#1
+            )
             PlainId(
                 id = 60
-            )#2
+            )
         ]
         mutableList = [
             PlainId(
                 id = 61
-            )#3
+            )
         ]
-    )#0
+    )
     DivideByZeroException(
-    )#0
+    )
     Node(
         id = 1
         link = Node(

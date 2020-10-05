@@ -13,8 +13,10 @@ public typealias Dumper = StringBuilder.(value: Any?) -> StringBuilder
  * Supports the following types out-of-the-box:
  * `null`, [Boolean], [Number], [CharSequence], [List] and classes with its properties.
  */
-public fun dumper(properties: DumperProperties, baseDumper: BaseDumper): Dumper = { value ->
-    val object2reference = HashMap<Any, Int>(16)
+public fun dumper(
+    properties: DumperProperties, baseDumper: BaseDumper, graphConcreteClasses: Set<KClass<*>> = emptySet()
+): Dumper = { value ->
+    val object2reference: HashMap<Any, Int> by lazy(LazyThreadSafetyMode.NONE) { HashMap(16) }
     var indent = 0
 
     fun dump(value: Any?) {
@@ -45,13 +47,19 @@ public fun dumper(properties: DumperProperties, baseDumper: BaseDumper): Dumper 
         }
 
         fun dumpObject(obj: Any) {
-            val reference = object2reference[obj]
-            if (reference != null) {
-                append("#$reference")
-                return
+            val graph = obj::class in graphConcreteClasses
+            val index: Int
+            if (graph) {
+                val reference = object2reference[obj]
+                if (reference != null) {
+                    append("#$reference")
+                    return
+                }
+                index = object2reference.size
+                object2reference[obj] = index
+            } else {
+                index = 0
             }
-            val index = object2reference.size
-            object2reference[obj] = index
             val type = obj::class
             inc("${type.simpleName}(")
             for (property in properties(type)) property.get(obj)?.let { propertyValue ->
@@ -60,7 +68,7 @@ public fun dumper(properties: DumperProperties, baseDumper: BaseDumper): Dumper 
                 dump(propertyValue)
                 appendLine()
             }
-            dec(")#$index")
+            dec(")${if (graph) "#$index" else ""}")
         }
 
         when (value) {

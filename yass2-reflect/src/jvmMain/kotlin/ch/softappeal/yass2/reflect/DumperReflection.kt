@@ -15,5 +15,3 @@ private val Class2dumperProperties = ConcurrentHashMap<KClass<*>, List<KProperty
 public val ReflectionDumperProperties: DumperProperties = { type ->
     Class2dumperProperties.computeIfAbsent(type) { type.properties() }
 }
-
-public fun reflectionDumper(baseDumper: BaseDumper): Dumper = dumper(ReflectionDumperProperties, baseDumper)
