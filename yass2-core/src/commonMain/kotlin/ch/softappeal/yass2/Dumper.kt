@@ -5,7 +5,7 @@ import kotlin.reflect.*
 public typealias DumperProperties = (type: KClass<*>) -> List<KProperty1<Any, Any?>>
 
 /** Writes value (without line breaks) if responsible else does nothing. */
-public typealias BaseDumper = StringBuilder.(value: Any) -> Unit
+public typealias ValueDumper = StringBuilder.(value: Any) -> Unit
 
 public typealias Dumper = StringBuilder.(value: Any?) -> StringBuilder
 
@@ -15,7 +15,7 @@ public typealias Dumper = StringBuilder.(value: Any?) -> StringBuilder
  */
 public fun dumper(
     properties: DumperProperties,
-    baseDumper: BaseDumper,
+    valueDumper: ValueDumper,
     compact: Boolean = true,
     graphConcreteClasses: Set<KClass<*>> = emptySet()
 ): Dumper = { value ->
@@ -103,7 +103,7 @@ public fun dumper(
             is List<*> -> dumpList(value)
             else -> {
                 val oldLength = length
-                baseDumper(value)
+                valueDumper(value)
                 if (oldLength == length) dumpObject(value)
             }
         }

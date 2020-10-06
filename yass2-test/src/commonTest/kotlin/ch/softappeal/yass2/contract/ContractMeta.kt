@@ -30,7 +30,7 @@ val FlowServiceId: ServiceId<FlowService> = serviceId(3)
 
 val ServiceIds = listOf(CalculatorId, EchoId, FlowServiceId)
 
-val BaseDumper: BaseDumper = { value ->
+val ValueDumper: ValueDumper = { value ->
     when (value) {
         is ByteArray -> append("binary")
         is Color -> append(value.name)

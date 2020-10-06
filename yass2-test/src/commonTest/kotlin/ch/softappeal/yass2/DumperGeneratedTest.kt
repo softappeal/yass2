@@ -8,7 +8,7 @@ import kotlin.test.*
 open class DumperGeneratedTest {
     protected open val dumperProperties = GeneratedDumperProperties
 
-    private fun getDumper(compact: Boolean) = dumper(dumperProperties, BaseDumper, compact, GraphConcreteClasses.toSet())
+    private fun getDumper(compact: Boolean) = dumper(dumperProperties, ValueDumper, compact, GraphConcreteClasses.toSet())
 
     @Test
     fun missingClass() {
