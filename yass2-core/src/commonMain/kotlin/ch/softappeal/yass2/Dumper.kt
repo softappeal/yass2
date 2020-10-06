@@ -14,7 +14,10 @@ public typealias Dumper = StringBuilder.(value: Any?) -> StringBuilder
  * `null`, [Boolean], [Number], [CharSequence], [List] and classes with its properties.
  */
 public fun dumper(
-    properties: DumperProperties, baseDumper: BaseDumper, graphConcreteClasses: Set<KClass<*>> = emptySet()
+    properties: DumperProperties,
+    baseDumper: BaseDumper,
+    compact: Boolean = true,
+    graphConcreteClasses: Set<KClass<*>> = emptySet()
 ): Dumper = { value ->
     val object2reference: HashMap<Any, Int> by lazy(LazyThreadSafetyMode.NONE) { HashMap(16) }
     var indent = 0
@@ -37,17 +40,28 @@ public fun dumper(
         }
 
         fun dumpList(list: List<*>) {
-            inc("[")
-            for (element in list) {
-                appendIndent()
-                dump(element)
-                appendLine()
+            if (compact) {
+                append('[')
+                var first = true
+                for (element in list) {
+                    if (first) first = false else append(',')
+                    dump(element)
+                }
+                append(']')
+            } else {
+                inc("[")
+                for (element in list) {
+                    appendIndent()
+                    dump(element)
+                    appendLine()
+                }
+                dec("]")
             }
-            dec("]")
         }
 
         fun dumpObject(obj: Any) {
-            val graph = obj::class in graphConcreteClasses
+            val type = obj::class
+            val graph = type in graphConcreteClasses
             val index: Int
             if (graph) {
                 val reference = object2reference[obj]
@@ -60,15 +74,25 @@ public fun dumper(
             } else {
                 index = 0
             }
-            val type = obj::class
-            inc("${type.simpleName}(")
-            for (property in properties(type)) property.get(obj)?.let { propertyValue ->
-                appendIndent()
-                append("${property.name} = ")
-                dump(propertyValue)
-                appendLine()
+            if (compact) {
+                append("${type.simpleName}(")
+                var first = true
+                for (property in properties(type)) property.get(obj)?.let { propertyValue ->
+                    if (first) first = false else append(',')
+                    append("${property.name}=")
+                    dump(propertyValue)
+                }
+            } else {
+                inc("${type.simpleName}(")
+                for (property in properties(type)) property.get(obj)?.let { propertyValue ->
+                    appendIndent()
+                    append("${property.name} = ")
+                    dump(propertyValue)
+                    appendLine()
+                }
+                dec("")
             }
-            dec(")${if (graph) "#$index" else ""}")
+            append(")${if (graph) "#$index" else ""}")
         }
 
         when (value) {
