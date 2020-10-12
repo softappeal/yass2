@@ -79,7 +79,9 @@ public abstract class Session {
      * if [check] throws an exception or doesn't return within [timeoutMillis].
      */
     public fun CoroutineScope.watch(
-        intervalMillis: Long = 10_000, timeoutMillis: Long = 1000, check: suspend () -> Unit
+        intervalMillis: Long = 10_000,
+        timeoutMillis: Long = 1000,
+        check: suspend () -> Unit,
     ): Job {
         require(intervalMillis > 0)
         require(timeoutMillis > 0)

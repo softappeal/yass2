@@ -34,7 +34,10 @@ public suspend fun Socket.handleRequest(config: TransportConfig, tunnel: Tunnel)
     }
 }
 
-public class SocketConnection internal constructor(private val config: TransportConfig, public val socket: Socket) : Connection {
+public class SocketConnection internal constructor(
+    private val config: TransportConfig,
+    public val socket: Socket,
+) : Connection {
     private val writeChannel = socket.openWriteChannel()
     override suspend fun write(packet: Packet?) {
         writeChannel.write(config, packet)

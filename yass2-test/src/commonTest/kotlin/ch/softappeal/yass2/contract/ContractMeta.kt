@@ -13,7 +13,7 @@ val BaseEncoders = listOf(IntEncoder, StringEncoder, ByteArrayEncoder)
 val TreeConcreteClasses = listOf(
     IntException::class, PlainId::class, ComplexId::class, Lists::class,
     Id2::class, Id3::class, IdWrapper::class, ManyProperties::class,
-    DivideByZeroException::class
+    DivideByZeroException::class,
 )
 
 val GraphConcreteClasses = listOf(

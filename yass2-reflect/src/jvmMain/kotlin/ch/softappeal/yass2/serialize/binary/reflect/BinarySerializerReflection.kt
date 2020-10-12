@@ -24,7 +24,7 @@ public fun KClass<*>.metaClass(baseEncoderTypes: List<KClass<*>>): MetaClass {
 public fun reflectionBinarySerializer(
     baseEncoders: List<BaseEncoder<*>>,
     treeConcreteClasses: List<KClass<*>> = emptyList(),
-    graphConcreteClasses: List<KClass<*>> = emptyList()
+    graphConcreteClasses: List<KClass<*>> = emptyList(),
 ): BinarySerializer {
     val baseEncoderTypes = baseEncoders.map { it.type }
     val encoders = mutableListOf<Encoder>()

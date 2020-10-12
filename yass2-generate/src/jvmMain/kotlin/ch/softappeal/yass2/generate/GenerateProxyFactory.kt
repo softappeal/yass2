@@ -5,7 +5,10 @@ import ch.softappeal.yass2.reflect.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
 
-public fun generateProxyFactory(services: List<KClass<*>>, name: String = "GeneratedProxyFactory"): String = writer {
+public fun generateProxyFactory(
+    services: List<KClass<*>>,
+    name: String = "GeneratedProxyFactory",
+): String = writer {
     require(services.toSet().size == services.size) { "duplicated services" }
     write("""
         @Suppress("UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")

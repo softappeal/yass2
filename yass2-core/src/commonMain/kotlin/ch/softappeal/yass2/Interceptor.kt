@@ -23,7 +23,9 @@ public interface ProxyFactory {
 }
 
 public inline operator fun <reified S : Any> ProxyFactory.invoke(
-    implementation: S, noinline interceptor: Interceptor, noinline suspendInterceptor: SuspendInterceptor
+    implementation: S,
+    noinline interceptor: Interceptor,
+    noinline suspendInterceptor: SuspendInterceptor,
 ): S = create(S::class, implementation, interceptor, suspendInterceptor)
 
 public val MissingInterceptor: Interceptor = { _, _, _ -> throw RuntimeException("missing Interceptor") }
@@ -38,7 +40,7 @@ public inline operator fun <reified S : Any> ProxyFactory.invoke(implementation:
 
 public fun checkInterceptors(
     interceptor: Interceptor, suspendInterceptor: SuspendInterceptor,
-    needsInterceptor: Boolean, needsSuspendInterceptor: Boolean
+    needsInterceptor: Boolean, needsSuspendInterceptor: Boolean,
 ) {
     if (needsInterceptor) require(interceptor !== MissingInterceptor) { "missing Interceptor" }
     if (needsSuspendInterceptor) require(suspendInterceptor !== MissingSuspendInterceptor) { "missing SuspendInterceptor" }

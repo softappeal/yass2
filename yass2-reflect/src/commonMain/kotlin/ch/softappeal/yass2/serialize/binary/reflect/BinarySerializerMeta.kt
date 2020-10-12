@@ -6,7 +6,9 @@ import kotlin.reflect.*
 public enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
 
 public class MetaProperty internal constructor(
-    public val property: KProperty1<Any, Any?>, public val kind: PropertyKind, public val encoderId: Int = -1
+    public val property: KProperty1<Any, Any?>,
+    public val kind: PropertyKind,
+    public val encoderId: Int = -1,
 ) {
     internal fun mutableProperty(): KMutableProperty1<Any, Any?> = property as KMutableProperty1<Any, Any?>
 
@@ -24,7 +26,9 @@ public class MetaProperty internal constructor(
 }
 
 internal fun KClass<*>.metaProperty(
-    property: KProperty1<Any, Any?>, baseEncoderTypes: List<KClass<*>>, optional: Boolean
+    property: KProperty1<Any, Any?>,
+    baseEncoderTypes: List<KClass<*>>,
+    optional: Boolean,
 ): MetaProperty {
     val kind = if (optional) PropertyKind.NoIdOptional else PropertyKind.NoIdRequired
     return if (this == List::class) {
@@ -39,7 +43,11 @@ internal fun KClass<*>.metaProperty(
     }
 }
 
-public class MetaClass internal constructor(klass: KClass<*>, properties: List<MetaProperty>, parameterNames: List<String>) {
+public class MetaClass internal constructor(
+    klass: KClass<*>,
+    properties: List<MetaProperty>,
+    parameterNames: List<String>,
+) {
     public val parameterProperties: List<MetaProperty>
     public val bodyProperties: List<MetaProperty>
     public val properties: List<MetaProperty>

@@ -4,7 +4,8 @@ import ch.softappeal.yass2.reflect.*
 import kotlin.reflect.*
 
 public fun generateDumperProperties(
-    concreteClasses: List<KClass<*>>, name: String = "GeneratedDumperProperties"
+    concreteClasses: List<KClass<*>>,
+    name: String = "GeneratedDumperProperties",
 ): String = writer {
     require(concreteClasses.toSet().size == concreteClasses.size) { "duplicated concreteClass" }
     write("""

@@ -16,7 +16,7 @@ class ComplexId(
     val baseId: Id = PlainId(),
     val baseIdOptional: Id? = null,
     val plainId: PlainId = PlainId(59),
-    val plainIdOptional: PlainId? = null
+    val plainIdOptional: PlainId? = null,
 ) : Id() {
     override var id: Int = baseId.id - 2
 }
@@ -24,7 +24,7 @@ class ComplexId(
 class Lists(
     val list: List<Id> = listOf(),
     val listOptional: List<Id>? = null,
-    val mutableList: MutableList<Id> = mutableListOf()
+    val mutableList: MutableList<Id> = mutableListOf(),
 )
 
 open class Id2 : Id() {
@@ -35,7 +35,7 @@ class Id3 : Id2()
 
 class IdWrapper(
     val id: Id2 = Id2(),
-    val idOptional: Id2? = null
+    val idOptional: Id2? = null,
 )
 
 class ManyProperties(
@@ -43,7 +43,7 @@ class ManyProperties(
     val d: Int,
     val f: Int,
     val g: Int,
-    val b: Int
+    val b: Int,
 ) {
     var e: Int = 0
     var j: Int = 0

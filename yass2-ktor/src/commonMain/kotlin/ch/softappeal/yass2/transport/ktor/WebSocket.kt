@@ -5,7 +5,8 @@ import ch.softappeal.yass2.transport.*
 import io.ktor.http.cio.websocket.*
 
 public class WebSocketConnection internal constructor(
-    private val config: TransportConfig, public val session: WebSocketSession
+    private val config: TransportConfig,
+    public val session: WebSocketSession,
 ) : Connection {
     override suspend fun write(packet: Packet?) {
         val writer = config.writer()

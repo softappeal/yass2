@@ -27,7 +27,10 @@ internal inline fun handleInvocationTargetException(action: () -> Any?): Any? = 
     throw e.cause!!
 }
 
-internal fun invokeSuspendFunction(continuation: Continuation<*>, suspendFunction: suspend () -> Any?): Any? =
+internal fun invokeSuspendFunction(
+    continuation: Continuation<*>,
+    suspendFunction: suspend () -> Any?,
+): Any? =
     handleInvocationTargetException {
         SuspendMethod.invoke(
             object : SuspendFunction {
@@ -39,7 +42,10 @@ internal fun invokeSuspendFunction(continuation: Continuation<*>, suspendFunctio
 
 public object ReflectionProxyFactory : ProxyFactory {
     override fun <S : Any> create(
-        service: KClass<S>, implementation: S, interceptor: Interceptor, suspendInterceptor: SuspendInterceptor
+        service: KClass<S>,
+        implementation: S,
+        interceptor: Interceptor,
+        suspendInterceptor: SuspendInterceptor,
     ): S {
         service.serviceFunctions().apply {
             checkInterceptors(interceptor, suspendInterceptor, any { !it.isSuspend }, any { it.isSuspend })

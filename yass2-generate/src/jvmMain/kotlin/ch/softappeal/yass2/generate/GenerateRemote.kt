@@ -5,7 +5,8 @@ import ch.softappeal.yass2.remote.reflect.*
 import kotlin.reflect.full.*
 
 public fun generateRemoteProxyFactoryCreator(
-    serviceIds: List<ServiceId<*>>, name: String = "generatedRemoteProxyFactoryCreator"
+    serviceIds: List<ServiceId<*>>,
+    name: String = "generatedRemoteProxyFactoryCreator",
 ): String = writer {
     require(serviceIds.map { it.id }.toSet().size == serviceIds.size) { "duplicated service id's" }
     write("""
@@ -48,7 +49,8 @@ public fun generateRemoteProxyFactoryCreator(
 }
 
 public fun generateInvoker(
-    serviceIds: List<ServiceId<*>>, name: String = "generatedInvoker"
+    serviceIds: List<ServiceId<*>>,
+    name: String = "generatedInvoker",
 ): String = writer {
     require(serviceIds.map { it.id }.toSet().size == serviceIds.size) { "duplicated service id's" }
     write("""

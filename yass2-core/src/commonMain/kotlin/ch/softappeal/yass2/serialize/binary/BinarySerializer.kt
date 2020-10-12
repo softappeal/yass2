@@ -97,7 +97,9 @@ public class BinarySerializer(encoders: List<Encoder>) : Serializer {
 }
 
 public class BaseEncoder<T : Any>(
-    type: KClass<T>, public val write: (writer: Writer, value: T) -> Unit, public val read: (reader: Reader) -> T
+    type: KClass<T>,
+    public val write: (writer: Writer, value: T) -> Unit,
+    public val read: (reader: Reader) -> T,
 ) : Encoder(type) {
     @Suppress("UNCHECKED_CAST")
     override fun write(writer: EncoderWriter, value: Any?) = write(writer.writer, value as T)
@@ -114,7 +116,7 @@ public class ClassEncoder<T : Any>(
     type: KClass<T>,
     private val graph: Boolean,
     private val writeProperties: (writer: EncoderWriter, instance: T) -> Unit,
-    private val readInstance: (reader: EncoderReader) -> T
+    private val readInstance: (reader: EncoderReader) -> T,
 ) : Encoder(type) {
     @Suppress("UNCHECKED_CAST")
     override fun write(writer: EncoderWriter, value: Any?) = writeProperties(writer, value as T)

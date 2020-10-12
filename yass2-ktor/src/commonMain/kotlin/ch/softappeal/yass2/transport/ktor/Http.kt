@@ -18,7 +18,11 @@ internal fun TransportConfig.write(message: Message): OutgoingContent.WriteChann
     }
 }
 
-public fun HttpClient.tunnel(config: TransportConfig, url: String, headers: Headers = headersOf()): Tunnel = { request ->
+public fun HttpClient.tunnel(
+    config: TransportConfig,
+    url: String,
+    headers: Headers = headersOf(),
+): Tunnel = { request ->
     val response = request<HttpResponse>(url) {
         method = HttpMethod.Post
         this.headers.appendAll(headers)

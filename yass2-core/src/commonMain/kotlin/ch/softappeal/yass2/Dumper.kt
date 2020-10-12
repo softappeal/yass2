@@ -17,7 +17,7 @@ public fun dumper(
     properties: DumperProperties,
     valueDumper: ValueDumper,
     compact: Boolean = true,
-    graphConcreteClasses: Set<KClass<*>> = emptySet()
+    graphConcreteClasses: Set<KClass<*>> = emptySet(),
 ): Dumper = { value ->
     val object2reference: HashMap<Any, Int> by lazy(LazyThreadSafetyMode.NONE) { HashMap(16) }
     var indent = 0

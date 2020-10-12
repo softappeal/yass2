@@ -8,7 +8,7 @@ public fun generateBinarySerializer(
     baseEncoders: List<BaseEncoder<*>>,
     treeConcreteClasses: List<KClass<*>> = emptyList(),
     graphConcreteClasses: List<KClass<*>> = emptyList(),
-    name: String = "generatedBinarySerializer"
+    name: String = "generatedBinarySerializer",
 ): String = writer {
     write("""
         @Suppress("UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
