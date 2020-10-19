@@ -86,9 +86,9 @@ allprojects {
     }
 }
 
-val coreProject = project("yass2-core")
+val coreProject = project("module:yass2-core")
 
-val coroutinesProject = project("yass2-coroutines") {
+val coroutinesProject = project("module:yass2-coroutines") {
     kotlin {
         sourceSets {
             val commonMain by getting {
@@ -101,7 +101,7 @@ val coroutinesProject = project("yass2-coroutines") {
     }
 }
 
-val reflectProject = project("yass2-reflect") {
+val reflectProject = project("module:yass2-reflect") {
     kotlin {
         sourceSets {
             val commonMain by getting {
@@ -118,7 +118,7 @@ val reflectProject = project("yass2-reflect") {
     }
 }
 
-val generateProject = project("yass2-generate") {
+val generateProject = project("module:yass2-generate") {
     kotlin {
         sourceSets {
             val jvmMain by getting {
@@ -130,7 +130,7 @@ val generateProject = project("yass2-generate") {
     }
 }
 
-val ktorProject = project("yass2-ktor") {
+val ktorProject = project("module:yass2-ktor") {
     kotlin {
         sourceSets {
             val commonMain by getting {
@@ -148,7 +148,7 @@ val ktorProject = project("yass2-ktor") {
     }
 }
 
-project("yass2-test") {
+project("module:yass2-test") {
     kotlin {
         sourceSets {
             val commonTest by getting {

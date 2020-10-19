@@ -48,7 +48,7 @@
 
 * Open Source ([BSD-3-Clause license](license.txt))
 
-* yass2 has multiple artifacts with the following dependencies
+* yass2 has multiple modules with the following dependencies
 
 ```
 yass2-core

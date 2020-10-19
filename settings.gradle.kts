@@ -1,8 +1,8 @@
 rootProject.name = "yass2"
 
-include("yass2-core")
-include("yass2-coroutines")
-include("yass2-reflect")
-include("yass2-generate")
-include("yass2-ktor")
-include("yass2-test")
+include("module:yass2-core")
+include("module:yass2-coroutines")
+include("module:yass2-reflect")
+include("module:yass2-generate")
+include("module:yass2-ktor")
+include("module:yass2-test")

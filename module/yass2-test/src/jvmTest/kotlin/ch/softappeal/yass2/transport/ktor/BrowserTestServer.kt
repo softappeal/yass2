@@ -18,8 +18,8 @@ fun main() {
         install(WebSockets)
         routing {
             static {
-                files("./")
-                files("./yass2-test/src/jsTest/resources")
+                files("./") // needed for debugging (sources)
+                files("./module/yass2-test/src/jsTest/resources")
                 files("./build/js/node_modules")
             }
             route(
