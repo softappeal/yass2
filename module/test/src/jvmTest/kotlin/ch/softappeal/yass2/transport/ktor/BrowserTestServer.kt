@@ -19,7 +19,7 @@ fun main() {
         routing {
             static {
                 files("./") // needed for debugging (sources)
-                files("./module/yass2-test/src/jsTest/resources")
+                files("./module/test/src/jsTest/resources")
                 files("./build/js/node_modules")
             }
             route(

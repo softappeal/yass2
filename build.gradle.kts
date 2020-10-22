@@ -148,7 +148,7 @@ val ktorProject = project("module:yass2-ktor") {
     }
 }
 
-project("module:yass2-test") {
+project("module:test") {
     kotlin {
         sourceSets {
             val commonTest by getting {
