@@ -1,14 +1,12 @@
 // https://kotlinlang.org/docs/reference/building-mpp-with-gradle.html
 
-val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9"
-
-fun ktor(module: String) = "io.ktor:ktor-$module:1.4.1"
-
 plugins {
-    kotlin("multiplatform") version "1.4.10"
+    kotlin("multiplatform") version "1.4.20"
     id("maven-publish")
     signing
 }
+val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2"
+fun ktor(module: String) = "io.ktor:ktor-$module:1.4.2"
 
 val windowsTarget = true
 val jsTarget = true
@@ -58,17 +56,15 @@ allprojects {
         }
 
         publishing {
-            publications.withType<MavenPublication>().apply {
-                forEach { publication ->
-                    publication.pom {
-                        name.set(project.name)
-                        description.set("Yet Another Service Solution")
-                        url.set("https://github.com/softappeal/yass2")
-                        licenses { license { name.set("BSD-3-Clause") } }
-                        scm { url.set("https://github.com/softappeal/yass2") }
-                        organization { name.set("softappeal GmbH Switzerland") }
-                        developers { developer { name.set("Angelo Salvade") } }
-                    }
+            publications.withType<MavenPublication>().onEach { publication ->
+                publication.pom {
+                    name.set(project.name)
+                    description.set("Yet Another Service Solution")
+                    url.set("https://github.com/softappeal/yass2")
+                    licenses { license { name.set("BSD-3-Clause") } }
+                    scm { url.set("https://github.com/softappeal/yass2") }
+                    organization { name.set("softappeal GmbH Switzerland") }
+                    developers { developer { name.set("Angelo Salvade") } }
                 }
             }
             repositories {
@@ -182,6 +178,6 @@ project("module:test") {
 
 tasks.register("publishYass2") {
     listOf(coreProject, coroutinesProject, reflectProject, generateProject, ktorProject).forEach {
-        dependsOn("${it.name}:publishAllPublicationsToOssrhRepository")
+        dependsOn("module:${it.name}:publishAllPublicationsToOssrhRepository")
     }
 }

@@ -42,7 +42,7 @@ public val StringEncoder: BaseEncoder<String> = BaseEncoder(String::class,
 )
 
 @PublishedApi
-internal fun <T : Enum<T>> enumEncoder(type: KClass<T>, constants: Array<T>) = BaseEncoder(type,
+internal fun <T : Enum<T>> enumEncoder(type: KClass<T>, constants: Array<T>): BaseEncoder<T> = BaseEncoder(type,
     { writer, value -> writer.writeVarInt(value.ordinal) },
     { reader -> constants[reader.readVarInt()] }
 )

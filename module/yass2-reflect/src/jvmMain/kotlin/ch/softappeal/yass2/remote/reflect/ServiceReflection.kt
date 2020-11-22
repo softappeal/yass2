@@ -8,10 +8,8 @@ import kotlin.coroutines.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
 
-public fun KClass<*>.suspendServiceFunctions(): List<KFunction<*>> = serviceFunctions().apply {
-    forEach {
-        require(it.isSuspend) { "'$it' is not a suspend function" }
-    }
+public fun KClass<*>.suspendServiceFunctions(): List<KFunction<*>> = serviceFunctions().onEach {
+    require(it.isSuspend) { "'$it' is not a suspend function" }
 }
 
 public class FunctionMapper(private val service: KClass<*>) {
