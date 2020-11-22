@@ -1,6 +1,7 @@
 package ch.softappeal.yass2
 
-public inline fun Exception.addSuppressed(block: () -> Unit): Exception {
+/** Calls the specified function [block], adds the thrown exception to `this` and returns `this`. */
+public inline fun <E : Exception> E.addSuppressed(block: () -> Unit): E {
     try {
         block()
     } catch (e: Exception) {
