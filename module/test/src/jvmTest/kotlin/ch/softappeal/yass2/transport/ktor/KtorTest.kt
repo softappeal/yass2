@@ -15,7 +15,6 @@ import io.ktor.network.sockets.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import io.ktor.util.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
 import java.net.*
@@ -27,7 +26,6 @@ const val Port = 28947
 const val Path = "/yass"
 private val Address = InetSocketAddress(Host, Port)
 
-@KtorExperimentalAPI
 class KtorTest {
     @AfterTest
     fun additionalWaitForServerSocketClose() {
