@@ -101,7 +101,7 @@ class KtorTest {
         try {
             runBlocking {
                 HttpClient(Apache).use { client ->
-                    client.tunnel(MessageConfig, "http://$Host:$Port$Path", headersOf(DemoHeaderKey, DemoHeaderValue))
+                    client.tunnel(MessageConfig, "http://$Host:$Port$Path") { headersOf(DemoHeaderKey, DemoHeaderValue) }
                         .test(1000)
                 }
             }

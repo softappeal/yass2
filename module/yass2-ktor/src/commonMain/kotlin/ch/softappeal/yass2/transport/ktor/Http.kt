@@ -21,11 +21,11 @@ internal fun TransportConfig.write(message: Message): OutgoingContent.WriteChann
 public fun HttpClient.tunnel(
     config: TransportConfig,
     url: String,
-    headers: Headers = headersOf(),
+    headers: () -> Headers = { Headers.Empty },
 ): Tunnel = { request ->
     val response = request<HttpResponse>(url) {
         method = HttpMethod.Post
-        this.headers.appendAll(headers)
+        this.headers.appendAll(headers())
         body = config.write(request)
     }
     val length = response.contentLength()!!.toInt()
