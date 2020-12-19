@@ -1,7 +1,7 @@
 // https://kotlinlang.org/docs/reference/building-mpp-with-gradle.html
 
 plugins {
-    kotlin("multiplatform") version "1.4.20"
+    kotlin("multiplatform") version "1.4.21"
     id("maven-publish")
     signing
 }

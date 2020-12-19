@@ -33,7 +33,7 @@
 
 * provides unidirectional and session based bidirectional remoting
 
-* provides [Ktor](https://ktor.io) transport adaptors for Http, WebSocket and plain Socket                                                                                                                                                                
+* provides [Ktor](https://ktor.io) transport adaptors for Http, WebSocket and plain Socket
 
 * Javascript transport uses native fetch and WebSocket API instead of Ktor
 
