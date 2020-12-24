@@ -1,11 +1,11 @@
 ### yass2 (Yet Another Service Solution)
 
 * yass2 is
-  * a small [Kotlin](https://kotlinlang.org/)
-    [Multiplatform](https://kotlinlang.org/docs/reference/multiplatform.html) library
-  * for efficient asynchronous/non-blocking [Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html)
-    based peer-to-peer communication
-  * enforcing type-safe contracts with interfaces and data transfer objects
+    * a small [Kotlin](https://kotlinlang.org/)
+      [Multiplatform](https://kotlinlang.org/docs/reference/multiplatform.html) library
+    * for efficient asynchronous/non-blocking
+      [Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) based peer-to-peer communication
+    * enforcing type-safe contracts with interfaces and data transfer objects
 
 ```
                          contract library
@@ -35,14 +35,14 @@
 
 * provides [Ktor](https://ktor.io) transport adaptors for Http, WebSocket and plain Socket
 
-* Javascript transport uses native fetch and WebSocket API instead of Ktor
+* Javascript transport uses the Fetch and the WebSocket API instead of Ktor
 
-* provided either with reflection (works only on the JVM platform and is slower) or
-  by generated code (works on any platform and is faster)
-  * fast, compact and extendable binary serializer for high throughput and low latency
-  * dumper (generic object printer)
-  * interceptor (around advice, aspect-oriented programming)
-  * remoting (remote proxy and invoker)
+* provided either with reflection (works only on the JVM platform and is slower) or by generated code
+  (works on any platform and is faster)
+    * fast, compact and extendable binary serializer for high throughput and low latency
+    * dumper (generic object printer)
+    * interceptor (around advice, aspect-oriented programming)
+    * remoting (remote proxy and invoker)
 
 * [Tutorial](https://github.com/softappeal/yass2-tutorial)
 

@@ -6,7 +6,7 @@ plugins {
     signing
 }
 val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2"
-fun ktor(module: String) = "io.ktor:ktor-$module:1.4.3"
+fun ktor(module: String) = "io.ktor:ktor-$module:1.5.0"
 
 val windowsTarget = true
 val jsTarget = true
@@ -159,8 +159,7 @@ project("module:test") {
                     implementation(generateProject)
                     implementation(ktorProject)
                     implementation(ktor("server-netty"))
-                    implementation(ktor("client-apache"))
-                    implementation(ktor("client-cio"))
+                    implementation(ktor("client-java"))
                     implementation(ktor("websockets"))
                     implementation(kotlin("test-junit"))
                 }

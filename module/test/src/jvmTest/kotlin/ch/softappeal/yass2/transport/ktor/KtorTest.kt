@@ -5,8 +5,7 @@ import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.coroutines.session.*
 import io.ktor.application.*
 import io.ktor.client.*
-import io.ktor.client.engine.apache.*
-import io.ktor.client.engine.cio.*
+import io.ktor.client.engine.java.*
 import io.ktor.client.features.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -98,7 +97,7 @@ class KtorTest {
         engine.start()
         try {
             runBlocking {
-                HttpClient(Apache).use { client ->
+                HttpClient(Java).use { client ->
                     client.tunnel(MessageConfig, "http://$Host:$Port$Path") { headersOf(DemoHeaderKey, DemoHeaderValue) }
                         .test(1000)
                 }
@@ -127,7 +126,7 @@ class KtorTest {
         engine.start()
         try {
             runBlocking {
-                HttpClient(CIO) {
+                HttpClient(Java) {
                     install(io.ktor.client.features.websocket.WebSockets)
                 }.use { client ->
                     client.ws(HttpMethod.Get, Host, Port, Path, { header(DemoHeaderKey, DemoHeaderValue) }) {
