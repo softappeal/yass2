@@ -16,19 +16,19 @@
                        | }                                       |
                        +-----------------------------------------+
 
-  client process                                      server process
-+-----------------------------------------+         +----------------------------------------------------+
-|            contract library             |         |                  contract library                  |
-|.........................................|         |....................................................|
-|     // contract usage                   |         | // contract implementation                         |
-|     val calculator: Calculator = ...    |         | class CalculatorImpl : Calculator {                |
-|     println(calculator.add(1, 2))       |         |   override suspend fun add(a: Int, b: Int) = a + b |
-|                                         |         | }                                                  |
-|.........................................|         |....................................................|
-|             yass2 library               |         |                  yass2 library                     |
-|.........................................|         |....................................................|
-|          transport library              | <-----> |                transport library                   |
-+-----------------------------------------+         +----------------------------------------------------+
+  client process                             server process
++----------------------------------+       +----------------------------------------------------+
+| // contract usage                |       | // contract implementation                         |
+| val calculator: Calculator = ... |       | class CalculatorImpl : Calculator {                |
+| println(calculator.add(1, 2))    |       |   override suspend fun add(a: Int, b: Int) = a + b |
+|                                  |       | }                                                  |
+|..................................|       |....................................................|
+|         contract library         |       |                 contract library                   |
+|..................................|       |....................................................|
+|          yass2 library           |       |                  yass2 library                     |
+|..................................|       |....................................................|
+|        transport library         | <---> |                transport library                   |
++----------------------------------+       +----------------------------------------------------+
 ```
 
 * provides unidirectional and session based bidirectional remoting
