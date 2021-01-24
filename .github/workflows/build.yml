@@ -1,9 +1,12 @@
+name: Build
 on: push
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-      - uses: gradle/wrapper-validation-action@v1
-      - run: docker build --tag project .
-      - run: docker run project ./gradlew build
+      - name: build
+        run: |
+          JAVA_HOME=$JAVA_HOME_11_X64
+          gradle -v
+          gradle build

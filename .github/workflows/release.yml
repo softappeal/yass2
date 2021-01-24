@@ -1,0 +1,25 @@
+name: Release
+on:
+  workflow_dispatch:
+    branches:
+      - master
+    inputs:
+      version:
+        description: 'Version (MAJOR.MINOR.PATCH)'
+        required: true
+jobs:
+  release:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: v${{ github.event.inputs.version }}
+      - name: release
+        run: |
+          mkdir $HOME/.gradle
+          echo "${{ secrets.MAVEN_CENTRAL_KEY }}" | base64 -d > $HOME/.gradle/maven.central.key.gpg
+          echo "${{ secrets.GRADLE_PROPERTIES }}" > $HOME/.gradle/gradle.properties
+          echo "signing.secretKeyRingFile=$HOME/.gradle/maven.central.key.gpg" >> $HOME/.gradle/gradle.properties
+          JAVA_HOME=$JAVA_HOME_11_X64
+          gradle -v
+          gradle -Pversion=${{ github.event.inputs.version }} build publishYass2
