@@ -15,10 +15,13 @@ jobs:
         with:
           ref: v${{ github.event.inputs.version }}
       - name: release
+        env: # note: printenv prevents that secrets are visible on command line
+          MAVEN_CENTRAL_KEY: ${{ secrets.MAVEN_CENTRAL_KEY }}
+          GRADLE_PROPERTIES: ${{ secrets.GRADLE_PROPERTIES }}
         run: |
           mkdir $HOME/.gradle
-          echo "${{ secrets.MAVEN_CENTRAL_KEY }}" | base64 -d > $HOME/.gradle/maven.central.key.gpg
-          echo "${{ secrets.GRADLE_PROPERTIES }}" > $HOME/.gradle/gradle.properties
+          printenv MAVEN_CENTRAL_KEY | base64 -d > $HOME/.gradle/maven.central.key.gpg
+          printenv GRADLE_PROPERTIES > $HOME/.gradle/gradle.properties
           echo "signing.secretKeyRingFile=$HOME/.gradle/maven.central.key.gpg" >> $HOME/.gradle/gradle.properties
           JAVA_HOME=$JAVA_HOME_11_X64
           gradle -v
