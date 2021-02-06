@@ -64,10 +64,11 @@ class RemoteFlowTest {
     @Test
     fun noService() = yassRunBlocking {
         @Suppress("UNCHECKED_CAST")
-        test(TestFlowFactory(0) as Flow<Int>,
+        test(
+            TestFlowFactory(0) as Flow<Int>,
             TestFlowFactory(1) as Flow<Int>,
             TestFlowFactory(2) as Flow<Int>,
-            TestFlowFactory(3) as Flow<Int>
+            TestFlowFactory(3) as Flow<Int>,
         )
     }
 
