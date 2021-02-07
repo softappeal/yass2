@@ -7,7 +7,7 @@ import kotlin.test.*
 private fun generate(fileName: String, code: String) {
     val text = "package ch.softappeal.yass2.contract.generated\n\n$code"
     print(text)
-    val filePath = "../test/src/commonTest/kotlin/ch/softappeal/yass2/contract/generated/$fileName"
+    val filePath = "../test/src/commonTest/kotlin/contract/generated/$fileName"
     assertEquals(text, File(filePath).readText().replace("\r\n", "\n"))
 }
 
