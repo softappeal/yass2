@@ -4,7 +4,7 @@ package ch.softappeal.yass2.contract.generated
 public object GeneratedProxyFactory : ch.softappeal.yass2.ProxyFactory {
     override fun <S : Any> create(
         service: kotlin.reflect.KClass<S>, implementation: S,
-        interceptor: ch.softappeal.yass2.Interceptor, suspendInterceptor: ch.softappeal.yass2.SuspendInterceptor
+        interceptor: ch.softappeal.yass2.Interceptor, suspendInterceptor: ch.softappeal.yass2.SuspendInterceptor,
     ): S = when (service) {
         ch.softappeal.yass2.contract.Calculator::class -> object : ch.softappeal.yass2.contract.Calculator {
             init {

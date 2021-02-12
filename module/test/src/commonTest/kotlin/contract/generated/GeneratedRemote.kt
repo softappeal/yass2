@@ -2,7 +2,7 @@ package ch.softappeal.yass2.contract.generated
 
 @Suppress("UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
 public fun generatedRemoteProxyFactoryCreator(
-    tunnel: ch.softappeal.yass2.remote.Tunnel
+    tunnel: ch.softappeal.yass2.remote.Tunnel,
 ): ch.softappeal.yass2.remote.RemoteProxyFactory =
     object : ch.softappeal.yass2.remote.RemoteProxyFactory {
         suspend operator fun ch.softappeal.yass2.remote.Tunnel.invoke(serviceId: Int, functionId: Int, vararg parameters: Any?): Any? =
@@ -42,7 +42,7 @@ public fun generatedRemoteProxyFactoryCreator(
 
 @Suppress("RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
 public suspend fun generatedInvoker(
-    request: ch.softappeal.yass2.remote.Request, service: ch.softappeal.yass2.remote.Service
+    request: ch.softappeal.yass2.remote.Request, service: ch.softappeal.yass2.remote.Service,
 ): Any? {
     val p = request.parameters
     return when (request.serviceId) {

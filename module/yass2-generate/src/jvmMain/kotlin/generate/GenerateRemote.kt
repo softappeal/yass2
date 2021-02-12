@@ -12,7 +12,7 @@ public fun generateRemoteProxyFactoryCreator(
     write("""
         @Suppress("UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
         public fun $name(
-            tunnel: $CSY.remote.Tunnel
+            tunnel: $CSY.remote.Tunnel,
         ): ${RemoteProxyFactory::class.qualifiedName} =
             object : ${RemoteProxyFactory::class.qualifiedName} {
                 suspend operator fun $CSY.remote.Tunnel.invoke(serviceId: Int, functionId: Int, vararg parameters: Any?): Any? =
@@ -56,7 +56,7 @@ public fun generateInvoker(
     write("""
         @Suppress("RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
         public suspend fun $name(
-            request: ${Request::class.qualifiedName}, service: ${Service::class.qualifiedName}
+            request: ${Request::class.qualifiedName}, service: ${Service::class.qualifiedName},
         ): Any? {
             val p = request.parameters
             return when (request.serviceId) {

@@ -8,5 +8,6 @@ jobs:
       - name: build
         run: |
           JAVA_HOME=$JAVA_HOME_11_X64
-          gradle -v
-          gradle build
+          chmod +x ./gradlew
+          ./gradlew -v
+          ./gradlew build

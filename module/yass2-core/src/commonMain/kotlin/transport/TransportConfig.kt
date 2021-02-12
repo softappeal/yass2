@@ -15,7 +15,7 @@ public class TransportConfig(
     public fun writer(): BytesWriter = BytesWriter(initialWriterCapacity)
 
     public suspend fun readBytes(
-        length: Int, readBytes: suspend (bytes: ByteArray, offset: Int, length: Int) -> Unit
+        length: Int, readBytes: suspend (bytes: ByteArray, offset: Int, length: Int) -> Unit,
     ): ByteArray {
         var buffer = ByteArray(minOf(length, maxReadBytesInitialSize))
         var current = 0

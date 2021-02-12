@@ -13,7 +13,7 @@ public fun generateBinarySerializer(
     write("""
         @Suppress("UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
         public fun $name(
-            baseEncoders: List<${BaseEncoder::class.qualifiedName}<*>>
+            baseEncoders: List<${BaseEncoder::class.qualifiedName}<*>>,
         ): ${BinarySerializer::class.qualifiedName} =
             ${BinarySerializer::class.qualifiedName}(baseEncoders + listOf(
     """)

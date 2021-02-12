@@ -18,7 +18,7 @@ public operator fun SuspendInterceptor.plus(second: SuspendInterceptor): Suspend
 
 public interface ProxyFactory {
     public fun <S : Any> create(
-        service: KClass<S>, implementation: S, interceptor: Interceptor, suspendInterceptor: SuspendInterceptor
+        service: KClass<S>, implementation: S, interceptor: Interceptor, suspendInterceptor: SuspendInterceptor,
     ): S
 }
 

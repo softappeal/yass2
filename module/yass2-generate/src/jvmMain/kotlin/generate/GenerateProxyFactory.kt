@@ -15,7 +15,7 @@ public fun generateProxyFactory(
         public object $name : ${ProxyFactory::class.qualifiedName} {
             override fun <S : Any> create(
                 service: ${KClass::class.qualifiedName}<S>, implementation: S,
-                interceptor: $CSY.Interceptor, suspendInterceptor: $CSY.SuspendInterceptor
+                interceptor: $CSY.Interceptor, suspendInterceptor: $CSY.SuspendInterceptor,
             ): S = when (service) {
     """)
     services.forEach { service ->

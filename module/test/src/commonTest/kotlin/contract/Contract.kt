@@ -1,7 +1,7 @@
 package ch.softappeal.yass2.contract
 
 class IntException(
-    val i: Int?
+    val i: Int?,
 ) : RuntimeException()
 
 abstract class Id {
@@ -9,7 +9,7 @@ abstract class Id {
 }
 
 class PlainId(
-    override var id: Int = 60
+    override var id: Int = 60,
 ) : Id()
 
 class ComplexId(

@@ -24,5 +24,6 @@ jobs:
           printenv GRADLE_PROPERTIES > $HOME/.gradle/gradle.properties
           echo "signing.secretKeyRingFile=$HOME/.gradle/maven.central.key.gpg" >> $HOME/.gradle/gradle.properties
           JAVA_HOME=$JAVA_HOME_11_X64
-          gradle -v
-          gradle -Pversion=${{ github.event.inputs.version }} build publishYass2
+          chmod +x ./gradlew
+          ./gradlew -v
+          ./gradlew -Pversion=${{ github.event.inputs.version }} build publishYass2
