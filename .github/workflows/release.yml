@@ -14,6 +14,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: v${{ github.event.inputs.version }}
+      - uses: gradle/wrapper-validation-action@v1
       - name: release
         env: # note: printenv prevents that secrets are visible on command line
           MAVEN_CENTRAL_KEY: ${{ secrets.MAVEN_CENTRAL_KEY }}
