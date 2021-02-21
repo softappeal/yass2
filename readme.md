@@ -44,10 +44,6 @@
     * interceptor (around advice, aspect-oriented programming)
     * remoting (remote proxy and invoker)
 
-* [Tutorial](https://github.com/softappeal/yass2-tutorial)
-
-* Open Source ([BSD-3-Clause license](license.txt))
-
 * yass2 has multiple modules with the following dependencies
 
 ```
@@ -69,5 +65,66 @@ yass2-core
 * artifacts on [Maven Central](https://search.maven.org/search?q=g:ch.softappeal.yass2) (GroupId: ch.softappeal.yass2)
 
 * uses [Semantic Versioning](https://semver.org)
+
+* packages
+
+```
++--------------------------------------------+--------+------------+
+|  file                                      | target | module     |
++--------------------------------------------+--------+------------+
+|  Cleanup.kt                                | common | core       |
+|  Dumper.kt                                 | common | core       |
+|  Interceptor.kt                            | common | core       |
++- remote                                    |        |            |
+|   |  Message.kt                            | common | core       |
+|   |  Remote.kt                             | common | core       |
+|   +- coroutines                            |        |            |
+|   |   |  RemoteFlow.kt                     | common | coroutines |
+|   |   |  Sync.kt                           | common | coroutines |
+|   |   +- session                           |        |            |
+|   |       |  Session.kt                    | common | coroutines |
+|   |       |  SessionConnector.kt           | common | coroutines |
+|   +- reflect                               |        |            |
+|       |  ServiceReflection.kt              | jvm    | reflect    |
++- serialize                                 |        |            |
+|   |  Serializer.kt                         | common | core       |
+|   +- binary                                |        |            |
+|       |  BaseEncoders.kt                   | common | core       |
+|       |  BinarySerializer.kt               | common | core       |
+|       |  Int.kt                            | common | core       |
+|       |  VarInt.kt                         | common | core       |
+|       +- reflect                           |        |            |
+|           |  BinarySerializerMeta.kt       | common | reflect    |
+|           |  BinarySerializerReflection.kt | jvm    | reflect    |
++- transport                                 |        |            |
+|   |  BinaryMessageSerializer.kt            | common | core       |
+|   |  Bytes.kt                              | common | core       |
+|   |  TransportConfig.kt                    | common | core       |
+|   +- session                               |        |            |
+|   |   |  BinaryPacketSerializer.kt         | common | coroutines |
+|   +- js                                    |        |            |
+|   |   |  Connect.kt                        | js     | coroutines |
+|   |   |  Tunnel.kt                         | js     | coroutines |
+|   +- ktor                                  |        |            |
+|       |  ByteChannel.kt                    | common | ktor       |
+|       |  Http.kt                           | common | ktor       |
+|       |  WebSocket.kt                      | common | ktor       |
+|       |  HttpServer.kt                     | jvm    | ktor       |
+|       |  Socket.kt                         | jvm    | ktor       |
++- reflect                                   |        |            |
+|   |  DumperReflection.kt                   | jvm    | reflect    |
+|   |  InterceptorReflection.kt              | jvm    | reflect    |
++- generate                                  |        |            |
+    |  Generate.kt                           | jvm    | generate   |
+    |  GenerateBinarySerializer.kt           | jvm    | generate   |
+    |  GenerateDumperProperties.kt           | jvm    | generate   |
+    |  GenerateProxyFactory.kt               | jvm    | generate   |
+    |  GenerateRemote.kt                     | jvm    | generate   |
++--------------------------------------------+--------+------------+
+```
+
+* [Tutorial](https://github.com/softappeal/yass2-tutorial)
+
+* Open Source ([BSD-3-Clause license](license.txt))
 
 * supersedes [yass](https://github.com/softappeal/yass/)
