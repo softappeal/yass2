@@ -1,12 +1,12 @@
 // https://kotlinlang.org/docs/reference/building-mpp-with-gradle.html
 
 plugins {
-    kotlin("multiplatform") version "1.4.30"
+    kotlin("multiplatform") version "1.4.31"
     id("maven-publish")
     signing
 }
-val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2"
-fun ktor(module: String) = "io.ktor:ktor-$module:1.5.1"
+val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3"
+fun ktor(module: String) = "io.ktor:ktor-$module:1.5.2"
 
 val windowsTarget = true
 val jsTarget = true
