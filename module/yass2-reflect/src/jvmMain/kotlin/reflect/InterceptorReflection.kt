@@ -15,12 +15,6 @@ public fun KClass<*>.serviceFunctions(): List<KFunction<*>> = memberFunctions
         require(map { it.name }.toSet().size == size) { "'${this@serviceFunctions}' has overloaded functions" }
     }
 
-private interface SuspendFunction {
-    suspend fun invoke(): Any?
-}
-
-private val SuspendMethod: Method = SuspendFunction::class.java.methods[0]
-
 internal inline fun handleInvocationTargetException(action: () -> Any?): Any? = try {
     action()
 } catch (e: InvocationTargetException) {
@@ -30,15 +24,9 @@ internal inline fun handleInvocationTargetException(action: () -> Any?): Any? = 
 internal fun invokeSuspendFunction(
     continuation: Continuation<*>,
     suspendFunction: suspend () -> Any?,
-): Any? =
-    handleInvocationTargetException {
-        SuspendMethod.invoke(
-            object : SuspendFunction {
-                override suspend fun invoke() = suspendFunction()
-            },
-            continuation
-        )
-    }
+): Any? = handleInvocationTargetException {
+    @Suppress("UNCHECKED_CAST") (suspendFunction as (Continuation<*>) -> Any?)(continuation)
+}
 
 public object ReflectionProxyFactory : ProxyFactory {
     override fun <S : Any> create(
