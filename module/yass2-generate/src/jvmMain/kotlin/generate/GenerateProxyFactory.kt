@@ -40,12 +40,8 @@ public fun generateProxyFactory(
                     if (parameter.index != 1) append(", ")
                     append("p${parameter.index}")
                 }
-                if (valueParameters.isEmpty()) {
-                    append("emptyArray(")
-                } else {
-                    append("arrayOf(")
-                    parameterList()
-                }
+                append("listOf(")
+                parameterList()
                 append(")) { (implementation as ${service.qualifiedName}).${this.name}(")
                 parameterList()
                 append(") }")

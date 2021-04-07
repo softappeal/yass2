@@ -37,7 +37,7 @@ class InterceptorReflectionTest : InterceptorGeneratedTest() {
         var annotated: Boolean
         val echo: Echo = ReflectionProxyFactory(EchoImpl) { function, parameters, invocation: SuspendInvocation ->
             annotated = function.findAnnotation<TestAnnotation>() != null
-            println("${function.name} $annotated ${parameters.asList()}")
+            println("${function.name} $annotated $parameters")
             invocation()
         }
         annotated = false

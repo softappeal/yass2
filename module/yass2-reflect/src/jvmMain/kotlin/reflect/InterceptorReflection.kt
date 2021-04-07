@@ -45,13 +45,13 @@ public object ReflectionProxyFactory : ProxyFactory {
                 val parameters = arguments.copyOf(arguments.size - 1)
                 val continuation = arguments.last() as Continuation<*>
                 invokeSuspendFunction(continuation) {
-                    suspendInterceptor(function, parameters) {
+                    suspendInterceptor(function, parameters.toList()) {
                         handleInvocationTargetException { method.invoke(implementation, *parameters, continuation) }
                     }
                 }
             } else {
-                val parameters = arguments ?: arrayOf()
-                interceptor(function, parameters) {
+                val parameters = arguments ?: emptyArray()
+                interceptor(function, parameters.toList()) {
                     handleInvocationTargetException { method.invoke(implementation, *parameters) }
                 }
             }

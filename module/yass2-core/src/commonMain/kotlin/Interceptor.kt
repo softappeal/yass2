@@ -3,10 +3,10 @@ package ch.softappeal.yass2
 import kotlin.reflect.*
 
 public typealias Invocation = () -> Any?
-public typealias Interceptor = (function: KFunction<*>, parameters: Array<Any?>, invocation: Invocation) -> Any?
+public typealias Interceptor = (function: KFunction<*>, parameters: List<Any?>, invocation: Invocation) -> Any?
 
 public typealias SuspendInvocation = suspend () -> Any?
-public typealias SuspendInterceptor = suspend (function: KFunction<*>, parameters: Array<Any?>, invocation: SuspendInvocation) -> Any?
+public typealias SuspendInterceptor = suspend (function: KFunction<*>, parameters: List<Any?>, invocation: SuspendInvocation) -> Any?
 
 public operator fun Interceptor.plus(second: Interceptor): Interceptor = { function, parameters, invocation ->
     this(function, parameters) { second(function, parameters, invocation) }

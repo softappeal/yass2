@@ -23,7 +23,7 @@ class InterceptorTest {
             value2 = 1
             invocation()
         }
-        assertSame(value, (interceptor1 + interceptor2)(Calculator::add, emptyArray()) { value })
+        assertSame(value, (interceptor1 + interceptor2)(Calculator::add, emptyList()) { value })
         assertNotNull(value1)
         assertNotNull(value2)
     }
@@ -45,7 +45,7 @@ class InterceptorTest {
             value2 = 1
             invocation()
         }
-        assertSame(value, (interceptor1 + interceptor2)(Calculator::add, emptyArray()) { value })
+        assertSame(value, (interceptor1 + interceptor2)(Calculator::add, emptyList()) { value })
         assertNotNull(value1)
         assertNotNull(value2)
     }
@@ -67,7 +67,7 @@ class InterceptorTest {
     fun missingInterceptor() {
         assertEquals(
             "missing Interceptor",
-            assertFailsWith<RuntimeException> { MissingInterceptor(Calculator::add, emptyArray()) {} }.message
+            assertFailsWith<RuntimeException> { MissingInterceptor(Calculator::add, emptyList()) {} }.message
         )
     }
 
@@ -75,7 +75,7 @@ class InterceptorTest {
     fun missingSuspendInterceptor() = yassRunBlocking {
         assertEquals(
             "missing SuspendInterceptor",
-            assertFailsWith<RuntimeException> { MissingSuspendInterceptor(Calculator::add, emptyArray()) {} }.message
+            assertFailsWith<RuntimeException> { MissingSuspendInterceptor(Calculator::add, emptyList()) {} }.message
         )
     }
 }
@@ -100,7 +100,7 @@ val MixedImpl = object : Mixed {
 
 suspend fun ProxyFactory.test(calculatorImpl: Calculator, echoImpl: Echo) {
     val printer: SuspendInterceptor = { function, parameters, invocation ->
-        print("${function.name} ${parameters.asList()} -> ")
+        print("${function.name} $parameters -> ")
         try {
             val result = invocation()
             println(result)
@@ -112,7 +112,7 @@ suspend fun ProxyFactory.test(calculatorImpl: Calculator, echoImpl: Echo) {
     }
     var counter = 0
     var functionName: String? = null
-    var params: Array<Any?>? = null
+    var params: List<Any?>? = null
     val testInterceptor: SuspendInterceptor = { function, parameters, invocation ->
         counter++
         functionName = function.name
@@ -124,7 +124,7 @@ suspend fun ProxyFactory.test(calculatorImpl: Calculator, echoImpl: Echo) {
     val echo = this(echoImpl, interceptor)
     assertEquals(5, calculator.add(2, 3))
     assertEquals("add", functionName)
-    assertEquals(listOf(2, 3), params!!.asList())
+    assertEquals(listOf(2, 3), params)
     assertEquals(1, counter)
     assertEquals(3, calculator.divide(12, 4))
     assertEquals(2, counter)
@@ -147,7 +147,7 @@ suspend fun ProxyFactory.test(calculatorImpl: Calculator, echoImpl: Echo) {
 
 private fun ProxyFactory.test() {
     val printer: Interceptor = { function, parameters, invocation ->
-        print("${function.name} ${parameters.asList()} -> ")
+        print("${function.name} $parameters -> ")
         try {
             val result = invocation()
             println(result)
@@ -159,7 +159,7 @@ private fun ProxyFactory.test() {
     }
     var counter = 0
     var functionName: String? = null
-    var params: Array<Any?>? = null
+    var params: List<Any?>? = null
     val testInterceptor: Interceptor = { function, parameters, invocation ->
         counter++
         functionName = function.name
@@ -169,7 +169,7 @@ private fun ProxyFactory.test() {
     val mixed = this(MixedImpl, testInterceptor + printer) { _, _, _ -> error("") }
     assertEquals(3, mixed.divide(12, 4))
     assertEquals("divide", functionName)
-    assertEquals(listOf(12, 4), params!!.asList())
+    assertEquals(listOf(12, 4), params)
     assertEquals(1, counter)
     println(assertFailsWith<DivideByZeroException> { mixed.divide(12, 0) })
     assertEquals(2, counter)
