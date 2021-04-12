@@ -1,4 +1,4 @@
-// https://kotlinlang.org/docs/reference/building-mpp-with-gradle.html
+// https://kotlinlang.org/docs/mpp-intro.html
 
 plugins {
     kotlin("multiplatform") version "1.4.32"

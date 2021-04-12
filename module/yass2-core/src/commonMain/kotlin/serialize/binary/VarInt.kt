@@ -54,7 +54,7 @@ public fun Reader.readVarLong(): Long {
     }
 }
 
-// see https://developers.google.com/protocol-buffers/docs/encoding#signed-integers
+// see https://developers.google.com/protocol-buffers/docs/encoding#signed_integers
 
 public fun Int.toZigZag(): Int = (this shl 1) xor (this shr 31)
 
