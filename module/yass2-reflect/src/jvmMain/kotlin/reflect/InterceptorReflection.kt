@@ -38,8 +38,7 @@ public object ReflectionProxyFactory : ProxyFactory {
         service.serviceFunctions().apply {
             checkInterceptors(interceptor, suspendInterceptor, any { !it.isSuspend }, any { it.isSuspend })
         }
-        @Suppress("UNCHECKED_CAST")
-        return newProxyInstance(service.java.classLoader, arrayOf(service.java)) { _, method, arguments ->
+        val proxy = newProxyInstance(service.java.classLoader, arrayOf(service.java)) { _, method, arguments ->
             val function = method.kotlinFunction!!
             if (function.isSuspend) {
                 val parameters = arguments.copyOf(arguments.size - 1)
@@ -55,6 +54,7 @@ public object ReflectionProxyFactory : ProxyFactory {
                     handleInvocationTargetException { method.invoke(implementation, *parameters) }
                 }
             }
-        } as S
+        }
+        return (@Suppress("UNCHECKED_CAST") (proxy as S))
     }
 }

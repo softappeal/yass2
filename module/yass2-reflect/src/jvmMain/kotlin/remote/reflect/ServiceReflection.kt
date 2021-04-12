@@ -14,7 +14,7 @@ public fun KClass<*>.suspendServiceFunctions(): List<KFunction<*>> = serviceFunc
 
 public class FunctionMapper(private val service: KClass<*>) {
     private val functions: Array<KFunction<*>> = service.suspendServiceFunctions().toTypedArray()
-    private val name2id: Map<String, Int> = functions.withIndex().map { (index, function) -> function.name to index }.toMap()
+    private val name2id: Map<String, Int> = functions.withIndex().associate { (index, function) -> function.name to index }
     public fun toFunction(id: Int): KFunction<*> = if (id >= 0 && id < functions.size) functions[id] else error("'$service' has no function $id")
     public fun toId(name: String): Int = name2id[name] ?: error("'$service' has no function '$name'")
 }
@@ -26,14 +26,14 @@ public fun reflectionRemoteProxyFactoryCreator(tunnel: Tunnel): RemoteProxyFacto
     override fun <S : Any> create(serviceId: ServiceId<S>): S {
         val functionMapper = functionMapper(serviceId.service)
         val javaService = serviceId.service.java
-        @Suppress("UNCHECKED_CAST")
-        return newProxyInstance(javaService.classLoader, arrayOf(javaService)) { _, method, arguments ->
+        val proxy = newProxyInstance(javaService.classLoader, arrayOf(javaService)) { _, method, arguments ->
             invokeSuspendFunction(arguments.last() as Continuation<*>) {
                 tunnel(
                     Request(serviceId.id, functionMapper.toId(method.name), listOf(*arguments.copyOf(arguments.size - 1)))
                 ).process()
             }
-        } as S
+        }
+        return (@Suppress("UNCHECKED_CAST") (proxy as S))
     }
 }
 

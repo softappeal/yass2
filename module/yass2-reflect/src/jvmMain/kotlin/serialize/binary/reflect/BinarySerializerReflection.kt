@@ -13,8 +13,10 @@ public fun KClass<*>.metaClass(baseEncoderTypes: List<KClass<*>>): MetaClass {
             .filter { !isSubclassOf(Throwable::class) || (it.name != "cause" && it.name != "message") }
             .sortedBy { it.name }
             .map { property ->
-                @Suppress("UNCHECKED_CAST") (property.returnType.classifier as KClass<*>).metaProperty(
-                    property as KProperty1<Any, Any?>, baseEncoderTypes, property.returnType.isMarkedNullable
+                (property.returnType.classifier as KClass<*>).metaProperty(
+                    @Suppress("UNCHECKED_CAST") (property as KProperty1<Any, Any?>),
+                    baseEncoderTypes,
+                    property.returnType.isMarkedNullable
                 )
             },
         (primaryConstructor ?: error("'$this' has no primary constructor")).valueParameters.map { it.name!! }
@@ -31,7 +33,7 @@ public fun reflectionBinarySerializer(
     encoders.addAll(baseEncoders)
     fun List<KClass<*>>.add(graph: Boolean) = forEach { klass ->
         val metaClass = klass.metaClass(baseEncoderTypes)
-        @Suppress("UNCHECKED_CAST") encoders.add(ClassEncoder(klass as KClass<Any>, graph,
+        encoders.add(ClassEncoder(@Suppress("UNCHECKED_CAST") (klass as KClass<Any>), graph,
             { writer, instance ->
                 metaClass.properties.forEach { it.write(writer, it.property.get(instance)) }
             },

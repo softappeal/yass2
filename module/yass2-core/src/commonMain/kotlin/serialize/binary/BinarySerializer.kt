@@ -101,9 +101,7 @@ public class BaseEncoder<T : Any>(
     public val write: (writer: Writer, value: T) -> Unit,
     public val read: (reader: Reader) -> T,
 ) : Encoder(type) {
-    @Suppress("UNCHECKED_CAST")
-    override fun write(writer: EncoderWriter, value: Any?) = write(writer.writer, value as T)
-
+    override fun write(writer: EncoderWriter, value: Any?) = write(writer.writer, @Suppress("UNCHECKED_CAST") (value as T))
     override fun read(reader: EncoderReader) = read(reader.reader)
 }
 
@@ -118,11 +116,8 @@ public class ClassEncoder<T : Any>(
     private val writeProperties: (writer: EncoderWriter, instance: T) -> Unit,
     private val readInstance: (reader: EncoderReader) -> T,
 ) : Encoder(type) {
-    @Suppress("UNCHECKED_CAST")
-    override fun write(writer: EncoderWriter, value: Any?) = writeProperties(writer, value as T)
-
+    override fun write(writer: EncoderWriter, value: Any?) = writeProperties(writer, @Suppress("UNCHECKED_CAST") (value as T))
     override fun read(reader: EncoderReader) = readInstance(reader)
-
     override fun write(writer: EncoderWriter, id: Int, value: Any?) {
         if (graph) {
             val object2reference = writer.object2reference

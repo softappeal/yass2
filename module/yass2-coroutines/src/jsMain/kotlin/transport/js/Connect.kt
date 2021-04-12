@@ -15,8 +15,8 @@ public fun TransportConfig.connect(url: String, sessionFactory: SessionFactory) 
                 override suspend fun write(packet: Packet?) {
                     val writer = writer()
                     write(writer, packet)
-                    @Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
-                    send((writer.buffer.asDynamic()).subarray(0, writer.current) as ArrayBufferView)
+                    val data = (writer.buffer.asDynamic()).subarray(0, writer.current)
+                    send(@Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE") (data as ArrayBufferView))
                 }
 
                 override suspend fun closed() = close()

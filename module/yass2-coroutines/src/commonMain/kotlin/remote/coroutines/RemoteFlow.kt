@@ -21,8 +21,7 @@ public fun <T> FlowService.createFlow(flowId: Any): Flow<T> = object : AbstractF
         try {
             while (true) {
                 val value = next(collectId) ?: return
-                @Suppress("UNCHECKED_CAST")
-                collector.emit(value as T)
+                collector.emit(@Suppress("UNCHECKED_CAST") (value as T))
             }
         } catch (e: Exception) {
             throw e.addSuppressed { cancel(collectId) }
