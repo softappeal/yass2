@@ -8,7 +8,7 @@ import kotlin.js.Promise
 
 @Suppress("unused")
 @JsName("callSuspendFunction")
-fun <T> callSuspendFunction(block: suspend () -> T): Promise<T> = GlobalScope.promise { block() }
+fun <T> callSuspendFunction(block: suspend () -> T): Promise<T> = @OptIn(DelicateCoroutinesApi::class) GlobalScope.promise { block() }
 
 @Suppress("unused")
 suspend fun remoteTest(): String {

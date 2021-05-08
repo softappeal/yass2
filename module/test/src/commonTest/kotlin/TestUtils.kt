@@ -8,7 +8,7 @@ inline fun performance(iterations: Int, action: () -> Unit) {
     repeat(2) {
         val timeMs = @OptIn(ExperimentalTime::class) measureTime {
             repeat(iterations) { action() }
-        }.inMilliseconds
+        }.inWholeMilliseconds
         println("  one sample: ${1_000_000 * timeMs / iterations}ns total time: ${timeMs}ms")
     }
 }

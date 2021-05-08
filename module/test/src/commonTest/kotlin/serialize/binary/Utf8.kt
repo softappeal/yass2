@@ -7,7 +7,7 @@ fun String.utf8Length(): Int {
     var c = 0
     while (c < length) {
         val ch = get(c)
-        val codePoint = ch.toInt()
+        val codePoint = ch.code
         bytes += when {
             codePoint < 0x80 -> 1
             codePoint < 0x800 -> 2
@@ -27,7 +27,7 @@ fun Writer.toUtf8(value: String) {
     var c = 0
     while (c < value.length) {
         val ch = value[c]
-        val codePoint = ch.toInt()
+        val codePoint = ch.code
         when {
             codePoint < 0x80 -> { // 0xxx_xxxx
                 writeByte(codePoint.toByte())
@@ -38,7 +38,7 @@ fun Writer.toUtf8(value: String) {
             }
             ch.isHighSurrogate() -> { // 1111_0xxx 10xx_xxxx 10xx_xxxx 10xx_xxxx
                 val highSurrogate = codePoint - 0xD800
-                val lowSurrogate = value[++c].toInt() - 0xDC00
+                val lowSurrogate = value[++c].code - 0xDC00
                 val codePoint2 = (highSurrogate shl 10) + lowSurrogate + 0x10000
                 writeByte((codePoint2 ushr 18 and 0x07 or 0xF0).toByte())
                 writeByte((codePoint2 ushr 12 and 0x3F or 0x80).toByte())

@@ -22,7 +22,7 @@ public fun TransportConfig.connect(url: String, sessionFactory: SessionFactory) 
                 override suspend fun closed() = close()
             }
             onmessage = { event ->
-                GlobalScope.launch {
+                @OptIn(DelicateCoroutinesApi::class) GlobalScope.launch {
                     try {
                         val buffer = event.data as ArrayBuffer
                         val reader = BytesReader(Int8Array(buffer).asDynamic() as ByteArray)
@@ -35,7 +35,7 @@ public fun TransportConfig.connect(url: String, sessionFactory: SessionFactory) 
                 }
             }
             fun close(reason: String) {
-                GlobalScope.launch { session.close(Exception(reason)) }
+                @OptIn(DelicateCoroutinesApi::class) GlobalScope.launch { session.close(Exception(reason)) }
             }
             onclose = { close("onclose") }
             onerror = { close("onerror") }

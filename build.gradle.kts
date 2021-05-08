@@ -1,12 +1,12 @@
 // https://kotlinlang.org/docs/mpp-intro.html
 
 plugins {
-    kotlin("multiplatform") version "1.4.32"
+    kotlin("multiplatform") version "1.5.10"
     id("maven-publish")
     signing
 }
-val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3"
-fun ktor(module: String) = "io.ktor:ktor-$module:1.5.2"
+val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0"
+fun ktor(module: String) = "io.ktor:ktor-$module:1.6.0"
 
 val windowsTarget = true
 val jsTarget = true
@@ -150,8 +150,7 @@ project("module:test") {
             val commonTest by getting {
                 dependencies {
                     implementation(coroutinesProject)
-                    implementation(kotlin("test-common"))
-                    implementation(kotlin("test-annotations-common"))
+                    implementation(kotlin("test"))
                 }
             }
             val jvmTest by getting {
@@ -161,14 +160,6 @@ project("module:test") {
                     implementation(ktor("server-netty"))
                     implementation(ktor("client-java"))
                     implementation(ktor("websockets"))
-                    implementation(kotlin("test-junit"))
-                }
-            }
-            if (jsTarget) {
-                val jsTest by getting {
-                    dependencies {
-                        implementation(kotlin("test-js"))
-                    }
                 }
             }
         }
