@@ -14,7 +14,7 @@ jobs:
           ref: ${{ github.event.inputs.version }}
       - uses: gradle/wrapper-validation-action@v1
       - name: release
-        env: # note: printenv prevents that secrets are visible on command line
+        env: # printenv prevents that secrets are visible on command line
           MAVEN_CENTRAL_KEY: ${{ secrets.MAVEN_CENTRAL_KEY }}
           GRADLE_PROPERTIES: ${{ secrets.GRADLE_PROPERTIES }}
         run: |
