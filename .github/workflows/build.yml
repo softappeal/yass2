@@ -1,14 +1,9 @@
-name: Build
 on: push
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: gradle/wrapper-validation-action@v1
-      - name: build
-        run: |
-          JAVA_HOME=$JAVA_HOME_11_X64
-          chmod +x ./gradlew
-          ./gradlew -v
-          ./gradlew build
+      - run: docker build --tag project .
+      - run: docker run project ./gradlew build
