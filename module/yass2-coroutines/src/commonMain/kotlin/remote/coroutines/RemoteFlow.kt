@@ -14,8 +14,7 @@ public interface FlowService {
     public suspend fun cancel(collectId: Int)
 }
 
-@OptIn(FlowPreview::class)
-public fun <T> FlowService.createFlow(flowId: Any): Flow<T> = object : AbstractFlow<T>() {
+public fun <T> FlowService.createFlow(flowId: Any): Flow<T> = @OptIn(FlowPreview::class) object : AbstractFlow<T>() {
     override suspend fun collectSafely(collector: FlowCollector<T>) {
         val collectId = create(flowId)
         try {
