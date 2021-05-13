@@ -1,24 +1,24 @@
 echo off
 
-docker       rm --force project
-docker image rm --force project
+docker container rm --force project-container
+docker image     rm --force project-image
 
 set version=
 set /p version=Version [ MAJOR.MINOR.PATCH or 'enter' for no-release ]?:
 if "%version%" == "" goto norelease
 
-docker build  --tag  project https://github.com/softappeal/yass2.git#%version%
-docker create --name project project ./gradlew -Pversion=%version% build publishYass2
+docker image     build                           --tag project-image https://github.com/softappeal/yass2.git#%version%
+docker container create --name project-container       project-image ./gradlew -Pversion=%version% build publishYass2
 goto continue
 
 :norelease
-docker build  --tag  project .
-docker create --name project --tty --interactive project /bin/bash
+docker image     build                                               --tag project-image .
+docker container create --name project-container --tty --interactive       project-image /bin/bash
 
 :continue
 pushd %HOMEPATH%\OneDrive\data\major\development\AngeloSalvade.MavenCentral.SigningKey
-docker cp gradle.docker.properties project:/root/.gradle/gradle.properties
-docker cp maven.central.key.gpg    project:/root/.gradle/maven.central.key.gpg
+docker container cp gradle.docker.properties project-container:/root/.gradle/gradle.properties
+docker container cp maven.central.key.gpg    project-container:/root/.gradle/maven.central.key.gpg
 popd
 
-docker start --attach --interactive project
+docker container start --attach --interactive project-container
