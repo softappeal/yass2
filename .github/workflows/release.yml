@@ -1,0 +1,26 @@
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (MAJOR.MINOR.PATCH)'
+        required: true
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.version }}
+      - uses: gradle/wrapper-validation-action@v1
+      - name: release
+        env: # printenv prevents that secrets are visible on command line
+          MAVEN_CENTRAL_KEY: ${{ secrets.MAVEN_CENTRAL_KEY }}
+          GRADLE_PROPERTIES: ${{ secrets.GRADLE_PROPERTIES }}
+        run: |
+          printenv MAVEN_CENTRAL_KEY | base64 -d > maven.central.key.gpg
+          printenv GRADLE_PROPERTIES > gradle.properties
+          docker image     build                           --tag project-image .
+          docker container create --name project-container       project-image ./gradlew -Pversion=${{ github.event.inputs.version }} build publishYass2
+          docker container cp gradle.properties     project-container:/root/.gradle/gradle.properties
+          docker container cp maven.central.key.gpg project-container:/root/.gradle/maven.central.key.gpg
+          docker container start --attach --interactive project-container
