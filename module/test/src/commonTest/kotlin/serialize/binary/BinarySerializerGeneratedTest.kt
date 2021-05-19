@@ -11,7 +11,7 @@ class BinarySerializerTest {
     fun duplicatedType() {
         assertPlatform<IllegalArgumentException>(
             "duplicated type 'class kotlin.Int'",
-            "duplicated type 'class Int'"
+            "duplicated type 'class Int'",
         ) { BinarySerializer(listOf(IntEncoder, IntEncoder)) }
     }
 
@@ -19,7 +19,7 @@ class BinarySerializerTest {
     fun missingType() {
         assertPlatform<IllegalStateException>(
             "missing type 'class kotlin.Boolean'",
-            "missing type 'class Boolean'"
+            "missing type 'class Boolean'",
         ) { GeneratedSerializer.write(BytesWriter(1000), true) }
     }
 }
