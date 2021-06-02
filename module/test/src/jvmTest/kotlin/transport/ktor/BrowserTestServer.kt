@@ -7,14 +7,14 @@ import io.ktor.application.*
 import io.ktor.http.content.*
 import io.ktor.request.*
 import io.ktor.routing.*
+import io.ktor.server.cio.*
 import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
 
 fun main() {
     println("http://$Host:$Port/index.html")
-    embeddedServer(Netty, Port) {
+    embeddedServer(CIO, Port) {
         install(WebSockets)
         routing {
             static {

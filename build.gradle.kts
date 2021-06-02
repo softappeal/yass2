@@ -157,8 +157,8 @@ project("module:test") {
                 dependencies {
                     implementation(generateProject)
                     implementation(ktorProject)
-                    implementation(ktor("server-netty"))
-                    implementation(ktor("client-java"))
+                    implementation(ktor("server-cio"))
+                    implementation(ktor("client-cio"))
                     implementation(ktor("websockets"))
                 }
             }

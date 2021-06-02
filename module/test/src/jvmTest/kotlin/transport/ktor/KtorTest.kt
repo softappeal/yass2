@@ -8,7 +8,6 @@ import ch.softappeal.yass2.serialize.binary.*
 import ch.softappeal.yass2.transport.*
 import io.ktor.application.*
 import io.ktor.client.*
-import io.ktor.client.engine.java.*
 import io.ktor.client.features.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -16,7 +15,6 @@ import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
 import java.net.*
@@ -88,7 +86,7 @@ class KtorTest {
 
     @Test
     fun http() {
-        val engine = embeddedServer(Netty, Port) {
+        val engine = embeddedServer(io.ktor.server.cio.CIO, Port) {
             routing {
                 route(
                     MessageConfig,
@@ -100,7 +98,7 @@ class KtorTest {
         engine.start()
         try {
             runBlocking {
-                HttpClient(Java).use { client ->
+                HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
                     client.tunnel(MessageConfig, "http://$Host:$Port$Path") { headersOf(DemoHeaderKey, DemoHeaderValue) }
                         .test(1000)
                 }
@@ -113,7 +111,7 @@ class KtorTest {
     @Test
     @Ignore // TODO: does not work in docker if Ktor > 1.5.2
     fun webSocket() {
-        val engine = embeddedServer(Netty, Port) {
+        val engine = embeddedServer(io.ktor.server.cio.CIO, Port) {
             install(io.ktor.websocket.WebSockets)
             routing {
                 webSocket(Path) {
@@ -130,7 +128,7 @@ class KtorTest {
         engine.start()
         try {
             runBlocking {
-                HttpClient(Java) {
+                HttpClient(io.ktor.client.engine.cio.CIO) {
                     install(io.ktor.client.features.websocket.WebSockets)
                 }.use { client ->
                     client.ws(HttpMethod.Get, Host, Port, Path, { header(DemoHeaderKey, DemoHeaderValue) }) {
