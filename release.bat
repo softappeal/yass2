@@ -8,7 +8,7 @@ set /p version=Version [ MAJOR.MINOR.PATCH or 'enter' for no-release ]?:
 if "%version%" == "" goto norelease
 
 docker image     build                           --tag project-image https://github.com/softappeal/yass2.git#%version%
-docker container create --name project-container       project-image ./gradlew -Pversion=%version% build publishYass2
+docker container create --name project-container       project-image ./gradlew -Pversion=%version% markers build publishYass2
 goto continue
 
 :norelease

@@ -1,5 +1,7 @@
 // https://kotlinlang.org/docs/mpp-intro.html
 
+import java.util.regex.Pattern
+
 plugins {
     kotlin("multiplatform") version "1.5.10"
     id("maven-publish")
@@ -169,5 +171,44 @@ project("module:test") {
 tasks.register("publishYass2") {
     listOf(coreProject, coroutinesProject, reflectProject, generateProject, ktorProject).forEach {
         dependsOn("module:${it.name}:publishAllPublicationsToOssrhRepository")
+    }
+}
+
+tasks.register("markers") {
+    doLast {
+        fun divider(type: Char) = println(type.toString().repeat(132))
+        val fileTree = fileTree(".")
+        fileTree
+            .exclude("/.git/")
+            .exclude("/.gradle/")
+            .exclude("/.idea/")
+            .exclude("**/build/")
+        fun search(marker: String, help: String, abort: Boolean = false) {
+            divider('=')
+            println("= $marker - $help")
+            val pattern = Pattern.compile("\\b$marker\\b", Pattern.CASE_INSENSITIVE)
+            fileTree.visit {
+                if (!isDirectory) {
+                    var found = false
+                    var number = 0
+                    file.forEachLine { line ->
+                        number++
+                        if (pattern.matcher(line).find()) {
+                            if (!found) {
+                                divider('-')
+                                println("+ $relativePath")
+                            }
+                            found = true
+                            println("- $number: $line")
+                            if (abort) throw Exception("abort marker $marker found")
+                        }
+                    }
+                }
+            }
+        }
+        search("FIXM" + "E", "not allowed for building a release", true)
+        search("TOD" + "O", "under construction, yet a release can still be built")
+        search("NOT" + "E", "important comment")
+        divider('=')
     }
 }

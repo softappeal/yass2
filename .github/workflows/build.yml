@@ -5,5 +5,5 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: gradle/wrapper-validation-action@v1
-      - run: docker build --tag project .
-      - run: docker run project ./gradlew build
+      - run: docker image     build --tag project-image .
+      - run: docker container run         project-image ./gradlew markers build
