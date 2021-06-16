@@ -66,63 +66,6 @@ yass2-core
 
 * uses [Semantic Versioning](https://semver.org)
 
-* package/file, module and target table
-
-```
-+-------------------------------------------+------------+--------+
-| package/file                              | module     | target |
-+-------------------------------------------+------------+--------+
-| Cleanup.kt                                | core       | common |
-| Dumper.kt                                 | core       | common |
-| Interceptor.kt                            | core       | common |
-| reflect                                   |            |        |
-|     DumperReflection.kt                   | reflect    | jvm    |
-|     InterceptorReflection.kt              | reflect    | jvm    |
-| remote                                    |            |        |
-|  |  Message.kt                            | core       | common |
-|  |  Remote.kt                             | core       | common |
-|  +- reflect                               |            |        |
-|  |      ServiceReflection.kt              | reflect    | jvm    |
-|  +- coroutines                            |            |        |
-|      |  RemoteFlow.kt                     | coroutines | common |
-|      |  Sync.kt                           | coroutines | common |
-|      +- session                           |            |        |
-|             Session.kt                    | coroutines | common |
-|             SessionConnector.kt           | coroutines | common |
-| serialize                                 |            |        |
-|  |  Serializer.kt                         | core       | common |
-|  +- binary                                |            |        |
-|      |  BaseEncoders.kt                   | core       | common |
-|      |  BinarySerializer.kt               | core       | common |
-|      |  Int.kt                            | core       | common |
-|      |  VarInt.kt                         | core       | common |
-|      +- reflect                           |            |        |
-|             BinarySerializerMeta.kt       | reflect    | common |
-|             BinarySerializerReflection.kt | reflect    | jvm    |
-| transport                                 |            |        |
-|  |  BinaryMessageSerializer.kt            | core       | common |
-|  |  Bytes.kt                              | core       | common |
-|  |  TransportConfig.kt                    | core       | common |
-|  +- session                               |            |        |
-|  |      BinaryPacketSerializer.kt         | coroutines | common |
-|  +- js                                    |            |        |
-|  |      Connect.kt                        | coroutines | js     |
-|  |      Tunnel.kt                         | coroutines | js     |
-|  +- ktor                                  |            |        |
-|         ByteChannel.kt                    | ktor       | common |
-|         Http.kt                           | ktor       | common |
-|         WebSocket.kt                      | ktor       | common |
-|         HttpServer.kt                     | ktor       | jvm    |
-|         Socket.kt                         | ktor       | jvm    |
-| generate                                  |            |        |
-|     Generate.kt                           | generate   | jvm    |
-|     GenerateBinarySerializer.kt           | generate   | jvm    |
-|     GenerateDumperProperties.kt           | generate   | jvm    |
-|     GenerateProxyFactory.kt               | generate   | jvm    |
-|     GenerateRemote.kt                     | generate   | jvm    |
-+-------------------------------------------+------------+--------+
-```
-
 * [Tutorial](https://github.com/softappeal/yass2-tutorial)
 
 * Open Source ([BSD-3-Clause license](license.txt))
