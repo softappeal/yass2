@@ -1,9 +1,9 @@
 // https://kotlinlang.org/docs/mpp-intro.html
 
-import java.util.regex.Pattern
+import java.util.regex.*
 
 plugins {
-    kotlin("multiplatform") version "1.5.10"
+    kotlin("multiplatform") version "1.5.20"
     id("maven-publish")
     signing
 }
