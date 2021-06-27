@@ -109,7 +109,6 @@ class KtorTest {
     }
 
     @Test
-    @Ignore // TODO: does not work in docker if Ktor > 1.5.2
     fun webSocket() {
         val engine = embeddedServer(io.ktor.server.cio.CIO, Port) {
             install(io.ktor.websocket.WebSockets)
