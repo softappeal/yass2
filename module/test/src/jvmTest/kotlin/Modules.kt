@@ -19,7 +19,7 @@ private fun Node.print(print: (String) -> Unit, indent: Int = 0) {
         is FileNode -> print("$name targets:${targets.sorted()}\n")
         is DirectoryNode -> {
             print("$name module:${module ?: "<no-module>"}\n")
-            name2node.values.forEach { it.print(print, indent + 1) }
+            name2node.values.sortedBy(Node::name).forEach { it.print(print, indent + 1) }
         }
     }
 }
@@ -43,7 +43,7 @@ private fun File.createNodes(): DirectoryNode {
                 directory.forEach { file ->
                     fun checkSplitPackage() {
                         check(module == moduleName) {
-                            "modules '$module' and '$moduleName' have split package '${targetDir.toPath().relativize(file.toPath())}'"
+                            "modules '$module' and '$moduleName' have split package '${targetDir.toPath().relativize(file.toPath()).toString().replace('\\', '/')}'"
                         }
                     }
 

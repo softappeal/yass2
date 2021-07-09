@@ -2,6 +2,15 @@
     Cleanup.kt targets:[common]
     Dumper.kt targets:[common]
     Interceptor.kt targets:[common]
+    generate module:yass2-generate
+        Generate.kt targets:[jvm]
+        GenerateBinarySerializer.kt targets:[jvm]
+        GenerateDumperProperties.kt targets:[jvm]
+        GenerateProxyFactory.kt targets:[jvm]
+        GenerateRemote.kt targets:[jvm]
+    reflect module:yass2-reflect
+        DumperReflection.kt targets:[jvm]
+        InterceptorReflection.kt targets:[jvm]
     remote module:yass2-core
         Message.kt targets:[common]
         Remote.kt targets:[common]
@@ -28,23 +37,14 @@
         Bytes.kt targets:[common]
         ContextMessageSerializer.kt targets:[common]
         TransportConfig.kt targets:[common]
-        session module:yass2-coroutines
-            BinaryPacketSerializer.kt targets:[common]
         js module:yass2-coroutines
             Connect.kt targets:[js]
             Tunnel.kt targets:[js]
         ktor module:yass2-ktor
             ByteChannel.kt targets:[common]
             Http.kt targets:[common]
-            WebSocket.kt targets:[common]
             HttpServer.kt targets:[jvm]
             Socket.kt targets:[jvm]
-    generate module:yass2-generate
-        Generate.kt targets:[jvm]
-        GenerateBinarySerializer.kt targets:[jvm]
-        GenerateDumperProperties.kt targets:[jvm]
-        GenerateProxyFactory.kt targets:[jvm]
-        GenerateRemote.kt targets:[jvm]
-    reflect module:yass2-reflect
-        DumperReflection.kt targets:[jvm]
-        InterceptorReflection.kt targets:[jvm]
+            WebSocket.kt targets:[common]
+        session module:yass2-coroutines
+            BinaryPacketSerializer.kt targets:[common]
