@@ -15,10 +15,11 @@ private class DirectoryNode(name: String) : Node(name) {
 
 private fun Node.print(print: (String) -> Unit, indent: Int = 0) {
     print("    ".repeat(indent))
+    print("- $name ")
     when (this) {
-        is FileNode -> print("$name targets:${targets.sorted()}\n")
+        is FileNode -> print("`${targets.sorted()}`\n")
         is DirectoryNode -> {
-            print("$name module:${module ?: "<no-module>"}\n")
+            print("`${module ?: "<no-module>"}`\n")
             name2node.values.sortedBy(Node::name).forEach { it.print(print, indent + 1) }
         }
     }

@@ -12,7 +12,7 @@ private fun printModules(directory: String): String {
 class ModulesTest {
     @Test
     fun test() {
-        assertEquals(printModules(".."), File("src/jvmTest/resources/modules.txt").readText().replace("\r\n", "\n"))
+        assertEquals(File("src/jvmTest/resources/modules.md").readText().replace("\r\n", "\n"), printModules(".."))
     }
 
     @Test
@@ -43,11 +43,24 @@ class ModulesTest {
     fun targets() {
         assertEquals(
             """
-                . module:module1
-                    Test.kt targets:[common, jvm]
+                - . `module1`
+                    - Test.kt `[common, jvm]`
 
             """.trimIndent(),
             printModules("src/jvmTest/resources/targets")
+        )
+    }
+
+    @Test
+    fun noModule() {
+        assertEquals(
+            """
+                - . `<no-module>`
+                    - nofile `module1`
+                        - Test.kt `[common]`
+
+            """.trimIndent(),
+            printModules("src/jvmTest/resources/noModule")
         )
     }
 }
