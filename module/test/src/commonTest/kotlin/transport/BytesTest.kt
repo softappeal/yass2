@@ -11,7 +11,7 @@ class BytesTest {
     fun test() {
         var writer = BytesWriter(4)
         with(writer) {
-            val buffer = writer.buffer
+            val buffer = this.buffer
             assertEquals(0, current)
             writeByte(-128)
             assertEquals(1, current)
@@ -30,7 +30,7 @@ class BytesTest {
             assertFails { checkTail(1, 22) }
             writeBytes(ByteArray(0))
             assertEquals(4, current)
-            assertSame(buffer, writer.buffer)
+            assertSame(buffer, this.buffer)
         }
         with(BytesReader(writer.buffer)) {
             assertFalse(drained)
