@@ -3,7 +3,7 @@ package ch.softappeal.yass2.transport
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.serialize.*
 
-public class ContextMessageSerializer<C>(
+class ContextMessageSerializer<C>(
     private val contextSerializer: Serializer, private val messageSerializer: Serializer,
     private val getContext: () -> C, private val setContext: (context: C) -> Unit,
 ) : Serializer {

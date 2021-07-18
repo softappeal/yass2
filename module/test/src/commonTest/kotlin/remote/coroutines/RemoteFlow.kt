@@ -8,13 +8,13 @@ import kotlinx.coroutines.flow.*
 import kotlin.coroutines.*
 
 /** The used serializer must be able to serialize [Int], the involved flowId and optional [Flow] types. */
-public interface FlowService {
-    public suspend fun create(flowId: Any): Int
-    public suspend fun next(collectId: Int): Any?
-    public suspend fun cancel(collectId: Int)
+interface FlowService {
+    suspend fun create(flowId: Any): Int
+    suspend fun next(collectId: Int): Any?
+    suspend fun cancel(collectId: Int)
 }
 
-public fun <T> FlowService.createFlow(flowId: Any): Flow<T> = @OptIn(FlowPreview::class) object : AbstractFlow<T>() {
+fun <T> FlowService.createFlow(flowId: Any): Flow<T> = @OptIn(FlowPreview::class) object : AbstractFlow<T>() {
     override suspend fun collectSafely(collector: FlowCollector<T>) {
         val collectId = create(flowId)
         try {
@@ -28,9 +28,9 @@ public fun <T> FlowService.createFlow(flowId: Any): Flow<T> = @OptIn(FlowPreview
     }
 }
 
-public typealias FlowFactory = (flowId: Any) -> Flow<*>
+typealias FlowFactory = (flowId: Any) -> Flow<*>
 
-public fun flowService(flowFactory: FlowFactory): FlowService {
+fun flowService(flowFactory: FlowFactory): FlowService {
     val nextCollectId = AtomicInteger(0)
     val collectId2channel = ThreadSafeMap<Int, Channel<Reply?>>(16)
     return object : FlowService {
