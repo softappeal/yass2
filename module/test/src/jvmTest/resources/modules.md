@@ -35,7 +35,6 @@
     - transport `yass2-core`
         - BinaryMessageSerializer.kt `[common]`
         - Bytes.kt `[common]`
-        - ContextMessageSerializer.kt `[common]`
         - TransportConfig.kt `[common]`
         - js `yass2-coroutines`
             - Connect.kt `[js]`
