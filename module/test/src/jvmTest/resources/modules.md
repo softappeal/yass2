@@ -15,7 +15,6 @@
         - Message.kt `[common]`
         - Remote.kt `[common]`
         - coroutines `yass2-coroutines`
-            - RemoteFlow.kt `[common]`
             - Sync.kt `[common]`
             - session `yass2-coroutines`
                 - Session.kt `[common]`

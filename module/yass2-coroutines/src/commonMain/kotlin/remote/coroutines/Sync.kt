@@ -17,10 +17,10 @@ public class AtomicInteger(private var value: Int) {
     public suspend fun incrementAndGet(): Int = mutex.withLock { ++value }
 }
 
-internal class ThreadSafeMap<K, V>(initialCapacity: Int) {
+public class ThreadSafeMap<K, V>(initialCapacity: Int) {
     private val mutex = Mutex()
     private val map = HashMap<K, V>(initialCapacity)
-    suspend fun get(key: K): V? = mutex.withLock { map[key] }
-    suspend fun put(key: K, value: V): Unit = mutex.withLock { map[key] = value }
-    suspend fun remove(key: K): V? = mutex.withLock { map.remove(key) }
+    public suspend fun get(key: K): V? = mutex.withLock { map[key] }
+    public suspend fun put(key: K, value: V): Unit = mutex.withLock { map[key] = value }
+    public suspend fun remove(key: K): V? = mutex.withLock { map.remove(key) }
 }
