@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:jdk-11.0.11_9-ubuntu-slim
+FROM adoptopenjdk/openjdk11:jdk-11.0.12_7-ubuntu-slim
 
 COPY  . /project
 WORKDIR /project
