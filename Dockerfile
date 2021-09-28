@@ -1,4 +1,4 @@
-FROM eclipse-temurin:11.0.13_8-jdk-focal
+FROM eclipse-temurin:17.0.1_12-jdk-focal
 
 COPY  . /project
 WORKDIR /project
