@@ -8,7 +8,7 @@ plugins {
     signing
 }
 val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
-fun ktor(module: String) = "io.ktor:ktor-$module:1.6.3"
+fun ktor(module: String) = "io.ktor:ktor-$module:1.6.4"
 
 val windowsTarget = true
 val jsTarget = true
