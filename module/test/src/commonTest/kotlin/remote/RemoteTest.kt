@@ -6,13 +6,15 @@ import ch.softappeal.yass2.contract.generated.*
 import ch.softappeal.yass2.remote.coroutines.*
 import kotlin.test.*
 
+private val RemoteProxyFactory = (::remoteProxyFactoryCreator)(::invoker.tunnel(listOf(CalculatorId(CalculatorImpl), EchoId(EchoImpl))))
+
 class RemoteTest {
     @Test
     fun duplicatedServices() {
         assertEquals(
             "duplicated service id's",
             assertFailsWith<IllegalArgumentException> {
-                ::generatedInvoker.tunnel(listOf(EchoId(EchoImpl), EchoId(EchoImpl)))
+                ::invoker.tunnel(listOf(EchoId(EchoImpl), EchoId(EchoImpl)))
             }.message
         )
     }
@@ -22,7 +24,7 @@ class RemoteTest {
         assertEquals(
             "no service id 1",
             assertFailsWith<IllegalStateException> {
-                generatedRemoteProxyFactoryCreator(::generatedInvoker.tunnel(emptyList()))(CalculatorId).add(1, 2)
+                remoteProxyFactoryCreator(::invoker.tunnel(emptyList()))(CalculatorId).add(1, 2)
             }.message
         )
     }
@@ -32,7 +34,7 @@ class RemoteTest {
         assertEquals(
             "no service id 123",
             assertFailsWith<IllegalStateException> {
-                generatedRemoteProxyFactoryCreator { ValueReply(null) }.create(serviceId<Calculator>(123))
+                remoteProxyFactoryCreator { ValueReply(null) }.create(serviceId<Calculator>(123))
             }.message
         )
     }
@@ -42,7 +44,7 @@ class RemoteTest {
         assertEquals(
             "no service id 123",
             assertFailsWith<IllegalStateException> {
-                generatedInvoker(Request(123, 0, emptyList()), EchoId(EchoImpl))
+                invoker(Request(123, 0, emptyList()), EchoId(EchoImpl))
             }.message
         )
     }
@@ -52,7 +54,7 @@ class RemoteTest {
         assertEquals(
             "no function id 123 for service id 2",
             assertFailsWith<IllegalStateException> {
-                generatedInvoker(Request(2, 123, emptyList()), EchoId(EchoImpl))
+                invoker(Request(2, 123, emptyList()), EchoId(EchoImpl))
             }.message
         )
     }
@@ -68,30 +70,20 @@ class RemoteTest {
         val value = 123
         assertSame(value, ValueReply(value).value)
     }
-}
-
-val Services: List<Service> = listOf(CalculatorId(CalculatorImpl), EchoId(EchoImpl))
-
-suspend fun RemoteProxyFactory.test(): Unit = GeneratedProxyFactory.test(this(CalculatorId), this(EchoId))
-
-open class RemoteGeneratedTest {
-    protected open val remoteProxyFactoryCreator: RemoteProxyFactoryCreator = ::generatedRemoteProxyFactoryCreator
-    protected open val invoker: Invoker = ::generatedInvoker
-    private fun remoteProxyFactory(): RemoteProxyFactory = remoteProxyFactoryCreator(invoker.tunnel(Services))
 
     @Test
-    fun generated(): Unit = yassRunBlocking {
-        remoteProxyFactory().test()
+    fun test() = yassRunBlocking {
+        GeneratedProxyFactory.test(RemoteProxyFactory(CalculatorId), RemoteProxyFactory(EchoId))
     }
 
     @Test
     fun performance(): Unit = yassRunBlocking {
-        val calculator = remoteProxyFactory()(CalculatorId)
+        val calculator = RemoteProxyFactory(CalculatorId)
         performance(100_000) { assertEquals(5, calculator.add(2, 3)) }
     }
 }
 
-fun tunnel(context: suspend () -> Any): Tunnel = ::generatedInvoker.tunnel(listOf(
+fun tunnel(context: suspend () -> Any): Tunnel = ::invoker.tunnel(listOf(
     CalculatorId(CalculatorImpl),
     EchoId(GeneratedProxyFactory(EchoImpl) { _, _, invocation: SuspendInvocation ->
         println("context<${context()}>")
@@ -100,7 +92,7 @@ fun tunnel(context: suspend () -> Any): Tunnel = ::generatedInvoker.tunnel(listO
     FlowServiceId(FlowServiceImpl)
 ))
 
-suspend fun Tunnel.test(iterations: Int): Unit = with(generatedRemoteProxyFactoryCreator(this)) {
+suspend fun Tunnel.test(iterations: Int): Unit = with(remoteProxyFactoryCreator(this)) {
     val calculator = this(CalculatorId)
     GeneratedProxyFactory.test(calculator, this(EchoId))
     performance(iterations) { assertEquals(5, calculator.add(2, 3)) }

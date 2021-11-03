@@ -10,7 +10,7 @@ import kotlin.reflect.jvm.*
 
 public fun KClass<*>.serviceFunctions(): List<KFunction<*>> = memberFunctions
     .filter { it.javaMethod!!.declaringClass != Object::class.java }
-    .sortedBy { it.name } // NOTE: support for overloading is not worth it and it's even not possible in JavaScript
+    .sortedBy { it.name } // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
     .apply {
         require(map { it.name }.toSet().size == size) { "'${this@serviceFunctions}' has overloaded functions" }
     }

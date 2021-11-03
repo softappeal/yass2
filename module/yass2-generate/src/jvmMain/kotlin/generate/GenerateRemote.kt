@@ -1,12 +1,17 @@
 package ch.softappeal.yass2.generate
 
+import ch.softappeal.yass2.reflect.*
 import ch.softappeal.yass2.remote.*
-import ch.softappeal.yass2.remote.reflect.*
+import kotlin.reflect.*
 import kotlin.reflect.full.*
+
+private fun KClass<*>.suspendServiceFunctions(): List<KFunction<*>> = serviceFunctions().onEach {
+    require(it.isSuspend) { "'$it' is not a suspend function" }
+}
 
 public fun generateRemoteProxyFactoryCreator(
     serviceIds: List<ServiceId<*>>,
-    name: String = "generatedRemoteProxyFactoryCreator",
+    name: String = "remoteProxyFactoryCreator",
 ): String = writer {
     require(serviceIds.map { it.id }.toSet().size == serviceIds.size) { "duplicated service id's" }
     write("""
@@ -50,7 +55,7 @@ public fun generateRemoteProxyFactoryCreator(
 
 public fun generateInvoker(
     serviceIds: List<ServiceId<*>>,
-    name: String = "generatedInvoker",
+    name: String = "invoker",
 ): String = writer {
     require(serviceIds.map { it.id }.toSet().size == serviceIds.size) { "duplicated service id's" }
     write("""
