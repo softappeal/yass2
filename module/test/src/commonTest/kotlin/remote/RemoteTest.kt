@@ -3,6 +3,7 @@ package ch.softappeal.yass2.remote
 import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.contract.generated.*
+import ch.softappeal.yass2.contract.generated.ProxyFactory
 import ch.softappeal.yass2.remote.coroutines.*
 import kotlin.test.*
 
@@ -73,7 +74,7 @@ class RemoteTest {
 
     @Test
     fun test() = yassRunBlocking {
-        GeneratedProxyFactory.test(RemoteProxyFactory(CalculatorId), RemoteProxyFactory(EchoId))
+        ProxyFactory.test(RemoteProxyFactory(CalculatorId), RemoteProxyFactory(EchoId))
     }
 
     @Test
@@ -85,7 +86,7 @@ class RemoteTest {
 
 fun tunnel(context: suspend () -> Any): Tunnel = ::invoker.tunnel(listOf(
     CalculatorId(CalculatorImpl),
-    EchoId(GeneratedProxyFactory(EchoImpl) { _, _, invocation: SuspendInvocation ->
+    EchoId(ProxyFactory(EchoImpl) { _, _, invocation: SuspendInvocation ->
         println("context<${context()}>")
         invocation()
     }),
@@ -94,7 +95,7 @@ fun tunnel(context: suspend () -> Any): Tunnel = ::invoker.tunnel(listOf(
 
 suspend fun Tunnel.test(iterations: Int): Unit = with(remoteProxyFactoryCreator(this)) {
     val calculator = this(CalculatorId)
-    GeneratedProxyFactory.test(calculator, this(EchoId))
+    ProxyFactory.test(calculator, this(EchoId))
     performance(iterations) { assertEquals(5, calculator.add(2, 3)) }
     this(FlowServiceId).test()
 }

@@ -1,8 +1,8 @@
 package ch.softappeal.yass2
 
 import ch.softappeal.yass2.contract.*
+import ch.softappeal.yass2.contract.generated.ProxyFactory
 import ch.softappeal.yass2.generate.*
-import ch.softappeal.yass2.reflect.*
 import kotlinx.coroutines.*
 import kotlin.reflect.full.*
 import kotlin.test.*
@@ -13,9 +13,7 @@ private interface Overloaded {
     suspend fun f(i: Int)
 }
 
-class InterceptorReflectionTest : InterceptorGeneratedTest() {
-    override fun getProxyFactory() = ReflectionProxyFactory
-
+class GenerateInterceptorTest {
     @Test
     fun overloadedFunction() {
         assertEquals(
@@ -35,7 +33,7 @@ class InterceptorReflectionTest : InterceptorGeneratedTest() {
     @Test
     fun annotation() = runBlocking {
         var annotated: Boolean
-        val echo: Echo = ReflectionProxyFactory(EchoImpl) { function, parameters, invocation: SuspendInvocation ->
+        val echo: Echo = ProxyFactory(EchoImpl) { function, parameters, invocation: SuspendInvocation ->
             annotated = function.findAnnotation<TestAnnotation>() != null
             println("${function.name} $annotated $parameters")
             invocation()

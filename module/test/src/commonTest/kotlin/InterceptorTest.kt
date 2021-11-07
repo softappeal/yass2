@@ -1,7 +1,7 @@
 package ch.softappeal.yass2
 
 import ch.softappeal.yass2.contract.*
-import ch.softappeal.yass2.contract.generated.*
+import ch.softappeal.yass2.contract.generated.ProxyFactory
 import kotlinx.coroutines.*
 import kotlin.test.*
 
@@ -59,7 +59,7 @@ class InterceptorTest {
             "no proxy for 'class null'",
             "no proxy for 'class <anonymous>'",
         ) {
-            GeneratedProxyFactory(object : NoSuchService {}) { _, _, invocation: Invocation -> invocation() }
+            ProxyFactory(object : NoSuchService {}) { _, _, invocation: Invocation -> invocation() }
         }
     }
 
@@ -76,6 +76,55 @@ class InterceptorTest {
         assertEquals(
             "missing SuspendInterceptor",
             assertFailsWith<RuntimeException> { MissingSuspendInterceptor(Calculator::add, emptyList()) {} }.message
+        )
+    }
+
+    @Test
+    fun proxyFactory(): Unit = ProxyFactory.test()
+
+    @Test
+    fun suspendProxyFactory(): Unit = yassRunBlocking {
+        ProxyFactory.test(CalculatorImpl, EchoImpl)
+    }
+
+    @Test
+    fun performance() {
+        var counter = 0
+        val proxy = ProxyFactory(MixedImpl,
+            { _, _, invocation: Invocation ->
+                counter++
+                invocation()
+            },
+            { _, _, _: SuspendInvocation -> }
+        )
+        performance(100_000) { assertEquals(4, proxy.divide(12, 3)) }
+        assertEquals(200_000, counter)
+    }
+
+    @Test
+    fun suspendPerformance(): Unit = yassRunBlocking {
+        var counter = 0
+        val proxy = ProxyFactory(CalculatorImpl) { _, _, invocation: SuspendInvocation ->
+            counter++
+            invocation()
+        }
+        performance(100_000) { assertEquals(4, proxy.divide(12, 3)) }
+        assertEquals(200_000, counter)
+    }
+
+    @Test
+    fun checkInterceptors() {
+        assertEquals(
+            "missing Interceptor",
+            assertFailsWith<IllegalArgumentException> {
+                ProxyFactory(MixedImpl) { _, _, invocation: SuspendInvocation -> invocation() }
+            }.message
+        )
+        assertEquals(
+            "missing SuspendInterceptor",
+            assertFailsWith<IllegalArgumentException> {
+                ProxyFactory(MixedImpl) { _, _, invocation: Invocation -> invocation() }
+            }.message
         )
     }
 }
@@ -177,57 +226,4 @@ private fun ProxyFactory.test() {
     println(mixed.toString())
     println(mixed.hashCode())
     assertNotEquals(mixed, Any())
-}
-
-open class InterceptorGeneratedTest {
-    open fun getProxyFactory(): ProxyFactory = GeneratedProxyFactory
-
-    @Test
-    fun proxyFactory(): Unit = getProxyFactory().test()
-
-    @Test
-    fun suspendProxyFactory(): Unit = yassRunBlocking {
-        getProxyFactory().test(CalculatorImpl, EchoImpl)
-    }
-
-    @Test
-    fun performance() {
-        var counter = 0
-        val proxy = getProxyFactory()(MixedImpl,
-            { _, _, invocation: Invocation ->
-                counter++
-                invocation()
-            },
-            { _, _, _: SuspendInvocation -> }
-        )
-        performance(100_000) { assertEquals(4, proxy.divide(12, 3)) }
-        assertEquals(200_000, counter)
-    }
-
-    @Test
-    fun suspendPerformance(): Unit = yassRunBlocking {
-        var counter = 0
-        val proxy = getProxyFactory()(CalculatorImpl) { _, _, invocation: SuspendInvocation ->
-            counter++
-            invocation()
-        }
-        performance(100_000) { assertEquals(4, proxy.divide(12, 3)) }
-        assertEquals(200_000, counter)
-    }
-
-    @Test
-    fun checkInterceptors() {
-        assertEquals(
-            "missing Interceptor",
-            assertFailsWith<IllegalArgumentException> {
-                getProxyFactory()(MixedImpl) { _, _, invocation: SuspendInvocation -> invocation() }
-            }.message
-        )
-        assertEquals(
-            "missing SuspendInterceptor",
-            assertFailsWith<IllegalArgumentException> {
-                getProxyFactory()(MixedImpl) { _, _, invocation: Invocation -> invocation() }
-            }.message
-        )
-    }
 }
