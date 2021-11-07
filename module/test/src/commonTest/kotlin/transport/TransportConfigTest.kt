@@ -7,7 +7,7 @@ import kotlin.test.*
 class TransportConfigTest {
     @Test
     fun testReadBytes() = yassRunBlocking {
-        val config = TransportConfig(GeneratedSerializer, 50, 100)
+        val config = TransportConfig(ContractSerializer, 50, 100)
 
         assertEquals(50, config.writer().buffer.size)
 

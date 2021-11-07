@@ -20,8 +20,8 @@ val GraphConcreteClasses = listOf(
     Node::class
 )
 
-val GeneratedSerializer = generatedBinarySerializer(BaseEncoders)
-val MessageSerializer = binaryMessageSerializer(GeneratedSerializer)
+val ContractSerializer = binarySerializer(BaseEncoders)
+val MessageSerializer = binaryMessageSerializer(ContractSerializer)
 val PacketSerializer = binaryPacketSerializer(MessageSerializer)
 
 val CalculatorId: ServiceId<Calculator> = serviceId(1)

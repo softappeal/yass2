@@ -6,25 +6,7 @@ import ch.softappeal.yass2.serialize.*
 import ch.softappeal.yass2.transport.*
 import kotlin.test.*
 
-class BinarySerializerTest {
-    @Test
-    fun duplicatedType() {
-        assertPlatform<IllegalArgumentException>(
-            "duplicated type 'class kotlin.Int'",
-            "duplicated type 'class Int'",
-        ) { BinarySerializer(listOf(IntEncoder, IntEncoder)) }
-    }
-
-    @Test
-    fun missingType() {
-        assertPlatform<IllegalStateException>(
-            "missing type 'class kotlin.Boolean'",
-            "missing type 'class Boolean'",
-        ) { GeneratedSerializer.write(BytesWriter(1000), true) }
-    }
-}
-
-fun <T> Serializer.copy(value: T, bytes: IntArray): T {
+private fun <T> Serializer.copy(value: T, bytes: IntArray): T {
     val writer = BytesWriter(1000)
     with(writer) {
         write(this, value)
@@ -37,6 +19,8 @@ fun <T> Serializer.copy(value: T, bytes: IntArray): T {
         result
     }
 }
+
+private fun <T> copy(value: T, vararg bytes: Int): T = ContractSerializer.copy(value, bytes)
 
 val ManyPropertiesConst = ManyProperties(8, 4, 6, 7, 2).apply {
     a = 1
@@ -80,10 +64,22 @@ private fun checkGraph(n1: Node) {
     assertSame(n3.link, n2)
 }
 
-open class BinarySerializerGeneratedTest {
-    protected open val serializer: Serializer = GeneratedSerializer
+class BinarySerializerTest {
+    @Test
+    fun duplicatedType() {
+        assertPlatform<IllegalArgumentException>(
+            "duplicated type 'class kotlin.Int'",
+            "duplicated type 'class Int'",
+        ) { BinarySerializer(listOf(IntEncoder, IntEncoder)) }
+    }
 
-    private fun <T> copy(value: T, vararg bytes: Int): T = serializer.copy(value, bytes)
+    @Test
+    fun missingType() {
+        assertPlatform<IllegalStateException>(
+            "missing type 'class kotlin.Boolean'",
+            "missing type 'class Boolean'",
+        ) { ContractSerializer.write(BytesWriter(1000), true) }
+    }
 
     @Test
     fun testNull() {
@@ -205,9 +201,9 @@ open class BinarySerializerGeneratedTest {
         val buffer = ByteArray(1000)
         performance(100_000) {
             val writer = BytesWriter(buffer)
-            serializer.write(writer, ManyPropertiesConst)
+            ContractSerializer.write(writer, ManyPropertiesConst)
             assertSame(buffer, writer.buffer)
-            (serializer.read(BytesReader(buffer)) as ManyProperties).assertManyProperties()
+            (ContractSerializer.read(BytesReader(buffer)) as ManyProperties).assertManyProperties()
         }
     }
 }

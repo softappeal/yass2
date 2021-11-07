@@ -23,9 +23,8 @@
             - BinarySerializer.kt `[common]`
             - Int.kt `[common]`
             - VarInt.kt `[common]`
-            - reflect `yass2-reflect`
+            - generate `yass2-generate`
                 - BinarySerializerMeta.kt `[common]`
-                - BinarySerializerReflection.kt `[jvm]`
     - transport `yass2-core`
         - BinaryMessageSerializer.kt `[common]`
         - Bytes.kt `[common]`

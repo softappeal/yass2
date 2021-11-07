@@ -1,28 +1,16 @@
-package ch.softappeal.yass2.serialize.binary.reflect
+package ch.softappeal.yass2.serialize.binary.generate
 
 import ch.softappeal.yass2.serialize.binary.*
 import kotlin.reflect.*
 
-public enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
+internal enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
 
-public class MetaProperty internal constructor(
-    public val property: KProperty1<Any, Any?>,
-    public val kind: PropertyKind,
-    public val encoderId: Int = -1,
+internal class MetaProperty constructor(
+    val property: KProperty1<Any, Any?>,
+    val kind: PropertyKind,
+    val encoderId: Int = -1,
 ) {
-    internal fun mutableProperty(): KMutableProperty1<Any, Any?> = property as KMutableProperty1<Any, Any?>
-
-    internal fun write(writer: EncoderWriter, value: Any?): Unit = when (kind) {
-        PropertyKind.WithId -> writer.writeWithId(value)
-        PropertyKind.NoIdRequired -> writer.writeNoIdRequired(encoderId, value!!)
-        PropertyKind.NoIdOptional -> writer.writeNoIdOptional(encoderId, value)
-    }
-
-    internal fun read(reader: EncoderReader): Any? = when (kind) {
-        PropertyKind.WithId -> reader.readWithId()
-        PropertyKind.NoIdRequired -> reader.readNoIdRequired(encoderId)
-        PropertyKind.NoIdOptional -> reader.readNoIdOptional(encoderId)
-    }
+    fun mutableProperty(): KMutableProperty1<Any, Any?> = property as KMutableProperty1<Any, Any?>
 }
 
 internal fun KClass<*>.metaProperty(
@@ -43,14 +31,14 @@ internal fun KClass<*>.metaProperty(
     }
 }
 
-public class MetaClass internal constructor(
+internal class MetaClass constructor(
     klass: KClass<*>,
     properties: List<MetaProperty>,
     parameterNames: List<String>,
 ) {
-    public val parameterProperties: List<MetaProperty>
-    public val bodyProperties: List<MetaProperty>
-    public val properties: List<MetaProperty>
+    val parameterProperties: List<MetaProperty>
+    val bodyProperties: List<MetaProperty>
+    val properties: List<MetaProperty>
 
     init {
         parameterProperties = mutableListOf()
