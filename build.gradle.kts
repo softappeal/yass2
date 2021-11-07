@@ -11,7 +11,6 @@ val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
 fun ktor(module: String) = "io.ktor:ktor-$module:1.6.4"
 
 val windowsTarget = true
-val macTarget = false
 val jsTarget = true
 
 allprojects {
@@ -47,8 +46,6 @@ allprojects {
         }
 
         if (windowsTarget) mingwX64("windows")
-
-        if (macTarget) macosArm64("mac")
 
         targets.all {
             compilations.all {
