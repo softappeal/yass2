@@ -9,7 +9,6 @@
         - GenerateProxyFactory.kt `[jvm]`
         - GenerateRemote.kt `[jvm]`
     - reflect `yass2-reflect`
-        - DumperReflection.kt `[jvm]`
         - InterceptorReflection.kt `[jvm]`
     - remote `yass2-core`
         - Message.kt `[common]`

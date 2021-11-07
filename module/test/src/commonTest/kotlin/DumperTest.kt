@@ -5,10 +5,8 @@ import ch.softappeal.yass2.contract.generated.*
 import ch.softappeal.yass2.serialize.binary.*
 import kotlin.test.*
 
-open class DumperGeneratedTest {
-    protected open val dumperProperties = GeneratedDumperProperties
-
-    private fun getDumper(compact: Boolean) = dumper(dumperProperties, ValueDumper, compact, GraphConcreteClasses.toSet())
+class DumperTest {
+    private fun getDumper(compact: Boolean) = dumper(DumperProperties, ValueDumper, compact, GraphConcreteClasses.toSet())
 
     @Test
     fun missingClass() {
