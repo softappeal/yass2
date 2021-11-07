@@ -86,22 +86,15 @@ class SessionTest {
             continuation.resume("hello")
         }
         assertEquals("hello", getString())
-        try {
+        assertFailsWith<TimeoutCancellationException> {
             withTimeout(100) { getString() }
-            fail()
-        } catch (ignore: TimeoutCancellationException) {
         }
         try {
             continuation.resume("first call after withTimeout")
         } catch (e: Exception) {
             fail()
         }
-        try {
-            continuation.resume("second call after withTimeout")
-            fail()
-        } catch (e: Exception) {
-            println(e)
-        }
+        println(assertFailsWith<Exception> { continuation.resume("second call after withTimeout") })
         println("done")
     }
 

@@ -33,7 +33,7 @@ class GenerateInterceptorTest {
     @Test
     fun annotation() = runBlocking {
         var annotated: Boolean
-        val echo: Echo = ProxyFactory(EchoImpl) { function, parameters, invocation: SuspendInvocation ->
+        val echo: Echo = ProxyFactory(EchoImpl) { function, parameters, invocation: Invocation ->
             annotated = function.findAnnotation<TestAnnotation>() != null
             println("${function.name} $annotated $parameters")
             invocation()

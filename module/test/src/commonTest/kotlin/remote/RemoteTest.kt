@@ -78,7 +78,7 @@ class RemoteTest {
     }
 
     @Test
-    fun performance(): Unit = yassRunBlocking {
+    fun performance() = yassRunBlocking {
         val calculator = RemoteProxyFactory(CalculatorId)
         performance(100_000) { assertEquals(5, calculator.add(2, 3)) }
     }
@@ -86,7 +86,7 @@ class RemoteTest {
 
 fun tunnel(context: suspend () -> Any): Tunnel = ::invoker.tunnel(listOf(
     CalculatorId(CalculatorImpl),
-    EchoId(ProxyFactory(EchoImpl) { _, _, invocation: SuspendInvocation ->
+    EchoId(ProxyFactory(EchoImpl) { _, _, invocation: Invocation ->
         println("context<${context()}>")
         invocation()
     }),

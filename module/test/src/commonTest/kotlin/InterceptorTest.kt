@@ -7,7 +7,7 @@ import kotlin.test.*
 
 class InterceptorTest {
     @Test
-    fun compositeInterceptor() {
+    fun compositeInterceptor() = yassRunBlocking {
         val value = "string"
         var value1: Int? = null
         var value2: Int? = null
@@ -18,28 +18,6 @@ class InterceptorTest {
             invocation()
         }
         val interceptor2: Interceptor = { _, _, invocation ->
-            assertNotNull(value1)
-            assertNull(value2)
-            value2 = 1
-            invocation()
-        }
-        assertSame(value, (interceptor1 + interceptor2)(Calculator::add, emptyList()) { value })
-        assertNotNull(value1)
-        assertNotNull(value2)
-    }
-
-    @Test
-    fun suspendCompositeInterceptor() = yassRunBlocking {
-        val value = "string"
-        var value1: Int? = null
-        var value2: Int? = null
-        val interceptor1: SuspendInterceptor = { _, _, invocation ->
-            assertNull(value1)
-            assertNull(value2)
-            value1 = 1
-            invocation()
-        }
-        val interceptor2: SuspendInterceptor = { _, _, invocation ->
             assertNotNull(value1)
             assertNull(value2)
             value2 = 1
@@ -64,68 +42,19 @@ class InterceptorTest {
     }
 
     @Test
-    fun missingInterceptor() {
-        assertEquals(
-            "missing Interceptor",
-            assertFailsWith<RuntimeException> { MissingInterceptor(Calculator::add, emptyList()) {} }.message
-        )
-    }
-
-    @Test
-    fun missingSuspendInterceptor() = yassRunBlocking {
-        assertEquals(
-            "missing SuspendInterceptor",
-            assertFailsWith<RuntimeException> { MissingSuspendInterceptor(Calculator::add, emptyList()) {} }.message
-        )
-    }
-
-    @Test
-    fun proxyFactory(): Unit = ProxyFactory.test()
-
-    @Test
-    fun suspendProxyFactory(): Unit = yassRunBlocking {
+    fun proxyFactory() = yassRunBlocking {
         ProxyFactory.test(CalculatorImpl, EchoImpl)
     }
 
     @Test
-    fun performance() {
+    fun performance() = yassRunBlocking {
         var counter = 0
-        val proxy = ProxyFactory(MixedImpl,
-            { _, _, invocation: Invocation ->
-                counter++
-                invocation()
-            },
-            { _, _, _: SuspendInvocation -> }
-        )
-        performance(100_000) { assertEquals(4, proxy.divide(12, 3)) }
-        assertEquals(200_000, counter)
-    }
-
-    @Test
-    fun suspendPerformance(): Unit = yassRunBlocking {
-        var counter = 0
-        val proxy = ProxyFactory(CalculatorImpl) { _, _, invocation: SuspendInvocation ->
+        val proxy = ProxyFactory(CalculatorImpl) { _, _, invocation ->
             counter++
             invocation()
         }
         performance(100_000) { assertEquals(4, proxy.divide(12, 3)) }
         assertEquals(200_000, counter)
-    }
-
-    @Test
-    fun checkInterceptors() {
-        assertEquals(
-            "missing Interceptor",
-            assertFailsWith<IllegalArgumentException> {
-                ProxyFactory(MixedImpl) { _, _, invocation: SuspendInvocation -> invocation() }
-            }.message
-        )
-        assertEquals(
-            "missing SuspendInterceptor",
-            assertFailsWith<IllegalArgumentException> {
-                ProxyFactory(MixedImpl) { _, _, invocation: Invocation -> invocation() }
-            }.message
-        )
     }
 }
 
@@ -141,60 +70,7 @@ val EchoImpl = object : Echo {
     override suspend fun delay(milliSeconds: Int) = delay(milliSeconds.toLong())
 }
 
-val MixedImpl = object : Mixed {
-    override fun divide(a: Int, b: Int) = if (b == 0) throw DivideByZeroException() else a / b
-    override suspend fun suspendDivide(a: Int, b: Int) = divide(a, b)
-    override fun noParametersNoResult() {}
-}
-
 suspend fun ProxyFactory.test(calculatorImpl: Calculator, echoImpl: Echo) {
-    val printer: SuspendInterceptor = { function, parameters, invocation ->
-        print("${function.name} $parameters -> ")
-        try {
-            val result = invocation()
-            println(result)
-            result
-        } catch (e: Exception) {
-            println(e)
-            throw e
-        }
-    }
-    var counter = 0
-    var functionName: String? = null
-    var params: List<Any?>? = null
-    val testInterceptor: SuspendInterceptor = { function, parameters, invocation ->
-        counter++
-        functionName = function.name
-        params = parameters
-        invocation()
-    }
-    val interceptor = testInterceptor + printer
-    val calculator = this(calculatorImpl, interceptor)
-    val echo = this(echoImpl, interceptor)
-    assertEquals(5, calculator.add(2, 3))
-    assertEquals("add", functionName)
-    assertEquals(listOf(2, 3), params)
-    assertEquals(1, counter)
-    assertEquals(3, calculator.divide(12, 4))
-    assertEquals(2, counter)
-    try {
-        calculator.divide(12, 0)
-        fail()
-    } catch (ignore: DivideByZeroException) {
-    }
-    assertEquals(3, counter)
-    echo.noParametersNoResult()
-    assertEquals("hello", echo.echo("hello"))
-    assertEquals(3, (echo.echo(ByteArray(3)) as ByteArray).size)
-    withTimeout(200) { echo.delay(100) }
-    try {
-        withTimeout(100) { echo.delay(200) }
-        fail()
-    } catch (ignore: TimeoutCancellationException) {
-    }
-}
-
-private fun ProxyFactory.test() {
     val printer: Interceptor = { function, parameters, invocation ->
         print("${function.name} $parameters -> ")
         try {
@@ -215,15 +91,22 @@ private fun ProxyFactory.test() {
         params = parameters
         invocation()
     }
-    val mixed = this(MixedImpl, testInterceptor + printer) { _, _, _ -> error("") }
-    assertEquals(3, mixed.divide(12, 4))
-    assertEquals("divide", functionName)
-    assertEquals(listOf(12, 4), params)
+    val interceptor = testInterceptor + printer
+    val calculator = this(calculatorImpl, interceptor)
+    val echo = this(echoImpl, interceptor)
+    assertEquals(5, calculator.add(2, 3))
+    assertEquals("add", functionName)
+    assertEquals(listOf(2, 3), params)
     assertEquals(1, counter)
-    println(assertFailsWith<DivideByZeroException> { mixed.divide(12, 0) })
+    assertEquals(3, calculator.divide(12, 4))
     assertEquals(2, counter)
-    mixed.noParametersNoResult()
-    println(mixed.toString())
-    println(mixed.hashCode())
-    assertNotEquals(mixed, Any())
+    println(assertFailsWith<DivideByZeroException> { calculator.divide(12, 0) })
+    assertEquals(3, counter)
+    echo.noParametersNoResult()
+    assertEquals("hello", echo.echo("hello"))
+    assertEquals(3, (echo.echo(ByteArray(3)) as ByteArray).size)
+    withTimeout(200) { echo.delay(100) }
+    println(assertFailsWith<TimeoutCancellationException> {
+        withTimeout(100) { echo.delay(200) }
+    })
 }

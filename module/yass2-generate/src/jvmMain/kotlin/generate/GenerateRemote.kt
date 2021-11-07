@@ -4,7 +4,7 @@ import ch.softappeal.yass2.remote.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
 
-private fun KClass<*>.suspendServiceFunctions(): List<KFunction<*>> = serviceFunctions().onEach {
+private fun KClass<*>.suspendServiceFunctions(): List<KFunction<*>> = serviceFunctions().onEach { // TODO
     require(it.isSuspend) { "'$it' is not a suspend function" }
 }
 
