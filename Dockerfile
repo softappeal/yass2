@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:jdk-11.0.12_7-ubuntu-slim
+FROM eclipse-temurin:11.0.13_8-jdk-focal
 
 COPY  . /project
 WORKDIR /project

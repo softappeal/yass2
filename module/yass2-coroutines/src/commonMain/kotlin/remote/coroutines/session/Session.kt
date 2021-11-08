@@ -70,7 +70,6 @@ public abstract class Session {
         when (val message = packet.message) {
             is Request -> write(Packet(packet.requestNumber, serverTunnel(message)))
             is Reply -> requestNumber2continuation.remove(packet.requestNumber)!!.resume(message)
-            else -> error("unexpected '$message'")
         }
     }
 
