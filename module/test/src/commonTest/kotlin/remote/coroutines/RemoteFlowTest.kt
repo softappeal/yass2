@@ -14,11 +14,11 @@ private suspend fun test(flow0: Flow<Int>, flow1: Flow<Int>, flow2: Flow<Int>, f
     assertEquals(Range0.toList(), flow0.toList())
 
     class CollectException : RuntimeException()
-    assertFailsWith<CollectException> {
+    assertSuspendFailsWith<CollectException> {
         flow1.collect { throw CollectException() }
     }
 
-    assertFailsWith<DivideByZeroException> { flow3.collect() }
+    assertSuspendFailsWith<DivideByZeroException> { flow3.collect() }
 
     val counter = AtomicInteger(0)
     coroutineScope {

@@ -100,13 +100,13 @@ suspend fun ProxyFactory.test(calculatorImpl: Calculator, echoImpl: Echo) {
     assertEquals(1, counter)
     assertEquals(3, calculator.divide(12, 4))
     assertEquals(2, counter)
-    println(assertFailsWith<DivideByZeroException> { calculator.divide(12, 0) })
+    assertSuspendFailsWith<DivideByZeroException> { calculator.divide(12, 0) }
     assertEquals(3, counter)
     echo.noParametersNoResult()
     assertEquals("hello", echo.echo("hello"))
     assertEquals(3, (echo.echo(ByteArray(3)) as ByteArray).size)
     withTimeout(200) { echo.delay(100) }
-    println(assertFailsWith<TimeoutCancellationException> {
+    println(assertSuspendFailsWith<TimeoutCancellationException> {
         withTimeout(100) { echo.delay(200) }
     })
 }

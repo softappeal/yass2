@@ -86,7 +86,7 @@ class SessionTest {
             continuation.resume("hello")
         }
         assertEquals("hello", getString())
-        assertFailsWith<TimeoutCancellationException> {
+        assertSuspendFailsWith<TimeoutCancellationException> {
             withTimeout(100) { getString() }
         }
         try {

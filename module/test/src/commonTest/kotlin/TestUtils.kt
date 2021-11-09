@@ -1,7 +1,21 @@
 package ch.softappeal.yass2
 
+import kotlin.reflect.*
 import kotlin.test.*
 import kotlin.time.*
+
+/** Needed because [assertFailsWith] doesn't work with js. */
+suspend inline fun <reified T : Throwable> assertSuspendFailsWith(noinline block: suspend () -> Unit): T =
+    assertSuspendFailsWith(T::class, block) as T
+
+suspend fun assertSuspendFailsWith(exceptionClass: KClass<*>, block: suspend () -> Unit): Throwable {
+    try {
+        block()
+    } catch (t: Throwable) {
+        if (exceptionClass.isInstance(t)) return t
+    }
+    fail()
+}
 
 inline fun performance(iterations: Int, action: () -> Unit) {
     println("iterations: $iterations")
