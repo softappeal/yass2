@@ -89,11 +89,7 @@ class SessionTest {
         assertSuspendFailsWith<TimeoutCancellationException> {
             withTimeout(100) { getString() }
         }
-        try {
-            continuation.resume("first call after withTimeout")
-        } catch (e: Exception) {
-            fail()
-        }
+        continuation.resume("first call after withTimeout")
         println(assertFailsWith<Exception> { continuation.resume("second call after withTimeout") })
         println("done")
     }
