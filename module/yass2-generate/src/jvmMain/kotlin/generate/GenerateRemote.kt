@@ -1,12 +1,7 @@
 package ch.softappeal.yass2.generate
 
 import ch.softappeal.yass2.remote.*
-import kotlin.reflect.*
 import kotlin.reflect.full.*
-
-private fun KClass<*>.suspendServiceFunctions(): List<KFunction<*>> = serviceFunctions().onEach { // TODO
-    require(it.isSuspend) { "'$it' is not a suspend function" }
-}
 
 public fun generateRemoteProxyFactoryCreator(
     serviceIds: List<ServiceId<*>>,
@@ -28,7 +23,7 @@ public fun generateRemoteProxyFactoryCreator(
         write("""
             ${serviceId.id} -> object : ${serviceId.service.qualifiedName} {
         """, 3)
-        serviceId.service.suspendServiceFunctions().withIndex().forEach { (functionIndex, function) ->
+        serviceId.service.serviceFunctions().withIndex().forEach { (functionIndex, function) ->
             with(function) {
                 if (functionIndex != 0) appendLine()
                 writeFunctionSignature("                ", this)
@@ -71,7 +66,7 @@ public fun generateInvoker(
                 val i = service.implementation as ${serviceId.service.qualifiedName}
                 when (request.functionId) {
         """, 2)
-        serviceId.service.suspendServiceFunctions().withIndex().forEach { (functionIndex, function) ->
+        serviceId.service.serviceFunctions().withIndex().forEach { (functionIndex, function) ->
             append("                $functionIndex -> i.${function.name}(")
             function.valueParameters.forEach { parameter ->
                 if (parameter.index != 1) append(", ")

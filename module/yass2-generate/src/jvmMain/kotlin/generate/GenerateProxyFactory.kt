@@ -11,6 +11,9 @@ internal fun KClass<*>.serviceFunctions(): List<KFunction<*>> = memberFunctions
     .apply {
         require(map { it.name }.toSet().size == size) { "'${this@serviceFunctions}' has overloaded functions" }
     }
+    .onEach {
+        require(it.isSuspend) { "'$it' is not a suspend function" }
+    }
 
 public fun generateProxyFactory(
     services: List<KClass<*>>,

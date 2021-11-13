@@ -125,19 +125,4 @@ class GenerateBinarySerializerTest {
         assertEquals(1, X::class.memberProperties.size)
         assertEquals(1, Y::class.memberProperties.size)
     }
-
-    @Test
-    fun baseTypeInheritance() {
-        abstract class A
-        class B : A()
-        class C : A()
-        class X(val a: A)
-
-        /* TODO
-        val bEncoder = BaseEncoder(B::class, { _, _ -> }, { B() })
-        val serializer = reflectionBinarySerializer(listOf(bEncoder), listOf(C::class, X::class))
-        assertTrue(serializer.copy(X(B()), intArrayOf(5, 3)).a is B)
-        assertTrue(serializer.copy(X(C()), intArrayOf(5, 4)).a is C)
-         */
-    }
 }
