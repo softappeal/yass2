@@ -10,8 +10,14 @@ plugins {
 val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
 fun ktor(module: String) = "io.ktor:ktor-$module:1.6.5"
 
-val windowsTarget = true
+val windowsTarget = false
+val macTarget = true
 val jsTarget = true
+
+// TODO: https://youtrack.jetbrains.com/issue/KT-49109
+rootProject.plugins.withType(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin::class.java) {
+    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().nodeVersion = "16.0.0"
+}
 
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
@@ -46,6 +52,8 @@ allprojects {
         }
 
         if (windowsTarget) mingwX64("windows")
+
+        if (macTarget) macosArm64("mac")
 
         targets.all {
             compilations.all {
