@@ -33,7 +33,7 @@ class BytesTest {
             assertSame(buffer, this.buffer)
         }
         with(BytesReader(writer.buffer)) {
-            assertFalse(drained)
+            assertFalse(isDrained)
             assertEquals(0, current)
             assertEquals(-128, readByte())
             assertEquals(1, current)
@@ -47,7 +47,7 @@ class BytesTest {
             assertEquals(2, current)
             assertEquals(byteArrayOf(1, 2).toList(), readBytes(2).toList())
             assertEquals(4, current)
-            assertTrue(drained)
+            assertTrue(isDrained)
             assertFailsWith<IllegalStateException> { readByte() }
             assertEquals(4, current)
         }

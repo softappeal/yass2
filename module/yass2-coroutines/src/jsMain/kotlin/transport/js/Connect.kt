@@ -27,7 +27,7 @@ public fun TransportConfig.connect(url: String, sessionFactory: SessionFactory) 
                         val buffer = event.data as ArrayBuffer
                         val reader = BytesReader(Int8Array(buffer).asDynamic() as ByteArray)
                         val packet = read(reader) as Packet?
-                        check(reader.drained)
+                        check(reader.isDrained)
                         session.received(packet)
                     } catch (e: Exception) {
                         session.close(e)

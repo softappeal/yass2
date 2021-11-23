@@ -21,7 +21,7 @@ public suspend fun WebSocketSession.receiveLoop(config: TransportConfig, session
     WebSocketConnection(config, this).receiveLoop(sessionFactory) {
         val reader = BytesReader((incoming.receive() as Frame.Binary).data)
         val packet = config.read(reader) as Packet?
-        check(reader.drained)
+        check(reader.isDrained)
         packet
     }
 }

@@ -17,6 +17,6 @@ public fun TransportConfig.tunnel(url: String): Tunnel = { request ->
     val buffer = response.arrayBuffer().await()
     val reader = BytesReader(Int8Array(buffer).asDynamic() as ByteArray)
     val reply = read(reader) as Reply
-    check(reader.drained)
+    check(reader.isDrained)
     reply
 }

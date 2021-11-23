@@ -17,7 +17,7 @@ class Utf8Test {
             }
             with(BytesReader(buffer)) {
                 val s2 = fromUtf8(bytes.size)
-                assertTrue(drained)
+                assertTrue(isDrained)
                 assertEquals(s, s2)
             }
         }

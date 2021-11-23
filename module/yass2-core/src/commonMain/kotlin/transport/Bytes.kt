@@ -28,7 +28,7 @@ public class BytesReader(private val buffer: ByteArray) : Reader {
     public var current: Int = 0
         private set
 
-    public val drained: Boolean get() = current >= buffer.size
+    public val isDrained: Boolean get() = current >= buffer.size
 
     override fun readByte(): Byte {
         check(current < buffer.size)

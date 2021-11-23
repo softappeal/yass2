@@ -14,6 +14,6 @@ internal suspend fun ByteReadChannel.read(config: TransportConfig, length: Int):
     val buffer = config.readBytes(length) { bytes, offset, size -> readFully(bytes, offset, size) }
     val reader = BytesReader(buffer)
     val value = config.read(reader)
-    check(reader.drained)
+    check(reader.isDrained)
     return value
 }

@@ -9,6 +9,8 @@ public typealias ValueDumper = StringBuilder.(value: Any) -> Unit
 
 public typealias Dumper = StringBuilder.(value: Any?) -> StringBuilder
 
+public enum class Layout { Compact, Wide }
+
 /**
  * Supports the following types out-of-the-box:
  * `null`, [Boolean], [Number], [CharSequence], [List] and classes with its properties.
@@ -16,7 +18,7 @@ public typealias Dumper = StringBuilder.(value: Any?) -> StringBuilder
 public fun dumper(
     properties: DumperProperties,
     valueDumper: ValueDumper,
-    compact: Boolean = true,
+    layout: Layout = Layout.Compact,
     graphConcreteClasses: Set<KClass<*>> = emptySet(),
 ): Dumper = { value ->
     val object2reference: HashMap<Any, Int> by lazy(LazyThreadSafetyMode.NONE) { HashMap(16) }
@@ -40,22 +42,26 @@ public fun dumper(
         }
 
         fun dumpList(list: List<*>) {
-            if (compact) {
-                append('[')
-                var first = true
-                for (element in list) {
-                    if (first) first = false else append(',')
-                    dump(element)
+            when (layout) {
+                Layout.Compact -> {
+                    append('[')
+                    for ((index, element) in list.withIndex()) {
+                        if (index != 0) append(',')
+                        append("$index:")
+                        dump(element)
+                    }
+                    append(']')
                 }
-                append(']')
-            } else {
-                inc("[")
-                for (element in list) {
-                    appendIndent()
-                    dump(element)
-                    appendLine()
+                Layout.Wide -> {
+                    inc("[")
+                    for ((index, element) in list.withIndex()) {
+                        appendIndent()
+                        append("$index: ")
+                        dump(element)
+                        appendLine()
+                    }
+                    dec("]")
                 }
-                dec("]")
             }
         }
 
@@ -74,23 +80,26 @@ public fun dumper(
             } else {
                 index = 0
             }
-            if (compact) {
-                append("${type.simpleName}(")
-                var first = true
-                for (property in properties(type)) property.get(obj)?.let { propertyValue ->
-                    if (first) first = false else append(',')
-                    append("${property.name}=")
-                    dump(propertyValue)
+            when (layout) {
+                Layout.Compact -> {
+                    append("${type.simpleName}(")
+                    var first = true
+                    for (property in properties(type)) property.get(obj)?.let { propertyValue ->
+                        if (first) first = false else append(',')
+                        append("${property.name}=")
+                        dump(propertyValue)
+                    }
                 }
-            } else {
-                inc("${type.simpleName}(")
-                for (property in properties(type)) property.get(obj)?.let { propertyValue ->
-                    appendIndent()
-                    append("${property.name} = ")
-                    dump(propertyValue)
-                    appendLine()
+                Layout.Wide -> {
+                    inc("${type.simpleName}(")
+                    for (property in properties(type)) property.get(obj)?.let { propertyValue ->
+                        appendIndent()
+                        append("${property.name} = ")
+                        dump(propertyValue)
+                        appendLine()
+                    }
+                    dec("")
                 }
-                dec("")
             }
             append(")${if (graph) "#$index" else ""}")
         }
