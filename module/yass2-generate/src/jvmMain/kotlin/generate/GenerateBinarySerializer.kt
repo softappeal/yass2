@@ -5,7 +5,7 @@ import ch.softappeal.yass2.serialize.binary.generate.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
 
-private fun KClass<*>.metaClass(baseEncoderTypes: List<KClass<*>>): MetaClass {
+private fun KClass<*>.metaClass(baseEncoderTypes: List<KClass<*>>, concreteClasses: List<KClass<*>>): MetaClass {
     require(!java.isEnum) { "type '$this' is enum" }
     require(!isAbstract) { "type '$this' is abstract" }
     return MetaClass(
@@ -17,8 +17,9 @@ private fun KClass<*>.metaClass(baseEncoderTypes: List<KClass<*>>): MetaClass {
                 (property.returnType.classifier as KClass<*>).metaProperty(
                     @Suppress("UNCHECKED_CAST") (property as KProperty1<Any, Any?>),
                     baseEncoderTypes,
+                    concreteClasses,
                     property.returnType.isMarkedNullable
-                )
+                ) { it != this && isSubclassOf(it) }
             },
         (primaryConstructor ?: error("'$this' has no primary constructor")).valueParameters.map { it.name!! }
     )
@@ -41,7 +42,7 @@ public fun generateBinarySerializer(
         write("""
             ${ClassEncoder::class.qualifiedName}(${klass.qualifiedName}::class,
         """, 2)
-        val metaClass = klass.metaClass(baseEncoderTypes)
+        val metaClass = klass.metaClass(baseEncoderTypes, concreteClasses)
         fun MetaProperty.encoderId(tail: String = ""): String = if (kind != PropertyKind.WithId) encoderId.toString() + tail else ""
         if (metaClass.properties.isEmpty()) {
             write("{ _, _ -> },", 3)

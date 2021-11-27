@@ -31,16 +31,16 @@ public fun binarySerializer(
             { w, i ->
                 w.writeWithId(i.baseId)
                 w.writeWithId(i.baseIdOptional)
-                w.writeWithId(i.plainId)
-                w.writeWithId(i.plainIdOptional)
+                w.writeNoIdRequired(6, i.plainId)
+                w.writeNoIdOptional(6, i.plainIdOptional)
                 w.writeNoIdRequired(2, i.id)
             },
             { r ->
                 val i = ch.softappeal.yass2.contract.ComplexId(
                     r.readWithId() as ch.softappeal.yass2.contract.Id,
                     r.readWithId() as ch.softappeal.yass2.contract.Id?,
-                    r.readWithId() as ch.softappeal.yass2.contract.PlainId,
-                    r.readWithId() as ch.softappeal.yass2.contract.PlainId?,
+                    r.readNoIdRequired(6) as ch.softappeal.yass2.contract.PlainId,
+                    r.readNoIdOptional(6) as ch.softappeal.yass2.contract.PlainId?,
                 )
                 i.id = r.readNoIdRequired(2) as kotlin.Int
                 i

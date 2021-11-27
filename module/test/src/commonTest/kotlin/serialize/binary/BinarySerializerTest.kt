@@ -90,7 +90,7 @@ class BinarySerializerTest {
 
     @Test
     fun complexId() {
-        with(copy(ComplexId(), 7, 6, 120, 0, 6, 118, 0, 116)) {
+        with(copy(ComplexId(), 7, 6, 120, 0, 118, 0, 116)) {
             assertEquals(60, baseId.id)
             assertTrue(baseId is PlainId)
             assertNull(baseIdOptional)
@@ -98,7 +98,7 @@ class BinarySerializerTest {
             assertNull(plainIdOptional)
             assertEquals(58, id)
         }
-        with(copy(ComplexId(baseIdOptional = PlainId(61)), 7, 6, 120, 6, 122, 6, 118, 0, 116)) {
+        with(copy(ComplexId(baseIdOptional = PlainId(61)), 7, 6, 120, 6, 122, 118, 0, 116)) {
             assertEquals(60, baseId.id)
             assertTrue(baseId is PlainId)
             assertEquals(61, baseIdOptional!!.id)
@@ -107,7 +107,7 @@ class BinarySerializerTest {
             assertNull(plainIdOptional)
             assertEquals(58, id)
         }
-        with(copy(ComplexId(plainId = PlainId(61)), 7, 6, 120, 0, 6, 122, 0, 116)) {
+        with(copy(ComplexId(plainId = PlainId(61)), 7, 6, 120, 0, 122, 0, 116)) {
             assertEquals(60, baseId.id)
             assertTrue(baseId is PlainId)
             assertNull(baseIdOptional)
@@ -115,7 +115,7 @@ class BinarySerializerTest {
             assertNull(plainIdOptional)
             assertEquals(58, id)
         }
-        with(copy(ComplexId(plainIdOptional = PlainId(61)), 7, 6, 120, 0, 6, 118, 6, 122, 116)) {
+        with(copy(ComplexId(plainIdOptional = PlainId(61)), 7, 6, 120, 0, 118, 1, 122, 116)) {
             assertEquals(60, baseId.id)
             assertTrue(baseId is PlainId)
             assertNull(baseIdOptional)

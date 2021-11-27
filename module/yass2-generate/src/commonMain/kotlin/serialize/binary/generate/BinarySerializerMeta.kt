@@ -13,12 +13,12 @@ internal class MetaProperty constructor(
     fun mutableProperty(): KMutableProperty1<Any, Any?> = property as KMutableProperty1<Any, Any?>
 }
 
-// TODO: add isStrictSubclassOf optimization
-
 internal fun KClass<*>.metaProperty(
     property: KProperty1<Any, Any?>,
     baseEncoderTypes: List<KClass<*>>,
+    concreteClasses: List<KClass<*>>,
     optional: Boolean,
+    isStrictSubclassOf: KClass<*>.(base: KClass<*>) -> Boolean,
 ): MetaProperty {
     val kind = if (optional) PropertyKind.NoIdOptional else PropertyKind.NoIdRequired
     return if (this == List::class) {
@@ -28,7 +28,12 @@ internal fun KClass<*>.metaProperty(
         if (baseEncoderIndex >= 0) {
             MetaProperty(property, kind, baseEncoderIndex + FirstEncoderId)
         } else {
-            MetaProperty(property, PropertyKind.WithId)
+            val concreteClassIndex = concreteClasses.indexOfFirst { it == this }
+            if (concreteClassIndex >= 0 && concreteClasses.none { it.isStrictSubclassOf(concreteClasses[concreteClassIndex]) }) {
+                MetaProperty(property, kind, concreteClassIndex + baseEncoderTypes.size + FirstEncoderId)
+            } else {
+                MetaProperty(property, PropertyKind.WithId)
+            }
         }
     }
 }
