@@ -11,8 +11,8 @@ val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
 fun ktor(module: String) = "io.ktor:ktor-$module:1.6.5"
 
 val windowsTarget = false
-val macTarget = true
-val jsTarget = true
+val macTarget = false // TODO
+val jsTarget = false // TODO
 
 // TODO: https://youtrack.jetbrains.com/issue/KT-49109
 rootProject.plugins.withType(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin::class.java) {
