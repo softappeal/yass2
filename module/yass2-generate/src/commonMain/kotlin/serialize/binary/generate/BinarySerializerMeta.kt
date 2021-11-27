@@ -13,6 +13,8 @@ internal class MetaProperty constructor(
     fun mutableProperty(): KMutableProperty1<Any, Any?> = property as KMutableProperty1<Any, Any?>
 }
 
+// TODO: add isStrictSubclassOf optimization
+
 internal fun KClass<*>.metaProperty(
     property: KProperty1<Any, Any?>,
     baseEncoderTypes: List<KClass<*>>,

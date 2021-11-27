@@ -6,25 +6,20 @@ import kotlin.reflect.*
 public abstract class Encoder internal constructor(public val type: KClass<*>) {
     internal abstract fun write(writer: EncoderWriter, value: Any?)
     internal abstract fun read(reader: EncoderReader): Any?
-    internal open fun write(writer: EncoderWriter, id: Int, value: Any?) {
-        writer.writer.writeVarInt(id)
-        write(writer, value)
-    }
 }
 
-public class EncoderId internal constructor(public val id: Int, internal val encoder: Encoder) {
-    internal fun write(writer: EncoderWriter, value: Any?) = encoder.write(writer, id, value)
-}
+public class EncoderId internal constructor(public val id: Int, internal val encoder: Encoder)
 
 public class EncoderWriter internal constructor(internal val writer: Writer, private val serializer: BinarySerializer) {
-    internal val object2reference: HashMap<Any, Int> by lazy(LazyThreadSafetyMode.NONE) { HashMap(16) }
-
     public fun writeWithId(value: Any?) {
         when (value) {
             null -> NullEncoderId
             is List<*> -> ListEncoderId
             else -> serializer.type2encoderId[value::class] ?: error("missing type '${value::class}'")
-        }.write(this, value)
+        }.apply {
+            writer.writeVarInt(id)
+            encoder.write(this@EncoderWriter, value)
+        }
     }
 
     public fun writeNoIdRequired(encoderId: Int, value: Any): Unit = serializer.encoders[encoderId].write(this, value)
@@ -37,15 +32,7 @@ public class EncoderWriter internal constructor(internal val writer: Writer, pri
 }
 
 public class EncoderReader internal constructor(internal val reader: Reader, private val encoders: Array<Encoder>) {
-    internal val objects: ArrayList<Any> by lazy(LazyThreadSafetyMode.NONE) { ArrayList(16) }
-
-    public fun <T : Any> created(value: T): T {
-        objects.add(value)
-        return value
-    }
-
     public fun readWithId(): Any? = encoders[reader.readVarInt()].read(this)
-
     public fun readNoIdRequired(encoderId: Int): Any = encoders[encoderId].read(this)!!
     public fun readNoIdOptional(encoderId: Int): Any? = if (reader.readBoolean()) readNoIdRequired(encoderId) else null
 }
@@ -70,18 +57,11 @@ public val ListEncoderId: EncoderId = EncoderId(1, object : Encoder(List::class)
     }
 })
 
-private class ReferenceType
-
-private val ReferenceEncoderId = EncoderId(2, object : Encoder(ReferenceType::class) {
-    override fun write(writer: EncoderWriter, value: Any?) = writer.writer.writeVarInt(value as Int)
-    override fun read(reader: EncoderReader) = reader.objects[reader.reader.readVarInt()]
-})
-
-public const val FirstEncoderId: Int = 3
+public const val FirstEncoderId: Int = 2
 
 /** Supports the following types (including optional variants): `null`, [List], [BaseEncoder] and [ClassEncoder]. */
 public class BinarySerializer(encoders: List<Encoder>) : Serializer {
-    internal val encoders = (listOf(NullEncoderId.encoder, ListEncoderId.encoder, ReferenceEncoderId.encoder) + encoders).toTypedArray()
+    internal val encoders = (listOf(NullEncoderId.encoder, ListEncoderId.encoder) + encoders).toTypedArray()
     internal val type2encoderId = HashMap<KClass<*>, EncoderId>(this.encoders.size)
 
     init {
@@ -112,22 +92,9 @@ public class BaseEncoder<T : Any>(
  */
 public class ClassEncoder<T : Any>(
     type: KClass<T>,
-    private val graph: Boolean,
     private val writeProperties: (writer: EncoderWriter, instance: T) -> Unit,
     private val readInstance: (reader: EncoderReader) -> T,
 ) : Encoder(type) {
     override fun write(writer: EncoderWriter, value: Any?) = writeProperties(writer, @Suppress("UNCHECKED_CAST") (value as T))
     override fun read(reader: EncoderReader) = readInstance(reader)
-    override fun write(writer: EncoderWriter, id: Int, value: Any?) {
-        if (graph) {
-            val object2reference = writer.object2reference
-            val reference = object2reference[value]
-            if (reference != null) {
-                ReferenceEncoderId.write(writer, reference)
-                return
-            }
-            object2reference[value!!] = object2reference.size
-        }
-        super.write(writer, id, value)
-    }
 }

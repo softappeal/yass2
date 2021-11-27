@@ -10,7 +10,7 @@ private const val ExceptionReplyType = 2.toByte()
 
 /**
  * Returns a binary [Serializer] for [Message].
- * [contractSerializer] must be able to serialize [List] and the used contract.
+ * [contractSerializer] must be able to serialize the used contract.
  */
 public fun binaryMessageSerializer(contractSerializer: Serializer): Serializer = object : Serializer {
     override fun write(writer: Writer, value: Any?) = when (value) {
@@ -18,7 +18,8 @@ public fun binaryMessageSerializer(contractSerializer: Serializer): Serializer =
             writer.writeByte(RequestType)
             writer.writeVarInt(value.serviceId)
             writer.writeVarInt(value.functionId)
-            contractSerializer.write(writer, value.parameters)
+            writer.writeByte(value.parameters.size.toByte())
+            value.parameters.forEach { contractSerializer.write(writer, it) }
         }
         is ValueReply -> {
             writer.writeByte(ValueReplyType)
@@ -31,11 +32,18 @@ public fun binaryMessageSerializer(contractSerializer: Serializer): Serializer =
         else -> error("unexpected value '$value'")
     }
 
+    private fun readList(reader: Reader): List<Any?> {
+        var size = reader.readByte().toInt()
+        val list = ArrayList<Any?>(size)
+        while (size-- > 0) list.add(contractSerializer.read(reader))
+        return list
+    }
+
     override fun read(reader: Reader): Message = when (val type = reader.readByte()) {
         RequestType -> Request(
             reader.readVarInt(),
             reader.readVarInt(),
-            contractSerializer.read(reader) as List<Any?>
+            readList(reader),
         )
         ValueReplyType -> ValueReply(
             contractSerializer.read(reader)

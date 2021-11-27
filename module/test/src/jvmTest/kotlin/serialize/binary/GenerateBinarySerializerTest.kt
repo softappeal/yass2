@@ -72,20 +72,20 @@ class GenerateBinarySerializerTest {
                     baseEncoders: List<ch.softappeal.yass2.serialize.binary.BaseEncoder<*>>,
                 ): ch.softappeal.yass2.serialize.binary.BinarySerializer =
                     ch.softappeal.yass2.serialize.binary.BinarySerializer(baseEncoders + listOf(
-                        ch.softappeal.yass2.serialize.binary.ClassEncoder(null::class, false,
+                        ch.softappeal.yass2.serialize.binary.ClassEncoder(null::class,
                             { w, i ->
-                                w.writeNoIdRequired(3, i.cause)
-                                w.writeNoIdRequired(3, i.message)
+                                w.writeNoIdRequired(2, i.cause)
+                                w.writeNoIdRequired(2, i.message)
                             },
                             { r ->
                                 val i = null(
-                                    r.readNoIdRequired(3) as kotlin.Int,
-                                    r.readNoIdRequired(3) as kotlin.Int,
+                                    r.readNoIdRequired(2) as kotlin.Int,
+                                    r.readNoIdRequired(2) as kotlin.Int,
                                 )
                                 i
                             }
                         ),
-                        ch.softappeal.yass2.serialize.binary.ClassEncoder(null::class, false,
+                        ch.softappeal.yass2.serialize.binary.ClassEncoder(null::class,
                             { _, _ -> },
                             {
                                 val i = null(
@@ -93,13 +93,13 @@ class GenerateBinarySerializerTest {
                                 i
                             }
                         ),
-                        ch.softappeal.yass2.serialize.binary.ClassEncoder(null::class, false,
+                        ch.softappeal.yass2.serialize.binary.ClassEncoder(null::class,
                             { w, i ->
-                                w.writeNoIdRequired(3, i.z)
+                                w.writeNoIdRequired(2, i.z)
                             },
                             { r ->
                                 val i = null(
-                                    r.readNoIdRequired(3) as kotlin.Int,
+                                    r.readNoIdRequired(2) as kotlin.Int,
                                 )
                                 i
                             }
