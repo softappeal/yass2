@@ -30,6 +30,8 @@ public fun generateBinarySerializer(
     concreteClasses: List<KClass<*>> = emptyList(),
     name: String = "binarySerializer",
 ): String = writer {
+    require(baseEncoders.map { it.type }.toSet().size == baseEncoders.size) { "duplicated baseEncoder" }
+    require(concreteClasses.toSet().size == concreteClasses.size) { "duplicated concreteClass" }
     write("""
         @Suppress("UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
         public fun $name(

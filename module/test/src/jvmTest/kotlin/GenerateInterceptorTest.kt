@@ -23,9 +23,9 @@ class GenerateInterceptorTest {
     }
 
     @Test
-    fun duplicatedServices() {
+    fun duplicatedService() {
         assertEquals(
-            "duplicated services",
+            "duplicated service",
             assertFailsWith<IllegalArgumentException> { generateProxyFactory(listOf(Calculator::class, Calculator::class)) }.message
         )
     }

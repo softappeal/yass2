@@ -19,7 +19,7 @@ public fun generateProxyFactory(
     services: List<KClass<*>>,
     name: String = "ProxyFactory",
 ): String = writer {
-    require(services.toSet().size == services.size) { "duplicated services" }
+    require(services.toSet().size == services.size) { "duplicated service" }
     write("""
         @Suppress("UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
         public object $name : ${ProxyFactory::class.qualifiedName} {

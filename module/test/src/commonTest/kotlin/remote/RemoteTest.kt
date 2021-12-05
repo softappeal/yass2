@@ -11,9 +11,9 @@ private val RemoteProxyFactory = (::remoteProxyFactoryCreator)(::invoker.tunnel(
 
 class RemoteTest {
     @Test
-    fun duplicatedServices() {
+    fun duplicatedService() {
         assertEquals(
-            "duplicated service id's",
+            "duplicated service id",
             assertFailsWith<IllegalArgumentException> {
                 ::invoker.tunnel(listOf(EchoId(EchoImpl), EchoId(EchoImpl)))
             }.message

@@ -7,7 +7,7 @@ public fun generateRemoteProxyFactoryCreator(
     serviceIds: List<ServiceId<*>>,
     name: String = "remoteProxyFactoryCreator",
 ): String = writer {
-    require(serviceIds.map { it.id }.toSet().size == serviceIds.size) { "duplicated service id's" }
+    require(serviceIds.map { it.id }.toSet().size == serviceIds.size) { "duplicated service id" }
     write("""
         @Suppress("UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
         public fun $name(
@@ -51,7 +51,7 @@ public fun generateInvoker(
     serviceIds: List<ServiceId<*>>,
     name: String = "invoker",
 ): String = writer {
-    require(serviceIds.map { it.id }.toSet().size == serviceIds.size) { "duplicated service id's" }
+    require(serviceIds.map { it.id }.toSet().size == serviceIds.size) { "duplicated service id" }
     write("""
         @Suppress("RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
         public suspend fun $name(

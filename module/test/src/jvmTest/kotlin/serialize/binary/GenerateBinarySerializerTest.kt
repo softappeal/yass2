@@ -7,6 +7,14 @@ import kotlin.test.*
 
 class GenerateBinarySerializerTest {
     @Test
+    fun duplicatedBaseEncoder() {
+        assertEquals(
+            "duplicated baseEncoder",
+            assertFailsWith<IllegalArgumentException> { generateBinarySerializer(listOf(IntEncoder, IntEncoder), listOf()) }.message
+        )
+    }
+
+    @Test
     fun enumClass() {
         assertEquals(
             "type 'class ch.softappeal.yass2.serialize.binary.Color' is enum",
@@ -19,6 +27,14 @@ class GenerateBinarySerializerTest {
         assertEquals(
             "type 'class ch.softappeal.yass2.contract.Id' is abstract",
             assertFailsWith<IllegalArgumentException> { generateBinarySerializer(listOf(), listOf(Id::class)) }.message
+        )
+    }
+
+    @Test
+    fun duplicatedConcreteClass() {
+        assertEquals(
+            "duplicated concreteClass",
+            assertFailsWith<IllegalArgumentException> { generateBinarySerializer(listOf(), listOf(Id2::class, Id2::class)) }.message
         )
     }
 
