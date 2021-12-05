@@ -5,6 +5,14 @@ import kotlin.reflect.*
 import kotlin.reflect.full.*
 import kotlin.reflect.jvm.*
 
+internal fun StringBuilder.write(s: String, level: Int = 0) {
+    append(s.replaceIndent("    ".repeat(level))).appendLine()
+}
+
+internal fun writer(action: StringBuilder.() -> Unit): String = StringBuilder(10_000).apply { action() }.toString()
+
+internal const val CSY = "ch.softappeal.yass2"
+
 internal fun KClass<*>.serviceFunctions(): List<KFunction<*>> = memberFunctions
     .filter { it.javaMethod!!.declaringClass != Object::class.java }
     .sortedBy { it.name } // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
@@ -14,6 +22,17 @@ internal fun KClass<*>.serviceFunctions(): List<KFunction<*>> = memberFunctions
     .onEach {
         require(it.isSuspend) { "'$it' is not a suspend function" }
     }
+
+internal fun StringBuilder.writeFunctionSignature(indent: String, function: KFunction<*>): Unit = with(function) {
+    append("${indent}override ${if (function.isSuspend) "suspend " else ""}fun $name(")
+    valueParameters.forEach { parameter ->
+        if (parameter.index != 1) append(", ")
+        append("p${parameter.index}: ${parameter.type}")
+    }
+    append(")")
+}
+
+internal fun KFunction<*>.hasResult(): Boolean = returnType.classifier != Unit::class
 
 public fun generateProxyFactory(
     services: List<KClass<*>>,

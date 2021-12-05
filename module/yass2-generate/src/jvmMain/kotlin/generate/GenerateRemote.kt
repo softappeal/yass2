@@ -1,7 +1,10 @@
 package ch.softappeal.yass2.generate
 
 import ch.softappeal.yass2.remote.*
+import kotlin.reflect.*
 import kotlin.reflect.full.*
+
+internal fun KType.needsCast(): Boolean = classifier != Any::class || !isMarkedNullable
 
 public fun generateRemoteProxyFactory(
     serviceIds: List<ServiceId<*>>,
