@@ -17,7 +17,7 @@ fun CoroutineScope.acceptorSessionFactory(context: suspend Session.() -> Any): S
             // If we move the line above into the block below, we get an IllegalAccessError on linux/mac if Ktor > 1.5.2:
             //   trying to access protected method 'clientTunnel' ('opened' is in unnamed module of loader io.ktor.server.engine.OverridingClassLoader; 'Session' is in unnamed module of loader 'app')
             launch {
-                val echo = remoteProxyFactoryCreator(ct)(EchoId)
+                val echo = remoteProxyFactory(ct)(EchoId)
                 val value = "echo from acceptor"
                 val result = echo.echo(value)
                 print("<$result>")
@@ -36,7 +36,7 @@ fun CoroutineScope.acceptorSessionFactory(context: suspend Session.() -> Any): S
 
 fun CoroutineScope.initiatorSessionFactory(iterations: Int): SessionFactory = {
     object : Session() {
-        override val serverTunnel = ::invoker.tunnel(listOf(EchoId(EchoImpl)))
+        override val serverTunnel = ::invoke.tunnel(listOf(EchoId(EchoImpl)))
 
         override fun opened() {
             launch {
@@ -99,7 +99,7 @@ class SessionTest {
         val session1 = object : Session() {
             override fun opened() {
                 launch {
-                    val echo = remoteProxyFactoryCreator(clientTunnel)(EchoId)
+                    val echo = remoteProxyFactory(clientTunnel)(EchoId)
                     var timeout = 20
                     val job = watch(200, 40) {
                         println("check")
@@ -113,7 +113,7 @@ class SessionTest {
 
             override suspend fun closed(e: Exception?) = println("session1 closed: $e")
         }
-        val serverTunnel = ::invoker.tunnel(listOf(EchoId(EchoImpl)))
+        val serverTunnel = ::invoke.tunnel(listOf(EchoId(EchoImpl)))
         val session2 = object : Session() {
             override val serverTunnel = serverTunnel
             override suspend fun closed(e: Exception?) = println("session2 closed: $e")
@@ -127,7 +127,7 @@ class SessionTest {
             object : Session() {
                 override fun opened() {
                     launch {
-                        val echo = remoteProxyFactoryCreator(clientTunnel)(EchoId)
+                        val echo = remoteProxyFactory(clientTunnel)(EchoId)
                         println(echo.echo("hello"))
                         close()
                     }
@@ -137,7 +137,7 @@ class SessionTest {
             }
         }
 
-        val serverTunnel = ::invoker.tunnel(listOf(EchoId(EchoImpl)))
+        val serverTunnel = ::invoke.tunnel(listOf(EchoId(EchoImpl)))
         val acceptorSessionFactory = {
             object : Session() {
                 override val serverTunnel = serverTunnel

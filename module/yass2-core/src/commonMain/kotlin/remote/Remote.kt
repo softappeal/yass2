@@ -33,8 +33,6 @@ public fun Invoker.tunnel(services: Collection<Service>): Tunnel {
     }
 }
 
-public typealias RemoteProxyFactoryCreator = (tunnel: Tunnel) -> RemoteProxyFactory
-
 public fun missingFunction(request: Request) {
     error("no function id ${request.functionId} for service id ${request.serviceId}")
 }

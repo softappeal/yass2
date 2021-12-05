@@ -9,7 +9,7 @@ class GenerateRemoteTest {
     fun duplicatedServiceId() {
         assertEquals(
             "duplicated service id",
-            assertFailsWith<IllegalArgumentException> { generateInvoker(listOf(EchoId, EchoId)) }.message
+            assertFailsWith<IllegalArgumentException> { generateInvoke(listOf(EchoId, EchoId)) }.message
         )
     }
 }
