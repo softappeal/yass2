@@ -7,8 +7,8 @@ plugins {
     id("maven-publish")
     signing
 }
-val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-RC"
-fun ktor(module: String) = "io.ktor:ktor-$module:1.6.6"
+fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.6.0-RC2"
+fun ktor(module: String) = "io.ktor:ktor-$module:1.6.7"
 
 val windowsTarget = false
 val macTarget = true
@@ -100,7 +100,7 @@ val coroutinesProject = project("module:yass2-coroutines") {
             val commonMain by getting {
                 dependencies {
                     api(coreProject)
-                    api(coroutinesCore)
+                    api(coroutines("core"))
                 }
             }
         }
@@ -149,6 +149,7 @@ project("module:test") {
                 dependencies {
                     implementation(coroutinesProject)
                     implementation(kotlin("test"))
+                    implementation(coroutines("test"))
                 }
             }
             val jvmTest by getting {

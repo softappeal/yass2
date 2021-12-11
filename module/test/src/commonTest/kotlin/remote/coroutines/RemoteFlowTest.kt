@@ -15,6 +15,7 @@ private suspend fun test(flow0: Flow<Int>, flow1: Flow<Int>, flow2: Flow<Int>, f
 
     class CollectException : RuntimeException()
     assertSuspendFailsWith<CollectException> {
+        @OptIn(InternalCoroutinesApi::class) // TODO: remove
         flow1.collect { throw CollectException() }
     }
 

@@ -43,6 +43,7 @@ fun flowService(flowFactory: FlowFactory): FlowService {
                 CoroutineScope(coroutineContext).launch {
                     tryFinally({
                         try {
+                            @OptIn(InternalCoroutinesApi::class) // TODO: remove
                             flow.collect { value -> channel.send(ValueReply(value)) }
                             channel.send(null)
                         } catch (e: Exception) {
