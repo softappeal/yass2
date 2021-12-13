@@ -10,7 +10,7 @@ import io.ktor.http.content.*
 import io.ktor.util.*
 import io.ktor.utils.io.*
 
-internal fun TransportConfig.write(message: Message): OutgoingContent.WriteChannelContent {
+internal fun Transport.write(message: Message): OutgoingContent.WriteChannelContent {
     val writer = writer()
     write(writer, message)
     return object : OutgoingContent.WriteChannelContent() {
@@ -20,15 +20,15 @@ internal fun TransportConfig.write(message: Message): OutgoingContent.WriteChann
 }
 
 public fun HttpClient.tunnel(
-    config: TransportConfig,
+    transport: Transport,
     url: String,
     headers: () -> Headers = { Headers.Empty },
 ): Tunnel = { request ->
     val response = request<HttpResponse>(url) {
         method = HttpMethod.Post
         @OptIn(InternalAPI::class) this.headers.appendAll(headers()) // TODO: replace with public API when available
-        body = config.write(request)
+        body = transport.write(request)
     }
     val length = response.contentLength()!!.toInt()
-    response.content.read(config, length) as Reply
+    response.content.read(transport, length) as Reply
 }

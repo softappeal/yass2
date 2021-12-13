@@ -43,12 +43,12 @@ class KtorTest {
                     while (true) {
                         val socket = serverSocket.accept()
                         launch {
-                            socket.handleRequest(MessageConfig, serverTunnel)
+                            socket.handleRequest(MessageTransport, serverTunnel)
                         }
                     }
                 }
                 try {
-                    val clientTunnel = MessageConfig.socketTunnel { tcp.connect(Address) }
+                    val clientTunnel = MessageTransport.socketTunnel { tcp.connect(Address) }
                     clientTunnel.test(1000)
                 } finally {
                     listenerJob.cancel()
@@ -66,7 +66,7 @@ class KtorTest {
                         val socket = serverSocket.accept()
                         launch {
                             socket.receiveLoop(
-                                PacketConfig,
+                                PacketTransport,
                                 acceptorSessionFactory { (connection as SocketConnection).socket.remoteAddress }
                             )
                         }
@@ -75,7 +75,7 @@ class KtorTest {
                 try {
                     launch {
                         tcp.connect(Address)
-                            .receiveLoop(PacketConfig, initiatorSessionFactory(1000))
+                            .receiveLoop(PacketTransport, initiatorSessionFactory(1000))
                     }.join()
                 } finally {
                     acceptorJob.cancel()
@@ -89,7 +89,7 @@ class KtorTest {
         val engine = embeddedServer(io.ktor.server.cio.CIO, Port) {
             routing {
                 route(
-                    MessageConfig,
+                    MessageTransport,
                     Path,
                     tunnel { currentCoroutineContext()[CallCce]!!.call.request.headers[DemoHeaderKey]!! }
                 )
@@ -99,7 +99,7 @@ class KtorTest {
         try {
             runBlocking {
                 HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
-                    client.tunnel(MessageConfig, "http://$Host:$Port$Path") { headersOf(DemoHeaderKey, DemoHeaderValue) }
+                    client.tunnel(MessageTransport, "http://$Host:$Port$Path") { headersOf(DemoHeaderKey, DemoHeaderValue) }
                         .test(1000)
                 }
             }
@@ -115,7 +115,7 @@ class KtorTest {
             routing {
                 webSocket(Path) {
                     receiveLoop(
-                        PacketConfig,
+                        PacketTransport,
                         acceptorSessionFactory {
                             ((connection as WebSocketConnection).session as WebSocketServerSession)
                                 .call.request.headers[DemoHeaderKey]!!
@@ -131,7 +131,7 @@ class KtorTest {
                     install(io.ktor.client.features.websocket.WebSockets)
                 }.use { client ->
                     client.ws(HttpMethod.Get, Host, Port, Path, { header(DemoHeaderKey, DemoHeaderValue) }) {
-                        receiveLoop(PacketConfig, initiatorSessionFactory(1000))
+                        receiveLoop(PacketTransport, initiatorSessionFactory(1000))
                     }
                 }
             }
@@ -143,7 +143,7 @@ class KtorTest {
     @Test
     fun context() {
         var context: String? = null
-        val transportConfig = TransportConfig(
+        val transport = Transport(
             ContextMessageSerializer(
                 BinarySerializer(listOf(StringEncoder)), MessageSerializer,
                 { context }, { context = it },
@@ -166,11 +166,11 @@ class KtorTest {
                     ))
                     while (true) {
                         val socket = serverSocket.accept()
-                        socket.handleRequest(transportConfig, serverTunnel)
+                        socket.handleRequest(transport, serverTunnel)
                     }
                 }
                 try {
-                    val clientTunnel = transportConfig.socketTunnel { tcp.connect(Address) }
+                    val clientTunnel = transport.socketTunnel { tcp.connect(Address) }
                     val calculator = remoteProxyFactory(clientTunnel)(CalculatorId)
                     context = "client"
                     assertEquals(5, calculator.add(2, 3))

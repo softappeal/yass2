@@ -7,7 +7,7 @@ import kotlinx.coroutines.*
 import org.khronos.webgl.*
 import org.w3c.fetch.*
 
-public fun TransportConfig.tunnel(url: String): Tunnel = { request ->
+public fun Transport.tunnel(url: String): Tunnel = { request ->
     val writer = writer()
     write(writer, request)
     val response = window.fetch(url, object : RequestInit {

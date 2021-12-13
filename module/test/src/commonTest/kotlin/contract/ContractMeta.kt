@@ -33,8 +33,8 @@ val ValueDumper: ValueDumper = { value ->
     }
 }
 
-val MessageConfig = TransportConfig(MessageSerializer, 100, 100)
-val PacketConfig = TransportConfig(PacketSerializer, 100, 100)
+val MessageTransport = Transport(MessageSerializer, 100, 100)
+val PacketTransport = Transport(PacketSerializer, 100, 100)
 
 const val DemoHeaderKey = "Demo-Header-Key"
 const val DemoHeaderValue = "Demo-Header-Value"

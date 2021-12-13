@@ -4,18 +4,18 @@ import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
 import kotlin.test.*
 
-class TransportConfigTest {
+class TransportTest {
     @Test
     fun testReadBytes() = yassRunBlocking {
-        val config = TransportConfig(ContractSerializer, 50, 100)
+        val transport = Transport(ContractSerializer, 50, 100)
 
-        assertEquals(50, config.writer().buffer.size)
+        assertEquals(50, transport.writer().buffer.size)
 
         class Step(val size: Int, val offset: Int, val length: Int)
 
         suspend fun check(length: Int, vararg steps: Step) {
             var counter = 0
-            val buffer = config.readBytes(length) { bytes, offset, l ->
+            val buffer = transport.readBytes(length) { bytes, offset, l ->
                 val step = steps[counter++]
                 assertEquals(step.size, bytes.size)
                 assertEquals(step.offset, offset)

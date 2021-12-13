@@ -2,7 +2,7 @@ package ch.softappeal.yass2.transport
 
 import ch.softappeal.yass2.serialize.*
 
-public class TransportConfig(
+public class Transport(
     serializer: Serializer,
     private val initialWriterCapacity: Int,
     private val maxReadBytesInitialSize: Int = 500,

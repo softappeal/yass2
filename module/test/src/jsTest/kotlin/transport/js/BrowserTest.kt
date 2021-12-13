@@ -12,8 +12,8 @@ fun <T> callSuspendFunction(block: suspend () -> T): Promise<T> = @OptIn(Delicat
 
 @Suppress("unused")
 suspend fun remoteTest(): String {
-    MessageConfig.tunnel("/yass").test(1000)
+    MessageTransport.tunnel("/yass").test(1000)
     val initiatorSessionFactory = CoroutineScope(Job()).initiatorSessionFactory(1000)
-    PacketConfig.connect("ws://localhost:28947/yass", initiatorSessionFactory)
+    PacketTransport.connect("ws://localhost:28947/yass", initiatorSessionFactory)
     return "done"
 }

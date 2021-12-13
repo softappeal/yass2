@@ -27,7 +27,7 @@
     - transport `yass2-core`
         - BinaryMessageSerializer.kt `[common]`
         - Bytes.kt `[common]`
-        - TransportConfig.kt `[common]`
+        - Transport.kt `[common]`
         - js `yass2-coroutines`
             - Connect.kt `[js]`
             - Tunnel.kt `[js]`

@@ -9,11 +9,11 @@ import io.ktor.utils.io.*
 import kotlinx.coroutines.*
 import kotlin.coroutines.*
 
-private suspend fun ByteReadChannel.read(config: TransportConfig): Any? = read(config, readInt())
+private suspend fun ByteReadChannel.read(transport: Transport): Any? = read(transport, readInt())
 
 public typealias SocketConnector = suspend () -> Socket
 
-public fun TransportConfig.socketTunnel(socketConnector: SocketConnector): Tunnel = { request ->
+public fun Transport.socketTunnel(socketConnector: SocketConnector): Tunnel = { request ->
     socketConnector().use { socket ->
         val writeChannel = socket.openWriteChannel()
         writeChannel.write(this, request)
@@ -26,22 +26,22 @@ public class SocketCce(public val socket: Socket) : AbstractCoroutineContextElem
     public companion object Key : CoroutineContext.Key<SocketCce>
 }
 
-public suspend fun Socket.handleRequest(config: TransportConfig, tunnel: Tunnel): Unit = use {
+public suspend fun Socket.handleRequest(transport: Transport, tunnel: Tunnel): Unit = use {
     withContext(SocketCce(this)) {
-        val reply = tunnel(openReadChannel().read(config) as Request)
+        val reply = tunnel(openReadChannel().read(transport) as Request)
         val writeChannel = openWriteChannel()
-        writeChannel.write(config, reply)
+        writeChannel.write(transport, reply)
         writeChannel.flush()
     }
 }
 
 public class SocketConnection internal constructor(
-    private val config: TransportConfig,
+    private val transport: Transport,
     public val socket: Socket,
 ) : Connection {
     private val writeChannel = socket.openWriteChannel()
     override suspend fun write(packet: Packet?) {
-        writeChannel.write(config, packet)
+        writeChannel.write(transport, packet)
         writeChannel.flush()
     }
 
@@ -49,7 +49,7 @@ public class SocketConnection internal constructor(
     override suspend fun closed(): Unit = socket.close()
 }
 
-public suspend fun Socket.receiveLoop(config: TransportConfig, sessionFactory: SessionFactory): Unit = use {
+public suspend fun Socket.receiveLoop(transport: Transport, sessionFactory: SessionFactory): Unit = use {
     val readChannel = openReadChannel()
-    SocketConnection(config, this).receiveLoop(sessionFactory) { readChannel.read(config) as Packet? }
+    SocketConnection(transport, this).receiveLoop(sessionFactory) { readChannel.read(transport) as Packet? }
 }

@@ -13,13 +13,13 @@ public class CallCce(public val call: ApplicationCall) : AbstractCoroutineContex
     public companion object Key : CoroutineContext.Key<CallCce>
 }
 
-public fun Route.route(config: TransportConfig, path: String, tunnel: Tunnel) {
+public fun Route.route(transport: Transport, path: String, tunnel: Tunnel) {
     route(path) {
         post {
             withContext(CallCce(call)) {
                 val length = call.request.headers["Content-Length"]!!.toInt()
-                val reply = tunnel(call.receiveChannel().read(config, length) as Request)
-                call.respond(config.write(reply))
+                val reply = tunnel(call.receiveChannel().read(transport, length) as Request)
+                call.respond(transport.write(reply))
             }
         }
     }

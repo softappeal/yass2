@@ -5,22 +5,22 @@ import ch.softappeal.yass2.transport.*
 import io.ktor.http.cio.websocket.*
 
 public class WebSocketConnection internal constructor(
-    private val config: TransportConfig,
+    private val transport: Transport,
     public val session: WebSocketSession,
 ) : Connection {
     override suspend fun write(packet: Packet?) {
-        val writer = config.writer()
-        config.write(writer, packet)
+        val writer = transport.writer()
+        transport.write(writer, packet)
         session.outgoing.send(Frame.Binary(true, writer.buffer.copyOfRange(0, writer.current)))
     }
 
     override suspend fun closed(): Unit = session.close()
 }
 
-public suspend fun WebSocketSession.receiveLoop(config: TransportConfig, sessionFactory: SessionFactory) {
-    WebSocketConnection(config, this).receiveLoop(sessionFactory) {
+public suspend fun WebSocketSession.receiveLoop(transport: Transport, sessionFactory: SessionFactory) {
+    WebSocketConnection(transport, this).receiveLoop(sessionFactory) {
         val reader = BytesReader((incoming.receive() as Frame.Binary).data)
-        val packet = config.read(reader) as Packet?
+        val packet = transport.read(reader) as Packet?
         check(reader.isDrained)
         packet
     }

@@ -23,13 +23,13 @@ fun main() {
                 files("./build/js/node_modules")
             }
             route(
-                MessageConfig,
+                MessageTransport,
                 Path,
                 tunnel { "http-" + currentCoroutineContext()[CallCce]?.call?.request?.uri!! }
             )
             webSocket(Path) {
                 receiveLoop(
-                    PacketConfig,
+                    PacketTransport,
                     acceptorSessionFactory { "ws-" + ((connection as WebSocketConnection).session as WebSocketServerSession).call.request.uri }
                 )
             }
