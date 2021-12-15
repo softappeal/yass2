@@ -57,7 +57,7 @@ allprojects {
 
         targets.all {
             compilations.all {
-                explicitApi()
+                if (moduleName != "tutorial") explicitApi()
                 kotlinOptions {
                     allWarningsAsErrors = true
                     freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
@@ -159,6 +159,37 @@ project("module:test") {
                     implementation(ktor("server-cio"))
                     implementation(ktor("client-cio"))
                     implementation(ktor("websockets"))
+                }
+            }
+        }
+    }
+}
+
+project("module:tutorial") {
+    kotlin {
+        sourceSets {
+            // TODO (and review tutorial source): fun yass2(module: String) = "ch.softappeal.yass2:yass2-$module:8.0.1"
+            val commonMain by getting {
+                dependencies {
+                    implementation(coroutinesProject)
+                }
+            }
+            val commonTest by getting {
+                dependencies {
+                    implementation(kotlin("test"))
+                }
+            }
+            val jvmMain by getting {
+                dependencies {
+                    implementation(ktorProject)
+                    implementation(ktor("server-cio"))
+                    implementation(ktor("client-cio"))
+                    implementation(ktor("websockets"))
+                }
+            }
+            val jvmTest by getting {
+                dependencies {
+                    implementation(generateProject)
                 }
             }
         }

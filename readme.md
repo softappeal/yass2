@@ -62,7 +62,7 @@ yass2-core
 
 * uses [Semantic Versioning](https://semver.org)
 
-* [Tutorial](https://github.com/softappeal/yass2-tutorial)
+* [Tutorial](module/tutorial/src)
 
 * Open Source ([BSD-3-Clause license](license.txt))
 

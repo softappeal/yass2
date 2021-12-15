@@ -27,7 +27,7 @@ private fun Node.print(print: (String) -> Unit, indent: Int = 0) {
 
 private fun File.forEach(action: (File) -> Unit) = listFiles()!!.filter { ".DS_Store" != it.name }.sorted().forEach(action)
 
-private val IgnoredModules = setOf("build", "test")
+private val IgnoredModules = setOf("build", "test", "tutorial")
 
 private const val MainSuffix = "Main"
 
