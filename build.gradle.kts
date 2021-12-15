@@ -168,10 +168,13 @@ project("module:test") {
 project("module:tutorial") {
     kotlin {
         sourceSets {
-            // TODO (and review tutorial source): fun yass2(module: String) = "ch.softappeal.yass2:yass2-$module:8.0.1"
+            fun yass2(module: String) = if (false) "$group:yass2-$module:0.0.0" else when (module) {
+                "coroutines" -> coroutinesProject; "generate" -> generateProject; "ktor" -> ktorProject; else -> error("unexpected module")
+            }
+
             val commonMain by getting {
                 dependencies {
-                    implementation(coroutinesProject)
+                    implementation(yass2("coroutines"))
                 }
             }
             val commonTest by getting {
@@ -181,7 +184,7 @@ project("module:tutorial") {
             }
             val jvmMain by getting {
                 dependencies {
-                    implementation(ktorProject)
+                    implementation(yass2("ktor"))
                     implementation(ktor("server-cio"))
                     implementation(ktor("client-cio"))
                     implementation(ktor("websockets"))
@@ -189,7 +192,7 @@ project("module:tutorial") {
             }
             val jvmTest by getting {
                 dependencies {
-                    implementation(generateProject)
+                    implementation(yass2("generate"))
                 }
             }
         }
