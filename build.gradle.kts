@@ -3,7 +3,7 @@
 import java.util.regex.*
 
 plugins {
-    kotlin("multiplatform") version "1.6.0"
+    kotlin("multiplatform") version "1.6.10"
     id("maven-publish")
     signing
 }
@@ -16,7 +16,7 @@ val jsTarget = true
 
 // TODO: https://youtrack.jetbrains.com/issue/KT-49109
 rootProject.plugins.withType(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin::class.java) {
-    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().nodeVersion = "16.0.0"
+    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().nodeVersion = "16.13.1"
 }
 
 allprojects {
