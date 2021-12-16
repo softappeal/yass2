@@ -2,7 +2,6 @@ package ch.softappeal.yass2.tutorial
 
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.transport.ktor.*
-import ch.softappeal.yass2.tutorial.contract.*
 import ch.softappeal.yass2.tutorial.contract.generated.*
 import io.ktor.application.*
 import io.ktor.client.*
@@ -29,7 +28,7 @@ fun createKtorEngine(invoker: Invoker): ApplicationEngine = embeddedServer(io.kt
     routing {
         static {
             files("./") // needed for debugging (sources)
-            files("./src/jsMain/resources")
+            files("./module/tutorial/src/jsMain/resources")
             files("./build/js/node_modules")
         }
 

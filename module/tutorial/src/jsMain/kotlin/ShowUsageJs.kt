@@ -3,7 +3,6 @@
 package ch.softappeal.yass2.tutorial
 
 import ch.softappeal.yass2.transport.js.*
-import ch.softappeal.yass2.tutorial.contract.*
 import ch.softappeal.yass2.tutorial.contract.generated.*
 import kotlinx.coroutines.*
 import kotlin.js.Promise

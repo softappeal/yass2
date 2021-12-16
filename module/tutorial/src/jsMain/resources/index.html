@@ -4,11 +4,11 @@
     <title>yass2 Tutorial</title>
     <script src="kotlin/kotlin.js"></script>
     <script src="kotlinx-coroutines-core/kotlinx-coroutines-core.js"></script>
-    <script src="yass2-core/yass2-core.js"></script>
-    <script src="yass2-coroutines/yass2-coroutines.js"></script>
-    <script src="yass2-tutorial/kotlin/yass2-tutorial.js"></script>
+    <script src="yass2-core/kotlin/yass2-core.js"></script>
+    <script src="yass2-coroutines/kotlin/yass2-coroutines.js"></script>
+    <script src="tutorial/kotlin/tutorial.js"></script>
     <script>
-        const tutorial = this['yass2-tutorial'].ch.softappeal.yass2.tutorial;
+        const tutorial = this['tutorial'].ch.softappeal.yass2.tutorial;
         tutorial.callSuspendFunction(tutorial.showUsage).then(function (value) {
             console.log(value);
         });

@@ -5,10 +5,18 @@ import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.coroutines.session.*
 import ch.softappeal.yass2.serialize.*
 import ch.softappeal.yass2.transport.*
+import ch.softappeal.yass2.transport.session.*
 import ch.softappeal.yass2.tutorial.contract.*
 import ch.softappeal.yass2.tutorial.contract.generated.*
 import ch.softappeal.yass2.tutorial.contract.generated.ProxyFactory
 import kotlinx.coroutines.*
+
+val ContractSerializer = binarySerializer(baseEncoders())
+val MessageSerializer = binaryMessageSerializer(ContractSerializer)
+val PacketSerializer = binaryPacketSerializer(MessageSerializer)
+
+val MessageTransport = Transport(MessageSerializer, 100)
+val PacketTransport = Transport(PacketSerializer, 100)
 
 suspend fun showGeneratedUsage() {
     val generatedDumper = dumper(DumperProperties, ValueDumper)
