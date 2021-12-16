@@ -1,7 +1,7 @@
 package ch.softappeal.yass2
 
 import ch.softappeal.yass2.contract.*
-import ch.softappeal.yass2.contract.generated.ProxyFactory
+import ch.softappeal.yass2.contract.generated.*
 import kotlinx.coroutines.*
 import kotlin.test.*
 
@@ -37,19 +37,19 @@ class InterceptorTest {
             "no proxy for 'class null'",
             "no proxy for 'class <anonymous>'",
         ) {
-            ProxyFactory(object : NoSuchService {}) { _, _, invocation: Invocation -> invocation() }
+            GeneratedProxyFactory(object : NoSuchService {}) { _, _, invocation: Invocation -> invocation() }
         }
     }
 
     @Test
     fun proxyFactory() = yassRunBlocking {
-        ProxyFactory.test(CalculatorImpl, EchoImpl)
+        GeneratedProxyFactory.test(CalculatorImpl, EchoImpl)
     }
 
     @Test
     fun performance() = yassRunBlocking {
         var counter = 0
-        val proxy = ProxyFactory(CalculatorImpl) { _, _, invocation ->
+        val proxy = GeneratedProxyFactory(CalculatorImpl) { _, _, invocation ->
             counter++
             invocation()
         }
@@ -70,7 +70,7 @@ val EchoImpl = object : Echo {
     override suspend fun delay(milliSeconds: Int) = delay(milliSeconds.toLong())
 }
 
-suspend fun ProxyFactory.test(calculatorImpl: Calculator, echoImpl: Echo) {
+suspend fun GeneratedProxyFactory.test(calculatorImpl: Calculator, echoImpl: Echo) {
     val printer: Interceptor = { function, parameters, invocation ->
         print("${function.name} $parameters -> ")
         try {

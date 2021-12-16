@@ -8,7 +8,7 @@ internal fun KType.needsCast(): Boolean = classifier != Any::class || !isMarkedN
 
 public fun generateRemoteProxyFactory(
     serviceIds: List<ServiceId<*>>,
-    name: String = "remoteProxyFactory",
+    name: String = "generatedRemoteProxyFactory",
 ): String = writer {
     require(serviceIds.map { it.id }.toSet().size == serviceIds.size) { "duplicated service id" }
     write("""
@@ -52,7 +52,7 @@ public fun generateRemoteProxyFactory(
 
 public fun generateInvoke(
     serviceIds: List<ServiceId<*>>,
-    name: String = "invoke",
+    name: String = "generatedInvoke",
 ): String = writer {
     require(serviceIds.map { it.id }.toSet().size == serviceIds.size) { "duplicated service id" }
     write("""

@@ -10,7 +10,7 @@ private fun KClass<*>.properties(): List<KProperty1<Any, Any?>> = memberProperti
 
 public fun generateDumperProperties(
     concreteClasses: List<KClass<*>>,
-    name: String = "DumperProperties",
+    name: String = "GeneratedDumperProperties",
 ): String = writer {
     require(concreteClasses.toSet().size == concreteClasses.size) { "duplicated concreteClass" }
     write("""

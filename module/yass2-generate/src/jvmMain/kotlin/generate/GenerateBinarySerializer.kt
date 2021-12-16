@@ -28,7 +28,7 @@ private fun KClass<*>.metaClass(baseEncoderTypes: List<KClass<*>>, concreteClass
 public fun generateBinarySerializer(
     baseEncoders: List<BaseEncoder<*>>,
     concreteClasses: List<KClass<*>> = emptyList(),
-    name: String = "binarySerializer",
+    name: String = "generatedBinarySerializer",
 ): String = writer {
     require(baseEncoders.map { it.type }.toSet().size == baseEncoders.size) { "duplicated baseEncoder" }
     require(concreteClasses.toSet().size == concreteClasses.size) { "duplicated concreteClass" }

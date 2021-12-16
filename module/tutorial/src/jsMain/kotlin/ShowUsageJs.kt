@@ -16,7 +16,7 @@ suspend fun showUsage(): String {
     println("*** useRemoting ***")
 
     // shows client-side unidirectional remoting with Http
-    useServices(MessageTransport.tunnel("/yass"), ::remoteProxyFactory)
+    useServices(MessageTransport.tunnel("/yass"), ::generatedRemoteProxyFactory)
 
     // shows client-side session based bidirectional remoting with WebSocket
     val initiatorSessionFactory = CoroutineScope(Job()).initiatorSessionFactory()

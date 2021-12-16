@@ -8,10 +8,9 @@ import ch.softappeal.yass2.transport.*
 import ch.softappeal.yass2.transport.session.*
 import ch.softappeal.yass2.tutorial.contract.*
 import ch.softappeal.yass2.tutorial.contract.generated.*
-import ch.softappeal.yass2.tutorial.contract.generated.ProxyFactory
 import kotlinx.coroutines.*
 
-val ContractSerializer = binarySerializer(baseEncoders())
+val ContractSerializer = generatedBinarySerializer(baseEncoders())
 val MessageSerializer = binaryMessageSerializer(ContractSerializer)
 val PacketSerializer = binaryPacketSerializer(MessageSerializer)
 
@@ -19,10 +18,10 @@ val MessageTransport = Transport(MessageSerializer, 100)
 val PacketTransport = Transport(PacketSerializer, 100)
 
 suspend fun showGeneratedUsage() {
-    val generatedDumper = dumper(DumperProperties, ValueDumper)
+    val generatedDumper = dumper(GeneratedDumperProperties, ValueDumper)
     useDumper(generatedDumper)
     useSerializer(ContractSerializer)
-    useInterceptor(ProxyFactory)
+    useInterceptor(GeneratedProxyFactory)
 }
 
 fun useDumper(dumper: Dumper) {
@@ -64,7 +63,7 @@ private suspend fun useCalculator(calculator: Calculator) {
     println("1 + 2 = ${calculator.add(1, 2)}")
 }
 
-suspend fun useInterceptor(proxyFactory: ProxyFactory) {
+suspend fun useInterceptor(proxyFactory: GeneratedProxyFactory) {
     println("*** useInterceptor ***")
     val interceptor: Interceptor = { function, _, invocation ->
         println("calling function '${function.name}'")
@@ -90,13 +89,13 @@ val Services = listOf(
 
 fun CoroutineScope.initiatorSessionFactory(): SessionFactory = {
     object : Session() {
-        override val serverTunnel = ::invoke.tunnel(listOf(
+        override val serverTunnel = ::generatedInvoke.tunnel(listOf(
             NewsListenerId(NewsListenerImpl) // register service
         ))
 
         override fun opened() {
             launch {
-                useServices(clientTunnel, ::remoteProxyFactory)
+                useServices(clientTunnel, ::generatedRemoteProxyFactory)
                 delay(100) // give the server some time to send news
                 close()
             }
@@ -110,11 +109,11 @@ fun CoroutineScope.initiatorSessionFactory(): SessionFactory = {
 
 fun CoroutineScope.acceptorSessionFactory(): SessionFactory = {
     object : Session() {
-        override val serverTunnel = ::invoke.tunnel(Services)
+        override val serverTunnel = ::generatedInvoke.tunnel(Services)
 
         override fun opened() {
             launch {
-                val remoteProxyFactory = remoteProxyFactory(clientTunnel)
+                val remoteProxyFactory = generatedRemoteProxyFactory(clientTunnel)
                 val newsListener = remoteProxyFactory(NewsListenerId)
                 newsListener.notify("News 1")
                 newsListener.notify("News 2")

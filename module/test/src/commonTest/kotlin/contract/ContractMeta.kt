@@ -16,7 +16,7 @@ val ConcreteClasses = listOf(
     DivideByZeroException::class,
 )
 
-val ContractSerializer = binarySerializer(BaseEncoders)
+val ContractSerializer = generatedBinarySerializer(BaseEncoders)
 val MessageSerializer = binaryMessageSerializer(ContractSerializer)
 val PacketSerializer = binaryPacketSerializer(MessageSerializer)
 

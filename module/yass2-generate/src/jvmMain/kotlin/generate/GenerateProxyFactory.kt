@@ -36,7 +36,7 @@ internal fun KFunction<*>.hasResult(): Boolean = returnType.classifier != Unit::
 
 public fun generateProxyFactory(
     services: List<KClass<*>>,
-    name: String = "ProxyFactory",
+    name: String = "GeneratedProxyFactory",
 ): String = writer {
     require(services.toSet().size == services.size) { "duplicated service" }
     write("""

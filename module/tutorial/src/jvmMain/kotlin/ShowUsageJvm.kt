@@ -16,7 +16,7 @@ import java.util.concurrent.*
 
 fun main() = runBlocking {
     showGeneratedUsage()
-    useKtorRemoting(::remoteProxyFactory, ::invoke)
+    useKtorRemoting(::generatedRemoteProxyFactory, ::generatedInvoke)
 }
 
 const val Host = "localhost"

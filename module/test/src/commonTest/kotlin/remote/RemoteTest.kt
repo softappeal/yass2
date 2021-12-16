@@ -3,11 +3,10 @@ package ch.softappeal.yass2.remote
 import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.contract.generated.*
-import ch.softappeal.yass2.contract.generated.ProxyFactory
 import ch.softappeal.yass2.remote.coroutines.*
 import kotlin.test.*
 
-private val RemoteProxyFactory = (::remoteProxyFactory)(::invoke.tunnel(listOf(CalculatorId(CalculatorImpl), EchoId(EchoImpl))))
+private val RemoteProxyFactory = (::generatedRemoteProxyFactory)(::generatedInvoke.tunnel(listOf(CalculatorId(CalculatorImpl), EchoId(EchoImpl))))
 
 class RemoteTest {
     @Test
@@ -15,7 +14,7 @@ class RemoteTest {
         assertEquals(
             "duplicated service id",
             assertFailsWith<IllegalArgumentException> {
-                ::invoke.tunnel(listOf(EchoId(EchoImpl), EchoId(EchoImpl)))
+                ::generatedInvoke.tunnel(listOf(EchoId(EchoImpl), EchoId(EchoImpl)))
             }.message
         )
     }
@@ -25,7 +24,7 @@ class RemoteTest {
         assertEquals(
             "no service id 1",
             assertFailsWith<IllegalStateException> {
-                remoteProxyFactory(::invoke.tunnel(emptyList()))(CalculatorId).add(1, 2)
+                generatedRemoteProxyFactory(::generatedInvoke.tunnel(emptyList()))(CalculatorId).add(1, 2)
             }.message
         )
     }
@@ -35,7 +34,7 @@ class RemoteTest {
         assertEquals(
             "no service id 123",
             assertFailsWith<IllegalStateException> {
-                remoteProxyFactory { ValueReply(null) }.create(serviceId<Calculator>(123))
+                generatedRemoteProxyFactory { ValueReply(null) }.create(serviceId<Calculator>(123))
             }.message
         )
     }
@@ -45,7 +44,7 @@ class RemoteTest {
         assertEquals(
             "no service id 123",
             assertFailsWith<IllegalStateException> {
-                invoke(Request(123, 0, emptyList()), EchoId(EchoImpl))
+                generatedInvoke(Request(123, 0, emptyList()), EchoId(EchoImpl))
             }.message
         )
     }
@@ -55,7 +54,7 @@ class RemoteTest {
         assertEquals(
             "no function id 123 for service id 2",
             assertFailsWith<IllegalStateException> {
-                invoke(Request(2, 123, emptyList()), EchoId(EchoImpl))
+                generatedInvoke(Request(2, 123, emptyList()), EchoId(EchoImpl))
             }.message
         )
     }
@@ -74,7 +73,7 @@ class RemoteTest {
 
     @Test
     fun test() = yassRunBlocking {
-        ProxyFactory.test(RemoteProxyFactory(CalculatorId), RemoteProxyFactory(EchoId))
+        GeneratedProxyFactory.test(RemoteProxyFactory(CalculatorId), RemoteProxyFactory(EchoId))
     }
 
     @Test
@@ -84,18 +83,18 @@ class RemoteTest {
     }
 }
 
-fun tunnel(context: suspend () -> Any): Tunnel = ::invoke.tunnel(listOf(
+fun tunnel(context: suspend () -> Any): Tunnel = ::generatedInvoke.tunnel(listOf(
     CalculatorId(CalculatorImpl),
-    EchoId(ProxyFactory(EchoImpl) { _, _, invocation: Invocation ->
+    EchoId(GeneratedProxyFactory(EchoImpl) { _, _, invocation: Invocation ->
         println("context<${context()}>")
         invocation()
     }),
     FlowServiceId(FlowServiceImpl)
 ))
 
-suspend fun Tunnel.test(iterations: Int): Unit = with(remoteProxyFactory(this)) {
+suspend fun Tunnel.test(iterations: Int): Unit = with(generatedRemoteProxyFactory(this)) {
     val calculator = this(CalculatorId)
-    ProxyFactory.test(calculator, this(EchoId))
+    GeneratedProxyFactory.test(calculator, this(EchoId))
     performance(iterations) { assertEquals(5, calculator.add(2, 3)) }
     this(FlowServiceId).test()
 }

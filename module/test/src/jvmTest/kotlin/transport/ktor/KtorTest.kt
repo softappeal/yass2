@@ -153,7 +153,7 @@ class KtorTest {
         tcp.bind(Address).use { serverSocket ->
             runBlocking {
                 val listenerJob = launch {
-                    val serverTunnel = ::invoke.tunnel(listOf(
+                    val serverTunnel = ::generatedInvoke.tunnel(listOf(
                         CalculatorId(object : Calculator {
                             override suspend fun add(a: Int, b: Int): Int {
                                 assertEquals("client", context)
@@ -171,7 +171,7 @@ class KtorTest {
                 }
                 try {
                     val clientTunnel = transport.socketTunnel { tcp.connect(Address) }
-                    val calculator = remoteProxyFactory(clientTunnel)(CalculatorId)
+                    val calculator = generatedRemoteProxyFactory(clientTunnel)(CalculatorId)
                     context = "client"
                     assertEquals(5, calculator.add(2, 3))
                     assertEquals("server", context)

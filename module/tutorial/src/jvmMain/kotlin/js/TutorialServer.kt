@@ -5,6 +5,6 @@ import ch.softappeal.yass2.tutorial.contract.generated.*
 
 fun main() {
     println("http://$Host:$Port/index.html")
-    createKtorEngine(::invoke)
+    createKtorEngine(::generatedInvoke)
         .start(wait = true)
 }
