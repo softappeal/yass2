@@ -2,6 +2,7 @@ package ch.softappeal.yass2.tutorial
 
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.transport.ktor.*
+import ch.softappeal.yass2.tutorial.contract.*
 import ch.softappeal.yass2.tutorial.contract.generated.*
 import io.ktor.application.*
 import io.ktor.client.*

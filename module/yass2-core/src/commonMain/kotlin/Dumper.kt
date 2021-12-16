@@ -4,16 +4,14 @@ import kotlin.reflect.*
 
 public typealias DumperProperties = (type: KClass<*>) -> List<KProperty1<Any, Any?>>
 
-/** Writes value (without line breaks) if responsible else does nothing. */
-public typealias ValueDumper = StringBuilder.(value: Any) -> Unit
-
 public typealias Dumper = StringBuilder.(value: Any?) -> StringBuilder
 
 /**
  * Supports the following types out-of-the-box:
  * `null`, [Boolean], [Number], [CharSequence], [List] and classes with its properties.
+ * [valueDumper] writes value (without line breaks) if responsible else does nothing.
  */
-public fun dumper(properties: DumperProperties, valueDumper: ValueDumper): Dumper = { value ->
+public fun dumper(properties: DumperProperties, valueDumper: StringBuilder.(value: Any) -> Unit): Dumper = { value ->
     var indent = 0
 
     fun dump(value: Any?) {

@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.contract
 
-import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.generated.*
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.coroutines.*
@@ -26,7 +25,7 @@ val FlowServiceId: ServiceId<FlowService> = serviceId(3)
 
 val ServiceIds = listOf(CalculatorId, EchoId, FlowServiceId)
 
-val ValueDumper: ValueDumper = { value ->
+fun StringBuilder.valueDumper(value: Any) {
     when (value) {
         is ByteArray -> append("binary")
         is Color -> append(value.name)

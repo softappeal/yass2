@@ -10,12 +10,12 @@ private fun KClass<*>.properties(): List<KProperty1<Any, Any?>> = memberProperti
 
 public fun generateDumperProperties(
     concreteClasses: List<KClass<*>>,
-    name: String = "GeneratedDumperProperties",
+    name: String = "generatedDumperProperties",
 ): String = writer {
     require(concreteClasses.toSet().size == concreteClasses.size) { "duplicated concreteClass" }
     write("""
         @Suppress("UNCHECKED_CAST", "RedundantVisibilityModifier")
-        public val $name: $CSY.DumperProperties = $CSY.dumperProperties(
+        public fun $name(): $CSY.DumperProperties = $CSY.dumperProperties(
     """)
     concreteClasses.forEach { klass ->
         write("""

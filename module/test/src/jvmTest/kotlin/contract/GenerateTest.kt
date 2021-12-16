@@ -29,6 +29,6 @@ class GenerateTest {
 
     @Test
     fun generateDumper() {
-        generate("GeneratedDumper.kt", generateDumperProperties(ConcreteClasses))
+        generate("GeneratedDumperProperties.kt", generateDumperProperties(ConcreteClasses))
     }
 }

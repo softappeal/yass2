@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.tutorial.contract
 
-import ch.softappeal.yass2.*
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.serialize.binary.*
 
@@ -37,10 +36,10 @@ val NewsListenerId = serviceId<NewsListener>(2)
 val ServiceIds = listOf(CalculatorId, NewsListenerId)
 
 /**
- * Define [ValueDumper] for base types.
+ * Writes value (without line breaks) if responsible else does nothing.
  * [Boolean], [Number] and [CharSequence] are handled by default.
  */
-val ValueDumper: ValueDumper = { value ->
+fun StringBuilder.valueDumper(value: Any) {
     when (value) {
         is Gender -> append(value.name)
         is MyDate -> append("MyDate(${value.currentTimeMillis})")
