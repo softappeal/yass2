@@ -1,3 +1,5 @@
+@file:Suppress("HttpUrlsUsage")
+
 package ch.softappeal.yass2.tutorial.js
 
 import ch.softappeal.yass2.tutorial.*

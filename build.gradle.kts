@@ -1,5 +1,7 @@
 // https://kotlinlang.org/docs/mpp-intro.html
 
+@file:Suppress("SpellCheckingInspection")
+
 import java.util.regex.*
 
 plugins {
@@ -60,7 +62,7 @@ allprojects {
                 if (moduleName != "tutorial") explicitApi()
                 kotlinOptions {
                     allWarningsAsErrors = true
-                    freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+                    @Suppress("SuspiciousCollectionReassignment") freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
                 }
             }
         }
@@ -168,7 +170,7 @@ project("module:test") {
 project("module:tutorial") {
     kotlin {
         sourceSets {
-            fun yass2(module: String) = if (false) "$group:yass2-$module:0.0.0" else when (module) {
+            @Suppress("ConstantConditionIf") fun yass2(module: String) = if (false) "$group:yass2-$module:0.0.0" else when (module) {
                 "coroutines" -> coroutinesProject; "generate" -> generateProject; "ktor" -> ktorProject; else -> error("unexpected module")
             }
 

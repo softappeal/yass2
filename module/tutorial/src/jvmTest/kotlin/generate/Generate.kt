@@ -9,6 +9,7 @@ private enum class Action { Generate, Verify }
 private fun generate(fileName: String, code: String) {
     val text = "package ch.softappeal.yass2.tutorial.contract.generated\n\n$code"
     val filePath = "src/commonMain/kotlin/contract/generated/$fileName"
+    @Suppress("KotlinConstantConditions")
     when (Action.Verify) {
         Action.Generate -> File(filePath).writeText(text)
         Action.Verify -> check(text == File(filePath).readText().replace("\r\n", "\n"))

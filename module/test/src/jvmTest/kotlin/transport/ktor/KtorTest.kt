@@ -1,3 +1,5 @@
+@file:Suppress("HttpUrlsUsage")
+
 package ch.softappeal.yass2.transport.ktor
 
 import ch.softappeal.yass2.contract.*

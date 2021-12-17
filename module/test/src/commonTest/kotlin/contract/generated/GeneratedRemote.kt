@@ -40,7 +40,7 @@ public fun generatedRemoteProxyFactory(
         }
     }
 
-@Suppress("RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
+@Suppress("RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier", "RedundantNullableReturnType")
 public suspend fun generatedInvoke(
     request: ch.softappeal.yass2.remote.Request, service: ch.softappeal.yass2.remote.Service,
 ): Any? {

@@ -1,3 +1,5 @@
+@file:Suppress("GrazieInspection")
+
 package ch.softappeal.yass2.tutorial.contract
 
 // This file describes the contract (data transfer objects and interfaces) between client and server.
@@ -24,7 +26,7 @@ class Address(
 /** Enumerations are supported. */
 enum class Gender {
     Female,
-    Male,
+    @Suppress("unused") Male,
 }
 
 /** Lists are supported. */

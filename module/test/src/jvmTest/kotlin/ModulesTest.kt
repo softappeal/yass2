@@ -53,6 +53,7 @@ class ModulesTest {
 
     @Test
     fun noModule() {
+        @Suppress("SpellCheckingInspection")
         assertEquals(
             """
                 - . `<no-module>`
