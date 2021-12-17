@@ -15,11 +15,6 @@ import io.ktor.websocket.*
 import kotlinx.coroutines.*
 import java.util.concurrent.*
 
-fun main() = runBlocking {
-    showUsage()
-    useKtorRemoting()
-}
-
 const val Host = "localhost"
 const val Port = 28947
 private const val Path = "/yass"
@@ -60,4 +55,9 @@ private suspend fun useKtorRemoting() {
     }
     delay(2_000) // needed for graceful shutdown
     println()
+}
+
+fun main() = runBlocking {
+    showUsage()
+    useKtorRemoting()
 }
