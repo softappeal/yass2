@@ -6,7 +6,7 @@ import ch.softappeal.yass2.serialize.binary.*
 import kotlin.test.*
 
 class DumperTest {
-    private val dumper = dumper(generatedDumperProperties(), StringBuilder::valueDumper)
+    private val dumper = dumper(::generatedDumperProperties, StringBuilder::valueDumper)
 
     @Test
     fun missingClass() {

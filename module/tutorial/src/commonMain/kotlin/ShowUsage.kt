@@ -9,36 +9,6 @@ import ch.softappeal.yass2.tutorial.contract.*
 import ch.softappeal.yass2.tutorial.contract.generated.*
 import kotlinx.coroutines.*
 
-suspend fun showGeneratedUsage() {
-    useDumper(Dumper)
-    useSerializer(ContractSerializer)
-    useInterceptor(GeneratedProxyFactory)
-}
-
-fun useDumper(dumper: Dumper) {
-    println("*** useDumper ***")
-    val person = Person(
-        "Guru",
-        Gender.Female,
-        listOf(
-            Address("Infinity Drive").apply { number = 1 },
-            Address("Hollywood Boulevard")
-        )
-    )
-    println(StringBuilder().dumper(person))
-    println()
-}
-
-fun useSerializer(serializer: Serializer) {
-    println("*** useSerializer ***")
-    val writer = BytesWriter(100)
-    serializer.write(writer, "hello")
-    val reader = BytesReader(writer.buffer)
-    val value = serializer.read(reader)
-    println(value)
-    println()
-}
-
 val CalculatorImpl = object : Calculator {
     override suspend fun add(a: Int, b: Int) = a + b
     override suspend fun divide(a: Int, b: Int) = if (b == 0) throw DivideByZeroException() else a / b
@@ -54,27 +24,54 @@ private suspend fun useCalculator(calculator: Calculator) {
     println("1 + 2 = ${calculator.add(1, 2)}")
 }
 
-suspend fun useInterceptor(proxyFactory: GeneratedProxyFactory) {
-    println("*** useInterceptor ***")
-    val interceptor: Interceptor = { function, _, invocation ->
-        println("calling function '${function.name}'")
-        invocation()
+suspend fun showUsage() {
+    fun useDumper(dumper: Dumper) {
+        println("*** useDumper ***")
+        val person = Person(
+            "Guru",
+            Gender.Female,
+            listOf(
+                Address("Infinity Drive").apply { number = 1 },
+                Address("Hollywood Boulevard")
+            )
+        )
+        println(StringBuilder().dumper(person))
+        println()
     }
-    val calculator = proxyFactory(CalculatorImpl, interceptor)
-    useCalculator(calculator)
-    println()
+
+    fun useSerializer(serializer: Serializer) {
+        println("*** useSerializer ***")
+        val writer = BytesWriter(100)
+        serializer.write(writer, "hello")
+        val reader = BytesReader(writer.buffer)
+        val value = serializer.read(reader)
+        println(value)
+        println()
+    }
+
+    suspend fun useInterceptor(proxyFactory: ProxyFactory) {
+        println("*** useInterceptor ***")
+        val interceptor: Interceptor = { function, _, invocation ->
+            println("calling function '${function.name}'")
+            invocation()
+        }
+        val calculator = proxyFactory(CalculatorImpl, interceptor)
+        useCalculator(calculator)
+        println()
+    }
+
+    useDumper(Dumper)
+    useSerializer(ContractSerializer)
+    useInterceptor(GeneratedProxyFactory)
 }
 
-suspend fun useServices(tunnel: Tunnel, remoteProxyFactoryCreator: (tunnel: Tunnel) -> RemoteProxyFactory) {
-    val remoteProxyFactory = remoteProxyFactoryCreator(tunnel)
+suspend fun useServices(tunnel: Tunnel) {
+    val remoteProxyFactory = generatedRemoteProxyFactory(tunnel)
     val calculator = remoteProxyFactory(CalculatorId)
     useCalculator(calculator)
 }
 
-val Services = listOf(
-    // register services
-    CalculatorId(CalculatorImpl),
-)
+val Services = listOf(CalculatorId(CalculatorImpl)) // register services
 
 // The following code is only needed if you use session based bidirectional remoting.
 
@@ -86,7 +83,7 @@ fun CoroutineScope.initiatorSessionFactory(): SessionFactory = {
 
         override fun opened() {
             launch {
-                useServices(clientTunnel, ::generatedRemoteProxyFactory)
+                useServices(clientTunnel)
                 delay(100) // give the server some time to send news
                 close()
             }

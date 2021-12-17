@@ -16,15 +16,15 @@ import kotlinx.coroutines.*
 import java.util.concurrent.*
 
 fun main() = runBlocking {
-    showGeneratedUsage()
-    useKtorRemoting(::generatedRemoteProxyFactory, ::generatedInvoke)
+    showUsage()
+    useKtorRemoting()
 }
 
 const val Host = "localhost"
 const val Port = 28947
 private const val Path = "/yass"
 
-fun createKtorEngine(invoker: Invoker): ApplicationEngine = embeddedServer(io.ktor.server.cio.CIO, Port) {
+fun createKtorEngine(): ApplicationEngine = embeddedServer(io.ktor.server.cio.CIO, Port) {
     install(io.ktor.websocket.WebSockets)
     routing {
         static {
@@ -34,23 +34,23 @@ fun createKtorEngine(invoker: Invoker): ApplicationEngine = embeddedServer(io.kt
         }
 
         // shows server-side unidirectional remoting with Http
-        route(MessageTransport, Path, invoker.tunnel(Services))
+        route(MessageTransport, Path, ::generatedInvoke.tunnel(Services))
 
         // shows server-side session based bidirectional remoting with WebSocket
         webSocket(Path) { receiveLoop(PacketTransport, acceptorSessionFactory()) }
     }
 }
 
-private suspend fun useKtorRemoting(remoteProxyFactoryCreator: (tunnel: Tunnel) -> RemoteProxyFactory, invoker: Invoker) {
+private suspend fun useKtorRemoting() {
     println("*** useKtorRemoting ***")
-    val engine = createKtorEngine(invoker)
+    val engine = createKtorEngine()
     engine.start()
     try {
         HttpClient(io.ktor.client.engine.cio.CIO) {
             install(io.ktor.client.features.websocket.WebSockets)
         }.use { client ->
             // shows client-side unidirectional remoting with Http
-            useServices(client.tunnel(MessageTransport, "http://$Host:$Port$Path"), remoteProxyFactoryCreator)
+            useServices(client.tunnel(MessageTransport, "http://$Host:$Port$Path"))
 
             // shows client-side session based bidirectional remoting with WebSocket
             client.ws(HttpMethod.Get, Host, Port, Path) { receiveLoop(PacketTransport, initiatorSessionFactory()) }

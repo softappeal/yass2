@@ -14,4 +14,4 @@ val PacketSerializer = binaryPacketSerializer(MessageSerializer)
 val MessageTransport = Transport(MessageSerializer, 100)
 val PacketTransport = Transport(PacketSerializer, 100)
 
-val Dumper = dumper(generatedDumperProperties(), StringBuilder::valueDumper)
+val Dumper = dumper(::generatedDumperProperties, StringBuilder::valueDumper)

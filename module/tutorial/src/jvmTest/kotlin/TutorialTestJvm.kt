@@ -2,7 +2,7 @@ package ch.softappeal.yass2.tutorial
 
 import kotlin.test.*
 
-class TutorialTest {
+class TutorialTestJvm {
     @Test
     fun generate() {
         ch.softappeal.yass2.tutorial.generate.main()
