@@ -7,7 +7,7 @@ plugins {
     id("maven-publish")
     signing
 }
-fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.6.0-RC2"
+fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.6.0-RC3"
 fun ktor(module: String) = "io.ktor:ktor-$module:1.6.7"
 
 val windowsTarget = false
