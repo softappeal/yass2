@@ -5,7 +5,9 @@ import ch.softappeal.yass2.transport.*
 import ch.softappeal.yass2.transport.session.*
 import ch.softappeal.yass2.tutorial.contract.generated.*
 
-val ContractSerializer = generatedBinarySerializer(baseEncoders())
+// This file describes the needed contract metadata that depends on generated artifacts.
+
+val ContractSerializer = generatedBinarySerializer(::baseEncoders)
 val MessageSerializer = binaryMessageSerializer(ContractSerializer)
 val PacketSerializer = binaryPacketSerializer(MessageSerializer)
 

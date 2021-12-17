@@ -26,18 +26,19 @@ private fun KClass<*>.metaClass(baseEncoderTypes: List<KClass<*>>, concreteClass
 }
 
 public fun generateBinarySerializer(
-    baseEncoders: List<BaseEncoder<*>>,
+    baseEncodersSupplier: () -> List<BaseEncoder<*>>, // NOTE: supplier is needed due to Kotlin Native/JS global variables initialize order bug
     concreteClasses: List<KClass<*>> = emptyList(),
     name: String = "generatedBinarySerializer",
 ): String = writer {
+    val baseEncoders = baseEncodersSupplier()
     require(baseEncoders.map { it.type }.toSet().size == baseEncoders.size) { "duplicated baseEncoder" }
     require(concreteClasses.toSet().size == concreteClasses.size) { "duplicated concreteClass" }
     write("""
         @Suppress("UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
         public fun $name(
-            baseEncoders: List<${BaseEncoder::class.qualifiedName}<*>>,
+            baseEncodersSupplier: () -> List<${BaseEncoder::class.qualifiedName}<*>>,
         ): ${BinarySerializer::class.qualifiedName} =
-            ${BinarySerializer::class.qualifiedName}(baseEncoders + listOf(
+            ${BinarySerializer::class.qualifiedName}(baseEncodersSupplier() + listOf(
     """)
     val baseEncoderTypes = baseEncoders.map { it.type }
     concreteClasses.forEach { klass ->

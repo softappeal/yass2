@@ -7,7 +7,8 @@ import ch.softappeal.yass2.serialize.binary.*
 import ch.softappeal.yass2.transport.*
 import ch.softappeal.yass2.transport.session.*
 
-val BaseEncoders = listOf(IntEncoder, StringEncoder, ByteArrayEncoder)
+
+fun baseEncoders() = listOf(IntEncoder, StringEncoder, ByteArrayEncoder)
 
 val ConcreteClasses = listOf(
     IntException::class, PlainId::class, ComplexId::class, Lists::class,
@@ -15,7 +16,7 @@ val ConcreteClasses = listOf(
     DivideByZeroException::class,
 )
 
-val ContractSerializer = generatedBinarySerializer(BaseEncoders)
+val ContractSerializer = generatedBinarySerializer(::baseEncoders)
 val MessageSerializer = binaryMessageSerializer(ContractSerializer)
 val PacketSerializer = binaryPacketSerializer(MessageSerializer)
 

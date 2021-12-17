@@ -18,6 +18,6 @@ private fun generate(fileName: String, code: String) {
 fun main() {
     generate("GeneratedProxyFactory.kt", generateProxyFactory(ServiceIds.map { it.service }))
     generate("GeneratedRemote.kt", generateRemoteProxyFactory(ServiceIds) + "\n" + generateInvoke(ServiceIds))
-    generate("GeneratedBinarySerializer.kt", generateBinarySerializer(baseEncoders(), ConcreteClasses))
+    generate("GeneratedBinarySerializer.kt", generateBinarySerializer(::baseEncoders, ConcreteClasses))
     generate("GeneratedDumperProperties.kt", generateDumperProperties(ConcreteClasses))
 }

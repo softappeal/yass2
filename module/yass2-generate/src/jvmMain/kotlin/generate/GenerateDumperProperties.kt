@@ -13,6 +13,7 @@ public fun generateDumperProperties(
     name: String = "generatedDumperProperties",
 ): String = writer {
     require(concreteClasses.toSet().size == concreteClasses.size) { "duplicated concreteClass" }
+    // NOTE: is 'fun' instead 'val' due to Kotlin Native/JS global variables initialize order bug
     write("""
         @Suppress("UNCHECKED_CAST", "RedundantVisibilityModifier")
         public fun $name(): $CSY.DumperProperties = $CSY.dumperProperties(

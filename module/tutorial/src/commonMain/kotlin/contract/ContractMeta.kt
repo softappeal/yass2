@@ -3,10 +3,10 @@ package ch.softappeal.yass2.tutorial.contract
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.serialize.binary.*
 
-// This file describes the needed contract metadata.
+// This file describes the needed contract metadata that doesn't depend on generated artifacts.
 
 /** Define all the base encoders needed by the contract (including enumerations and own base types). */
-fun baseEncoders(): List<BaseEncoder<out Any>> {
+fun baseEncoders(): List<BaseEncoder<*>> {
     // Shows how to implement an own base type encoder.
     val myDateEncoder = BaseEncoder(MyDate::class,
         { writer, value -> writer.writeLong(value.currentTimeMillis) },
@@ -35,10 +35,7 @@ val NewsListenerId = serviceId<NewsListener>(2)
 /** Define all used [ServiceId]. */
 val ServiceIds = listOf(CalculatorId, NewsListenerId)
 
-/**
- * Writes value (without line breaks) if responsible else does nothing.
- * [Boolean], [Number] and [CharSequence] are handled by default.
- */
+/** Writes value (without line breaks) if responsible else does nothing. */
 fun StringBuilder.valueDumper(value: Any) {
     when (value) {
         is Gender -> append(value.name)
