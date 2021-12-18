@@ -18,7 +18,7 @@ jobs:
           GRADLE_PROPERTIES: ${{ secrets.GRADLE_PROPERTIES }}
         run: |
           printenv MAVEN_CENTRAL_KEY | base64 -d > ~/maven.central.key.gpg
-          printenv GRADLE_PROPERTIES > ~/gradle.properties
+          printenv GRADLE_PROPERTIES             > ~/gradle.properties
           docker image     build                           --tag project-image .
           docker container create --name project-container       project-image ./gradlew -Pversion=${{ github.event.inputs.version }} markers build publishYass2
           docker container cp ~/gradle.properties       project-container:/root/.gradle/gradle.properties
