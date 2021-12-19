@@ -3,6 +3,7 @@
     - Dumper.kt `[common]`
     - Interceptor.kt `[common]`
     - generate `yass2-generate`
+        - Generate.kt `[jvm]`
         - GenerateBinarySerializer.kt `[jvm]`
         - GenerateDumperProperties.kt `[jvm]`
         - GenerateProxyFactory.kt `[jvm]`

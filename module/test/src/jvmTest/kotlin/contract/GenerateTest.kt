@@ -1,14 +1,13 @@
 package ch.softappeal.yass2.contract
 
 import ch.softappeal.yass2.generate.*
-import java.io.*
 import kotlin.test.*
 
 private fun generate(fileName: String, code: String) {
-    val text = "package ch.softappeal.yass2.contract.generated\n\n$code"
-    print(text)
-    val filePath = "src/commonTest/kotlin/contract/generated/$fileName"
-    assertEquals(text, File(filePath).readText().replace("\r\n", "\n"))
+    GenerateAction.Verify.execute(
+        "src/commonTest/kotlin/contract/generated/$fileName",
+        "package ch.softappeal.yass2.contract.generated\n\n$code",
+    )
 }
 
 class GenerateTest {
