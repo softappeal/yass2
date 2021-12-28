@@ -10,7 +10,7 @@ plugins {
     signing
 }
 fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.6.1"
-fun ktor(module: String) = "io.ktor:ktor-$module:1.6.8"
+fun ktor(module: String) = "io.ktor:ktor-$module:2.0.0"
 
 val windowsTarget = false
 val macTarget = true
@@ -145,6 +145,7 @@ val ktorProject = project("module:yass2-ktor") {
             val jvmMain by getting {
                 dependencies {
                     api(ktor("server-core"))
+                    api(ktor("network"))
                 }
             }
         }
@@ -165,9 +166,9 @@ project("module:test") {
                 dependencies {
                     implementation(generateProject)
                     implementation(ktorProject)
-                    implementation(ktor("server-cio"))
                     implementation(ktor("client-cio"))
-                    implementation(ktor("websockets"))
+                    implementation(ktor("server-cio"))
+                    implementation(ktor("server-websockets"))
                 }
             }
         }
@@ -194,9 +195,9 @@ project("module:tutorial") {
             val jvmMain by getting {
                 dependencies {
                     implementation(yass2("ktor"))
-                    implementation(ktor("server-cio"))
                     implementation(ktor("client-cio"))
-                    implementation(ktor("websockets"))
+                    implementation(ktor("server-cio"))
+                    implementation(ktor("server-websockets"))
                 }
             }
             val jvmTest by getting {

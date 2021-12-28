@@ -23,11 +23,11 @@ public fun HttpClient.tunnel(
     url: String,
     headers: () -> Headers = { Headers.Empty },
 ): Tunnel = { request ->
-    val response = request<HttpResponse>(url) {
+    val response = request(url) {
         method = HttpMethod.Post
         this.headers.appendAll(headers())
-        body = transport.write(request)
+        setBody(transport.write(request))
     }
     val length = response.contentLength()!!.toInt()
-    response.content.read(transport, length) as Reply
+    response.bodyAsChannel().read(transport, length) as Reply
 }

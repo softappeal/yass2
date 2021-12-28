@@ -8,18 +8,18 @@ import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.coroutines.session.*
 import ch.softappeal.yass2.serialize.binary.*
 import ch.softappeal.yass2.transport.*
-import io.ktor.application.*
 import io.ktor.client.*
-import io.ktor.client.features.websocket.*
+import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
 import io.ktor.server.engine.*
-import io.ktor.websocket.*
+import io.ktor.server.plugins.*
+import io.ktor.server.routing.*
+import io.ktor.server.websocket.*
 import kotlinx.coroutines.*
-import java.net.*
 import java.util.concurrent.*
 import kotlin.test.*
 
@@ -113,7 +113,7 @@ class KtorTest {
     @Test
     fun webSocket() {
         val engine = embeddedServer(io.ktor.server.cio.CIO, Port) {
-            install(io.ktor.websocket.WebSockets)
+            install(io.ktor.server.websocket.WebSockets)
             routing {
                 webSocket(Path) {
                     receiveLoop(
@@ -130,7 +130,7 @@ class KtorTest {
         try {
             runBlocking {
                 HttpClient(io.ktor.client.engine.cio.CIO) {
-                    install(io.ktor.client.features.websocket.WebSockets)
+                    install(io.ktor.client.plugins.websocket.WebSockets)
                 }.use { client ->
                     client.ws(HttpMethod.Get, Host, Port, Path, { header(DemoHeaderKey, DemoHeaderValue) }) {
                         receiveLoop(PacketTransport, initiatorSessionFactory(1000))

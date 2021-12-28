@@ -6,14 +6,14 @@ import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.transport.ktor.*
 import ch.softappeal.yass2.tutorial.contract.*
 import ch.softappeal.yass2.tutorial.contract.generated.*
-import io.ktor.application.*
 import io.ktor.client.*
-import io.ktor.client.features.websocket.*
+import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
-import io.ktor.http.content.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
 import io.ktor.server.engine.*
-import io.ktor.websocket.*
+import io.ktor.server.http.content.*
+import io.ktor.server.routing.*
+import io.ktor.server.websocket.*
 import kotlinx.coroutines.*
 import java.util.concurrent.*
 
@@ -22,7 +22,7 @@ public const val Port: Int = 28947
 private const val Path = "/yass"
 
 public fun createKtorEngine(): ApplicationEngine = embeddedServer(io.ktor.server.cio.CIO, Port) {
-    install(io.ktor.websocket.WebSockets)
+    install(io.ktor.server.websocket.WebSockets)
     routing {
         static {
             files("./") // needed for debugging (sources)
@@ -44,7 +44,7 @@ private suspend fun useKtorRemoting() {
     engine.start()
     try {
         HttpClient(io.ktor.client.engine.cio.CIO) {
-            install(io.ktor.client.features.websocket.WebSockets)
+            install(io.ktor.client.plugins.websocket.WebSockets)
         }.use { client ->
             // shows client-side unidirectional remoting with Http
             useServices(client.tunnel(MessageTransport, "http://$Host:$Port$Path"))

@@ -2,7 +2,7 @@ package ch.softappeal.yass2.transport.ktor
 
 import ch.softappeal.yass2.remote.coroutines.session.*
 import ch.softappeal.yass2.transport.*
-import io.ktor.http.cio.websocket.*
+import io.ktor.websocket.*
 
 public class WebSocketConnection internal constructor(
     private val transport: Transport,
