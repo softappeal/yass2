@@ -5,7 +5,7 @@ import kotlin.reflect.*
 
 internal enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
 
-internal class MetaProperty constructor(
+internal class MetaProperty(
     val property: KProperty1<Any, Any?>,
     val kind: PropertyKind,
     val encoderId: Int = -1,
@@ -38,7 +38,7 @@ internal fun KClass<*>.metaProperty(
     }
 }
 
-internal class MetaClass constructor(
+internal class MetaClass(
     klass: KClass<*>,
     properties: List<MetaProperty>,
     parameterNames: List<String>,

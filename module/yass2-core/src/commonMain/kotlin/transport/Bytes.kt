@@ -2,7 +2,7 @@ package ch.softappeal.yass2.transport
 
 import ch.softappeal.yass2.serialize.*
 
-public class BytesWriter constructor(initialBuffer: ByteArray) : Writer {
+public class BytesWriter(initialBuffer: ByteArray) : Writer {
     public constructor(initialCapacity: Int) : this(ByteArray(initialCapacity))
 
     public var buffer: ByteArray = initialBuffer
