@@ -38,9 +38,9 @@ public class BytesReader(private val buffer: ByteArray) : Reader {
     override fun readBytes(length: Int): ByteArray {
         val newCurrent = current + length
         check(newCurrent <= buffer.size)
-        val bytes = ByteArray(length)
-        buffer.copyInto(bytes, 0, current, newCurrent)
-        current = newCurrent
-        return bytes
+        return ByteArray(length).apply {
+            buffer.copyInto(this, 0, current, newCurrent)
+            current = newCurrent
+        }
     }
 }

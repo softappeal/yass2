@@ -34,9 +34,9 @@ public fun binaryMessageSerializer(contractSerializer: Serializer): Serializer =
 
     private fun readList(reader: Reader): List<Any?> {
         var size = reader.readByte().toInt()
-        val list = ArrayList<Any?>(size)
-        while (size-- > 0) list.add(contractSerializer.read(reader))
-        return list
+        return ArrayList<Any?>(size).apply {
+            while (size-- > 0) add(contractSerializer.read(reader))
+        }
     }
 
     override fun read(reader: Reader): Message = when (val type = reader.readByte()) {

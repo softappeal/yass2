@@ -3,11 +3,9 @@ package ch.softappeal.yass2
 import java.io.*
 import kotlin.test.*
 
-private fun printModules(directory: String): String {
-    val b = StringBuffer()
-    printModules(directory) { b.append(it) }
-    return b.toString()
-}
+private fun printModules(directory: String) = StringBuffer().apply {
+    printModules(directory) { append(it) }
+}.toString()
 
 class ModulesTest {
     @Test

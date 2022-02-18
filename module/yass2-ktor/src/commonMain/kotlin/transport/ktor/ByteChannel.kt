@@ -13,7 +13,7 @@ internal suspend fun ByteWriteChannel.write(transport: Transport, value: Any?) {
 internal suspend fun ByteReadChannel.read(transport: Transport, length: Int): Any? {
     val buffer = transport.readBytes(length) { bytes, offset, size -> readFully(bytes, offset, size) }
     val reader = BytesReader(buffer)
-    val value = transport.read(reader)
-    check(reader.isDrained)
-    return value
+    return transport.read(reader).apply {
+        check(reader.isDrained)
+    }
 }

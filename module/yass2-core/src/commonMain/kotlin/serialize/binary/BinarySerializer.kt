@@ -51,9 +51,9 @@ public val ListEncoderId: EncoderId = EncoderId(1, object : Encoder(List::class)
 
     override fun read(reader: EncoderReader): MutableList<*> {
         var size = reader.reader.readVarInt()
-        val list = ArrayList<Any?>(minOf(size, 100)) // prevents easy out-of-memory attack
-        while (size-- > 0) list.add(reader.readWithId())
-        return list
+        return ArrayList<Any?>(minOf(size, 100)).apply { // prevents easy out-of-memory attack
+            while (size-- > 0) add(reader.readWithId())
+        }
     }
 })
 
