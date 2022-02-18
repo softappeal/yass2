@@ -1,9 +1,13 @@
 package ch.softappeal.yass2.tutorial.contract
 
+import ch.softappeal.yass2.*
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.serialize.binary.*
+import ch.softappeal.yass2.transport.*
+import ch.softappeal.yass2.transport.session.*
+import ch.softappeal.yass2.tutorial.contract.generated.*
 
-// This file describes the needed contract metadata that doesn't depend on generated artifacts.
+// This file describes the needed contract metadata.
 
 /** Define all the base encoders needed by the contract (including enumerations and own base types). */
 fun baseEncoders(): List<BaseEncoder<*>> {
@@ -36,9 +40,18 @@ val NewsListenerId = serviceId<NewsListener>(2)
 val ServiceIds = listOf(CalculatorId, NewsListenerId)
 
 /** Writes value (without line breaks) if responsible else does nothing. */
-fun StringBuilder.valueDumper(value: Any) {
+private fun StringBuilder.valueDumper(value: Any) {
     when (value) {
         is Gender -> append(value.name)
         is MyDate -> append("MyDate(${value.currentTimeMillis})")
     }
 }
+
+val ContractSerializer = generatedBinarySerializer(::baseEncoders)
+val MessageSerializer = binaryMessageSerializer(ContractSerializer)
+val PacketSerializer = binaryPacketSerializer(MessageSerializer)
+
+val MessageTransport = Transport(MessageSerializer, 100)
+val PacketTransport = Transport(PacketSerializer, 100)
+
+val Dumper = dumper(::generatedDumperProperties, StringBuilder::valueDumper)
