@@ -5,13 +5,15 @@ import ch.softappeal.yass2.contract.generated.*
 import ch.softappeal.yass2.serialize.binary.*
 import kotlin.test.*
 
-class DumperTest {
-    private val dumper = dumper(::generatedDumperProperties, StringBuilder::valueDumper)
+open class DumperTest {
+    protected open val propertiesSupplier = ::generatedDumperProperties
+
+    private fun dumper() = dumper(propertiesSupplier, StringBuilder::valueDumper)
 
     @Test
     fun missingClass() {
         try {
-            StringBuilder().dumper(Any())
+            StringBuilder().(dumper())(Any())
         } catch (e: IllegalStateException) {
             println(e)
         }
@@ -20,8 +22,9 @@ class DumperTest {
     @Test
     fun test() {
         val s = StringBuilder()
+        val d = dumper()
         fun dump(value: Any?) {
-            s.dumper(value).appendLine()
+            s.d(value).appendLine()
         }
 
         dump(null)

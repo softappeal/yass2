@@ -7,7 +7,6 @@ import ch.softappeal.yass2.serialize.binary.*
 import ch.softappeal.yass2.transport.*
 import ch.softappeal.yass2.transport.session.*
 
-
 fun baseEncoders() = listOf(IntEncoder, StringEncoder, ByteArrayEncoder)
 
 val ConcreteClasses = listOf(

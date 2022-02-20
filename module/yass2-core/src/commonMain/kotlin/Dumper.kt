@@ -11,7 +11,10 @@ public typealias Dumper = StringBuilder.(value: Any?) -> StringBuilder
  * `null`, [Boolean], [Number], [CharSequence], [List] and classes with its properties.
  * [valueDumper] writes value (without line breaks) if responsible else does nothing.
  */
-public fun dumper(propertiesSupplier: () -> DumperProperties, valueDumper: StringBuilder.(value: Any) -> Unit): Dumper {
+public fun dumper(
+    propertiesSupplier: () -> DumperProperties, // NOTE: supplier is needed due to Kotlin Native/JS global variables initialize order bug
+    valueDumper: StringBuilder.(value: Any) -> Unit,
+): Dumper {
     val properties = propertiesSupplier()
     return { value ->
         var indent = 0

@@ -1,12 +1,7 @@
 package ch.softappeal.yass2.generate
 
+import ch.softappeal.yass2.reflect.*
 import kotlin.reflect.*
-import kotlin.reflect.full.*
-
-private fun KClass<*>.properties(): List<KProperty1<Any, Any?>> = memberProperties
-    .filter { !isSubclassOf(Throwable::class) || (it.name != "cause" && it.name != "message") }
-    .sortedBy { it.name }
-    .map { @Suppress("UNCHECKED_CAST") (it as KProperty1<Any, Any?>) }
 
 public fun generateDumperProperties(
     concreteClasses: List<KClass<*>>,
