@@ -1,19 +1,19 @@
-package ch.softappeal.yass2.serialize.binary.generate
+package ch.softappeal.yass2.serialize.binary.reflect
 
 import ch.softappeal.yass2.serialize.binary.*
 import kotlin.reflect.*
 
-internal enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
+public enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
 
-internal class MetaProperty(
-    val property: KProperty1<Any, Any?>,
-    val kind: PropertyKind,
-    val encoderId: Int = -1,
+public class MetaProperty(
+    public val property: KProperty1<Any, Any?>,
+    public val kind: PropertyKind,
+    public val encoderId: Int = -1,
 ) {
-    fun mutableProperty(): KMutableProperty1<Any, Any?> = property as KMutableProperty1<Any, Any?>
+    public fun mutableProperty(): KMutableProperty1<Any, Any?> = property as KMutableProperty1<Any, Any?>
 }
 
-internal fun KClass<*>.metaProperty(
+public fun KClass<*>.metaProperty(
     property: KProperty1<Any, Any?>,
     baseEncoderTypes: List<KClass<*>>,
     concreteClasses: List<KClass<*>>,
@@ -38,14 +38,14 @@ internal fun KClass<*>.metaProperty(
     }
 }
 
-internal class MetaClass(
+public class MetaClass(
     klass: KClass<*>,
     properties: List<MetaProperty>,
     parameterNames: List<String>,
 ) {
-    val parameterProperties: List<MetaProperty>
-    val bodyProperties: List<MetaProperty>
-    val properties: List<MetaProperty>
+    public val parameterProperties: List<MetaProperty>
+    public val bodyProperties: List<MetaProperty>
+    public val properties: List<MetaProperty>
 
     init {
         parameterProperties = mutableListOf()

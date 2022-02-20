@@ -1,7 +1,7 @@
 package ch.softappeal.yass2.generate
 
 import ch.softappeal.yass2.serialize.binary.*
-import ch.softappeal.yass2.serialize.binary.generate.*
+import ch.softappeal.yass2.serialize.binary.reflect.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
 
