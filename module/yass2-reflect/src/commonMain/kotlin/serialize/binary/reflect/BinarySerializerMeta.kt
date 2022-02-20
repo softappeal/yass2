@@ -11,6 +11,18 @@ public class MetaProperty(
     public val encoderId: Int = -1,
 ) {
     public fun mutableProperty(): KMutableProperty1<Any, Any?> = property as KMutableProperty1<Any, Any?>
+
+    public fun write(writer: EncoderWriter, value: Any?): Unit = when (kind) {
+        PropertyKind.WithId -> writer.writeWithId(value)
+        PropertyKind.NoIdRequired -> writer.writeNoIdRequired(encoderId, value!!)
+        PropertyKind.NoIdOptional -> writer.writeNoIdOptional(encoderId, value)
+    }
+
+    public fun read(reader: EncoderReader): Any? = when (kind) {
+        PropertyKind.WithId -> reader.readWithId()
+        PropertyKind.NoIdRequired -> reader.readNoIdRequired(encoderId)
+        PropertyKind.NoIdOptional -> reader.readNoIdOptional(encoderId)
+    }
 }
 
 public fun KClass<*>.metaProperty(

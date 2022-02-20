@@ -2,6 +2,7 @@ package ch.softappeal.yass2.serialize.binary
 
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.generate.*
+import ch.softappeal.yass2.serialize.binary.reflect.*
 import kotlin.reflect.full.*
 import kotlin.test.*
 
@@ -9,7 +10,7 @@ class GenerateBinarySerializerTest {
     @Test
     fun duplicatedBaseEncoder() {
         assertEquals(
-            "duplicated baseEncoder",
+            "duplicated types",
             assertFailsWith<IllegalArgumentException> { generateBinarySerializer({ listOf(IntEncoder, IntEncoder) }, listOf()) }.message
         )
     }
@@ -33,8 +34,16 @@ class GenerateBinarySerializerTest {
     @Test
     fun duplicatedConcreteClass() {
         assertEquals(
-            "duplicated concreteClass",
+            "duplicated types",
             assertFailsWith<IllegalArgumentException> { generateBinarySerializer({ listOf() }, listOf(Id2::class, Id2::class)) }.message
+        )
+    }
+
+    @Test
+    fun duplicatedType() {
+        assertEquals(
+            "duplicated types",
+            assertFailsWith<IllegalArgumentException> { generateBinarySerializer({ listOf(IntEncoder) }, listOf(Int::class)) }.message
         )
     }
 
@@ -140,5 +149,17 @@ class GenerateBinarySerializerTest {
         }
         assertEquals(1, X::class.memberProperties.size)
         assertEquals(1, Y::class.memberProperties.size)
+    }
+}
+
+class ReflectionBinarySerializerTest : BinarySerializerTest() {
+    override val serializer = reflectionBinarySerializer(::baseEncoders, ConcreteClasses)
+
+    @Test
+    fun duplicatedInt() {
+        assertEquals(
+            "duplicated type 'class kotlin.Int'",
+            assertFailsWith<IllegalArgumentException> { reflectionBinarySerializer({ listOf(IntEncoder) }, listOf(Int::class)) }.message
+        )
     }
 }

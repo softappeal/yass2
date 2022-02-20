@@ -20,8 +20,6 @@ private fun <T> Serializer.copy(value: T, bytes: IntArray): T {
     }
 }
 
-private fun <T> copy(value: T, vararg bytes: Int): T = ContractSerializer.copy(value, bytes)
-
 val ManyPropertiesConst = ManyProperties(8, 4, 6, 7, 2).apply {
     a = 1
     c = 3
@@ -45,7 +43,11 @@ private fun ManyProperties.assertManyProperties() {
     )
 }
 
-class BinarySerializerTest {
+open class BinarySerializerTest {
+    protected open val serializer = ContractSerializer
+
+    private fun <T> copy(value: T, vararg bytes: Int): T = serializer.copy(value, bytes)
+
     @Test
     fun duplicatedType() {
         assertPlatform<IllegalArgumentException>(
@@ -59,7 +61,7 @@ class BinarySerializerTest {
         assertPlatform<IllegalStateException>(
             "missing type 'class kotlin.Boolean'",
             "missing type 'class Boolean'",
-        ) { ContractSerializer.write(BytesWriter(1000), true) }
+        ) { serializer.write(BytesWriter(1000), true) }
     }
 
     @Test
@@ -177,9 +179,9 @@ class BinarySerializerTest {
         val buffer = ByteArray(1000)
         performance(100_000) {
             val writer = BytesWriter(buffer)
-            ContractSerializer.write(writer, ManyPropertiesConst)
+            serializer.write(writer, ManyPropertiesConst)
             assertSame(buffer, writer.buffer)
-            (ContractSerializer.read(BytesReader(buffer)) as ManyProperties).assertManyProperties()
+            (serializer.read(BytesReader(buffer)) as ManyProperties).assertManyProperties()
         }
     }
 }
