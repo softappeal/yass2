@@ -10,6 +10,7 @@
         - GenerateRemote.kt `[jvm]`
     - reflect `yass2-reflect`
         - ReflectionDumper.kt `[jvm]`
+        - ReflectionInterceptor.kt `[jvm]`
     - remote `yass2-core`
         - Message.kt `[common]`
         - Remote.kt `[common]`

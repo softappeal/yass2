@@ -5,59 +5,6 @@ import ch.softappeal.yass2.contract.generated.*
 import kotlinx.coroutines.*
 import kotlin.test.*
 
-class InterceptorTest {
-    @Test
-    fun compositeInterceptor() = yassRunBlocking {
-        val value = "string"
-        var value1: Int? = null
-        var value2: Int? = null
-        val interceptor1: Interceptor = { _, _, invocation ->
-            assertNull(value1)
-            assertNull(value2)
-            value1 = 1
-            invocation()
-        }
-        val interceptor2: Interceptor = { _, _, invocation ->
-            assertNotNull(value1)
-            assertNull(value2)
-            value2 = 1
-            invocation()
-        }
-        assertSame(value, (interceptor1 + interceptor2)(Calculator::add, emptyList()) { value })
-        assertNotNull(value1)
-        assertNotNull(value2)
-    }
-
-    private interface NoSuchService
-
-    @Test
-    fun noSuchService() {
-        assertPlatform<IllegalStateException>(
-            "no proxy for 'class ch.softappeal.yass2.InterceptorTest\$noSuchService\$1\$1'",
-            "no proxy for 'class null'",
-            "no proxy for 'class <anonymous>'",
-        ) {
-            GeneratedProxyFactory(object : NoSuchService {}) { _, _, invocation: Invocation -> invocation() }
-        }
-    }
-
-    @Test
-    fun proxyFactory() = yassRunBlocking {
-        GeneratedProxyFactory.test(CalculatorImpl, EchoImpl)
-    }
-
-    @Test
-    fun performance() = yassRunBlocking {
-        var counter = 0
-        val proxy = GeneratedProxyFactory(CalculatorImpl) { _, _, invocation ->
-            counter++
-            invocation()
-        }
-        performance(100_000) { assertEquals(4, proxy.divide(12, 3)) }
-        assertEquals(200_000, counter)
-    }
-}
-
 val CalculatorImpl = object : Calculator {
     override suspend fun add(a: Int, b: Int) = a + b
     override suspend fun divide(a: Int, b: Int) = if (b == 0) throw DivideByZeroException() else a / b
@@ -70,7 +17,7 @@ val EchoImpl = object : Echo {
     override suspend fun delay(milliSeconds: Int) = delay(milliSeconds.toLong())
 }
 
-suspend fun GeneratedProxyFactory.test(calculatorImpl: Calculator, echoImpl: Echo) {
+suspend fun ProxyFactory.test(calculatorImpl: Calculator, echoImpl: Echo) {
     val printer: Interceptor = { function, parameters, invocation ->
         print("${function.name} $parameters -> ")
         try {
@@ -109,4 +56,59 @@ suspend fun GeneratedProxyFactory.test(calculatorImpl: Calculator, echoImpl: Ech
     println(assertSuspendFailsWith<TimeoutCancellationException> {
         withTimeout(100) { echo.delay(200) }
     })
+}
+
+open class InterceptorTest {
+    protected open val proxyFactory: ProxyFactory = GeneratedProxyFactory
+
+    @Test
+    fun compositeInterceptor() = yassRunBlocking {
+        val value = "string"
+        var value1: Int? = null
+        var value2: Int? = null
+        val interceptor1: Interceptor = { _, _, invocation ->
+            assertNull(value1)
+            assertNull(value2)
+            value1 = 1
+            invocation()
+        }
+        val interceptor2: Interceptor = { _, _, invocation ->
+            assertNotNull(value1)
+            assertNull(value2)
+            value2 = 1
+            invocation()
+        }
+        assertSame(value, (interceptor1 + interceptor2)(Calculator::add, emptyList()) { value })
+        assertNotNull(value1)
+        assertNotNull(value2)
+    }
+
+    private interface NoSuchService
+
+    @Test
+    fun noSuchService() {
+        assertPlatform<IllegalStateException>(
+            "no proxy for 'class ch.softappeal.yass2.InterceptorTest\$noSuchService\$1\$1'",
+            "no proxy for 'class null'",
+            "no proxy for 'class <anonymous>'",
+        ) {
+            GeneratedProxyFactory(object : NoSuchService {}) { _, _, invocation: Invocation -> invocation() }
+        }
+    }
+
+    @Test
+    fun proxyFactoryTest() = yassRunBlocking {
+        proxyFactory.test(CalculatorImpl, EchoImpl)
+    }
+
+    @Test
+    fun performance() = yassRunBlocking {
+        var counter = 0
+        val proxy = proxyFactory(CalculatorImpl) { _, _, invocation ->
+            counter++
+            invocation()
+        }
+        performance(100_000) { assertEquals(4, proxy.divide(12, 3)) }
+        assertEquals(200_000, counter)
+    }
 }

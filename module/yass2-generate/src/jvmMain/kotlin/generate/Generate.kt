@@ -3,7 +3,6 @@ package ch.softappeal.yass2.generate
 import java.io.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
-import kotlin.reflect.jvm.*
 
 internal fun StringBuilder.write(s: String, level: Int = 0) {
     append(s.replaceIndent("    ".repeat(level))).appendLine()
@@ -16,16 +15,6 @@ internal const val CSY = "ch.softappeal.yass2"
 internal fun KType.needsCast(): Boolean = classifier != Any::class || !isMarkedNullable
 
 internal fun KFunction<*>.hasResult(): Boolean = returnType.classifier != Unit::class
-
-internal fun KClass<*>.serviceFunctions(): List<KFunction<*>> = memberFunctions
-    .filter { it.javaMethod!!.declaringClass != Object::class.java }
-    .sortedBy { it.name } // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
-    .apply {
-        require(map { it.name }.toSet().size == size) { "'${this@serviceFunctions}' has overloaded functions" }
-    }
-    .onEach {
-        require(it.isSuspend) { "'$it' is not a suspend function" }
-    }
 
 internal fun StringBuilder.writeFunctionSignature(indent: String, function: KFunction<*>): Unit = with(function) {
     append("${indent}override ${if (function.isSuspend) "suspend " else ""}fun $name(")

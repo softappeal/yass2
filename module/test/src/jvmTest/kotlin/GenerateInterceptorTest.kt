@@ -3,6 +3,7 @@ package ch.softappeal.yass2
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.contract.generated.*
 import ch.softappeal.yass2.generate.*
+import ch.softappeal.yass2.reflect.*
 import kotlinx.coroutines.*
 import kotlin.reflect.full.*
 import kotlin.test.*
@@ -30,6 +31,18 @@ class GenerateInterceptorTest {
         )
     }
 
+    interface NoSuspend {
+        @Suppress("unused") fun x()
+    }
+
+    @Test
+    fun noSuspend() {
+        assertEquals(
+            "'fun ch.softappeal.yass2.GenerateInterceptorTest.NoSuspend.x(): kotlin.Unit' is not a suspend function",
+            assertFailsWith<IllegalArgumentException> { generateProxyFactory(listOf(NoSuspend::class)) }.message
+        )
+    }
+
     @Test
     fun annotation() = runBlocking {
         var hasAnnotation = false
@@ -42,5 +55,24 @@ class GenerateInterceptorTest {
         assertTrue(hasAnnotation)
         echo.noParametersNoResult()
         assertFalse(hasAnnotation)
+    }
+}
+
+class ReflectionInterceptorTest : InterceptorTest() {
+    override val proxyFactory = ReflectionProxyFactory
+
+    class NoSuspend {
+        @Suppress("unused", "EmptyMethod") fun x() {}
+    }
+
+    @Test
+    fun noSuspend() {
+        assertEquals(
+            "'fun ch.softappeal.yass2.ReflectionInterceptorTest.NoSuspend.x(): kotlin.Unit' is not a suspend function",
+            assertFailsWith<IllegalArgumentException> {
+                val interceptor: Interceptor = { _, _, _ -> }
+                ReflectionProxyFactory(NoSuspend(), interceptor)
+            }.message
+        )
     }
 }
