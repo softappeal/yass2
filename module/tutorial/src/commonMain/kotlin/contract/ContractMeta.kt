@@ -9,20 +9,19 @@ import ch.softappeal.yass2.tutorial.contract.generated.*
 
 // This file describes the needed contract metadata.
 
+// Shows how to implement an own base type encoder.
+private val MyDateEncoder = BaseEncoder(MyDate::class,
+    { writer, value -> writer.writeLong(value.currentTimeMillis) },
+    { reader -> MyDate(reader.readLong()) }
+)
+
 /** Define all the base encoders needed by the contract (including enumerations and own base types). */
-fun baseEncoders(): List<BaseEncoder<*>> {
-    // Shows how to implement an own base type encoder.
-    val myDateEncoder = BaseEncoder(MyDate::class,
-        { writer, value -> writer.writeLong(value.currentTimeMillis) },
-        { reader -> MyDate(reader.readLong()) }
-    )
-    return listOf(
-        IntEncoder,
-        StringEncoder,
-        enumEncoder<Gender>(),
-        myDateEncoder,
-    )
-}
+fun baseEncoders() = listOf(
+    IntEncoder,
+    StringEncoder,
+    enumEncoder<Gender>(),
+    MyDateEncoder,
+)
 
 /** Define all the concrete classes needed by the contract. */
 val ConcreteClasses = listOf(
