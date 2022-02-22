@@ -8,8 +8,12 @@ import kotlin.coroutines.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
 
+public fun KClass<*>.suspendServiceFunctions(): List<KFunction<*>> = serviceFunctions().onEach {
+    require(it.isSuspend) { "'$it' is not a suspend function" }
+}
+
 public class FunctionMapper(private val service: KClass<*>) {
-    private val functions: Array<KFunction<*>> = service.serviceFunctions().toTypedArray()
+    private val functions: Array<KFunction<*>> = service.suspendServiceFunctions().toTypedArray()
     private val name2id: Map<String, Int> = functions.withIndex().associate { (index, function) -> function.name to index }
     public fun toFunction(id: Int): KFunction<*> = if (id >= 0 && id < functions.size) functions[id] else error("'$service' has no function $id")
     public fun toId(name: String): Int = name2id[name] ?: error("'$service' has no function '$name'")

@@ -73,3 +73,9 @@ interface Echo {
 
     suspend fun delay(milliSeconds: Int)
 }
+
+interface Mixed {
+    fun divide(a: Int, b: Int): Int
+    suspend fun suspendDivide(a: Int, b: Int): Int
+    fun noParametersNoResult()
+}

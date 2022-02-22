@@ -14,9 +14,6 @@ public fun KClass<*>.serviceFunctions(): List<KFunction<*>> = memberFunctions
     .apply {
         require(map { it.name }.toSet().size == size) { "'${this@serviceFunctions}' has overloaded functions" }
     }
-    .onEach {
-        require(it.isSuspend) { "'$it' is not a suspend function" }
-    }
 
 internal inline fun handleInvocationTargetException(action: () -> Any?): Any? = try {
     action()
@@ -35,16 +32,26 @@ public object ReflectionProxyFactory : ProxyFactory {
     override fun <S : Any> create(
         service: KClass<S>,
         implementation: S,
-        interceptor: SuspendInterceptor,
+        interceptor: Interceptor,
+        suspendInterceptor: SuspendInterceptor,
     ): S {
-        service.serviceFunctions()
+        service.serviceFunctions().apply {
+            checkInterceptors(interceptor, suspendInterceptor, any { !it.isSuspend }, any { it.isSuspend })
+        }
         val proxy = newProxyInstance(service.java.classLoader, arrayOf(service.java)) { _, method, arguments ->
             val function = method.kotlinFunction!!
-            val parameters = arguments.copyOf(arguments.size - 1)
-            val continuation = arguments.last() as Continuation<*>
-            invokeSuspendFunction(continuation) {
+            if (function.isSuspend) {
+                val parameters = arguments.copyOf(arguments.size - 1)
+                val continuation = arguments.last() as Continuation<*>
+                invokeSuspendFunction(continuation) {
+                    suspendInterceptor(function, parameters.toList()) {
+                        handleInvocationTargetException { method.invoke(implementation, *parameters, continuation) }
+                    }
+                }
+            } else {
+                val parameters = arguments ?: emptyArray()
                 interceptor(function, parameters.toList()) {
-                    handleInvocationTargetException { method.invoke(implementation, *parameters, continuation) }
+                    handleInvocationTargetException { method.invoke(implementation, *parameters) }
                 }
             }
         }

@@ -1,7 +1,7 @@
 package ch.softappeal.yass2.generate
 
-import ch.softappeal.yass2.reflect.*
 import ch.softappeal.yass2.remote.*
+import ch.softappeal.yass2.remote.reflect.*
 import kotlin.reflect.full.*
 
 public fun generateRemoteProxyFactory(
@@ -24,7 +24,7 @@ public fun generateRemoteProxyFactory(
         write("""
             ${serviceId.id} -> object : ${serviceId.service.qualifiedName} {
         """, 3)
-        serviceId.service.serviceFunctions().withIndex().forEach { (functionIndex, function) ->
+        serviceId.service.suspendServiceFunctions().withIndex().forEach { (functionIndex, function) ->
             with(function) {
                 if (functionIndex != 0) appendLine()
                 writeFunctionSignature("                ", this)
@@ -67,7 +67,7 @@ public fun generateInvoke(
                 val i = service.implementation as ${serviceId.service.qualifiedName}
                 when (request.functionId) {
         """, 2)
-        serviceId.service.serviceFunctions().withIndex().forEach { (functionIndex, function) ->
+        serviceId.service.suspendServiceFunctions().withIndex().forEach { (functionIndex, function) ->
             append("                $functionIndex -> i.${function.name}(")
             function.valueParameters.forEach { parameter ->
                 if (parameter.index != 1) append(", ")

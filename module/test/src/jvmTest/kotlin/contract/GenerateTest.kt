@@ -13,7 +13,7 @@ private fun generate(fileName: String, code: String) {
 class GenerateTest {
     @Test
     fun generateProxyFactory() {
-        generate("GeneratedProxyFactory.kt", generateProxyFactory(ServiceIds.map { it.service }))
+        generate("GeneratedProxyFactory.kt", generateProxyFactory(ServiceIds.map { it.service } + Mixed::class))
     }
 
     @Test
