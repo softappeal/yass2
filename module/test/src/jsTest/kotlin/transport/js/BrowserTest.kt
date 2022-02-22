@@ -1,7 +1,6 @@
 package ch.softappeal.yass2.transport.js
 
 import ch.softappeal.yass2.contract.*
-import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.coroutines.session.*
 import kotlinx.coroutines.*
 import kotlin.js.Promise

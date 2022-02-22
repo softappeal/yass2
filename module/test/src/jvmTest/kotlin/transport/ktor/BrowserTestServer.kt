@@ -3,7 +3,6 @@
 package ch.softappeal.yass2.transport.ktor
 
 import ch.softappeal.yass2.contract.*
-import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.coroutines.session.*
 import io.ktor.application.*
 import io.ktor.http.content.*

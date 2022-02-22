@@ -4,9 +4,26 @@ import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.contract.generated.*
 import ch.softappeal.yass2.remote.*
+import ch.softappeal.yass2.remote.coroutines.*
 import kotlinx.coroutines.*
 import kotlin.coroutines.*
 import kotlin.test.*
+
+fun tunnel(context: suspend () -> Any): Tunnel = ::generatedInvoke.tunnel(listOf(
+    CalculatorId(CalculatorImpl),
+    EchoId(GeneratedProxyFactory(EchoImpl) { _, _, invocation: Invocation ->
+        println("context<${context()}>")
+        invocation()
+    }),
+    FlowServiceId(FlowServiceImpl)
+))
+
+suspend fun Tunnel.test(iterations: Int): Unit = with(generatedRemoteProxyFactory(this)) {
+    val calculator = this(CalculatorId)
+    GeneratedProxyFactory.test(calculator, this(EchoId))
+    performance(iterations) { assertEquals(5, calculator.add(2, 3)) }
+    this(FlowServiceId).test()
+}
 
 fun CoroutineScope.acceptorSessionFactory(context: suspend Session.() -> Any): SessionFactory = {
     object : Session() {

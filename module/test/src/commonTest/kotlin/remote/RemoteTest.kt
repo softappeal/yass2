@@ -3,18 +3,18 @@ package ch.softappeal.yass2.remote
 import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.contract.generated.*
-import ch.softappeal.yass2.remote.coroutines.*
 import kotlin.test.*
 
-private val RemoteProxyFactory = (::generatedRemoteProxyFactory)(::generatedInvoke.tunnel(listOf(CalculatorId(CalculatorImpl), EchoId(EchoImpl))))
+open class RemoteTest {
+    protected open val invoke = ::generatedInvoke
+    protected open val remoteProxyFactory = ::generatedRemoteProxyFactory
 
-class RemoteTest {
     @Test
     fun duplicatedService() {
         assertEquals(
             "duplicated service id",
             assertFailsWith<IllegalArgumentException> {
-                ::generatedInvoke.tunnel(listOf(EchoId(EchoImpl), EchoId(EchoImpl)))
+                invoke.tunnel(listOf(EchoId(EchoImpl), EchoId(EchoImpl)))
             }.message
         )
     }
@@ -24,7 +24,7 @@ class RemoteTest {
         assertEquals(
             "no service id 1",
             assertFailsWith<IllegalStateException> {
-                generatedRemoteProxyFactory(::generatedInvoke.tunnel(emptyList()))(CalculatorId).add(1, 2)
+                remoteProxyFactory(invoke.tunnel(emptyList()))(CalculatorId).add(1, 2)
             }.message
         )
     }
@@ -71,30 +71,16 @@ class RemoteTest {
         assertSame(value, ValueReply(value).value)
     }
 
+    private fun remoteProxyFactory() = remoteProxyFactory(invoke.tunnel(listOf(CalculatorId(CalculatorImpl), EchoId(EchoImpl))))
+
     @Test
     fun test() = yassRunBlocking {
-        GeneratedProxyFactory.test(RemoteProxyFactory(CalculatorId), RemoteProxyFactory(EchoId))
+        GeneratedProxyFactory.test(remoteProxyFactory()(CalculatorId), remoteProxyFactory()(EchoId))
     }
 
     @Test
     fun performance() = yassRunBlocking {
-        val calculator = RemoteProxyFactory(CalculatorId)
+        val calculator = remoteProxyFactory()(CalculatorId)
         performance(100_000) { assertEquals(5, calculator.add(2, 3)) }
     }
-}
-
-fun tunnel(context: suspend () -> Any): Tunnel = ::generatedInvoke.tunnel(listOf(
-    CalculatorId(CalculatorImpl),
-    EchoId(GeneratedProxyFactory(EchoImpl) { _, _, invocation: Invocation ->
-        println("context<${context()}>")
-        invocation()
-    }),
-    FlowServiceId(FlowServiceImpl)
-))
-
-suspend fun Tunnel.test(iterations: Int): Unit = with(generatedRemoteProxyFactory(this)) {
-    val calculator = this(CalculatorId)
-    GeneratedProxyFactory.test(calculator, this(EchoId))
-    performance(iterations) { assertEquals(5, calculator.add(2, 3)) }
-    this(FlowServiceId).test()
 }

@@ -18,13 +18,13 @@ public fun KClass<*>.serviceFunctions(): List<KFunction<*>> = memberFunctions
         require(it.isSuspend) { "'$it' is not a suspend function" }
     }
 
-private inline fun handleInvocationTargetException(action: () -> Any?): Any? = try {
+internal inline fun handleInvocationTargetException(action: () -> Any?): Any? = try {
     action()
 } catch (e: InvocationTargetException) {
     throw e.cause!!
 }
 
-private fun invokeSuspendFunction(
+internal fun invokeSuspendFunction(
     continuation: Continuation<*>,
     suspendFunction: suspend () -> Any?,
 ): Any? = handleInvocationTargetException {

@@ -19,6 +19,8 @@
             - session `yass2-coroutines`
                 - Session.kt `[common]`
                 - SessionConnector.kt `[common]`
+        - reflect `yass2-reflect`
+            - ReflectionRemote.kt `[jvm]`
     - serialize `yass2-core`
         - Serializer.kt `[common]`
         - binary `yass2-core`
