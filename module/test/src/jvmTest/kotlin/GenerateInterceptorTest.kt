@@ -46,7 +46,7 @@ class GenerateInterceptorTest {
     @Test
     fun annotation() = runBlocking {
         var hasAnnotation = false
-        val echo: Echo = GeneratedProxyFactory(EchoImpl) { function, parameters, invocation: Invocation ->
+        val echo: Echo = GeneratedProxyFactory(EchoImpl) { function, parameters, invocation: SuspendInvocation ->
             hasAnnotation = function.findAnnotation<TestAnnotation>() != null
             println("${function.name} $hasAnnotation $parameters")
             invocation()
@@ -70,7 +70,7 @@ class ReflectionInterceptorTest : InterceptorTest() {
         assertEquals(
             "'fun ch.softappeal.yass2.ReflectionInterceptorTest.NoSuspend.x(): kotlin.Unit' is not a suspend function",
             assertFailsWith<IllegalArgumentException> {
-                val interceptor: Interceptor = { _, _, _ -> }
+                val interceptor: SuspendInterceptor = { _, _, _ -> }
                 ReflectionProxyFactory(NoSuspend(), interceptor)
             }.message
         )

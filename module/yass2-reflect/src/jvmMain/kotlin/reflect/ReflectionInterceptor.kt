@@ -35,7 +35,7 @@ public object ReflectionProxyFactory : ProxyFactory {
     override fun <S : Any> create(
         service: KClass<S>,
         implementation: S,
-        interceptor: Interceptor,
+        interceptor: SuspendInterceptor,
     ): S {
         service.serviceFunctions()
         val proxy = newProxyInstance(service.java.classLoader, arrayOf(service.java)) { _, method, arguments ->

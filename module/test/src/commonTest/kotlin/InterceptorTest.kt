@@ -18,7 +18,7 @@ val EchoImpl = object : Echo {
 }
 
 suspend fun ProxyFactory.test(calculatorImpl: Calculator, echoImpl: Echo) {
-    val printer: Interceptor = { function, parameters, invocation ->
+    val printer: SuspendInterceptor = { function, parameters, invocation ->
         print("${function.name} $parameters -> ")
         try {
             val result = invocation()
@@ -32,7 +32,7 @@ suspend fun ProxyFactory.test(calculatorImpl: Calculator, echoImpl: Echo) {
     var counter = 0
     var functionName: String? = null
     var params: List<Any?>? = null
-    val testInterceptor: Interceptor = { function, parameters, invocation ->
+    val testInterceptor: SuspendInterceptor = { function, parameters, invocation ->
         counter++
         functionName = function.name
         params = parameters
@@ -66,13 +66,13 @@ open class InterceptorTest {
         val value = "string"
         var value1: Int? = null
         var value2: Int? = null
-        val interceptor1: Interceptor = { _, _, invocation ->
+        val interceptor1: SuspendInterceptor = { _, _, invocation ->
             assertNull(value1)
             assertNull(value2)
             value1 = 1
             invocation()
         }
-        val interceptor2: Interceptor = { _, _, invocation ->
+        val interceptor2: SuspendInterceptor = { _, _, invocation ->
             assertNotNull(value1)
             assertNull(value2)
             value2 = 1
@@ -92,7 +92,7 @@ open class InterceptorTest {
             "no proxy for 'class null'",
             "no proxy for 'class <anonymous>'",
         ) {
-            GeneratedProxyFactory(object : NoSuchService {}) { _, _, invocation: Invocation -> invocation() }
+            GeneratedProxyFactory(object : NoSuchService {}) { _, _, invocation: SuspendInvocation -> invocation() }
         }
     }
 

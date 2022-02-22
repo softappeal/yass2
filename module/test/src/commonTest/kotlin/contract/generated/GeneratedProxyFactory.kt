@@ -3,7 +3,7 @@ package ch.softappeal.yass2.contract.generated
 @Suppress("UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
 public object GeneratedProxyFactory : ch.softappeal.yass2.ProxyFactory {
     override fun <S : Any> create(
-        service: kotlin.reflect.KClass<S>, implementation: S, interceptor: ch.softappeal.yass2.Interceptor,
+        service: kotlin.reflect.KClass<S>, implementation: S, interceptor: ch.softappeal.yass2.SuspendInterceptor,
     ): S = when (service) {
         ch.softappeal.yass2.contract.Calculator::class -> object : ch.softappeal.yass2.contract.Calculator {
             override suspend fun add(p1: kotlin.Int, p2: kotlin.Int): kotlin.Int {

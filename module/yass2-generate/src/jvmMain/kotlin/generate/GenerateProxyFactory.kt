@@ -14,7 +14,7 @@ public fun generateProxyFactory(
         @Suppress("UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
         public object $name : ${ProxyFactory::class.qualifiedName} {
             override fun <S : Any> create(
-                service: ${KClass::class.qualifiedName}<S>, implementation: S, interceptor: $CSY.Interceptor,
+                service: ${KClass::class.qualifiedName}<S>, implementation: S, interceptor: $CSY.SuspendInterceptor,
             ): S = when (service) {
     """)
     services.forEach { service ->

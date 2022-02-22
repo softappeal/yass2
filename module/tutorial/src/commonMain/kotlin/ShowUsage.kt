@@ -51,7 +51,7 @@ suspend fun showUsage() {
 
     suspend fun useInterceptor(proxyFactory: ProxyFactory) {
         println("*** useInterceptor ***")
-        val interceptor: Interceptor = { function, _, invocation ->
+        val interceptor: SuspendInterceptor = { function, _, invocation ->
             println("calling function '${function.name}'")
             invocation()
         }

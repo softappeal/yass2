@@ -11,7 +11,7 @@ import kotlin.test.*
 
 fun tunnel(context: suspend () -> Any): Tunnel = ::generatedInvoke.tunnel(listOf(
     CalculatorId(CalculatorImpl),
-    EchoId(GeneratedProxyFactory(EchoImpl) { _, _, invocation: Invocation ->
+    EchoId(GeneratedProxyFactory(EchoImpl) { _, _, invocation: SuspendInvocation ->
         println("context<${context()}>")
         invocation()
     }),
