@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.generate
 
+import ch.softappeal.yass2.*
 import ch.softappeal.yass2.reflect.*
 import kotlin.reflect.*
 
@@ -8,7 +9,7 @@ public fun generateDumperProperties(
     name: String = "generatedDumperProperties",
 ): String = writer {
     require(concreteClasses.toSet().size == concreteClasses.size) { "duplicated concreteClass" }
-    // NOTE: is 'fun' instead 'val' due to Kotlin Native/JS global variables initialize order bug
+    @UnspecifiedInitializationOrder(workaround = "'fun' instead 'val'")
     write("""
         @Suppress("UNCHECKED_CAST", "RedundantVisibilityModifier")
         public fun $name(): $CSY.DumperProperties = $CSY.dumperProperties(

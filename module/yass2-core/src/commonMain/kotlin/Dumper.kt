@@ -12,7 +12,7 @@ public typealias Dumper = StringBuilder.(value: Any?) -> StringBuilder
  * [valueDumper] writes value (without line breaks) if responsible else does nothing.
  */
 public fun dumper(
-    propertiesSupplier: () -> DumperProperties, // NOTE: supplier is needed due to Kotlin Native/JS global variables initialize order bug
+    @UnspecifiedInitializationOrder(workaround = "supplier") propertiesSupplier: () -> DumperProperties,
     valueDumper: StringBuilder.(value: Any) -> Unit,
 ): Dumper {
     val properties = propertiesSupplier()

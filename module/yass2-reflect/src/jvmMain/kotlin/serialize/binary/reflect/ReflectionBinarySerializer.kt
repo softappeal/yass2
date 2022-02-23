@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.serialize.binary.reflect
 
+import ch.softappeal.yass2.*
 import ch.softappeal.yass2.serialize.binary.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
@@ -25,7 +26,7 @@ public fun KClass<*>.metaClass(baseEncoderTypes: List<KClass<*>>, concreteClasse
 }
 
 public fun reflectionBinarySerializer(
-    baseEncodersSupplier: () -> List<BaseEncoder<*>>, // NOTE: supplier is needed due to Kotlin Native/JS global variables initialize order bug
+    @UnspecifiedInitializationOrder(workaround = "supplier") baseEncodersSupplier: () -> List<BaseEncoder<*>>,
     concreteClasses: List<KClass<*>> = emptyList(),
 ): BinarySerializer {
     val baseEncoders = baseEncodersSupplier()

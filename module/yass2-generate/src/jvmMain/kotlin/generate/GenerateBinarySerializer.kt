@@ -1,11 +1,12 @@
 package ch.softappeal.yass2.generate
 
+import ch.softappeal.yass2.*
 import ch.softappeal.yass2.serialize.binary.*
 import ch.softappeal.yass2.serialize.binary.reflect.*
 import kotlin.reflect.*
 
 public fun generateBinarySerializer(
-    baseEncodersSupplier: () -> List<BaseEncoder<*>>, // NOTE: supplier is needed due to Kotlin Native/JS global variables initialize order bug
+    @UnspecifiedInitializationOrder(workaround = "supplier") baseEncodersSupplier: () -> List<BaseEncoder<*>>,
     concreteClasses: List<KClass<*>> = emptyList(),
     name: String = "generatedBinarySerializer",
 ): String = writer {
