@@ -14,9 +14,11 @@ public typealias Dumper = StringBuilder.(value: Any?) -> StringBuilder
 public fun dumper(
     @UnspecifiedInitializationOrder(workaround = "supplier") propertiesSupplier: () -> DumperProperties,
     valueDumper: StringBuilder.(value: Any) -> Unit,
+    graphConcreteClasses: Set<KClass<*>> = emptySet(),
 ): Dumper {
     val properties = propertiesSupplier()
     return { value ->
+        val object2reference: HashMap<Any, Int> by lazy(LazyThreadSafetyMode.NONE) { HashMap(16) }
         var indent = 0
 
         fun dump(value: Any?) {
@@ -38,8 +40,9 @@ public fun dumper(
 
             fun dumpList(list: List<*>) {
                 inc("[")
-                for (element in list) {
+                for ((index, element) in list.withIndex()) {
                     appendIndent()
+                    append("$index: ")
                     dump(element)
                     appendLine()
                 }
@@ -48,6 +51,15 @@ public fun dumper(
 
             fun dumpObject(obj: Any) {
                 val type = obj::class
+                val graph = type in graphConcreteClasses
+                val index = if (graph) {
+                    val reference = object2reference[obj]
+                    if (reference != null) {
+                        append("#$reference")
+                        return
+                    }
+                    object2reference.size.apply { object2reference[obj] = this }
+                } else 0
                 inc("${type.simpleName}(")
                 for (property in properties(type)) property.get(obj)?.let { propertyValue ->
                     appendIndent()
@@ -56,6 +68,7 @@ public fun dumper(
                     appendLine()
                 }
                 dec(")")
+                if (graph) append(" #$index")
             }
 
             when (value) {

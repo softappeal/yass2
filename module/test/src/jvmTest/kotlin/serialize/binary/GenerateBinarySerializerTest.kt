@@ -153,7 +153,7 @@ class GenerateBinarySerializerTest {
 }
 
 class ReflectionBinarySerializerTest : BinarySerializerTest() {
-    override val serializer = reflectionBinarySerializer(::baseEncoders, ConcreteClasses)
+    override val serializer = reflectionBinarySerializer(::baseEncoders, TreeConcreteClasses)
 
     @Test
     fun duplicatedInt() {

@@ -8,7 +8,7 @@ import kotlin.test.*
 open class DumperTest {
     protected open val propertiesSupplier = ::generatedDumperProperties
 
-    private fun dumper() = dumper(propertiesSupplier, StringBuilder::valueDumper)
+    private fun dumper() = dumper(propertiesSupplier, StringBuilder::valueDumper, GraphConcreteClasses.toSet())
 
     @Test
     fun missingClass() {
@@ -44,6 +44,7 @@ open class DumperTest {
         dump(ComplexId())
         dump(Lists(list = listOf(PlainId(), PlainId()), mutableList = mutableListOf(PlainId(61))))
         dump(DivideByZeroException())
+        dump(createGraph())
 
         println(">$s<")
         assertEquals(Output, s.toString())
@@ -64,8 +65,8 @@ private val Output = """
     [
     ]
     [
-        null
-        123
+        0: null
+        1: 123
     ]
     ManyProperties(
         a = 1
@@ -102,20 +103,30 @@ private val Output = """
     )
     Lists(
         list = [
-            PlainId(
+            0: PlainId(
                 id = 60
             )
-            PlainId(
+            1: PlainId(
                 id = 60
             )
         ]
         mutableList = [
-            PlainId(
+            0: PlainId(
                 id = 61
             )
         ]
     )
     DivideByZeroException(
     )
+    Node(
+        id = 1
+        link = Node(
+            id = 2
+            link = Node(
+                id = 3
+                link = #1
+            ) #2
+        ) #1
+    ) #0
 
 """.trimIndent()

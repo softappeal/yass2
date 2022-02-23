@@ -9,10 +9,14 @@ import ch.softappeal.yass2.transport.session.*
 
 fun baseEncoders() = listOf(IntEncoder, StringEncoder, ByteArrayEncoder)
 
-val ConcreteClasses = listOf(
+val TreeConcreteClasses = listOf(
     IntException::class, PlainId::class, ComplexId::class, Lists::class,
     Id2::class, Id3::class, IdWrapper::class, ManyProperties::class,
     DivideByZeroException::class,
+)
+
+val GraphConcreteClasses = listOf(
+    Node::class
 )
 
 val ContractSerializer = generatedBinarySerializer(::baseEncoders)

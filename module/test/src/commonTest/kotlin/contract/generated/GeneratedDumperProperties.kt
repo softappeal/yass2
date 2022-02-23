@@ -44,4 +44,8 @@ public fun generatedDumperProperties(): ch.softappeal.yass2.DumperProperties = c
     ),
     ch.softappeal.yass2.contract.DivideByZeroException::class to listOf(
     ),
+    ch.softappeal.yass2.contract.Node::class to listOf(
+        ch.softappeal.yass2.contract.Node::id as kotlin.reflect.KProperty1<Any, Any?>,
+        ch.softappeal.yass2.contract.Node::link as kotlin.reflect.KProperty1<Any, Any?>,
+    ),
 )

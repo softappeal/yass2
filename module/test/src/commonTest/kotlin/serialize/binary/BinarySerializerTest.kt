@@ -43,6 +43,16 @@ private fun ManyProperties.assertManyProperties() {
     )
 }
 
+fun createGraph(): Node {
+    val n1 = Node(1)
+    val n2 = Node(2)
+    val n3 = Node(3)
+    n1.link = n2
+    n2.link = n3
+    n3.link = n2
+    return n1
+}
+
 open class BinarySerializerTest {
     protected open val serializer = ContractSerializer
 

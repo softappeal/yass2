@@ -23,11 +23,11 @@ class GenerateTest {
 
     @Test
     fun generateBinarySerializer() {
-        generate("GeneratedBinarySerializer.kt", generateBinarySerializer(::baseEncoders, ConcreteClasses))
+        generate("GeneratedBinarySerializer.kt", generateBinarySerializer(::baseEncoders, TreeConcreteClasses))
     }
 
     @Test
     fun generateDumper() {
-        generate("GeneratedDumperProperties.kt", generateDumperProperties(ConcreteClasses))
+        generate("GeneratedDumperProperties.kt", generateDumperProperties(TreeConcreteClasses + GraphConcreteClasses))
     }
 }
