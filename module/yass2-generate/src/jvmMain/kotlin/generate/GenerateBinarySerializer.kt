@@ -7,12 +7,14 @@ import kotlin.reflect.*
 
 public fun generateBinarySerializer(
     @UnspecifiedInitializationOrder(workaround = "supplier") baseEncodersSupplier: () -> List<BaseEncoder<*>>,
-    concreteClasses: List<KClass<*>> = emptyList(),
+    treeConcreteClasses: List<KClass<*>> = emptyList(),
+    graphConcreteClasses: List<KClass<*>> = emptyList(),
     name: String = "generatedBinarySerializer",
 ): String = writer {
     val baseEncoders = baseEncodersSupplier()
     require(
-        (baseEncoders.map { it.type }.toSet() + concreteClasses.toSet()).size == (baseEncoders.size + concreteClasses.size)
+        (baseEncoders.map { it.type }.toSet() + treeConcreteClasses.toSet() + graphConcreteClasses.toSet()).size ==
+            (baseEncoders.size + treeConcreteClasses.size + graphConcreteClasses.size)
     ) { "duplicated types" }
     write("""
         @Suppress("UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
@@ -22,11 +24,11 @@ public fun generateBinarySerializer(
             ${BinarySerializer::class.qualifiedName}(baseEncodersSupplier() + listOf(
     """)
     val baseEncoderTypes = baseEncoders.map { it.type }
-    concreteClasses.forEach { klass ->
+    fun List<KClass<*>>.add(graph: Boolean) = forEach { klass ->
         write("""
-            ${ClassEncoder::class.qualifiedName}(${klass.qualifiedName}::class,
+            ${ClassEncoder::class.qualifiedName}(${klass.qualifiedName}::class, $graph,
         """, 2)
-        val metaClass = klass.metaClass(baseEncoderTypes, concreteClasses)
+        val metaClass = klass.metaClass(baseEncoderTypes)
         fun MetaProperty.encoderId(tail: String = ""): String = if (kind != PropertyKind.WithId) encoderId.toString() + tail else ""
         if (metaClass.properties.isEmpty()) {
             write("{ _, _ -> },", 3)
@@ -40,15 +42,15 @@ public fun generateBinarySerializer(
             """, 3)
         }
         write("""
-            {${if (metaClass.properties.isNotEmpty()) " r ->" else ""}
+            {${if (graph || metaClass.properties.isNotEmpty()) " r ->" else ""}
         """, 3)
         write("""
-            val i = ${klass.qualifiedName}(
+            val i = ${if (graph) "r.created(" else ""}${klass.qualifiedName}(
         """, 4)
         fun cast(p: MetaProperty) = if (p.property.returnType.needsCast()) " as ${p.property.returnType}" else ""
         metaClass.parameterProperties.forEach { write("r.read${it.kind}(${it.encoderId()})${cast(it)},", 5) }
         write("""
-            )
+            )${if (graph) ')' else ""}
         """, 4)
         metaClass.bodyProperties.forEach {
             write("i.${it.property.name} = r.read${it.kind}(${it.encoderId()})${cast(it)}", 4)
@@ -59,6 +61,8 @@ public fun generateBinarySerializer(
             ),
         """, 2)
     }
+    treeConcreteClasses.add(false)
+    graphConcreteClasses.add(true)
     write("""
         ))
     """, 1)

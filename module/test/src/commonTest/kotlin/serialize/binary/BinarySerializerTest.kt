@@ -53,6 +53,15 @@ fun createGraph(): Node {
     return n1
 }
 
+private fun checkGraph(n1: Node) {
+    val n2 = n1.link
+    val n3 = n2!!.link!!
+    assertEquals(1, n1.id)
+    assertEquals(2, n2.id)
+    assertEquals(3, n3.id)
+    assertSame(n3.link, n2)
+}
+
 open class BinarySerializerTest {
     protected open val serializer = ContractSerializer
 
@@ -81,28 +90,28 @@ open class BinarySerializerTest {
 
     @Test
     fun testInt() {
-        assertEquals(60, copy(60, 2, 120))
+        assertEquals(60, copy(60, 3, 120))
     }
 
     @Test
     fun list() {
         assertEquals(0, copy(listOf<String>(), 1, 0).size)
-        assertEquals(listOf<Any?>(null, 60), copy(listOf<Any?>(null, 60), 1, 2, 0, 2, 120))
-        assertEquals(mutableListOf<Any?>(null, 60), copy(listOf<Any?>(null, 60), 1, 2, 0, 2, 120))
-        assertEquals(listOf<Any?>(null, 60), copy(mutableListOf<Any?>(null, 60), 1, 2, 0, 2, 120))
-        assertEquals(mutableListOf<Any?>(null, 60), copy(mutableListOf<Any?>(null, 60), 1, 2, 0, 2, 120))
+        assertEquals(listOf<Any?>(null, 60), copy(listOf<Any?>(null, 60), 1, 2, 0, 3, 120))
+        assertEquals(mutableListOf<Any?>(null, 60), copy(listOf<Any?>(null, 60), 1, 2, 0, 3, 120))
+        assertEquals(listOf<Any?>(null, 60), copy(mutableListOf<Any?>(null, 60), 1, 2, 0, 3, 120))
+        assertEquals(mutableListOf<Any?>(null, 60), copy(mutableListOf<Any?>(null, 60), 1, 2, 0, 3, 120))
         copy(mutableListOf<Any>(), 1, 0).add(123)
     }
 
     @Test
     fun intException() {
-        with(copy(IntException(null), 5, 0)) { assertNull(i) }
-        with(copy(IntException(60), 5, 1, 120)) { assertEquals(60, i) }
+        with(copy(IntException(null), 6, 0)) { assertNull(i) }
+        with(copy(IntException(60), 6, 1, 120)) { assertEquals(60, i) }
     }
 
     @Test
     fun complexId() {
-        with(copy(ComplexId(), 7, 6, 120, 0, 118, 0, 116)) {
+        with(copy(ComplexId(), 8, 7, 120, 0, 7, 118, 0, 116)) {
             assertEquals(60, baseId.id)
             assertTrue(baseId is PlainId)
             assertNull(baseIdOptional)
@@ -110,7 +119,7 @@ open class BinarySerializerTest {
             assertNull(plainIdOptional)
             assertEquals(58, id)
         }
-        with(copy(ComplexId(baseIdOptional = PlainId(61)), 7, 6, 120, 6, 122, 118, 0, 116)) {
+        with(copy(ComplexId(baseIdOptional = PlainId(61)), 8, 7, 120, 7, 122, 7, 118, 0, 116)) {
             assertEquals(60, baseId.id)
             assertTrue(baseId is PlainId)
             assertEquals(61, baseIdOptional!!.id)
@@ -119,7 +128,7 @@ open class BinarySerializerTest {
             assertNull(plainIdOptional)
             assertEquals(58, id)
         }
-        with(copy(ComplexId(plainId = PlainId(61)), 7, 6, 120, 0, 122, 0, 116)) {
+        with(copy(ComplexId(plainId = PlainId(61)), 8, 7, 120, 0, 7, 122, 0, 116)) {
             assertEquals(60, baseId.id)
             assertTrue(baseId is PlainId)
             assertNull(baseIdOptional)
@@ -127,7 +136,7 @@ open class BinarySerializerTest {
             assertNull(plainIdOptional)
             assertEquals(58, id)
         }
-        with(copy(ComplexId(plainIdOptional = PlainId(61)), 7, 6, 120, 0, 118, 1, 122, 116)) {
+        with(copy(ComplexId(plainIdOptional = PlainId(61)), 8, 7, 120, 0, 7, 118, 7, 122, 116)) {
             assertEquals(60, baseId.id)
             assertTrue(baseId is PlainId)
             assertNull(baseIdOptional)
@@ -139,14 +148,14 @@ open class BinarySerializerTest {
 
     @Test
     fun lists() {
-        with(copy(Lists(), 8, 0, 0, 0)) {
+        with(copy(Lists(), 9, 0, 0, 0)) {
             assertTrue(list.isEmpty())
             assertNull(listOptional)
             assertTrue(mutableList.isEmpty())
             mutableList.add(PlainId())
             assertEquals(1, mutableList.size)
         }
-        with(copy(Lists(list = listOf(PlainId()), mutableList = mutableListOf(PlainId(61))), 8, 1, 6, 120, 0, 1, 6, 122)) {
+        with(copy(Lists(list = listOf(PlainId()), mutableList = mutableListOf(PlainId(61))), 9, 1, 7, 120, 0, 1, 7, 122)) {
             assertEquals(1, list.size)
             assertEquals(60, list[0].id)
             assertTrue(list[0] is PlainId)
@@ -157,7 +166,7 @@ open class BinarySerializerTest {
             mutableList.add(PlainId())
             assertEquals(2, mutableList.size)
         }
-        with(copy(Lists(listOptional = listOf()), 8, 0, 1, 0, 0)) {
+        with(copy(Lists(listOptional = listOf()), 9, 0, 1, 0, 0)) {
             assertTrue(list.isEmpty())
             assertTrue(listOptional!!.isEmpty())
             assertTrue(mutableList.isEmpty())
@@ -166,12 +175,12 @@ open class BinarySerializerTest {
 
     @Test
     fun idWrapper() {
-        with(copy(IdWrapper(), 11, 9, 120, 0)) {
+        with(copy(IdWrapper(), 12, 10, 120, 0)) {
             assertEquals(id::class, Id2::class)
             assertEquals(60, id.id)
             assertNull(idOptional)
         }
-        with(copy(IdWrapper(idOptional = Id3()), 11, 9, 120, 10, 120)) {
+        with(copy(IdWrapper(idOptional = Id3()), 12, 10, 120, 11, 120)) {
             assertEquals(id::class, Id2::class)
             assertEquals(60, id.id)
             assertEquals(idOptional!!::class, Id3::class)
@@ -181,7 +190,12 @@ open class BinarySerializerTest {
 
     @Test
     fun manyProperties() {
-        copy(ManyPropertiesConst, 12, 16, 8, 12, 14, 4, 2, 6, 10, 18, 20).assertManyProperties()
+        copy(ManyPropertiesConst, 13, 16, 8, 12, 14, 4, 2, 6, 10, 18, 20).assertManyProperties()
+    }
+
+    @Test
+    fun graph() {
+        checkGraph(copy(createGraph(), 15, 2, 15, 4, 15, 6, 2, 1))
     }
 
     @Test

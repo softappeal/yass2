@@ -5,7 +5,7 @@ import ch.softappeal.yass2.serialize.binary.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
 
-public fun KClass<*>.metaClass(baseEncoderTypes: List<KClass<*>>, concreteClasses: List<KClass<*>>): MetaClass {
+public fun KClass<*>.metaClass(baseEncoderTypes: List<KClass<*>>): MetaClass {
     require(!java.isEnum) { "type '$this' is enum" }
     require(!isAbstract) { "type '$this' is abstract" }
     return MetaClass(
@@ -17,9 +17,8 @@ public fun KClass<*>.metaClass(baseEncoderTypes: List<KClass<*>>, concreteClasse
                 (property.returnType.classifier as KClass<*>).metaProperty(
                     @Suppress("UNCHECKED_CAST") (property as KProperty1<Any, Any?>),
                     baseEncoderTypes,
-                    concreteClasses,
                     property.returnType.isMarkedNullable,
-                ) { it != this && isSubclassOf(it) }
+                )
             },
         (primaryConstructor ?: error("'$this' has no primary constructor")).valueParameters.map { it.name!! }
     )
@@ -27,25 +26,31 @@ public fun KClass<*>.metaClass(baseEncoderTypes: List<KClass<*>>, concreteClasse
 
 public fun reflectionBinarySerializer(
     @UnspecifiedInitializationOrder(workaround = "supplier") baseEncodersSupplier: () -> List<BaseEncoder<*>>,
-    concreteClasses: List<KClass<*>> = emptyList(),
+    treeConcreteClasses: List<KClass<*>> = emptyList(),
+    graphConcreteClasses: List<KClass<*>> = emptyList(),
 ): BinarySerializer {
     val baseEncoders = baseEncodersSupplier()
     val baseEncoderTypes = baseEncoders.map { it.type }
     val encoders = mutableListOf<Encoder>()
     encoders.addAll(baseEncoders)
-    concreteClasses.forEach { klass ->
-        val metaClass = klass.metaClass(baseEncoderTypes, concreteClasses)
-        encoders.add(ClassEncoder(@Suppress("UNCHECKED_CAST") (klass as KClass<Any>),
+    fun List<KClass<*>>.add(graph: Boolean) = forEach { klass ->
+        val metaClass = klass.metaClass(baseEncoderTypes)
+        encoders.add(ClassEncoder(
+            @Suppress("UNCHECKED_CAST") (klass as KClass<Any>),
+            graph,
             { writer, instance ->
                 metaClass.properties.forEach { it.write(writer, it.property.get(instance)) }
             },
             { reader ->
                 val parameterProperties = Array(metaClass.parameterProperties.size) { metaClass.parameterProperties[it].read(reader) }
-                val instance = klass.primaryConstructor!!.call(*parameterProperties)
+                val created = klass.primaryConstructor!!.call(*parameterProperties)
+                val instance = if (graph) reader.created(created) else created
                 metaClass.bodyProperties.forEach { it.mutableProperty().set(instance, it.read(reader)) }
                 instance
-            }
+            },
         ))
     }
+    treeConcreteClasses.add(false)
+    graphConcreteClasses.add(true)
     return BinarySerializer(encoders)
 }

@@ -23,7 +23,7 @@ class GenerateTest {
 
     @Test
     fun generateBinarySerializer() {
-        generate("GeneratedBinarySerializer.kt", generateBinarySerializer(::baseEncoders, TreeConcreteClasses))
+        generate("GeneratedBinarySerializer.kt", generateBinarySerializer(::baseEncoders, TreeConcreteClasses, GraphConcreteClasses))
     }
 
     @Test

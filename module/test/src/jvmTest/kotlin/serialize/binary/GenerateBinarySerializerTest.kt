@@ -8,14 +8,6 @@ import kotlin.test.*
 
 class GenerateBinarySerializerTest {
     @Test
-    fun duplicatedBaseEncoder() {
-        assertEquals(
-            "duplicated types",
-            assertFailsWith<IllegalArgumentException> { generateBinarySerializer({ listOf(IntEncoder, IntEncoder) }, listOf()) }.message
-        )
-    }
-
-    @Test
     fun enumClass() {
         assertEquals(
             "type 'class ch.softappeal.yass2.serialize.binary.Color' is enum",
@@ -32,7 +24,23 @@ class GenerateBinarySerializerTest {
     }
 
     @Test
-    fun duplicatedConcreteClass() {
+    fun duplicatedTypes() {
+        assertEquals(
+            "duplicated types",
+            assertFailsWith<IllegalArgumentException> { generateBinarySerializer({ listOf(IntEncoder) }, listOf(Int::class)) }.message
+        )
+    }
+
+    @Test
+    fun duplicatedBaseEncoder() {
+        assertEquals(
+            "duplicated types",
+            assertFailsWith<IllegalArgumentException> { generateBinarySerializer({ listOf(IntEncoder, IntEncoder) }, listOf()) }.message
+        )
+    }
+
+    @Test
+    fun duplicatedTreeConcreteClass() {
         assertEquals(
             "duplicated types",
             assertFailsWith<IllegalArgumentException> { generateBinarySerializer({ listOf() }, listOf(Id2::class, Id2::class)) }.message
@@ -40,10 +48,10 @@ class GenerateBinarySerializerTest {
     }
 
     @Test
-    fun duplicatedType() {
+    fun duplicatedGraphConcreteClass() {
         assertEquals(
             "duplicated types",
-            assertFailsWith<IllegalArgumentException> { generateBinarySerializer({ listOf(IntEncoder) }, listOf(Int::class)) }.message
+            assertFailsWith<IllegalArgumentException> { generateBinarySerializer({ listOf() }, listOf(), listOf(Node::class, Node::class)) }.message
         )
     }
 
@@ -97,20 +105,20 @@ class GenerateBinarySerializerTest {
                     baseEncodersSupplier: () -> List<ch.softappeal.yass2.serialize.binary.BaseEncoder<*>>,
                 ): ch.softappeal.yass2.serialize.binary.BinarySerializer =
                     ch.softappeal.yass2.serialize.binary.BinarySerializer(baseEncodersSupplier() + listOf(
-                        ch.softappeal.yass2.serialize.binary.ClassEncoder(null::class,
+                        ch.softappeal.yass2.serialize.binary.ClassEncoder(null::class, false,
                             { w, i ->
-                                w.writeNoIdRequired(2, i.cause)
-                                w.writeNoIdRequired(2, i.message)
+                                w.writeNoIdRequired(3, i.cause)
+                                w.writeNoIdRequired(3, i.message)
                             },
                             { r ->
                                 val i = null(
-                                    r.readNoIdRequired(2) as kotlin.Int,
-                                    r.readNoIdRequired(2) as kotlin.Int,
+                                    r.readNoIdRequired(3) as kotlin.Int,
+                                    r.readNoIdRequired(3) as kotlin.Int,
                                 )
                                 i
                             }
                         ),
-                        ch.softappeal.yass2.serialize.binary.ClassEncoder(null::class,
+                        ch.softappeal.yass2.serialize.binary.ClassEncoder(null::class, false,
                             { _, _ -> },
                             {
                                 val i = null(
@@ -118,13 +126,13 @@ class GenerateBinarySerializerTest {
                                 i
                             }
                         ),
-                        ch.softappeal.yass2.serialize.binary.ClassEncoder(null::class,
+                        ch.softappeal.yass2.serialize.binary.ClassEncoder(null::class, false,
                             { w, i ->
-                                w.writeNoIdRequired(2, i.z)
+                                w.writeNoIdRequired(3, i.z)
                             },
                             { r ->
                                 val i = null(
-                                    r.readNoIdRequired(2) as kotlin.Int,
+                                    r.readNoIdRequired(3) as kotlin.Int,
                                 )
                                 i
                             }
@@ -153,7 +161,7 @@ class GenerateBinarySerializerTest {
 }
 
 class ReflectionBinarySerializerTest : BinarySerializerTest() {
-    override val serializer = reflectionBinarySerializer(::baseEncoders, TreeConcreteClasses)
+    override val serializer = reflectionBinarySerializer(::baseEncoders, TreeConcreteClasses, GraphConcreteClasses)
 
     @Test
     fun duplicatedInt() {

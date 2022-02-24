@@ -28,25 +28,12 @@ public class MetaProperty(
 public fun KClass<*>.metaProperty(
     property: KProperty1<Any, Any?>,
     baseEncoderTypes: List<KClass<*>>,
-    concreteClasses: List<KClass<*>>,
     optional: Boolean,
-    isStrictSubclassOf: KClass<*>.(base: KClass<*>) -> Boolean,
 ): MetaProperty {
     val kind = if (optional) PropertyKind.NoIdOptional else PropertyKind.NoIdRequired
-    return if (this == List::class) {
-        MetaProperty(property, kind, ListEncoderId.id)
-    } else {
-        val baseEncoderIndex = baseEncoderTypes.indexOfFirst { it == this }
-        if (baseEncoderIndex >= 0) {
-            MetaProperty(property, kind, baseEncoderIndex + FirstEncoderId)
-        } else {
-            val concreteClassIndex = concreteClasses.indexOfFirst { it == this }
-            if (concreteClassIndex >= 0 && concreteClasses.none { it.isStrictSubclassOf(concreteClasses[concreteClassIndex]) }) {
-                MetaProperty(property, kind, concreteClassIndex + baseEncoderTypes.size + FirstEncoderId)
-            } else {
-                MetaProperty(property, PropertyKind.WithId)
-            }
-        }
+    return if (this == List::class) MetaProperty(property, kind, ListEncoderId.id) else {
+        val index = baseEncoderTypes.indexOfFirst { it == this }
+        if (index >= 0) MetaProperty(property, kind, index + FirstEncoderId) else MetaProperty(property, PropertyKind.WithId)
     }
 }
 
