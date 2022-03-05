@@ -5,7 +5,7 @@
 import java.util.regex.*
 
 plugins {
-    kotlin("multiplatform") version "1.6.10"
+    kotlin("multiplatform") version "1.6.20-RC" // TODO
     id("maven-publish")
     signing
 }
@@ -15,11 +15,6 @@ fun ktor(module: String) = "io.ktor:ktor-$module:1.6.7"
 val windowsTarget = false
 val macTarget = true
 val jsTarget = true
-
-// TODO: https://youtrack.jetbrains.com/issue/KT-49109
-rootProject.plugins.withType(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin::class.java) {
-    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().nodeVersion = "16.13.1"
-}
 
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
@@ -62,7 +57,7 @@ allprojects {
                 explicitApi()
                 kotlinOptions {
                     allWarningsAsErrors = true
-                    @Suppress("SuspiciousCollectionReassignment") freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+                    @Suppress("SuspiciousCollectionReassignment") freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
                 }
             }
         }
