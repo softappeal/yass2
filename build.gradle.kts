@@ -59,7 +59,7 @@ allprojects {
 
         targets.all {
             compilations.all {
-                if (moduleName != "tutorial") explicitApi()
+                explicitApi()
                 kotlinOptions {
                     allWarningsAsErrors = true
                     @Suppress("SuspiciousCollectionReassignment") freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"

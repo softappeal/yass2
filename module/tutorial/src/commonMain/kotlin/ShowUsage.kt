@@ -9,12 +9,12 @@ import ch.softappeal.yass2.tutorial.contract.*
 import ch.softappeal.yass2.tutorial.contract.generated.*
 import kotlinx.coroutines.*
 
-val CalculatorImpl = object : Calculator {
+public val CalculatorImpl: Calculator = object : Calculator {
     override suspend fun add(a: Int, b: Int) = a + b
     override suspend fun divide(a: Int, b: Int) = if (b == 0) throw DivideByZeroException() else a / b
 }
 
-val NewsListenerImpl = object : NewsListener {
+public val NewsListenerImpl: NewsListener = object : NewsListener {
     override suspend fun notify(news: String) {
         println("NewsListener.notify: $news")
     }
@@ -24,7 +24,7 @@ private suspend fun useCalculator(calculator: Calculator) {
     println("1 + 2 = ${calculator.add(1, 2)}")
 }
 
-suspend fun showUsage() {
+public suspend fun showUsage() {
     fun useDumper(dumper: Dumper) {
         println("*** useDumper ***")
         val person = Person(
@@ -65,17 +65,17 @@ suspend fun showUsage() {
     useInterceptor(GeneratedProxyFactory)
 }
 
-suspend fun useServices(tunnel: Tunnel) {
+public suspend fun useServices(tunnel: Tunnel) {
     val remoteProxyFactory = generatedRemoteProxyFactory(tunnel)
     val calculator = remoteProxyFactory(CalculatorId)
     useCalculator(calculator)
 }
 
-val Services = listOf(CalculatorId(CalculatorImpl)) // register services
+public val Services: List<Service> = listOf(CalculatorId(CalculatorImpl)) // register services
 
 // The following code is only needed if you use session based bidirectional remoting.
 
-fun CoroutineScope.initiatorSessionFactory(): SessionFactory = {
+public fun CoroutineScope.initiatorSessionFactory(): SessionFactory = {
     object : Session() {
         override val serverTunnel = ::generatedInvoke.tunnel(listOf(
             NewsListenerId(NewsListenerImpl) // register service
@@ -95,7 +95,7 @@ fun CoroutineScope.initiatorSessionFactory(): SessionFactory = {
     }
 }
 
-fun CoroutineScope.acceptorSessionFactory(): SessionFactory = {
+public fun CoroutineScope.acceptorSessionFactory(): SessionFactory = {
     object : Session() {
         override val serverTunnel = ::generatedInvoke.tunnel(Services)
 

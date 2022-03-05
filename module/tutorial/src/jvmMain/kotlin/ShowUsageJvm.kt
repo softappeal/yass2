@@ -17,11 +17,11 @@ import io.ktor.websocket.*
 import kotlinx.coroutines.*
 import java.util.concurrent.*
 
-const val Host = "localhost"
-const val Port = 28947
+public const val Host: String = "localhost"
+public const val Port: Int = 28947
 private const val Path = "/yass"
 
-fun createKtorEngine(): ApplicationEngine = embeddedServer(io.ktor.server.cio.CIO, Port) {
+public fun createKtorEngine(): ApplicationEngine = embeddedServer(io.ktor.server.cio.CIO, Port) {
     install(io.ktor.websocket.WebSockets)
     routing {
         static {
@@ -59,7 +59,7 @@ private suspend fun useKtorRemoting() {
     println()
 }
 
-fun main() = runBlocking {
+public fun main(): Unit = runBlocking {
     showUsage()
     useKtorRemoting()
 }

@@ -10,60 +10,60 @@ package ch.softappeal.yass2.tutorial.contract
  * Other own base types like [MyDate] could be added.
  * In contrast to regular classes, own base types could implement a more efficient serializing.
  */
-class MyDate(val currentTimeMillis: Long)
+public class MyDate(public val currentTimeMillis: Long)
 
 /**
  * A concrete class must have a primary constructor and all its parameters must be properties.
  * Body properties are allowed but must be of `var` kind.
  * Properties can be optional.
  */
-class Address(
-    val street: String,
+public class Address(
+    public val street: String,
 ) {
-    var number: Int? = null
+    public var number: Int? = null
 }
 
 /** Enumerations are supported. */
-enum class Gender {
+public enum class Gender {
     Female,
     @Suppress("unused") Male,
 }
 
 /** Lists are supported. */
-class Person(
-    val name: String,
-    val gender: Gender,
-    val addresses: List<Address>,
+public class Person(
+    public val name: String,
+    public val gender: Gender,
+    public val addresses: List<Address>,
 )
 
 /**
  * Exceptions are supported.
  * They are basically like regular classes but [Throwable.message] and [Throwable.cause] aren't serialized.
  */
-class DivideByZeroException : RuntimeException()
+public class DivideByZeroException : RuntimeException()
 
 /**
  * Inheritance is supported.
  * Base class properties must be in body and abstract and overridden in subclasses.
  */
-abstract class BaseClass {
-    abstract val baseClassProperty: String
+public abstract class BaseClass {
+    public abstract val baseClassProperty: String
 }
 
-class SubClass(
-    override val baseClassProperty: String,
-    val subClassProperty: String,
+public class SubClass(
+    public override val baseClassProperty: String,
+    public val subClassProperty: String,
 ) : BaseClass()
 
 /**
  * All functions must be suspendable because they need IO.
  * Overloading is not allowed.
  */
-interface Calculator {
-    suspend fun add(a: Int, b: Int): Int
-    suspend fun divide(a: Int, b: Int): Int
+public interface Calculator {
+    public suspend fun add(a: Int, b: Int): Int
+    public suspend fun divide(a: Int, b: Int): Int
 }
 
-interface NewsListener {
-    suspend fun notify(news: String)
+public interface NewsListener {
+    public suspend fun notify(news: String)
 }

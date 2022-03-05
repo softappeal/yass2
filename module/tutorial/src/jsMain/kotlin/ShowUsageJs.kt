@@ -8,9 +8,9 @@ import kotlinx.coroutines.*
 import kotlin.js.Promise
 
 @JsName("callSuspendFunction")
-fun <T> callSuspendFunction(block: suspend () -> T): Promise<T> = @OptIn(DelicateCoroutinesApi::class) GlobalScope.promise { block() }
+public fun <T> callSuspendFunction(block: suspend () -> T): Promise<T> = @OptIn(DelicateCoroutinesApi::class) GlobalScope.promise { block() }
 
-suspend fun showJsUsage(): String {
+public suspend fun showJsUsage(): String {
     showUsage()
 
     println("*** useRemoting ***")
