@@ -1,17 +1,15 @@
 package ch.softappeal.yass2.generate
 
-import ch.softappeal.yass2.*
 import ch.softappeal.yass2.serialize.binary.*
 import ch.softappeal.yass2.serialize.binary.reflect.*
 import kotlin.reflect.*
 
 public fun generateBinarySerializer(
-    @UnspecifiedInitializationOrder(workaround = "supplier") baseEncodersSupplier: () -> List<BaseEncoder<*>>,
+    baseEncoders: List<BaseEncoder<*>>,
     treeConcreteClasses: List<KClass<*>> = emptyList(),
     graphConcreteClasses: List<KClass<*>> = emptyList(),
     name: String = "generatedBinarySerializer",
 ): String = writer {
-    val baseEncoders = baseEncodersSupplier()
     require(
         (baseEncoders.map { it.type }.toSet() + treeConcreteClasses.toSet() + graphConcreteClasses.toSet()).size ==
             (baseEncoders.size + treeConcreteClasses.size + graphConcreteClasses.size)
@@ -19,9 +17,9 @@ public fun generateBinarySerializer(
     write("""
         @Suppress("UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
         public fun $name(
-            baseEncodersSupplier: () -> List<${BaseEncoder::class.qualifiedName}<*>>,
+            baseEncoders: List<${BaseEncoder::class.qualifiedName}<*>>,
         ): ${BinarySerializer::class.qualifiedName} =
-            ${BinarySerializer::class.qualifiedName}(baseEncodersSupplier() + listOf(
+            ${BinarySerializer::class.qualifiedName}(baseEncoders + listOf(
     """)
     val baseEncoderTypes = baseEncoders.map { it.type }
     fun List<KClass<*>>.add(graph: Boolean) = forEach { klass ->

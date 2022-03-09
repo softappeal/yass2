@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.serialize.binary.reflect
 
-import ch.softappeal.yass2.*
 import ch.softappeal.yass2.serialize.binary.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
@@ -25,11 +24,10 @@ public fun KClass<*>.metaClass(baseEncoderTypes: List<KClass<*>>): MetaClass {
 }
 
 public fun reflectionBinarySerializer(
-    @UnspecifiedInitializationOrder(workaround = "supplier") baseEncodersSupplier: () -> List<BaseEncoder<*>>,
+    baseEncoders: List<BaseEncoder<*>>,
     treeConcreteClasses: List<KClass<*>> = emptyList(),
     graphConcreteClasses: List<KClass<*>> = emptyList(),
 ): BinarySerializer {
-    val baseEncoders = baseEncodersSupplier()
     val baseEncoderTypes = baseEncoders.map { it.type }
     val encoders = mutableListOf<Encoder>()
     encoders.addAll(baseEncoders)

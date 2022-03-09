@@ -152,7 +152,6 @@ open class InterceptorTest {
         assertPlatform<IllegalStateException>(
             "no proxy for 'class ch.softappeal.yass2.InterceptorTest\$noSuchService\$1\$1'",
             "no proxy for 'class null'",
-            "no proxy for 'class <anonymous>'",
         ) {
             GeneratedProxyFactory(object : NoSuchService {}) { _, _, invocation: Invocation -> invocation() }
         }

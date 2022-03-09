@@ -7,7 +7,6 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.content.*
-import io.ktor.util.*
 import io.ktor.utils.io.*
 
 internal fun Transport.write(message: Message): OutgoingContent.WriteChannelContent {
@@ -26,7 +25,7 @@ public fun HttpClient.tunnel(
 ): Tunnel = { request ->
     val response = request<HttpResponse>(url) {
         method = HttpMethod.Post
-        @OptIn(InternalAPI::class) this.headers.appendAll(headers()) // TODO: replace with public API when available
+        this.headers.appendAll(headers())
         body = transport.write(request)
     }
     val length = response.contentLength()!!.toInt()

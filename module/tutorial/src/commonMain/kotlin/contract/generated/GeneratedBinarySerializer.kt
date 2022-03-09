@@ -2,9 +2,9 @@ package ch.softappeal.yass2.tutorial.contract.generated
 
 @Suppress("UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
 public fun generatedBinarySerializer(
-    baseEncodersSupplier: () -> List<ch.softappeal.yass2.serialize.binary.BaseEncoder<*>>,
+    baseEncoders: List<ch.softappeal.yass2.serialize.binary.BaseEncoder<*>>,
 ): ch.softappeal.yass2.serialize.binary.BinarySerializer =
-    ch.softappeal.yass2.serialize.binary.BinarySerializer(baseEncodersSupplier() + listOf(
+    ch.softappeal.yass2.serialize.binary.BinarySerializer(baseEncoders + listOf(
         ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.tutorial.contract.Address::class, false,
             { w, i ->
                 w.writeNoIdRequired(4, i.street)

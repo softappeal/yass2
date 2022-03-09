@@ -59,8 +59,7 @@ public suspend fun showUsage() {
         useCalculator(calculator)
         println()
     }
-
-    useDumper(Dumper)
+    useDumper(dumper(GeneratedDumperProperties, StringBuilder::valueDumper))
     useSerializer(ContractSerializer)
     useInterceptor(GeneratedProxyFactory)
 }
