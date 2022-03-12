@@ -58,7 +58,7 @@ public fun dumper(
                 }
                 object2reference.size.apply { object2reference[obj] = this }
             } else 0
-            inc("${type.simpleName}(")
+            inc("${type.simpleName}(${if (graph) " #$index" else ""}")
             for (property in properties(type)) property.get(obj)?.let { propertyValue ->
                 appendIndent()
                 append("${property.name} = ")
@@ -66,7 +66,6 @@ public fun dumper(
                 appendLine()
             }
             dec(")")
-            if (graph) append(" #$index")
         }
 
         when (value) {

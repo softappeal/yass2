@@ -118,15 +118,15 @@ private val Output = """
     )
     DivideByZeroException(
     )
-    Node(
+    Node( #0
         id = 1
-        link = Node(
+        link = Node( #1
             id = 2
-            link = Node(
+            link = Node( #2
                 id = 3
                 link = #1
-            ) #2
-        ) #1
-    ) #0
+            )
+        )
+    )
 
 """.trimIndent()
