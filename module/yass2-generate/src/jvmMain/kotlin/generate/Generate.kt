@@ -1,5 +1,7 @@
 package ch.softappeal.yass2.generate
 
+import ch.softappeal.yass2.remote.*
+import ch.softappeal.yass2.serialize.binary.*
 import java.io.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
@@ -41,4 +43,16 @@ public enum class GenerateAction {
     };
 
     public abstract fun execute(filePath: String, code: String)
+}
+
+public fun GenerateAction.all(
+    dir: String, pkg: String,
+    serviceIds: List<ServiceId<out Any>>,
+    baseEncoders: List<BaseEncoder<out Any>>, treeConcreteClasses: List<KClass<out Any>>, graphConcreteClasses: List<KClass<out Any>> = emptyList(),
+) {
+    fun execute(fileName: String, code: String): Unit = this.execute("$dir/$fileName", "package $pkg\n\n$code")
+    execute("GeneratedProxyFactory.kt", generateProxyFactory(serviceIds.map { it.service }))
+    execute("GeneratedRemote.kt", generateRemoteProxyFactory(serviceIds) + "\n" + generateInvoke(serviceIds))
+    execute("GeneratedBinarySerializer.kt", generateBinarySerializer(baseEncoders, treeConcreteClasses, graphConcreteClasses))
+    execute("GeneratedDumperProperties.kt", generateDumperProperties(treeConcreteClasses + graphConcreteClasses))
 }
