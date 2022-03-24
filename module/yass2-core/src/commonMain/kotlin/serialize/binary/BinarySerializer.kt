@@ -84,7 +84,7 @@ public class BinarySerializer(encoders: List<Encoder>) : Serializer {
     internal val type2encoderId = HashMap<KClass<*>, EncoderId>(this.encoders.size)
 
     init {
-        this.encoders.withIndex().forEach { (id, encoder) ->
+        this.encoders.forEachIndexed { id, encoder ->
             require(type2encoderId.put(encoder.type, EncoderId(id, encoder)) == null) {
                 "duplicated type '${encoder.type}'"
             }

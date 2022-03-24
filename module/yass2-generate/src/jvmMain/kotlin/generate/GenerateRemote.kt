@@ -24,7 +24,7 @@ public fun generateRemoteProxyFactory(
         write("""
             ${serviceId.id} -> object : ${serviceId.service.qualifiedName} {
         """, 3)
-        serviceId.service.suspendServiceFunctions().withIndex().forEach { (functionIndex, function) ->
+        serviceId.service.suspendServiceFunctions().forEachIndexed { functionIndex, function ->
             with(function) {
                 if (functionIndex != 0) appendLine()
                 writeFunctionSignature("                ", this)
@@ -67,7 +67,7 @@ public fun generateInvoke(
                 val i = service.implementation as ${serviceId.service.qualifiedName}
                 when (request.functionId) {
         """, 2)
-        serviceId.service.suspendServiceFunctions().withIndex().forEach { (functionIndex, function) ->
+        serviceId.service.suspendServiceFunctions().forEachIndexed { functionIndex, function ->
             append("                $functionIndex -> i.${function.name}(")
             function.valueParameters.forEach { parameter ->
                 if (parameter.index != 1) append(", ")

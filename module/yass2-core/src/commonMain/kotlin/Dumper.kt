@@ -38,7 +38,7 @@ public fun dumper(
 
         fun dumpList(list: List<*>) {
             inc("[")
-            for ((index, element) in list.withIndex()) {
+            list.forEachIndexed { index, element ->
                 appendIndent()
                 append("$index: ")
                 dump(element)
