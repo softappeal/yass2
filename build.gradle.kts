@@ -5,11 +5,11 @@
 import java.util.regex.*
 
 plugins {
-    kotlin("multiplatform") version "1.6.20-RC2" // TODO
+    kotlin("multiplatform") version "1.6.20"
     id("maven-publish")
     signing
 }
-fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.6.0"
+fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.6.1"
 fun ktor(module: String) = "io.ktor:ktor-$module:1.6.8"
 
 val windowsTarget = false
