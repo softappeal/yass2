@@ -142,11 +142,18 @@ val ktorProject = project("module:yass2-ktor") {
                     api(ktor("client-core"))
                 }
             }
-            val jvmMain by getting {
+            val jvmAndNixMain by creating {
+                dependsOn(commonMain)
                 dependencies {
                     api(ktor("server-core"))
                     api(ktor("network"))
                 }
+            }
+            val jvmMain by getting {
+                dependsOn(jvmAndNixMain)
+            }
+            val macMain by getting {
+                dependsOn(jvmAndNixMain)
             }
         }
     }
@@ -162,14 +169,23 @@ project("module:test") {
                     implementation(coroutines("test"))
                 }
             }
-            val jvmTest by getting {
+            val jvmAndNixMain by creating {
+                dependsOn(commonTest)
                 dependencies {
-                    implementation(generateProject)
                     implementation(ktorProject)
                     implementation(ktor("client-cio"))
                     implementation(ktor("server-cio"))
                     implementation(ktor("server-websockets"))
                 }
+            }
+            val jvmTest by getting {
+                dependsOn(jvmAndNixMain)
+                dependencies {
+                    implementation(generateProject)
+                }
+            }
+            val macTest by getting {
+                dependsOn(jvmAndNixMain)
             }
         }
     }

@@ -6,6 +6,7 @@ import ch.softappeal.yass2.remote.coroutines.session.Connection
 import ch.softappeal.yass2.transport.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
+import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import kotlin.coroutines.*
 
