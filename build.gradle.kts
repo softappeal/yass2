@@ -139,7 +139,10 @@ val ktorProject = project("module:yass2-ktor") {
             val commonMain by getting {
                 dependencies {
                     api(coroutinesProject)
+                    api(ktor("utils"))
                     api(ktor("client-core"))
+                    api(ktor("http"))
+                    api(ktor("websockets"))
                 }
             }
             val jvmMain by getting {
