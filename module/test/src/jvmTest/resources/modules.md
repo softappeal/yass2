@@ -41,8 +41,8 @@
         - ktor `yass2-ktor`
             - ByteChannel.kt `[common]`
             - Http.kt `[common]`
-            - HttpServer.kt `[jvm]`
-            - Socket.kt `[jvm]`
+            - HttpServer.kt `[jvmAndNix]`
+            - Socket.kt `[jvmAndNix]`
             - WebSocket.kt `[common]`
         - session `yass2-coroutines`
             - BinaryPacketSerializer.kt `[common]`

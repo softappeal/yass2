@@ -8,7 +8,6 @@ private fun printModules(directory: String) = StringBuffer().apply {
 }.toString()
 
 class ModulesTest {
-    @Ignore // TODO: implement jvmAndNix
     @Test
     fun test() {
         assertEquals(File("src/jvmTest/resources/modules.md").readText().replace("\r\n", "\n"), printModules(".."))
