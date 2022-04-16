@@ -2,6 +2,7 @@
 
 @file:Suppress("SpellCheckingInspection")
 
+import org.jetbrains.kotlin.gradle.plugin.mpp.*
 import java.util.regex.*
 
 plugins {
@@ -59,6 +60,12 @@ allprojects {
                     allWarningsAsErrors = true
                     @Suppress("SuspiciousCollectionReassignment") freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
                 }
+            }
+        }
+
+        targets.withType(KotlinNativeTarget::class.java) {
+            binaries.all {
+                binaryOptions["memoryModel"] = "experimental"
             }
         }
 

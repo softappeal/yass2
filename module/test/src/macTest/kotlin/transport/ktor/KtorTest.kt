@@ -3,11 +3,7 @@
 package ch.softappeal.yass2.transport.ktor
 
 import ch.softappeal.yass2.contract.*
-import ch.softappeal.yass2.contract.generated.*
-import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.coroutines.session.*
-import ch.softappeal.yass2.serialize.binary.*
-import ch.softappeal.yass2.transport.*
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
@@ -30,10 +26,6 @@ private val Address = InetSocketAddress(Host, Port)
 
 @Ignore // TODO: implement mac
 class KtorTest {
-    @AfterTest
-    fun additionalWaitForServerSocketClose() {
-    }
-
     private val tcp = aSocket(SelectorManager(EmptyCoroutineContext)).tcp()
 
     @Test
@@ -106,7 +98,7 @@ class KtorTest {
                 }
             }
         } finally {
-            engine.stop(0, 0)
+            engine.stop()
         }
     }
 
@@ -138,49 +130,7 @@ class KtorTest {
                 }
             }
         } finally {
-            engine.stop(0, 0)
-        }
-    }
-
-    @Test
-    fun context() {
-        var context: String? = null
-        val transport = Transport(
-            ContextMessageSerializer(
-                BinarySerializer(listOf(StringEncoder)), MessageSerializer,
-                { context }, { context = it },
-            ),
-            100, 100,
-        )
-        tcp.bind(Address).use { serverSocket ->
-            runBlocking {
-                val listenerJob = launch {
-                    val serverTunnel = ::generatedInvoke.tunnel(listOf(
-                        CalculatorId(object : Calculator {
-                            override suspend fun add(a: Int, b: Int): Int {
-                                assertEquals("client", context)
-                                context = "server"
-                                return a + b
-                            }
-
-                            override suspend fun divide(a: Int, b: Int): Int = error("not needed")
-                        })
-                    ))
-                    while (true) {
-                        val socket = serverSocket.accept()
-                        socket.handleRequest(transport, serverTunnel)
-                    }
-                }
-                try {
-                    val clientTunnel = transport.socketTunnel { tcp.connect(Address) }
-                    val calculator = generatedRemoteProxyFactory(clientTunnel)(CalculatorId)
-                    context = "client"
-                    assertEquals(5, calculator.add(2, 3))
-                    assertEquals("server", context)
-                } finally {
-                    listenerJob.cancel()
-                }
-            }
+            engine.stop()
         }
     }
 }
