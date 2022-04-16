@@ -152,8 +152,10 @@ val ktorProject = project("module:yass2-ktor") {
             val jvmMain by getting {
                 dependsOn(jvmAndNixMain)
             }
-            val macMain by getting {
-                dependsOn(jvmAndNixMain)
+            if (macTarget) {
+                val macMain by getting {
+                    dependsOn(jvmAndNixMain)
+                }
             }
         }
     }
@@ -184,8 +186,10 @@ project("module:test") {
                     implementation(generateProject)
                 }
             }
-            val macTest by getting {
-                dependsOn(jvmAndNixMain)
+            if (macTarget) {
+                val macTest by getting {
+                    dependsOn(jvmAndNixMain)
+                }
             }
         }
     }
