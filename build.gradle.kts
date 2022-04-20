@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.*
 import java.util.regex.*
 
 plugins {
-    kotlin("multiplatform") version "1.6.20"
+    kotlin("multiplatform") version "1.6.21"
     id("maven-publish")
     signing
 }
