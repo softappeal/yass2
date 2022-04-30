@@ -11,7 +11,7 @@ plugins {
     signing
 }
 fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.6.1"
-fun ktor(module: String) = "io.ktor:ktor-$module:2.0.0"
+fun ktor(module: String) = "io.ktor:ktor-$module:2.0.1"
 
 val windowsTarget = false
 val macTarget = true

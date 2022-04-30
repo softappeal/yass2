@@ -24,10 +24,10 @@ const val Port = 28947
 const val Path = "/yass"
 private val Address = InetSocketAddress(Host, Port)
 
-@Ignore // TODO: implement mac
 class KtorTest {
     private val tcp = aSocket(SelectorManager(EmptyCoroutineContext)).tcp()
 
+    @Ignore // TODO: implement mac
     @Test
     fun socket() {
         tcp.bind(Address).use { serverSocket ->
@@ -51,6 +51,7 @@ class KtorTest {
         }
     }
 
+    @Ignore // TODO: implement mac
     @Test
     fun socketSession() {
         tcp.bind(Address).use { serverSocket ->
