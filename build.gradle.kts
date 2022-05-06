@@ -205,13 +205,9 @@ project("module:test") {
 project("module:tutorial") {
     kotlin {
         sourceSets {
-            @Suppress("ConstantConditionIf") fun yass2(module: String) = if (false) "$group:yass2-$module:0.0.0" else when (module) {
-                "coroutines" -> coroutinesProject; "generate" -> generateProject; "ktor" -> ktorProject; else -> error("unexpected module")
-            }
-
             val commonMain by getting {
                 dependencies {
-                    implementation(yass2("coroutines"))
+                    implementation(coroutinesProject)
                 }
             }
             val commonTest by getting {
@@ -221,7 +217,7 @@ project("module:tutorial") {
             }
             val jvmMain by getting {
                 dependencies {
-                    implementation(yass2("ktor"))
+                    implementation(ktorProject)
                     implementation(ktor("client-cio"))
                     implementation(ktor("server-cio"))
                     implementation(ktor("server-websockets"))
@@ -229,7 +225,7 @@ project("module:tutorial") {
             }
             val jvmTest by getting {
                 dependencies {
-                    implementation(yass2("generate"))
+                    implementation(generateProject)
                 }
             }
         }
