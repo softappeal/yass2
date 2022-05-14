@@ -24,10 +24,10 @@ const val Port = 28947
 const val Path = "/yass"
 private val Address = InetSocketAddress(Host, Port)
 
+@Ignore // TODO: works on mac if tests are run single
 class KtorTest {
     private val tcp = aSocket(SelectorManager(EmptyCoroutineContext)).tcp()
 
-    @Ignore // TODO: implement mac
     @Test
     fun socket() {
         tcp.bind(Address).use { serverSocket ->
@@ -43,7 +43,7 @@ class KtorTest {
                 }
                 try {
                     val clientTunnel = MessageTransport.socketTunnel { tcp.connect(Address) }
-                    clientTunnel.test(1000)
+                    clientTunnel.test(10)
                 } finally {
                     listenerJob.cancel()
                 }
@@ -51,30 +51,31 @@ class KtorTest {
         }
     }
 
-    @Ignore // TODO: implement mac
     @Test
     fun socketSession() {
         tcp.bind(Address).use { serverSocket ->
-            runBlocking {
-                val acceptorJob = launch {
-                    while (true) {
-                        val socket = serverSocket.accept()
-                        launch {
-                            socket.receiveLoop(
-                                PacketTransport,
-                                acceptorSessionFactory { (connection as SocketConnection).socket.remoteAddress }
-                            )
+            try {
+                runBlocking {
+                    launch {
+                        while (true) {
+                            val socket = serverSocket.accept()
+                            launch {
+                                socket.receiveLoop(
+                                    PacketTransport,
+                                    acceptorSessionFactory { (connection as SocketConnection).socket.remoteAddress }
+                                )
+                            }
                         }
                     }
-                }
-                try {
                     launch {
                         tcp.connect(Address)
                             .receiveLoop(PacketTransport, initiatorSessionFactory(1000))
-                    }.join()
-                } finally {
-                    acceptorJob.cancel()
+                    }
+                    delay(2_000)
+                    cancel()
                 }
+            } catch (ignore: CancellationException) {
+                ignore.printStackTrace()
             }
         }
     }
@@ -95,7 +96,7 @@ class KtorTest {
             runBlocking {
                 HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
                     client.tunnel(MessageTransport, "http://$Host:$Port$Path") { headersOf(DemoHeaderKey, DemoHeaderValue) }
-                        .test(1000)
+                        .test(10)
                 }
             }
         } finally {
