@@ -6,12 +6,12 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.*
 import java.util.regex.*
 
 plugins {
-    kotlin("multiplatform") version "1.6.21"
+    kotlin("multiplatform") version "1.7.10"
     id("maven-publish")
     signing
 }
-fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.6.2"
-fun ktor(module: String) = "io.ktor:ktor-$module:2.0.2"
+fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.6.4"
+fun ktor(module: String) = "io.ktor:ktor-$module:2.0.3"
 
 val windowsTarget = false
 val macTarget = true
@@ -58,7 +58,6 @@ allprojects {
                 explicitApi()
                 kotlinOptions {
                     allWarningsAsErrors = true
-                    @Suppress("SuspiciousCollectionReassignment") freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
                 }
             }
         }
