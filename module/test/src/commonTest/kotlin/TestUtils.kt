@@ -1,7 +1,5 @@
 package ch.softappeal.yass2
 
-import kotlinx.coroutines.*
-import kotlinx.coroutines.test.*
 import kotlin.reflect.*
 import kotlin.test.*
 import kotlin.time.*
@@ -33,9 +31,4 @@ inline fun <reified T : Throwable> assertPlatform(vararg expectedMessages: Strin
     val actualMessage = assertFailsWith(T::class, block).message!!
     println(actualMessage)
     assertTrue(actualMessage in expectedMessages)
-}
-
-fun yassRunBlocking(block: suspend CoroutineScope.() -> Unit) {
-    @OptIn(ExperimentalCoroutinesApi::class)
-    runTest(testBody = block)
 }

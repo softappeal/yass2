@@ -3,6 +3,7 @@ package ch.softappeal.yass2.remote
 import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.contract.generated.*
+import kotlinx.coroutines.test.*
 import kotlin.test.*
 
 open class RemoteTest {
@@ -20,7 +21,7 @@ open class RemoteTest {
     }
 
     @Test
-    fun missingService() = yassRunBlocking {
+    fun missingService() = runTest {
         assertEquals(
             "no service id 1",
             assertFailsWith<IllegalStateException> {
@@ -40,7 +41,7 @@ open class RemoteTest {
     }
 
     @Test
-    fun noServiceIdInvoker() = yassRunBlocking {
+    fun noServiceIdInvoker() = runTest {
         assertEquals(
             "no service id 123",
             assertFailsWith<IllegalStateException> {
@@ -50,7 +51,7 @@ open class RemoteTest {
     }
 
     @Test
-    fun noFunctionId() = yassRunBlocking {
+    fun noFunctionId() = runTest {
         assertEquals(
             "no function id 123 for service id 2",
             assertFailsWith<IllegalStateException> {
@@ -74,12 +75,12 @@ open class RemoteTest {
     private fun remoteProxyFactory() = remoteProxyFactory(invoke.tunnel(listOf(CalculatorId(CalculatorImpl), EchoId(EchoImpl))))
 
     @Test
-    fun test() = yassRunBlocking {
+    fun test() = runTest {
         GeneratedProxyFactory.test(remoteProxyFactory()(CalculatorId), remoteProxyFactory()(EchoId))
     }
 
     @Test
-    fun performance() = yassRunBlocking {
+    fun performance() = runTest {
         val calculator = remoteProxyFactory()(CalculatorId)
         performance(100_000) { assertEquals(5, calculator.add(2, 3)) }
     }

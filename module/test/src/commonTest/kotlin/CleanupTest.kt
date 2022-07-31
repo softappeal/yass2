@@ -1,5 +1,6 @@
 package ch.softappeal.yass2
 
+import kotlinx.coroutines.test.*
 import kotlin.test.*
 
 class CleanupTest {
@@ -27,7 +28,7 @@ class CleanupTest {
     }
 
     @Test
-    fun addSuppressedWithSuspend() = yassRunBlocking {
+    fun addSuppressedWithSuspend() = runTest {
         val e = Exception()
         var called = false
 
@@ -120,7 +121,7 @@ class CleanupTest {
     }
 
     @Test
-    fun tryFinallyWithSuspend() = yassRunBlocking {
+    fun tryFinallyWithSuspend() = runTest {
         var tryCalled = false
         var finallyCalled = false
 

@@ -171,6 +171,9 @@ project("module:test") {
     kotlin {
         sourceSets {
             val commonTest by getting {
+                all {
+                    languageSettings.optIn("kotlinx.coroutines.ExperimentalCoroutinesApi") // for runTest
+                }
                 dependencies {
                     implementation(coroutinesProject)
                     implementation(kotlin("test"))
@@ -225,6 +228,11 @@ project("module:tutorial") {
             val jvmTest by getting {
                 dependencies {
                     implementation(generateProject)
+                }
+            }
+            val jsTest by getting {
+                dependencies {
+                    implementation(coroutines("test"))
                 }
             }
         }

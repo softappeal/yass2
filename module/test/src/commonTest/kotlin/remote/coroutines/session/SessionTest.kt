@@ -6,6 +6,7 @@ import ch.softappeal.yass2.contract.generated.*
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.coroutines.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.test.*
 import kotlin.coroutines.*
 import kotlin.test.*
 
@@ -86,12 +87,12 @@ private fun connect(session1: Session, session2: Session) {
 
 class SessionTest {
     @Test
-    fun test() = yassRunBlocking {
+    fun test() = runTest {
         connect(initiatorSessionFactory(1000)(), acceptorSessionFactory { connection }())
     }
 
     @Test
-    fun timedOutResume() = yassRunBlocking {
+    fun timedOutResume() = runTest {
         lateinit var continuation: Continuation<String>
         suspend fun getString(): String = suspendCancellableCoroutine { c: Continuation<String> ->
             continuation = c
@@ -112,7 +113,7 @@ class SessionTest {
     }
 
     @Test
-    fun watch() = yassRunBlocking {
+    fun watch() = runTest {
         val session1 = object : Session() {
             override fun opened() {
                 launch {
@@ -139,7 +140,7 @@ class SessionTest {
     }
 
     @Test
-    fun connect() = yassRunBlocking {
+    fun connect() = runTest {
         val initiatorSessionFactory = {
             object : Session() {
                 override fun opened() {

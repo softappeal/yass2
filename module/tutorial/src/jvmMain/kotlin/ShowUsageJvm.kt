@@ -59,7 +59,7 @@ private suspend fun useKtorRemoting() {
     println()
 }
 
-public suspend fun main() {
+public fun main(): Unit = runBlocking {
     showUsage()
     useKtorRemoting()
 }

@@ -46,7 +46,6 @@ public class SocketConnection internal constructor(
         writeChannel.flush()
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
     override suspend fun closed(): Unit = socket.close()
 }
 

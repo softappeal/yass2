@@ -1,10 +1,11 @@
 package ch.softappeal.yass2
 
+import kotlinx.coroutines.test.*
 import kotlin.test.*
 
 class TestUtilsTest {
     @Test
-    fun assertSuspendFailsWith() = yassRunBlocking {
+    fun assertSuspendFailsWith() = runTest {
         assertEquals(
             "hello",
             assertSuspendFailsWith<RuntimeException> { throw NullPointerException("hello") }.message

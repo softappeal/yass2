@@ -4,6 +4,7 @@ import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.test.*
 import kotlin.test.*
 
 private val Range0 = 1..2
@@ -54,7 +55,7 @@ val FlowServiceImpl: FlowService = flowService(TestFlowFactory)
 
 class RemoteFlowTest {
     @Test
-    fun noService() = yassRunBlocking {
+    fun noService() = runTest {
         @Suppress("UNCHECKED_CAST")
         test(
             TestFlowFactory(0) as Flow<Int>,
@@ -65,7 +66,7 @@ class RemoteFlowTest {
     }
 
     @Test
-    fun withService() = yassRunBlocking {
+    fun withService() = runTest {
         FlowServiceImpl.test()
     }
 }

@@ -3,6 +3,7 @@ package ch.softappeal.yass2
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.contract.generated.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.test.*
 import kotlin.test.*
 
 val CalculatorImpl = object : Calculator {
@@ -124,7 +125,7 @@ open class InterceptorTest {
     }
 
     @Test
-    fun suspendCompositeInterceptor() = yassRunBlocking {
+    fun suspendCompositeInterceptor() = runTest {
         val value = "string"
         var value1: Int? = null
         var value2: Int? = null
@@ -163,7 +164,7 @@ open class InterceptorTest {
     }
 
     @Test
-    fun suspendProxyFactory() = yassRunBlocking {
+    fun suspendProxyFactory() = runTest {
         proxyFactory.test(CalculatorImpl, EchoImpl)
     }
 
@@ -182,7 +183,7 @@ open class InterceptorTest {
     }
 
     @Test
-    fun suspendPerformance() = yassRunBlocking {
+    fun suspendPerformance() = runTest {
         var counter = 0
         val proxy = proxyFactory(CalculatorImpl) { _, _, invocation: SuspendInvocation ->
             counter++
@@ -201,7 +202,7 @@ open class InterceptorTest {
     }
 
     @Test
-    fun missingSuspendInterceptor() = yassRunBlocking {
+    fun missingSuspendInterceptor() = runTest {
         assertEquals(
             "missing SuspendInterceptor",
             assertFailsWith<RuntimeException> { MissingSuspendInterceptor(Calculator::add, emptyList()) {} }.message

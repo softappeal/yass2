@@ -1,12 +1,12 @@
 package ch.softappeal.yass2.transport
 
-import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
+import kotlinx.coroutines.test.*
 import kotlin.test.*
 
 class TransportTest {
     @Test
-    fun testReadBytes() = yassRunBlocking {
+    fun testReadBytes() = runTest {
         val transport = Transport(ContractSerializer, 50, 100)
 
         assertEquals(50, transport.writer().buffer.size)
