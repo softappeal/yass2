@@ -8,7 +8,7 @@ public typealias Dumper = StringBuilder.(value: Any?) -> StringBuilder
 
 /**
  * Supports the following types out-of-the-box:
- * `null`, [Boolean], [Number], [CharSequence], [List] and classes with its properties.
+ * `null`, [Boolean], [Number], [CharSequence], [List], [Enum] and classes with its properties.
  * [valueDumper] writes value (without line breaks) if responsible else does nothing.
  */
 public fun dumper(
@@ -73,6 +73,7 @@ public fun dumper(
             is Boolean -> append(value)
             is Number -> append(value)
             is CharSequence -> append("\"$value\"")
+            is Enum<*> -> append(value.name)
             is List<*> -> dumpList(value)
             else -> {
                 val oldLength = length

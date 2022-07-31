@@ -32,7 +32,6 @@ val ServiceIds = listOf(CalculatorId, EchoId, FlowServiceId)
 fun StringBuilder.valueDumper(value: Any) {
     when (value) {
         is ByteArray -> append("binary")
-        is Color -> append(value.name)
     }
 }
 

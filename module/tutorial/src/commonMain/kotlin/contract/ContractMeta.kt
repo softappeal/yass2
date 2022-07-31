@@ -42,7 +42,6 @@ public val ServiceIds: List<ServiceId<out Any>> = listOf(CalculatorId, NewsListe
 /** Writes value (without line breaks) if responsible else does nothing. */
 public fun StringBuilder.valueDumper(value: Any) {
     when (value) {
-        is Gender -> append(value.name)
         is MyDate -> append("MyDate(${value.currentTimeMillis})")
     }
 }
