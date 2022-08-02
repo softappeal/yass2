@@ -24,8 +24,6 @@ const val Port = 28947
 const val Path = "/yass"
 private val Address = InetSocketAddress(Host, Port)
 
-// ./gradlew :module:test:macTest --info --tests "ch.softappeal.yass2.transport.ktor.KtorTest.http"
-
 @Ignore // TODO
 class KtorTest {
     private val tcp = aSocket(SelectorManager(EmptyCoroutineContext)).tcp()

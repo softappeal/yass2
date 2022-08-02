@@ -12,9 +12,10 @@ plugins {
 fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.6.4"
 fun ktor(module: String) = "io.ktor:ktor-$module:2.0.3"
 
+val jsTarget = true
 val windowsTarget = false
 val macTarget = true
-val jsTarget = true
+val linuxTarget = false
 
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
@@ -51,6 +52,8 @@ allprojects {
         if (windowsTarget) mingwX64("windows")
 
         if (macTarget) macosArm64("mac")
+
+        if (linuxTarget) linuxX64("linux")
 
         targets.all {
             compilations.all {
@@ -156,6 +159,11 @@ val ktorProject = project("module:yass2-ktor") {
                     dependsOn(jvmAndNixMain)
                 }
             }
+            if (linuxTarget) {
+                val linuxMain by getting {
+                    dependsOn(jvmAndNixMain)
+                }
+            }
         }
     }
 }
@@ -193,6 +201,11 @@ project("module:test") {
                     dependsOn(jvmAndNixMain)
                 }
             }
+            if (linuxTarget) {
+                val linuxTest by getting {
+                    dependsOn(jvmAndNixMain)
+                }
+            }
         }
     }
 }
@@ -223,9 +236,11 @@ project("module:tutorial") {
                     implementation(generateProject)
                 }
             }
-            val jsTest by getting {
-                dependencies {
-                    implementation(coroutines("test"))
+            if (jsTarget) {
+                val jsTest by getting {
+                    dependencies {
+                        implementation(coroutines("test"))
+                    }
                 }
             }
         }
