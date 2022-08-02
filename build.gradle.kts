@@ -2,11 +2,10 @@
 
 @file:Suppress("SpellCheckingInspection")
 
-import org.jetbrains.kotlin.gradle.plugin.mpp.*
 import java.util.regex.*
 
 plugins {
-    kotlin("multiplatform") version "1.7.10"
+    kotlin("multiplatform") version "1.7.20-Beta"
     id("maven-publish")
     signing
 }
@@ -59,12 +58,6 @@ allprojects {
                 kotlinOptions {
                     allWarningsAsErrors = true
                 }
-            }
-        }
-
-        targets.withType(KotlinNativeTarget::class.java) {
-            binaries.all {
-                binaryOptions["memoryModel"] = "experimental"
             }
         }
 
