@@ -3,7 +3,11 @@
 package ch.softappeal.yass2.transport.ktor
 
 import ch.softappeal.yass2.contract.*
+import ch.softappeal.yass2.contract.generated.*
+import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.coroutines.session.*
+import ch.softappeal.yass2.serialize.binary.*
+import ch.softappeal.yass2.transport.*
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
@@ -16,72 +20,16 @@ import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
+import transport.ktor.*
 import kotlin.coroutines.*
 import kotlin.test.*
+import kotlin.time.*
 
 const val Host = "localhost"
 const val Port = 28947
 const val Path = "/yass"
-private val Address = InetSocketAddress(Host, Port)
 
-// ./gradlew :module:test:macTest --info --tests "ch.softappeal.yass2.transport.ktor.KtorTest.http"
-
-@Ignore // TODO
-class KtorTest {
-    private val tcp = aSocket(SelectorManager(EmptyCoroutineContext)).tcp()
-
-    @Test
-    fun socket() {
-        tcp.bind(Address).use { serverSocket ->
-            runBlocking {
-                val listenerJob = launch {
-                    val serverTunnel = tunnel { currentCoroutineContext()[SocketCce]!!.socket.remoteAddress }
-                    while (true) {
-                        val socket = serverSocket.accept()
-                        launch {
-                            socket.handleRequest(MessageTransport, serverTunnel)
-                        }
-                    }
-                }
-                try {
-                    val clientTunnel = MessageTransport.socketTunnel { tcp.connect(Address) }
-                    clientTunnel.test(10)
-                } finally {
-                    listenerJob.cancel()
-                }
-            }
-        }
-    }
-
-    @Test
-    fun socketSession() {
-        tcp.bind(Address).use { serverSocket ->
-            try {
-                runBlocking {
-                    launch {
-                        while (true) {
-                            val socket = serverSocket.accept()
-                            launch {
-                                socket.receiveLoop(
-                                    PacketTransport,
-                                    acceptorSessionFactory { (connection as SocketConnection).socket.remoteAddress }
-                                )
-                            }
-                        }
-                    }
-                    launch {
-                        tcp.connect(Address)
-                            .receiveLoop(PacketTransport, initiatorSessionFactory(1000))
-                    }
-                    delay(2_000)
-                    cancel()
-                }
-            } catch (ignore: CancellationException) {
-                ignore.printStackTrace()
-            }
-        }
-    }
-
+class HttpTest {
     @Test
     fun http() {
         val engine = embeddedServer(io.ktor.server.cio.CIO, Port) {
@@ -98,7 +46,7 @@ class KtorTest {
             runBlocking {
                 HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
                     client.tunnel(MessageTransport, "http://$Host:$Port$Path") { headersOf(DemoHeaderKey, DemoHeaderValue) }
-                        .test(10)
+                        .test(100)
                 }
             }
         } finally {
@@ -131,6 +79,46 @@ class KtorTest {
                     client.ws(HttpMethod.Get, Host, Port, Path, { header(DemoHeaderKey, DemoHeaderValue) }) {
                         receiveLoop(PacketTransport, initiatorSessionFactory(1000))
                     }
+                }
+            }
+        } finally {
+            engine.stop()
+        }
+    }
+
+    @Test
+    fun context() {
+        var context: String? = null
+        val transport = Transport(
+            ContextMessageSerializer(
+                BinarySerializer(listOf(StringEncoder)), MessageSerializer,
+                { context }, { context = it },
+            ),
+            100, 100,
+        )
+        val engine = embeddedServer(io.ktor.server.cio.CIO, Port) {
+            routing {
+                val calculator = object : Calculator {
+                    override suspend fun add(a: Int, b: Int): Int {
+                        assertEquals("client", context)
+                        context = "server"
+                        return a + b
+                    }
+
+                    override suspend fun divide(a: Int, b: Int): Int = error("not needed")
+                }
+                route(transport, Path, ::generatedInvoke.tunnel(listOf(CalculatorId(calculator))))
+            }
+        }
+        engine.start()
+        try {
+            runBlocking {
+                HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
+                    val clientTunnel = client.tunnel(transport, "http://$Host:$Port$Path")
+                    val calculator = generatedRemoteProxyFactory(clientTunnel)(CalculatorId)
+                    context = "client"
+                    assertEquals(5, calculator.add(2, 3))
+                    assertEquals("server", context)
                 }
             }
         } finally {
