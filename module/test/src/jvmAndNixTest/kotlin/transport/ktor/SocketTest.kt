@@ -55,10 +55,8 @@ class SocketTest {
                     }
                 }
                 try {
-                    launch {
-                        tcp.connect(Address)
-                            .receiveLoop(PacketTransport, initiatorSessionFactory(1000))
-                    }.join()
+                    tcp.connect(Address)
+                        .receiveLoop(PacketTransport, initiatorSessionFactory(1000))
                 } finally {
                     acceptorJob.cancel()
                 }

@@ -15,7 +15,6 @@ import io.ktor.server.http.content.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import kotlinx.coroutines.*
-import java.util.concurrent.*
 
 public const val Host: String = "localhost"
 public const val Port: Int = 28947
@@ -53,10 +52,8 @@ private suspend fun useKtorRemoting() {
             client.ws(HttpMethod.Get, Host, Port, Path) { receiveLoop(PacketTransport, initiatorSessionFactory()) }
         }
     } finally {
-        engine.stop(0, 0, TimeUnit.SECONDS)
+        engine.stop()
     }
-    delay(2_000) // needed for graceful shutdown
-    println()
 }
 
 public fun main(): Unit = runBlocking {

@@ -36,7 +36,6 @@ public suspend fun showUsage() {
             )
         )
         println(StringBuilder().dumper(person))
-        println()
     }
 
     fun useSerializer(serializer: Serializer) {
@@ -46,7 +45,6 @@ public suspend fun showUsage() {
         val reader = BytesReader(writer.buffer)
         val value = serializer.read(reader)
         println(value)
-        println()
     }
 
     suspend fun useInterceptor(proxyFactory: ProxyFactory) {
@@ -57,7 +55,6 @@ public suspend fun showUsage() {
         }
         val calculator = proxyFactory(CalculatorImpl, interceptor)
         useCalculator(calculator)
-        println()
     }
     useDumper(dumper(GeneratedDumperProperties, StringBuilder::valueDumper))
     useSerializer(ContractSerializer)
