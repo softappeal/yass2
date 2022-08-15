@@ -3,14 +3,16 @@ package ch.softappeal.yass2
 import java.io.*
 import kotlin.test.*
 
-private fun printModules(directory: String) = StringBuffer().apply {
-    printModules(directory) { append(it) }
+private val Modules = setOf("yass2-core", "yass2-coroutines", "yass2-generate", "yass2-ktor", "yass2-reflect")
+
+private fun printModules(directory: String, modules: Set<String>? = null) = StringBuffer().apply {
+    printModules(modules, directory) { append(it) }
 }.toString()
 
 class ModulesTest {
     @Test
     fun test() {
-        assertEquals(File("src/jvmTest/resources/modules.md").readText().replace("\r\n", "\n"), printModules(".."))
+        assertEquals(File("src/jvmTest/resources/modules.md").readText().replace("\r\n", "\n"), printModules("..", Modules))
     }
 
     @Test

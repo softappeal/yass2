@@ -88,9 +88,9 @@ allprojects {
     }
 }
 
-val coreProject = project("module:yass2-core")
+val coreProject = project("yass2-core")
 
-val coroutinesProject = project("module:yass2-coroutines") {
+val coroutinesProject = project("yass2-coroutines") {
     kotlin {
         sourceSets {
             val commonMain by getting {
@@ -103,7 +103,7 @@ val coroutinesProject = project("module:yass2-coroutines") {
     }
 }
 
-val reflectProject = project("module:yass2-reflect") {
+val reflectProject = project("yass2-reflect") {
     kotlin {
         sourceSets {
             val commonMain by getting {
@@ -120,7 +120,7 @@ val reflectProject = project("module:yass2-reflect") {
     }
 }
 
-val generateProject = project("module:yass2-generate") {
+val generateProject = project("yass2-generate") {
     kotlin {
         sourceSets {
             val jvmMain by getting {
@@ -132,7 +132,7 @@ val generateProject = project("module:yass2-generate") {
     }
 }
 
-val ktorProject = project("module:yass2-ktor") {
+val ktorProject = project("yass2-ktor") {
     kotlin {
         sourceSets {
             val commonMain by getting {
@@ -160,7 +160,7 @@ val ktorProject = project("module:yass2-ktor") {
     }
 }
 
-project("module:test") {
+project("test") {
     kotlin {
         sourceSets {
             val commonTest by getting {
@@ -197,7 +197,7 @@ project("module:test") {
     }
 }
 
-project("module:tutorial") {
+project("tutorial") {
     kotlin {
         sourceSets {
             val commonMain by getting {
@@ -236,7 +236,7 @@ project("module:tutorial") {
 
 tasks.register("publishYass2") {
     listOf(coreProject, coroutinesProject, reflectProject, generateProject, ktorProject).forEach {
-        dependsOn("module:${it.name}:publishAllPublicationsToOssrhRepository")
+        dependsOn("${it.name}:publishAllPublicationsToOssrhRepository")
     }
 }
 

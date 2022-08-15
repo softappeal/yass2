@@ -27,15 +27,13 @@ private fun Node.print(print: (String) -> Unit, indent: Int = 0) {
 
 private fun File.forEach(action: (File) -> Unit) = listFiles()!!.filter { ".DS_Store" != it.name }.sorted().forEach(action)
 
-private val IgnoredModules = setOf("build", "test", "tutorial")
-
 private const val MainSuffix = "Main"
 
-private fun File.createNodes(): DirectoryNode {
+private fun File.createNodes(modules: Set<String>?): DirectoryNode {
     val node = DirectoryNode(".")
     forEach { moduleDir ->
         val moduleName = moduleDir.name
-        if (moduleName in IgnoredModules) return@forEach
+        if (modules != null && moduleName !in modules) return@forEach
         File(moduleDir, "src").forEach { targetDir ->
             check(targetDir.name.endsWith(MainSuffix)) { "target '${targetDir.name}' must end with '$MainSuffix'" }
             val target = targetDir.name.removeSuffix(MainSuffix)
@@ -76,6 +74,6 @@ private fun File.createNodes(): DirectoryNode {
     return node
 }
 
-fun printModules(directory: String, print: (String) -> Unit) {
-    File(directory).createNodes().print(print)
+fun printModules(modules: Set<String>?, directory: String, print: (String) -> Unit) {
+    File(directory).createNodes(modules).print(print)
 }

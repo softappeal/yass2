@@ -25,7 +25,7 @@ public fun createKtorEngine(): ApplicationEngine = embeddedServer(io.ktor.server
     routing {
         static {
             files("./") // needed for debugging (sources)
-            files("./module/tutorial/src/jsMain/resources")
+            files("./tutorial/src/jsMain/resources")
             files("./build/js/node_modules")
         }
 

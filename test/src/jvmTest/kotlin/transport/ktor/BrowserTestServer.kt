@@ -20,7 +20,7 @@ fun main() {
         routing {
             static {
                 files("./") // needed for debugging (sources)
-                files("./module/test/src/jsTest/resources")
+                files("./test/src/jsTest/resources")
                 files("./build/js/node_modules")
             }
             route(
