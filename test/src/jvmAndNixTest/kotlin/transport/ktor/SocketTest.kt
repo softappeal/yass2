@@ -12,8 +12,8 @@ import kotlin.test.*
 
 private val Address = InetSocketAddress(Host, Port)
 
-@Ignore // TODO
-class SocketTest {
+@Ignore
+open class SocketTest {
     private val tcp = aSocket(SelectorManager(EmptyCoroutineContext)).tcp()
 
     @Test
@@ -31,7 +31,7 @@ class SocketTest {
                 }
                 try {
                     val clientTunnel = MessageTransport.socketTunnel { tcp.connect(Address) }
-                    clientTunnel.test(10)
+                    clientTunnel.test(1000)
                 } finally {
                     listenerJob.cancel()
                 }
