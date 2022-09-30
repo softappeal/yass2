@@ -33,6 +33,6 @@ public fun Invoker.tunnel(services: Collection<Service>): Tunnel {
     }
 }
 
-public fun missingFunction(request: Request) {
+public fun missingFunction(request: Request): Nothing {
     error("no function id ${request.functionId} for service id ${request.serviceId}")
 }
