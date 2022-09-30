@@ -10,7 +10,7 @@ public fun generateRemoteProxyFactory(
 ): String = writer {
     require(serviceIds.map { it.id }.toSet().size == serviceIds.size) { "duplicated service id" }
     write("""
-        @Suppress("UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
+        @Suppress("RedundantSuppression", "UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
         public fun $name(
             tunnel: $CSY.remote.Tunnel,
         ): ${RemoteProxyFactory::class.qualifiedName} =
@@ -54,7 +54,7 @@ public fun generateInvoke(
 ): String = writer {
     require(serviceIds.map { it.id }.toSet().size == serviceIds.size) { "duplicated service id" }
     write("""
-        @Suppress("RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier", "RedundantNullableReturnType")
+        @Suppress("RedundantSuppression", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier", "RedundantNullableReturnType")
         public suspend fun $name(
             request: ${Request::class.qualifiedName}, service: ${Service::class.qualifiedName},
         ): Any? {

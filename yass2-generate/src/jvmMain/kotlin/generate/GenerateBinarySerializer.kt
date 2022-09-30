@@ -15,7 +15,7 @@ public fun generateBinarySerializer(
             (baseEncoders.size + treeConcreteClasses.size + graphConcreteClasses.size)
     ) { "duplicated types" }
     write("""
-        @Suppress("UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
+        @Suppress("RedundantSuppression", "UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
         public fun $name(
             baseEncoders: List<${BaseEncoder::class.qualifiedName}<*>>,
         ): ${BinarySerializer::class.qualifiedName} =

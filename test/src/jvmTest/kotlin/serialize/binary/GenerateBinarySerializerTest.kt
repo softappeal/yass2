@@ -100,7 +100,7 @@ class GenerateBinarySerializerTest {
         class Z(val z: Int) : Exception()
         assertEquals(
             """
-                @Suppress("UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
+                @Suppress("RedundantSuppression", "UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
                 public fun generatedBinarySerializer(
                     baseEncoders: List<ch.softappeal.yass2.serialize.binary.BaseEncoder<*>>,
                 ): ch.softappeal.yass2.serialize.binary.BinarySerializer =

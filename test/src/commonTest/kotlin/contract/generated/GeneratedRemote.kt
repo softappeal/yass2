@@ -1,6 +1,6 @@
 package ch.softappeal.yass2.contract.generated
 
-@Suppress("UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
+@Suppress("RedundantSuppression", "UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
 public fun generatedRemoteProxyFactory(
     tunnel: ch.softappeal.yass2.remote.Tunnel,
 ): ch.softappeal.yass2.remote.RemoteProxyFactory =
@@ -40,7 +40,7 @@ public fun generatedRemoteProxyFactory(
         }
     }
 
-@Suppress("RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier", "RedundantNullableReturnType")
+@Suppress("RedundantSuppression", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier", "RedundantNullableReturnType")
 public suspend fun generatedInvoke(
     request: ch.softappeal.yass2.remote.Request, service: ch.softappeal.yass2.remote.Service,
 ): Any? {

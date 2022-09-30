@@ -11,7 +11,7 @@ public fun generateProxyFactory(
 ): String = writer {
     require(services.toSet().size == services.size) { "duplicated service" }
     write("""
-        @Suppress("UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
+        @Suppress("RedundantSuppression", "UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
         public object $name : ${ProxyFactory::class.qualifiedName} {
             override fun <S : Any> create(
                 service: ${KClass::class.qualifiedName}<S>, implementation: S,
