@@ -46,7 +46,7 @@ class HttpTest {
             runBlocking {
                 HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
                     client.tunnel(MessageTransport, "http://$Host:$Port$Path") { headersOf(DemoHeaderKey, DemoHeaderValue) }
-                        .test(100)
+                        .test(1000)
                 }
             }
         } finally {
