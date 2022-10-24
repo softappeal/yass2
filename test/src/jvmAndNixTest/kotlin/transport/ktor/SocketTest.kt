@@ -12,8 +12,8 @@ import kotlin.test.*
 
 private val Address = InetSocketAddress(Host, Port)
 
-@Ignore
-open class SocketTest {
+@Ignore // TODO: seems yet to work only on JVM target
+class SocketTest {
     private val tcp = aSocket(SelectorManager(EmptyCoroutineContext)).tcp()
 
     @Test
