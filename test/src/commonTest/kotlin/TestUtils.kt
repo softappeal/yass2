@@ -27,7 +27,7 @@ inline fun performance(iterations: Int, action: () -> Unit) {
     }
 }
 
-inline fun <reified T : Throwable> assertPlatform(vararg expectedMessages: String, block: () -> Unit) {
+inline fun <reified T : Throwable> assertFailsWithAndCheckMessage(vararg expectedMessages: String, block: () -> Unit) {
     val actualMessage = assertFailsWith(T::class, block).message!!
     println(actualMessage)
     assertTrue(actualMessage in expectedMessages)

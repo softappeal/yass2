@@ -150,7 +150,7 @@ open class InterceptorTest {
 
     @Test
     fun noSuchService() {
-        assertPlatform<IllegalStateException>(
+        assertFailsWithAndCheckMessage<IllegalStateException>(
             "no proxy for 'class ch.softappeal.yass2.InterceptorTest\$noSuchService\$1\$1'",
             "no proxy for 'class null'",
         ) {
