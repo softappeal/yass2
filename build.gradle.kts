@@ -12,7 +12,7 @@ plugins {
 fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.6.4"
 fun ktor(module: String) = "io.ktor:ktor-$module:2.1.2"
 
-val macTarget = true
+val macTarget = false
 
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")

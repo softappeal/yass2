@@ -12,8 +12,7 @@ import kotlin.test.*
 
 private val Address = InetSocketAddress(Host, Port)
 
-@Ignore // TODO: seems yet to work only on JVM target
-class SocketTest {
+class SocketTest { // TODO: Ktor socket seems yet to work only on JVM target
     private val tcp = aSocket(SelectorManager(EmptyCoroutineContext)).tcp()
 
     @Test
