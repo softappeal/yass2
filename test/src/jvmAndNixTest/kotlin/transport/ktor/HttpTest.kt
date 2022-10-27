@@ -2,7 +2,6 @@
 
 package ch.softappeal.yass2.transport.ktor
 
-import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.contract.generated.*
 import ch.softappeal.yass2.remote.*
@@ -33,61 +32,57 @@ const val Path = "/yass"
 class HttpTest {
     @Test
     fun http() {
-        runOnPlatforms(Platform.Jvm, Platform.Linux, Platform.Mac) {
-            val engine = embeddedServer(io.ktor.server.cio.CIO, Port) {
-                routing {
-                    route(
-                        MessageTransport,
-                        Path,
-                        tunnel { currentCoroutineContext()[CallCce]!!.call.request.headers[DemoHeaderKey]!! }
-                    )
+        val engine = embeddedServer(io.ktor.server.cio.CIO, Port) {
+            routing {
+                route(
+                    MessageTransport,
+                    Path,
+                    tunnel { currentCoroutineContext()[CallCce]!!.call.request.headers[DemoHeaderKey]!! }
+                )
+            }
+        }
+        engine.start()
+        try {
+            runBlocking {
+                HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
+                    client.tunnel(MessageTransport, "http://$Host:$Port$Path") { headersOf(DemoHeaderKey, DemoHeaderValue) }
+                        .test(100)
                 }
             }
-            engine.start()
-            try {
-                runBlocking {
-                    HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
-                        client.tunnel(MessageTransport, "http://$Host:$Port$Path") { headersOf(DemoHeaderKey, DemoHeaderValue) }
-                            .test(100)
-                    }
-                }
-            } finally {
-                engine.stop()
-            }
+        } finally {
+            engine.stop()
         }
     }
 
     @Test
     fun webSocket() {
-        runOnPlatforms(Platform.Jvm, Platform.Linux, Platform.Mac) {
-            val engine = embeddedServer(io.ktor.server.cio.CIO, Port) {
-                install(io.ktor.server.websocket.WebSockets)
-                routing {
-                    webSocket(Path) {
-                        receiveLoop(
-                            PacketTransport,
-                            acceptorSessionFactory {
-                                ((connection as WebSocketConnection).session as WebSocketServerSession)
-                                    .call.request.headers[DemoHeaderKey]!!
-                            }
-                        )
-                    }
-                }
-            }
-            engine.start()
-            try {
-                runBlocking {
-                    HttpClient(io.ktor.client.engine.cio.CIO) {
-                        install(io.ktor.client.plugins.websocket.WebSockets)
-                    }.use { client ->
-                        client.ws(HttpMethod.Get, Host, Port, Path, { header(DemoHeaderKey, DemoHeaderValue) }) {
-                            receiveLoop(PacketTransport, initiatorSessionFactory(1000))
+        val engine = embeddedServer(io.ktor.server.cio.CIO, Port) {
+            install(io.ktor.server.websocket.WebSockets)
+            routing {
+                webSocket(Path) {
+                    receiveLoop(
+                        PacketTransport,
+                        acceptorSessionFactory {
+                            ((connection as WebSocketConnection).session as WebSocketServerSession)
+                                .call.request.headers[DemoHeaderKey]!!
                         }
+                    )
+                }
+            }
+        }
+        engine.start()
+        try {
+            runBlocking {
+                HttpClient(io.ktor.client.engine.cio.CIO) {
+                    install(io.ktor.client.plugins.websocket.WebSockets)
+                }.use { client ->
+                    client.ws(HttpMethod.Get, Host, Port, Path, { header(DemoHeaderKey, DemoHeaderValue) }) {
+                        receiveLoop(PacketTransport, initiatorSessionFactory(1000))
                     }
                 }
-            } finally {
-                engine.stop()
             }
+        } finally {
+            engine.stop()
         }
     }
 
