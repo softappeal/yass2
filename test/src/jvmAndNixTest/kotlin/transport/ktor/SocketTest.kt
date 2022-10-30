@@ -19,25 +19,23 @@ class SocketTest {
 
     @Test
     fun socket() {
-        runOnPlatforms(Platform.Jvm) {
-            val address = createRandomAddress()
-            tcp.bind(address).use { serverSocket ->
-                runBlocking {
-                    val listenerJob = launch {
-                        val serverTunnel = tunnel { currentCoroutineContext()[SocketCce]!!.socket.remoteAddress }
-                        while (true) {
-                            val socket = serverSocket.accept()
-                            launch {
-                                socket.handleRequest(MessageTransport, serverTunnel)
-                            }
+        val address = createRandomAddress()
+        tcp.bind(address).use { serverSocket ->
+            runBlocking {
+                val listenerJob = launch {
+                    val serverTunnel = tunnel { currentCoroutineContext()[SocketCce]!!.socket.remoteAddress }
+                    while (true) {
+                        val socket = serverSocket.accept()
+                        launch {
+                            socket.handleRequest(MessageTransport, serverTunnel)
                         }
                     }
-                    try {
-                        val clientTunnel = MessageTransport.socketTunnel { tcp.connect(address) }
-                        clientTunnel.test(1000)
-                    } finally {
-                        listenerJob.cancel()
-                    }
+                }
+                try {
+                    val clientTunnel = MessageTransport.socketTunnel { tcp.connect(address) }
+                    clientTunnel.test(100)
+                } finally {
+                    listenerJob.cancel()
                 }
             }
         }

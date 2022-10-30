@@ -8,8 +8,8 @@ import kotlinx.coroutines.test.*
 import kotlin.test.*
 
 private val Range0 = 1..2
-private val Range1 = 1..100
-private val Range2 = 2000..2200
+private val Range1 = 1..10
+private val Range2 = 2000..2020
 
 private suspend fun test(flow0: Flow<Int>, flow1: Flow<Int>, flow2: Flow<Int>, flow3: Flow<Int>) {
     assertEquals(Range0.toList(), flow0.toList())
