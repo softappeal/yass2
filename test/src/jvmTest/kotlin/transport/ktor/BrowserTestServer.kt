@@ -14,8 +14,9 @@ import io.ktor.server.websocket.*
 import kotlinx.coroutines.*
 
 fun main() {
-    println("http://$Host:$Port/index.html")
-    embeddedServer(CIO, Port) {
+    val port = 28947
+    println("http://$Host:$port/index.html")
+    embeddedServer(CIO, port) {
         install(WebSockets)
         routing {
             static {

@@ -9,9 +9,10 @@ import io.ktor.network.sockets.*
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import kotlin.coroutines.*
+import kotlin.random.*
 import kotlin.test.*
 
-private val Address = InetSocketAddress(Host, Port)
+private fun createRandomAddress() = InetSocketAddress(Host, Random.nextInt(2_000..65_000))
 
 class SocketTest {
     private val tcp = aSocket(SelectorManager(EmptyCoroutineContext)).tcp()
@@ -19,7 +20,8 @@ class SocketTest {
     @Test
     fun socket() {
         runOnPlatforms(Platform.Jvm) {
-            tcp.bind(Address).use { serverSocket ->
+            val address = createRandomAddress()
+            tcp.bind(address).use { serverSocket ->
                 runBlocking {
                     val listenerJob = launch {
                         val serverTunnel = tunnel { currentCoroutineContext()[SocketCce]!!.socket.remoteAddress }
@@ -31,7 +33,7 @@ class SocketTest {
                         }
                     }
                     try {
-                        val clientTunnel = MessageTransport.socketTunnel { tcp.connect(Address) }
+                        val clientTunnel = MessageTransport.socketTunnel { tcp.connect(address) }
                         clientTunnel.test(1000)
                     } finally {
                         listenerJob.cancel()
@@ -44,7 +46,8 @@ class SocketTest {
     @Test
     fun socketSession() {
         runOnPlatforms(Platform.Jvm) {
-            tcp.bind(Address).use { serverSocket ->
+            val address = createRandomAddress()
+            tcp.bind(address).use { serverSocket ->
                 runBlocking {
                     val acceptorJob = launch {
                         while (true) {
@@ -58,7 +61,7 @@ class SocketTest {
                         }
                     }
                     try {
-                        tcp.connect(Address)
+                        tcp.connect(address)
                             .receiveLoop(PacketTransport, initiatorSessionFactory(1000))
                     } finally {
                         acceptorJob.cancel()
