@@ -28,6 +28,9 @@ internal fun invokeSuspendFunction(
     @Suppress("UNCHECKED_CAST") (suspendFunction as (Continuation<*>) -> Any?)(continuation)
 }
 
+internal fun Array<Any?>.getContinuation() = last() as Continuation<*>
+internal fun Array<Any?>.removeContinuation() = copyOf(lastIndex).asList()
+
 public object ReflectionProxyFactory : ProxyFactory {
     override fun <S : Any> create(
         service: KClass<S>,
@@ -41,16 +44,14 @@ public object ReflectionProxyFactory : ProxyFactory {
         val proxy = newProxyInstance(service.java.classLoader, arrayOf(service.java)) { _, method, arguments ->
             val function = method.kotlinFunction!!
             if (function.isSuspend) {
-                val parameters = arguments.copyOf(arguments.size - 1)
-                val continuation = arguments.last() as Continuation<*>
-                invokeSuspendFunction(continuation) {
-                    suspendInterceptor(function, parameters.toList()) {
-                        handleInvocationTargetException { method.invoke(implementation, *parameters, continuation) }
+                invokeSuspendFunction(arguments.getContinuation()) {
+                    suspendInterceptor(function, arguments.removeContinuation()) {
+                        handleInvocationTargetException { method.invoke(implementation, *arguments) }
                     }
                 }
             } else {
                 val parameters = arguments ?: emptyArray()
-                interceptor(function, parameters.toList()) {
+                interceptor(function, parameters.asList()) {
                     handleInvocationTargetException { method.invoke(implementation, *parameters) }
                 }
             }

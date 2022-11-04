@@ -27,9 +27,9 @@ public fun reflectionRemoteProxyFactory(tunnel: Tunnel): RemoteProxyFactory = ob
         val functionMapper = functionMapper(serviceId.service)
         val javaService = serviceId.service.java
         val proxy = newProxyInstance(javaService.classLoader, arrayOf(javaService)) { _, method, arguments ->
-            invokeSuspendFunction(arguments.last() as Continuation<*>) {
+            invokeSuspendFunction(arguments.getContinuation()) {
                 tunnel(
-                    Request(serviceId.id, functionMapper.toId(method.name), listOf(*arguments.copyOf(arguments.size - 1)))
+                    Request(serviceId.id, functionMapper.toId(method.name), arguments.removeContinuation())
                 ).process()
             }
         }
