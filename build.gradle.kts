@@ -12,9 +12,12 @@ plugins {
 fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.6.4"
 fun ktor(module: String) = "io.ktor:ktor-$module:2.1.3"
 
+val publishYass2 = "publishYass2"
+fun Boolean.disableNativeTargetIfPublish() = this && (publishYass2 !in project.gradle.startParameter.taskNames)
+
 val jsTarget = true
-val linuxTarget = true
-val macTarget = true
+val linuxTarget = true.disableNativeTargetIfPublish()
+val macTarget = true.disableNativeTargetIfPublish()
 
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
@@ -244,7 +247,7 @@ project("tutorial") {
     }
 }
 
-tasks.register("publishYass2") {
+tasks.register(publishYass2) {
     listOf(coreProject, coroutinesProject, reflectProject, generateProject, ktorProject).forEach {
         dependsOn("${it.name}:publishAllPublicationsToOssrhRepository")
     }
