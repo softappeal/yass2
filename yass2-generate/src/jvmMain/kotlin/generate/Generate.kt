@@ -14,8 +14,10 @@ internal fun writer(action: StringBuilder.() -> Unit): String = StringBuilder(10
 
 internal const val CSY = "ch.softappeal.yass2"
 
+@Suppress("BooleanMethodIsAlwaysInverted")
 internal fun KType.needsCast(): Boolean = classifier != Any::class || !isMarkedNullable
 
+@Suppress("BooleanMethodIsAlwaysInverted")
 internal fun KFunction<*>.hasResult(): Boolean = returnType.classifier != Unit::class
 
 internal fun StringBuilder.writeFunctionSignature(indent: String, function: KFunction<*>): Unit = with(function) {
@@ -40,7 +42,8 @@ public enum class GenerateAction {
                 "file '$filePath' is\n${">".repeat(120)}\n$existingCode\n${"<".repeat(120)}\nbut should be\n${">".repeat(120)}\n$code\n${"<".repeat(120)}"
             }
         }
-    };
+    },
+    ;
 
     public abstract fun execute(filePath: String, code: String)
 }

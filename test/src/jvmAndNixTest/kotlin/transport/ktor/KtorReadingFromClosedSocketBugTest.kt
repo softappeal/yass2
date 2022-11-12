@@ -1,3 +1,5 @@
+@file:Suppress("GrazieInspection")
+
 package transport.ktor
 
 import io.ktor.network.selector.*
@@ -9,7 +11,7 @@ import kotlin.test.*
 
 // see https://youtrack.jetbrains.com/issue/KTOR-5093/Native-Read-from-a-closed-socket-doesnt-throw-an-exception
 
-@Ignore // TODO: remove @Ignore for running tests
+@Ignore // TODO: comment out this line for running tests
 class KtorReadingFromClosedSocketBugTest {
     @Test
     fun `Native - Read from a closed socket doesn't throw an exception`() {
