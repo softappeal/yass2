@@ -1,9 +1,17 @@
 rootProject.name = "yass2"
 
-include("yass2-core")
-include("yass2-coroutines")
-include("yass2-reflect")
-include("yass2-generate")
-include("yass2-ktor")
-include("test")
-include("tutorial")
+include(
+    "yass2-core",
+    "yass2-coroutines",
+    "yass2-reflect",
+    "yass2-generate",
+    "yass2-ktor",
+    "test",
+    "tutorial",
+)
+
+pluginManagement {
+    plugins {
+        kotlin("multiplatform").version(extra["kotlin.version"] as String)
+    }
+}

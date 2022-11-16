@@ -5,12 +5,10 @@
 import java.util.regex.*
 
 plugins {
-    kotlin("multiplatform") version "1.7.21"
+    kotlin("multiplatform")
     id("maven-publish")
     signing
 }
-fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:1.6.4"
-fun ktor(module: String) = "io.ktor:ktor-$module:2.1.3"
 
 val publishYass2 = "publishYass2"
 fun Boolean.disableNativeTargetIfPublish() = this && (publishYass2 !in project.gradle.startParameter.taskNames)
@@ -90,6 +88,9 @@ allprojects {
         }
     }
 }
+
+fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:${extra["kotlinx-coroutines.version"]}"
+fun ktor(module: String) = "io.ktor:ktor-$module:${extra["ktor.version"]}"
 
 val coreProject = project("yass2-core")
 
