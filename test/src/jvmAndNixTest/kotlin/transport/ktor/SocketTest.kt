@@ -1,6 +1,5 @@
 package transport.ktor
 
-import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.remote.coroutines.session.*
 import ch.softappeal.yass2.transport.ktor.*
@@ -14,6 +13,7 @@ import kotlin.test.*
 
 private fun createRandomAddress() = InetSocketAddress(Host, Random.nextInt(2_000..65_000))
 
+@Ignore // TODO: see KtorReadingFromClosedSocketBugTest
 class SocketTest {
     private val tcp = aSocket(SelectorManager(EmptyCoroutineContext)).tcp()
 
@@ -43,27 +43,25 @@ class SocketTest {
 
     @Test
     fun socketSession() {
-        runOnPlatforms(Platform.Jvm) {
-            val address = createRandomAddress()
-            tcp.bind(address).use { serverSocket ->
-                runBlocking {
-                    val acceptorJob = launch {
-                        while (true) {
-                            val socket = serverSocket.accept()
-                            launch {
-                                socket.receiveLoop(
-                                    PacketTransport,
-                                    acceptorSessionFactory { (connection as SocketConnection).socket.remoteAddress }
-                                )
-                            }
+        val address = createRandomAddress()
+        tcp.bind(address).use { serverSocket ->
+            runBlocking {
+                val acceptorJob = launch {
+                    while (true) {
+                        val socket = serverSocket.accept()
+                        launch {
+                            socket.receiveLoop(
+                                PacketTransport,
+                                acceptorSessionFactory { (connection as SocketConnection).socket.remoteAddress }
+                            )
                         }
                     }
-                    try {
-                        tcp.connect(address)
-                            .receiveLoop(PacketTransport, initiatorSessionFactory(1000))
-                    } finally {
-                        acceptorJob.cancel()
-                    }
+                }
+                try {
+                    tcp.connect(address)
+                        .receiveLoop(PacketTransport, initiatorSessionFactory(1000))
+                } finally {
+                    acceptorJob.cancel()
                 }
             }
         }

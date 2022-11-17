@@ -11,7 +11,7 @@ import kotlin.test.*
 
 // see https://youtrack.jetbrains.com/issue/KTOR-5093/Native-Read-from-a-closed-socket-doesnt-throw-an-exception
 
-@Ignore // TODO: comment out this line for running tests
+@Ignore // comment out this line for running tests
 class KtorReadingFromClosedSocketBugTest {
     @Test
     fun `Native - Read from a closed socket doesn't throw an exception`() {
