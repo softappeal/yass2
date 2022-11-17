@@ -150,12 +150,12 @@ open class InterceptorTest {
 
     @Test
     fun noSuchService() {
-        assertFailsWithAndCheckMessage<IllegalStateException>(
-            "no proxy for 'class ch.softappeal.yass2.InterceptorTest\$noSuchService\$1\$1'",
-            "no proxy for 'class null'",
-        ) {
-            GeneratedProxyFactory(object : NoSuchService {}) { _, _, invocation: Invocation -> invocation() }
-        }
+        assertEquals(
+            "no proxy for 'class ${if (Platform.Js.actual()) "null" else "ch.softappeal.yass2.InterceptorTest\$noSuchService\$1\$1"}'",
+            assertFailsWith<IllegalStateException> {
+                GeneratedProxyFactory(object : NoSuchService {}) { _, _, invocation: Invocation -> invocation() }
+            }.message
+        )
     }
 
     @Test

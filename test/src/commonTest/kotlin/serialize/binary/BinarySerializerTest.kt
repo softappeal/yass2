@@ -69,18 +69,18 @@ open class BinarySerializerTest {
 
     @Test
     fun duplicatedType() {
-        assertFailsWithAndCheckMessage<IllegalArgumentException>(
-            "duplicated type 'class kotlin.Int'",
-            "duplicated type 'class Int'",
-        ) { BinarySerializer(listOf(IntEncoder, IntEncoder)) }
+        assertEquals(
+            "duplicated type 'class ${if (Platform.Js.actual()) "" else "kotlin."}Int'",
+            assertFailsWith<IllegalArgumentException> { BinarySerializer(listOf(IntEncoder, IntEncoder)) }.message
+        )
     }
 
     @Test
     fun missingType() {
-        assertFailsWithAndCheckMessage<IllegalStateException>(
-            "missing type 'class kotlin.Boolean'",
-            "missing type 'class Boolean'",
-        ) { serializer.write(BytesWriter(1000), true) }
+        assertEquals(
+            "missing type 'class ${if (Platform.Js.actual()) "" else "kotlin."}Boolean'",
+            assertFailsWith<IllegalStateException> { serializer.write(BytesWriter(1000), true) }.message
+        )
     }
 
     @Test

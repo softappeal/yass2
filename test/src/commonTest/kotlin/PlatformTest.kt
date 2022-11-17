@@ -16,6 +16,11 @@ class PlatformTest {
     }
 
     @Test
+    fun testActual() {
+        assertTrue(getPlatform().actual())
+    }
+
+    @Test
     fun testRunOnPlatforms2() {
         var run = false
         runOnPlatforms(Platform.Jvm, Platform.Js, Platform.Linux, Platform.Mac) {
