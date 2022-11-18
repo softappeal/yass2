@@ -62,28 +62,18 @@ private fun checkGraph(n1: Node) {
     assertSame(n3.link, n2)
 }
 
+fun duplicatedType(thePackage: String) = assertFailsMessage<IllegalArgumentException>("duplicated type 'class ${thePackage}Int'") {
+    BinarySerializer(listOf(IntEncoder, IntEncoder))
+}
+
+fun missingType(thePackage: String) = assertFailsMessage<IllegalStateException>("missing type 'class ${thePackage}Boolean'") {
+    ContractSerializer.write(BytesWriter(1000), true)
+}
+
 open class BinarySerializerTest {
     protected open val serializer = ContractSerializer
 
     private fun <T> copy(value: T, vararg bytes: Int): T = serializer.copy(value, bytes)
-
-    @Test
-    fun duplicatedType() {
-        assertTrue(
-            assertFailsWith<IllegalArgumentException> {
-                BinarySerializer(listOf(IntEncoder, IntEncoder))
-            }.message!!.startsWith("duplicated type 'class ")
-        )
-    }
-
-    @Test
-    fun missingType() {
-        assertTrue(
-            assertFailsWith<IllegalStateException> {
-                serializer.write(BytesWriter(1000), true)
-            }.message!!.startsWith("missing type 'class ")
-        )
-    }
 
     @Test
     fun testNull() {

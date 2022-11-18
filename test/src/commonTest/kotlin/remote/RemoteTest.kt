@@ -11,53 +11,34 @@ open class RemoteTest {
     protected open val remoteProxyFactory = ::generatedRemoteProxyFactory
 
     @Test
-    fun duplicatedService() {
-        assertEquals(
-            "duplicated service id",
-            assertFailsWith<IllegalArgumentException> {
-                invoke.tunnel(listOf(EchoId(EchoImpl), EchoId(EchoImpl)))
-            }.message
-        )
+    fun duplicatedService() = assertFailsMessage<IllegalArgumentException>("duplicated service id") {
+        invoke.tunnel(listOf(EchoId(EchoImpl), EchoId(EchoImpl)))
     }
 
     @Test
     fun missingService() = runTest {
-        assertEquals(
-            "no service id 1",
-            assertFailsWith<IllegalStateException> {
-                remoteProxyFactory(invoke.tunnel(emptyList()))(CalculatorId).add(1, 2)
-            }.message
-        )
+        assertFailsMessage<IllegalStateException>("no service id 1") {
+            remoteProxyFactory(invoke.tunnel(emptyList()))(CalculatorId).add(1, 2)
+        }
     }
 
     @Test
-    fun noServiceIdRemoteProxyFactory() {
-        assertEquals(
-            "no service id 123",
-            assertFailsWith<IllegalStateException> {
-                generatedRemoteProxyFactory { ValueReply(null) }.create(serviceId<Calculator>(123))
-            }.message
-        )
+    fun noServiceIdRemoteProxyFactory() = assertFailsMessage<IllegalStateException>("no service id 123") {
+        generatedRemoteProxyFactory { ValueReply(null) }.create(serviceId<Calculator>(123))
     }
 
     @Test
     fun noServiceIdInvoker() = runTest {
-        assertEquals(
-            "no service id 123",
-            assertFailsWith<IllegalStateException> {
-                generatedInvoke(Request(123, 0, emptyList()), EchoId(EchoImpl))
-            }.message
-        )
+        assertFailsMessage<IllegalStateException>("no service id 123") {
+            generatedInvoke(Request(123, 0, emptyList()), EchoId(EchoImpl))
+        }
     }
 
     @Test
     fun noFunctionId() = runTest {
-        assertEquals(
-            "no function id 123 for service id 2",
-            assertFailsWith<IllegalStateException> {
-                generatedInvoke(Request(2, 123, emptyList()), EchoId(EchoImpl))
-            }.message
-        )
+        assertFailsMessage<IllegalStateException>("no function id 123 for service id 2") {
+            generatedInvoke(Request(2, 123, emptyList()), EchoId(EchoImpl))
+        }
     }
 
     @Test

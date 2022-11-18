@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.serialize.binary
 
+import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.generate.*
 import ch.softappeal.yass2.serialize.binary.reflect.*
@@ -8,51 +9,33 @@ import kotlin.test.*
 
 class GenerateBinarySerializerTest {
     @Test
-    fun enumClass() {
-        assertEquals(
-            "type 'class ch.softappeal.yass2.serialize.binary.Color' is enum",
-            assertFailsWith<IllegalArgumentException> { generateBinarySerializer(listOf(), listOf(Color::class)) }.message
-        )
+    fun enumClass() = assertFailsMessage<IllegalArgumentException>("type 'class ch.softappeal.yass2.serialize.binary.Color' is enum") {
+        generateBinarySerializer(listOf(), listOf(Color::class))
     }
 
     @Test
-    fun abstractClass() {
-        assertEquals(
-            "type 'class ch.softappeal.yass2.contract.Id' is abstract",
-            assertFailsWith<IllegalArgumentException> { generateBinarySerializer(listOf(), listOf(Id::class)) }.message
-        )
+    fun abstractClass() = assertFailsMessage<IllegalArgumentException>(("type 'class ch.softappeal.yass2.contract.Id' is abstract")) {
+        generateBinarySerializer(listOf(), listOf(Id::class))
     }
 
     @Test
-    fun duplicatedTypes() {
-        assertEquals(
-            "duplicated types",
-            assertFailsWith<IllegalArgumentException> { generateBinarySerializer(listOf(IntEncoder), listOf(Int::class)) }.message
-        )
+    fun duplicatedTypes() = assertFailsMessage<IllegalArgumentException>("duplicated types") {
+        generateBinarySerializer(listOf(IntEncoder), listOf(Int::class))
     }
 
     @Test
-    fun duplicatedBaseEncoder() {
-        assertEquals(
-            "duplicated types",
-            assertFailsWith<IllegalArgumentException> { generateBinarySerializer(listOf(IntEncoder, IntEncoder), listOf()) }.message
-        )
+    fun duplicatedBaseEncoder() = assertFailsMessage<IllegalArgumentException>("duplicated types") {
+        generateBinarySerializer(listOf(IntEncoder, IntEncoder), listOf())
     }
 
     @Test
-    fun duplicatedTreeConcreteClass() {
-        assertEquals(
-            "duplicated types",
-            assertFailsWith<IllegalArgumentException> { generateBinarySerializer(listOf(), listOf(Id2::class, Id2::class)) }.message
-        )
+    fun duplicatedTreeConcreteClass() = assertFailsMessage<IllegalArgumentException>("duplicated types") {
+        generateBinarySerializer(listOf(), listOf(Id2::class, Id2::class))
     }
 
     @Test
-    fun duplicatedGraphConcreteClass() {
-        assertEquals(
-            "duplicated types",
-            assertFailsWith<IllegalArgumentException> { generateBinarySerializer(listOf(), listOf(), listOf(Node::class, Node::class)) }.message
-        )
+    fun duplicatedGraphConcreteClass() = assertFailsMessage<IllegalArgumentException>("duplicated types") {
+        generateBinarySerializer(listOf(), listOf(), listOf(Node::class, Node::class))
     }
 
     @Test
@@ -62,10 +45,9 @@ class GenerateBinarySerializerTest {
                 println(x)
             }
         }
-        assertEquals(
-            "primary constructor parameter 'x' of 'class ch.softappeal.yass2.serialize.binary.GenerateBinarySerializerTest\$notPropertyParameter\$X' is not a property",
-            assertFailsWith<IllegalArgumentException> { generateBinarySerializer(listOf(IntEncoder), listOf(X::class)) }.message
-        )
+        assertFailsMessage<IllegalArgumentException>("primary constructor parameter 'x' of 'class ch.softappeal.yass2.serialize.binary.GenerateBinarySerializerTest\$notPropertyParameter\$X' is not a property") {
+            generateBinarySerializer(listOf(IntEncoder), listOf(X::class))
+        }
     }
 
     @Test
@@ -74,10 +56,9 @@ class GenerateBinarySerializerTest {
             @Suppress("unused")
             val x: Int = 0
         }
-        assertEquals(
-            "body property 'x' of 'class ch.softappeal.yass2.serialize.binary.GenerateBinarySerializerTest\$bodyPropertyNotVar\$X' is not 'var'",
-            assertFailsWith<IllegalArgumentException> { generateBinarySerializer(listOf(IntEncoder), listOf(X::class)) }.message
-        )
+        assertFailsMessage<IllegalArgumentException>("body property 'x' of 'class ch.softappeal.yass2.serialize.binary.GenerateBinarySerializerTest\$bodyPropertyNotVar\$X' is not 'var'") {
+            generateBinarySerializer(listOf(IntEncoder), listOf(X::class))
+        }
     }
 
     @Test
@@ -86,10 +67,9 @@ class GenerateBinarySerializerTest {
         class X {
             constructor()
         }
-        assertEquals(
-            "'class ch.softappeal.yass2.serialize.binary.GenerateBinarySerializerTest\$noPrimaryConstructor\$X' has no primary constructor",
-            assertFailsWith<IllegalStateException> { generateBinarySerializer(listOf(IntEncoder), listOf(X::class)) }.message
-        )
+        assertFailsMessage<IllegalStateException>("'class ch.softappeal.yass2.serialize.binary.GenerateBinarySerializerTest\$noPrimaryConstructor\$X' has no primary constructor") {
+            generateBinarySerializer(listOf(IntEncoder), listOf(X::class))
+        }
     }
 
     @Test
@@ -164,10 +144,7 @@ class ReflectionBinarySerializerTest : BinarySerializerTest() {
     override val serializer = reflectionBinarySerializer(BaseEncoders, TreeConcreteClasses, GraphConcreteClasses)
 
     @Test
-    fun duplicatedInt() {
-        assertEquals(
-            "duplicated type 'class kotlin.Int'",
-            assertFailsWith<IllegalArgumentException> { reflectionBinarySerializer(listOf(IntEncoder), listOf(Int::class)) }.message
-        )
+    fun duplicatedInt() = assertFailsMessage<IllegalArgumentException>("duplicated type 'class kotlin.Int'") {
+        reflectionBinarySerializer(listOf(IntEncoder), listOf(Int::class))
     }
 }

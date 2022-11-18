@@ -16,27 +16,18 @@ class ModulesTest {
     }
 
     @Test
-    fun notMain() {
-        assertEquals(
-            "target 'testTest' must end with 'Main'",
-            assertFailsWith<IllegalStateException> { printModules("src/jvmTest/resources/notMain") }.message
-        )
+    fun notMain() = assertFailsMessage<IllegalStateException>("target 'testTest' must end with 'Main'") {
+        printModules("src/jvmTest/resources/notMain")
     }
 
     @Test
-    fun split1() {
-        assertEquals(
-            "modules 'module1' and 'module2' have split package 'kotlin/Test.kt'",
-            assertFailsWith<IllegalStateException> { printModules("src/jvmTest/resources/split1") }.message
-        )
+    fun split1() = assertFailsMessage<IllegalStateException>("modules 'module1' and 'module2' have split package 'kotlin/Test.kt'") {
+        printModules("src/jvmTest/resources/split1")
     }
 
     @Test
-    fun split2() {
-        assertEquals(
-            "modules 'module1' and 'module2' have split package 'kotlin/Test2.kt'",
-            assertFailsWith<IllegalStateException> { printModules("src/jvmTest/resources/split2") }.message
-        )
+    fun split2() = assertFailsMessage<IllegalStateException>("modules 'module1' and 'module2' have split package 'kotlin/Test2.kt'") {
+        printModules("src/jvmTest/resources/split2")
     }
 
     @Test

@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.transport.session
 
+import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.coroutines.session.*
@@ -24,10 +25,7 @@ class BinaryPacketSerializerTest {
     }
 
     @Test
-    fun writeString() = assertEquals(
-        "unexpected value 's'",
-        assertFailsWith<IllegalStateException> {
-            PacketSerializer.write(BytesWriter(100), "s")
-        }.message
-    )
+    fun writeString() = assertFailsMessage<IllegalStateException>("unexpected value 's'") {
+        PacketSerializer.write(BytesWriter(100), "s")
+    }
 }

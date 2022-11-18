@@ -99,6 +99,15 @@ private fun ProxyFactory.test() {
     assertNotEquals(mixed, Any())
 }
 
+private interface NoSuchService
+
+fun noSuchService(thePackage: String) {
+    val noSuchService: NoSuchService = object : NoSuchService {}
+    assertFailsMessage<IllegalStateException>("no proxy for 'class ${thePackage}NoSuchService'") {
+        GeneratedProxyFactory(noSuchService) { _, _, invocation: Invocation -> invocation() }
+    }
+}
+
 open class InterceptorTest {
     protected open val proxyFactory: ProxyFactory = GeneratedProxyFactory
 
@@ -146,17 +155,6 @@ open class InterceptorTest {
         assertNotNull(value2)
     }
 
-    private interface NoSuchService
-
-    @Test
-    fun noSuchService() {
-        assertTrue(
-            assertFailsWith<IllegalStateException> {
-                GeneratedProxyFactory(object : NoSuchService {}) { _, _, invocation: Invocation -> invocation() }
-            }.message!!.startsWith("no proxy for 'class ")
-        )
-    }
-
     @Test
     fun proxyFactoryTest() {
         proxyFactory.test()
@@ -193,34 +191,24 @@ open class InterceptorTest {
     }
 
     @Test
-    fun missingInterceptor() {
-        assertEquals(
-            "missing Interceptor",
-            assertFailsWith<RuntimeException> { MissingInterceptor(Calculator::add, emptyList()) {} }.message
-        )
+    fun missingInterceptor() = assertFailsMessage<RuntimeException>("missing Interceptor") {
+        MissingInterceptor(Calculator::add, emptyList()) {}
     }
 
     @Test
     fun missingSuspendInterceptor() = runTest {
-        assertEquals(
-            "missing SuspendInterceptor",
-            assertFailsWith<RuntimeException> { MissingSuspendInterceptor(Calculator::add, emptyList()) {} }.message
-        )
+        assertFailsMessage<RuntimeException>("missing SuspendInterceptor") {
+            MissingSuspendInterceptor(Calculator::add, emptyList()) {}
+        }
     }
 
     @Test
     fun checkInterceptors() {
-        assertEquals(
-            "missing Interceptor",
-            assertFailsWith<IllegalArgumentException> {
-                proxyFactory(MixedImpl) { _, _, _: SuspendInvocation -> }
-            }.message
-        )
-        assertEquals(
-            "missing SuspendInterceptor",
-            assertFailsWith<IllegalArgumentException> {
-                proxyFactory(MixedImpl) { _, _, _: Invocation -> }
-            }.message
-        )
+        assertFailsMessage<IllegalArgumentException>("missing Interceptor") {
+            proxyFactory(MixedImpl) { _, _, _: SuspendInvocation -> }
+        }
+        assertFailsMessage<IllegalArgumentException>("missing SuspendInterceptor") {
+            proxyFactory(MixedImpl) { _, _, _: Invocation -> }
+        }
     }
 }

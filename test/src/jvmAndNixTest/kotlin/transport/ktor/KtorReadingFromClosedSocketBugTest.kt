@@ -1,6 +1,6 @@
 @file:Suppress("GrazieInspection")
 
-package transport.ktor
+package ch.softappeal.yass2.transport.ktor
 
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*

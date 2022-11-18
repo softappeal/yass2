@@ -26,3 +26,6 @@ inline fun performance(iterations: Int, action: () -> Unit) {
         println("  one sample: ${1_000_000 * timeMs / iterations}ns total time: ${timeMs}ms")
     }
 }
+
+inline fun <reified T : Throwable> assertFailsMessage(expectedMessage: String, block: () -> Unit) =
+    assertEquals(expectedMessage, assertFailsWith(T::class, block).message)

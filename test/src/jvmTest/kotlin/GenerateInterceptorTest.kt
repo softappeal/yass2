@@ -16,19 +16,13 @@ private interface Overloaded {
 
 class GenerateInterceptorTest {
     @Test
-    fun overloadedFunction() {
-        assertEquals(
-            "'class ch.softappeal.yass2.Overloaded' has overloaded functions",
-            assertFailsWith<IllegalArgumentException> { generateProxyFactory(listOf(Overloaded::class)) }.message
-        )
+    fun overloadedFunction() = assertFailsMessage<IllegalArgumentException>("'class ch.softappeal.yass2.Overloaded' has overloaded functions") {
+        generateProxyFactory(listOf(Overloaded::class))
     }
 
     @Test
-    fun duplicatedService() {
-        assertEquals(
-            "duplicated service",
-            assertFailsWith<IllegalArgumentException> { generateProxyFactory(listOf(Calculator::class, Calculator::class)) }.message
-        )
+    fun duplicatedService() = assertFailsMessage<IllegalArgumentException>("duplicated service") {
+        generateProxyFactory(listOf(Calculator::class, Calculator::class))
     }
 
     @Test

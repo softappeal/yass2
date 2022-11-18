@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.transport
 
+import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.serialize.*
@@ -46,26 +47,17 @@ class BinaryMessageSerializerTest {
     }
 
     @Test
-    fun writeNull() = assertEquals(
-        "unexpected value 'null'",
-        assertFailsWith<IllegalStateException> {
-            MessageSerializer.write(BytesWriter(100), null)
-        }.message
-    )
+    fun writeNull() = assertFailsMessage<IllegalStateException>("unexpected value 'null'") {
+        MessageSerializer.write(BytesWriter(100), null)
+    }
 
     @Test
-    fun writeString() = assertEquals(
-        "unexpected value 's'",
-        assertFailsWith<IllegalStateException> {
-            MessageSerializer.write(BytesWriter(100), "s")
-        }.message
-    )
+    fun writeString() = assertFailsMessage<IllegalStateException>("unexpected value 's'") {
+        MessageSerializer.write(BytesWriter(100), "s")
+    }
 
     @Test
-    fun invalidType() = assertEquals(
-        "unexpected type 123",
-        assertFailsWith<IllegalStateException> {
-            MessageSerializer.read(BytesReader(byteArrayOf(123)))
-        }.message
-    )
+    fun invalidType() = assertFailsMessage<IllegalStateException>("unexpected type 123") {
+        MessageSerializer.read(BytesReader(byteArrayOf(123)))
+    }
 }

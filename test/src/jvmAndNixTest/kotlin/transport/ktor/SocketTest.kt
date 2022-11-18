@@ -1,8 +1,7 @@
-package transport.ktor
+package ch.softappeal.yass2.transport.ktor
 
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.remote.coroutines.session.*
-import ch.softappeal.yass2.transport.ktor.*
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.core.*
@@ -13,7 +12,8 @@ import kotlin.test.*
 
 private fun createRandomAddress() = InetSocketAddress(Host, Random.nextInt(2_000..65_000))
 
-@Ignore // TODO: see KtorReadingFromClosedSocketBugTest
+@Ignore // TODO
+/** see [KtorReadingFromClosedSocketBugTest] */
 class SocketTest {
     private val tcp = aSocket(SelectorManager(EmptyCoroutineContext)).tcp()
 
