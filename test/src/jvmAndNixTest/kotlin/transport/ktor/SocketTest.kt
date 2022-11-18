@@ -12,14 +12,13 @@ import kotlin.test.*
 
 private fun createRandomAddress() = InetSocketAddress(Host, Random.nextInt(2_000..65_000))
 
-@Ignore // TODO
 /** see [KtorReadingFromClosedSocketBugTest] */
+@Ignore // TODO: runs yet only on JVM due to ktor bug
 class SocketTest {
-    private val tcp = aSocket(SelectorManager(EmptyCoroutineContext)).tcp()
-
     @Test
-    fun socket() {
+    fun socketTest() {
         val address = createRandomAddress()
+        val tcp = aSocket(SelectorManager(EmptyCoroutineContext)).tcp()
         tcp.bind(address).use { serverSocket ->
             runBlocking {
                 val listenerJob = launch {
@@ -44,6 +43,7 @@ class SocketTest {
     @Test
     fun socketSession() {
         val address = createRandomAddress()
+        val tcp = aSocket(SelectorManager(EmptyCoroutineContext)).tcp()
         tcp.bind(address).use { serverSocket ->
             runBlocking {
                 val acceptorJob = launch {
