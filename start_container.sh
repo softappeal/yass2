@@ -5,8 +5,8 @@ docker image     build                                               --tag proje
 docker container create --name project-container --tty --interactive       project-image /bin/bash
 
 pushd ~/OneDrive/data/major/development/AngeloSalvade.MavenCentral.SigningKey
-docker container cp gradle.docker.properties project-container:/root/.gradle/gradle.properties
 docker container cp maven.central.key.gpg    project-container:/root/.gradle/maven.central.key.gpg
+docker container cp gradle.docker.properties project-container:/root/.gradle/gradle.properties
 popd
 
 docker container start --attach --interactive project-container
