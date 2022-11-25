@@ -37,9 +37,6 @@ allprojects {
             mavenPublication {
                 artifact(tasks["javadocJar"])
             }
-            compilations.all {
-                kotlinOptions.jvmTarget = "17"
-            }
         }
 
         if (jsTarget) {
