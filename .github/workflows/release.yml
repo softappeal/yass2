@@ -1,3 +1,4 @@
+#file: noinspection SpellCheckingInspection
 on:
   workflow_dispatch:
     inputs:

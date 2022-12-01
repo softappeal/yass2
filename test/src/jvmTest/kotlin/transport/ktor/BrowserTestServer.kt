@@ -13,28 +13,30 @@ import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import kotlinx.coroutines.*
 
+private fun Application.theModule() {
+    install(WebSockets)
+    routing {
+        static {
+            files("./") // needed for debugging (sources)
+            files("./test/src/jsTest/resources")
+            files("./build/js/node_modules")
+        }
+        route(
+            MessageTransport,
+            Path,
+            tunnel { "http-" + currentCoroutineContext()[CallCce]?.call?.request?.uri!! }
+        )
+        webSocket(Path) {
+            receiveLoop(
+                PacketTransport,
+                acceptorSessionFactory { "ws-" + ((connection as WebSocketConnection).session as WebSocketServerSession).call.request.uri }
+            )
+        }
+    }
+}
+
 fun main() {
     val port = 28947
     println("http://$Host:$port/index.html")
-    embeddedServer(CIO, port) {
-        install(WebSockets)
-        routing {
-            static {
-                files("./") // needed for debugging (sources)
-                files("./test/src/jsTest/resources")
-                files("./build/js/node_modules")
-            }
-            route(
-                MessageTransport,
-                Path,
-                tunnel { "http-" + currentCoroutineContext()[CallCce]?.call?.request?.uri!! }
-            )
-            webSocket(Path) {
-                receiveLoop(
-                    PacketTransport,
-                    acceptorSessionFactory { "ws-" + ((connection as WebSocketConnection).session as WebSocketServerSession).call.request.uri }
-                )
-            }
-        }
-    }.start(wait = true)
+    embeddedServer(CIO, port, module = Application::theModule).start(wait = true)
 }

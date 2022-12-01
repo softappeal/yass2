@@ -20,7 +20,7 @@ public const val Host: String = "localhost"
 public const val Port: Int = 28947
 private const val Path = "/yass"
 
-public fun createKtorEngine(): ApplicationEngine = embeddedServer(io.ktor.server.cio.CIO, Port) {
+private fun Application.theModule() {
     install(io.ktor.server.websocket.WebSockets)
     routing {
         static {
@@ -36,6 +36,8 @@ public fun createKtorEngine(): ApplicationEngine = embeddedServer(io.ktor.server
         webSocket(Path) { receiveLoop(PacketTransport, acceptorSessionFactory()) }
     }
 }
+
+public fun createKtorEngine(): ApplicationEngine = embeddedServer(io.ktor.server.cio.CIO, Port, module = Application::theModule)
 
 private suspend fun useKtorRemoting() {
     println("*** useKtorRemoting ***")
