@@ -19,8 +19,8 @@ public class FunctionMapper(private val service: KClass<*>) {
     public fun toId(name: String): Int = name2id[name] ?: error("'$service' has no function '$name'")
 }
 
-private val FunctionMappers = ConcurrentHashMap<KClass<*>, FunctionMapper>(16)
-private fun functionMapper(service: KClass<*>): FunctionMapper = FunctionMappers.computeIfAbsent(service) { FunctionMapper(service) }
+private val functionMappers = ConcurrentHashMap<KClass<*>, FunctionMapper>(16)
+private fun functionMapper(service: KClass<*>): FunctionMapper = functionMappers.computeIfAbsent(service) { FunctionMapper(service) }
 
 public fun reflectionRemoteProxyFactory(tunnel: Tunnel): RemoteProxyFactory = object : RemoteProxyFactory {
     override fun <S : Any> create(serviceId: ServiceId<S>): S {
