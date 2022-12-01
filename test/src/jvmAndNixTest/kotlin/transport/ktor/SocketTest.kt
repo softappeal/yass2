@@ -10,7 +10,7 @@ import kotlin.coroutines.*
 import kotlin.random.*
 import kotlin.test.*
 
-private fun createRandomAddress() = InetSocketAddress(Host, Random.nextInt(2_000..65_000))
+private fun createRandomAddress() = InetSocketAddress(HOST, Random.nextInt(2_000..65_000))
 
 /** see [KtorReadingFromClosedSocketBugTest] */
 @Ignore // TODO: runs yet only on JVM due to ktor bug

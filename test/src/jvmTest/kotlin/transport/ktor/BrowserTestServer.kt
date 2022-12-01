@@ -23,10 +23,10 @@ private fun Application.theModule() {
         }
         route(
             MessageTransport,
-            Path,
+            PATH,
             tunnel { "http-" + currentCoroutineContext()[CallCce]?.call?.request?.uri!! }
         )
-        webSocket(Path) {
+        webSocket(PATH) {
             receiveLoop(
                 PacketTransport,
                 acceptorSessionFactory { "ws-" + ((connection as WebSocketConnection).session as WebSocketServerSession).call.request.uri }
@@ -37,6 +37,6 @@ private fun Application.theModule() {
 
 fun main() {
     val port = 28947
-    println("http://$Host:$port/index.html")
+    println("http://$HOST:$port/index.html")
     embeddedServer(CIO, port, module = Application::theModule).start(wait = true)
 }

@@ -4,12 +4,12 @@ import ch.softappeal.yass2.serialize.*
 
 // see https://developers.google.com/protocol-buffers/docs/encoding#varints
 
-private const val IntInv7F: Int = 0x7F.inv()
+private const val INT_INV_7F: Int = 0x7F.inv()
 
 public fun Writer.writeVarInt(value: Int) {
     var v = value
     while (true) {
-        if (v and IntInv7F == 0) {
+        if (v and INT_INV_7F == 0) {
             writeByte(v.toByte())
             return
         }
@@ -29,12 +29,12 @@ public fun Reader.readVarInt(): Int {
     }
 }
 
-private const val LongInv7F: Long = 0x7FL.inv()
+private const val LONG_INV_7F: Long = 0x7FL.inv()
 
 public fun Writer.writeVarLong(value: Long) {
     var v = value
     while (true) {
-        if (v and LongInv7F == 0L) {
+        if (v and LONG_INV_7F == 0L) {
             writeByte(v.toByte())
             return
         }

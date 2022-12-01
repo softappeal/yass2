@@ -38,5 +38,5 @@ fun StringBuilder.valueDumper(value: Any) {
 val MessageTransport = Transport(MessageSerializer, 100, 100)
 val PacketTransport = Transport(PacketSerializer, 100, 100)
 
-const val DemoHeaderKey = "Demo-Header-Key"
-const val DemoHeaderValue = "Demo-Header-Value"
+const val DEMO_HEADER_KEY = "Demo-Header-Key"
+const val DEMO_HEADER_VALUE = "Demo-Header-Value"

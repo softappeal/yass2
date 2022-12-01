@@ -16,9 +16,9 @@ import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import kotlinx.coroutines.*
 
-public const val Host: String = "localhost"
-public const val Port: Int = 28947
-private const val Path = "/yass"
+public const val HOST: String = "localhost"
+public const val PORT: Int = 28947
+private const val PATH = "/yass"
 
 private fun Application.theModule() {
     install(io.ktor.server.websocket.WebSockets)
@@ -30,14 +30,14 @@ private fun Application.theModule() {
         }
 
         // shows server-side unidirectional remoting with Http
-        route(MessageTransport, Path, ::generatedInvoke.tunnel(Services))
+        route(MessageTransport, PATH, ::generatedInvoke.tunnel(Services))
 
         // shows server-side session based bidirectional remoting with WebSocket
-        webSocket(Path) { receiveLoop(PacketTransport, acceptorSessionFactory()) }
+        webSocket(PATH) { receiveLoop(PacketTransport, acceptorSessionFactory()) }
     }
 }
 
-public fun createKtorEngine(): ApplicationEngine = embeddedServer(io.ktor.server.cio.CIO, Port, module = Application::theModule)
+public fun createKtorEngine(): ApplicationEngine = embeddedServer(io.ktor.server.cio.CIO, PORT, module = Application::theModule)
 
 private suspend fun useKtorRemoting() {
     println("*** useKtorRemoting ***")
@@ -48,10 +48,10 @@ private suspend fun useKtorRemoting() {
             install(io.ktor.client.plugins.websocket.WebSockets)
         }.use { client ->
             // shows client-side unidirectional remoting with Http
-            useServices(client.tunnel(MessageTransport, "http://$Host:$Port$Path"))
+            useServices(client.tunnel(MessageTransport, "http://$HOST:$PORT$PATH"))
 
             // shows client-side session based bidirectional remoting with WebSocket
-            client.ws(HttpMethod.Get, Host, Port, Path) { receiveLoop(PacketTransport, initiatorSessionFactory()) }
+            client.ws(HttpMethod.Get, HOST, PORT, PATH) { receiveLoop(PacketTransport, initiatorSessionFactory()) }
         }
     } finally {
         engine.stop()

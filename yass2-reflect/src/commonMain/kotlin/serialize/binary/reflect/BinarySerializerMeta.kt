@@ -33,7 +33,7 @@ public fun KClass<*>.metaProperty(
     val kind = if (optional) PropertyKind.NoIdOptional else PropertyKind.NoIdRequired
     return if (this == List::class) MetaProperty(property, kind, ListEncoderId.id) else {
         val index = baseEncoderTypes.indexOfFirst { it == this }
-        if (index >= 0) MetaProperty(property, kind, index + FirstEncoderId) else MetaProperty(property, PropertyKind.WithId)
+        if (index >= 0) MetaProperty(property, kind, index + FIRST_ENCODER_ID) else MetaProperty(property, PropertyKind.WithId)
     }
 }
 

@@ -27,7 +27,7 @@ private fun Node.print(print: (String) -> Unit, indent: Int = 0) {
 
 private fun File.forEach(action: (File) -> Unit) = listFiles()!!.filter { ".DS_Store" != it.name }.sorted().forEach(action)
 
-private const val MainSuffix = "Main"
+private const val MAIN_SUFFIX = "Main"
 
 private fun File.createNodes(modules: Set<String>?): DirectoryNode {
     val node = DirectoryNode(".")
@@ -35,8 +35,8 @@ private fun File.createNodes(modules: Set<String>?): DirectoryNode {
         val moduleName = moduleDir.name
         if (modules != null && moduleName !in modules) return@forEach
         File(moduleDir, "src").forEach { targetDir ->
-            check(targetDir.name.endsWith(MainSuffix)) { "target '${targetDir.name}' must end with '$MainSuffix'" }
-            val target = targetDir.name.removeSuffix(MainSuffix)
+            check(targetDir.name.endsWith(MAIN_SUFFIX)) { "target '${targetDir.name}' must end with '$MAIN_SUFFIX'" }
+            val target = targetDir.name.removeSuffix(MAIN_SUFFIX)
 
             fun DirectoryNode.add(directory: File) {
                 directory.forEach { file ->

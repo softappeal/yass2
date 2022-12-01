@@ -76,7 +76,7 @@ private val ReferenceEncoderId = EncoderId(2, object : Encoder(ReferenceType::cl
     override fun read(reader: EncoderReader) = reader.objects[reader.reader.readVarInt()]
 })
 
-public const val FirstEncoderId: Int = 3
+public const val FIRST_ENCODER_ID: Int = 3
 
 /** Supports the following types (including optional variants): `null`, [List], [BaseEncoder] and [ClassEncoder]. */
 public class BinarySerializer(encoders: List<Encoder>) : Serializer {

@@ -24,8 +24,8 @@ import kotlin.coroutines.*
 import kotlin.test.*
 import kotlin.time.*
 
-const val Host = "localhost"
-const val Path = "/yass"
+const val HOST = "localhost"
+const val PATH = "/yass"
 
 class HttpTest {
     @Test
@@ -34,8 +34,8 @@ class HttpTest {
             routing {
                 route(
                     MessageTransport,
-                    Path,
-                    tunnel { currentCoroutineContext()[CallCce]!!.call.request.headers[DemoHeaderKey]!! }
+                    PATH,
+                    tunnel { currentCoroutineContext()[CallCce]!!.call.request.headers[DEMO_HEADER_KEY]!! }
                 )
             }
         }
@@ -44,7 +44,7 @@ class HttpTest {
             runBlocking {
                 val randomPort = engine.resolvedConnectors().first().port
                 HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
-                    client.tunnel(MessageTransport, "http://$Host:$randomPort$Path") { headersOf(DemoHeaderKey, DemoHeaderValue) }
+                    client.tunnel(MessageTransport, "http://$HOST:$randomPort$PATH") { headersOf(DEMO_HEADER_KEY, DEMO_HEADER_VALUE) }
                         .test(100)
                 }
             }
@@ -58,12 +58,12 @@ class HttpTest {
         val engine = embeddedServer(io.ktor.server.cio.CIO, 0) {
             install(io.ktor.server.websocket.WebSockets)
             routing {
-                webSocket(Path) {
+                webSocket(PATH) {
                     receiveLoop(
                         PacketTransport,
                         acceptorSessionFactory {
                             ((connection as WebSocketConnection).session as WebSocketServerSession)
-                                .call.request.headers[DemoHeaderKey]!!
+                                .call.request.headers[DEMO_HEADER_KEY]!!
                         }
                     )
                 }
@@ -76,7 +76,7 @@ class HttpTest {
                 HttpClient(io.ktor.client.engine.cio.CIO) {
                     install(io.ktor.client.plugins.websocket.WebSockets)
                 }.use { client ->
-                    client.ws(HttpMethod.Get, Host, randomPort, Path, { header(DemoHeaderKey, DemoHeaderValue) }) {
+                    client.ws(HttpMethod.Get, HOST, randomPort, PATH, { header(DEMO_HEADER_KEY, DEMO_HEADER_VALUE) }) {
                         receiveLoop(PacketTransport, initiatorSessionFactory(1000))
                     }
                 }
@@ -107,7 +107,7 @@ class HttpTest {
 
                     override suspend fun divide(a: Int, b: Int): Int = error("not needed")
                 }
-                route(transport, Path, ::generatedInvoke.tunnel(listOf(CalculatorId(calculator))))
+                route(transport, PATH, ::generatedInvoke.tunnel(listOf(CalculatorId(calculator))))
             }
         }
         engine.start()
@@ -115,7 +115,7 @@ class HttpTest {
             runBlocking {
                 val randomPort = engine.resolvedConnectors().first().port
                 HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
-                    val clientTunnel = client.tunnel(transport, "http://$Host:$randomPort$Path")
+                    val clientTunnel = client.tunnel(transport, "http://$HOST:$randomPort$PATH")
                     val calculator = generatedRemoteProxyFactory(clientTunnel)(CalculatorId)
                     context = "client"
                     assertEquals(5, calculator.add(2, 3))
