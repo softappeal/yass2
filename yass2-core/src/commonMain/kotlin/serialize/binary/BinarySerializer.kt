@@ -49,6 +49,7 @@ public class EncoderReader internal constructor(internal val reader: Reader, pri
     public fun readNoIdOptional(encoderId: Int): Any? = if (reader.readBoolean()) readNoIdRequired(encoderId) else null
 }
 
+@Suppress("PrivatePropertyName")
 private val NullEncoderId = EncoderId(0, object : Encoder(Unit::class) {
     override fun write(writer: EncoderWriter, value: Any?) {}
     override fun read(reader: EncoderReader): Any? = null
@@ -71,6 +72,7 @@ public val ListEncoderId: EncoderId = EncoderId(1, object : Encoder(List::class)
 
 private class ReferenceType
 
+@Suppress("PrivatePropertyName")
 private val ReferenceEncoderId = EncoderId(2, object : Encoder(ReferenceType::class) {
     override fun write(writer: EncoderWriter, value: Any?) = writer.writer.writeVarInt(value as Int)
     override fun read(reader: EncoderReader) = reader.objects[reader.reader.readVarInt()]

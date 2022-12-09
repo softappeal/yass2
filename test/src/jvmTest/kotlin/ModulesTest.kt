@@ -3,6 +3,7 @@ package ch.softappeal.yass2
 import java.io.*
 import kotlin.test.*
 
+@Suppress("PrivatePropertyName")
 private val Modules = setOf("yass2-core", "yass2-coroutines", "yass2-generate", "yass2-ktor", "yass2-reflect")
 
 private fun printModules(directory: String, modules: Set<String>? = null) = StringBuffer().apply {

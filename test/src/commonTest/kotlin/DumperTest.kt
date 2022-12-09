@@ -51,6 +51,7 @@ open class DumperTest {
     }
 }
 
+@Suppress("PrivatePropertyName")
 private val Output = """
     null
     true
