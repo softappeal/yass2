@@ -43,6 +43,7 @@ allprojects {
             js {
                 moduleName = project.name
                 nodejs()
+                binaries.executable()
             }
         }
 
