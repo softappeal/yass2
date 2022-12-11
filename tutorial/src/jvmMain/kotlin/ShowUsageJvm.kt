@@ -16,13 +16,18 @@ import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import kotlinx.coroutines.*
 
-private const val HOST: String = "localhost"
-private const val PORT: Int = 28947
+public const val HOST: String = "localhost"
+public const val PORT: Int = 28947
 private const val PATH = "/yass"
 
 private fun Application.theModule() {
     install(io.ktor.server.websocket.WebSockets)
     routing {
+        static {
+            files("./") // needed for debugging (sources)
+            files("./build/js/packages/tutorial/kotlin")
+        }
+
         // shows server-side unidirectional remoting with Http
         route(MessageTransport, PATH, ::generatedInvoke.tunnel(Services))
 
@@ -31,9 +36,11 @@ private fun Application.theModule() {
     }
 }
 
+public fun createKtorEngine(): ApplicationEngine = embeddedServer(io.ktor.server.cio.CIO, PORT, module = Application::theModule)
+
 private suspend fun useKtorRemoting() {
     println("*** useKtorRemoting ***")
-    val engine = embeddedServer(io.ktor.server.cio.CIO, PORT, module = Application::theModule)
+    val engine = createKtorEngine()
     engine.start()
     try {
         HttpClient(io.ktor.client.engine.cio.CIO) {
