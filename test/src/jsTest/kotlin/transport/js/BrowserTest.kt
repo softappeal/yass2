@@ -4,8 +4,7 @@ import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.remote.coroutines.session.*
 import kotlinx.coroutines.*
 
-@OptIn(ExperimentalJsExport::class)
-@JsExport
+@OptIn(ExperimentalJsExport::class) @JsExport
 @Suppress("unused")
 fun remoteTest() {
     @OptIn(DelicateCoroutinesApi::class) GlobalScope.launch {
