@@ -5,7 +5,6 @@ import ch.softappeal.yass2.tutorial.contract.*
 import kotlinx.coroutines.*
 
 @OptIn(ExperimentalJsExport::class) @JsExport
-@Suppress("unused")
 public fun showJsUsage() {
     @OptIn(DelicateCoroutinesApi::class) GlobalScope.launch {
         showUsage()
