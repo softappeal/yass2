@@ -7,6 +7,7 @@ include(
     "yass2-generate",
     "yass2-ktor",
     "test",
+    "tutorial-contract",
     "tutorial",
 )
 

@@ -5,9 +5,16 @@ import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.coroutines.session.*
 import ch.softappeal.yass2.serialize.*
 import ch.softappeal.yass2.transport.*
+import ch.softappeal.yass2.transport.session.*
 import ch.softappeal.yass2.tutorial.contract.*
 import ch.softappeal.yass2.tutorial.contract.generated.*
+import ch.softappeal.yass2.tutorial.contract.meta.*
 import kotlinx.coroutines.*
+
+public val PacketSerializer: Serializer = binaryPacketSerializer(MessageSerializer)
+
+public val MessageTransport: Transport = Transport(MessageSerializer, 100)
+public val PacketTransport: Transport = Transport(PacketSerializer, 100)
 
 public val CalculatorImpl: Calculator = object : Calculator {
     override suspend fun add(a: Int, b: Int) = a + b
@@ -56,7 +63,7 @@ public suspend fun showUsage() {
         val calculator = proxyFactory(CalculatorImpl, interceptor)
         useCalculator(calculator)
     }
-    useDumper(dumper(GeneratedDumperProperties, StringBuilder::valueDumper))
+    useDumper(dumper)
     useSerializer(ContractSerializer)
     useInterceptor(GeneratedProxyFactory)
 }

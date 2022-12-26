@@ -4,7 +4,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
 import kotlin.test.*
 
-class TutorialTestJs {
+class TutorialTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun test() = runTest {

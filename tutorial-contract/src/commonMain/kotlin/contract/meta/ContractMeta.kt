@@ -1,12 +1,12 @@
-package ch.softappeal.yass2.tutorial.contract
+package ch.softappeal.yass2.tutorial.contract.meta
 
+import ch.softappeal.yass2.*
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.serialize.*
 import ch.softappeal.yass2.serialize.binary.*
 import ch.softappeal.yass2.transport.*
-import ch.softappeal.yass2.transport.session.*
+import ch.softappeal.yass2.tutorial.contract.*
 import ch.softappeal.yass2.tutorial.contract.generated.*
-import kotlin.reflect.*
 
 // This file describes the needed contract metadata.
 
@@ -18,7 +18,7 @@ private val MyDateEncoder = BaseEncoder(MyDate::class,
 )
 
 /** Define all the base encoders needed by the contract (including enumerations and own base types). */
-public val BaseEncoders: List<BaseEncoder<out Any>> = listOf(
+internal val BaseEncoders = listOf(
     IntEncoder,
     StringEncoder,
     enumEncoder<Gender>(),
@@ -26,30 +26,29 @@ public val BaseEncoders: List<BaseEncoder<out Any>> = listOf(
 )
 
 /** Define all the concrete classes needed by the contract. */
-public val ConcreteClasses: List<KClass<out Any>> = listOf(
+internal val ConcreteClasses = listOf(
     Address::class,
     Person::class,
     DivideByZeroException::class,
     SubClass::class,
 )
 
-/** Define the [ServiceId] for each contract interface. */
-public val CalculatorId: ServiceId<Calculator> = serviceId(1)
-public val NewsListenerId: ServiceId<NewsListener> = serviceId(2)
-
-/** Define all used [ServiceId]. */
-public val ServiceIds: List<ServiceId<out Any>> = listOf(CalculatorId, NewsListenerId)
+public val ContractSerializer: BinarySerializer = generatedBinarySerializer(BaseEncoders)
 
 /** Writes value (without line breaks) if responsible else does nothing. */
-public fun StringBuilder.valueDumper(value: Any) {
+private fun StringBuilder.valueDumper(value: Any) {
     when (value) {
         is MyDate -> append("MyDate(${value.currentTimeMillis})")
     }
 }
 
-public val ContractSerializer: BinarySerializer = generatedBinarySerializer(BaseEncoders)
-public val MessageSerializer: Serializer = binaryMessageSerializer(ContractSerializer)
-public val PacketSerializer: Serializer = binaryPacketSerializer(MessageSerializer)
+public val dumper: Dumper = dumper(GeneratedDumperProperties, StringBuilder::valueDumper)
 
-public val MessageTransport: Transport = Transport(MessageSerializer, 100)
-public val PacketTransport: Transport = Transport(PacketSerializer, 100)
+/** Define the [ServiceId] for each contract interface. */
+public val CalculatorId: ServiceId<Calculator> = serviceId(1)
+public val NewsListenerId: ServiceId<NewsListener> = serviceId(2)
+
+/** Define all used [ServiceId]. */
+internal val ServiceIds = listOf(CalculatorId, NewsListenerId)
+
+public val MessageSerializer: Serializer = binaryMessageSerializer(ContractSerializer)

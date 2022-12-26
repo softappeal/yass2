@@ -209,11 +209,30 @@ project("test") {
     }
 }
 
+val tutorialContractProject = project("tutorial-contract") {
+    kotlin {
+        sourceSets {
+            val commonMain by getting {
+                dependencies {
+                    api(coreProject)
+                }
+            }
+            val jvmTest by getting {
+                dependencies {
+                    implementation(kotlin("test"))
+                    implementation(generateProject)
+                }
+            }
+        }
+    }
+}
+
 project("tutorial") {
     kotlin {
         sourceSets {
             val commonMain by getting {
                 dependencies {
+                    implementation(tutorialContractProject)
                     implementation(coroutinesProject)
                 }
             }
@@ -228,11 +247,6 @@ project("tutorial") {
                     implementation(ktor("client-cio"))
                     implementation(ktor("server-cio"))
                     implementation(ktor("server-websockets"))
-                }
-            }
-            val jvmTest by getting {
-                dependencies {
-                    implementation(generateProject)
                 }
             }
             if (jsTarget) {
