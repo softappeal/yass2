@@ -4,7 +4,7 @@ import kotlin.test.*
 
 class TutorialTest {
     @Test
-    fun tutorial() {
+    fun test() {
         main()
     }
 }

@@ -1,11 +1,10 @@
-package ch.softappeal.yass2.tutorial.contract.meta
+package ch.softappeal.yass2.tutorial.contract
 
 import ch.softappeal.yass2.*
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.serialize.*
 import ch.softappeal.yass2.serialize.binary.*
 import ch.softappeal.yass2.transport.*
-import ch.softappeal.yass2.tutorial.contract.*
 import ch.softappeal.yass2.tutorial.contract.generated.*
 
 // This file describes the needed contract metadata.

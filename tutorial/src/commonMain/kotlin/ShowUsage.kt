@@ -8,7 +8,6 @@ import ch.softappeal.yass2.transport.*
 import ch.softappeal.yass2.transport.session.*
 import ch.softappeal.yass2.tutorial.contract.*
 import ch.softappeal.yass2.tutorial.contract.generated.*
-import ch.softappeal.yass2.tutorial.contract.meta.*
 import kotlinx.coroutines.*
 
 public val PacketSerializer: Serializer = binaryPacketSerializer(MessageSerializer)
