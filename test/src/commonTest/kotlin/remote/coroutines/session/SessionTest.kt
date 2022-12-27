@@ -10,14 +10,14 @@ import kotlinx.coroutines.test.*
 import kotlin.coroutines.*
 import kotlin.test.*
 
-fun tunnel(context: suspend () -> Any): Tunnel = ::generatedInvoke.tunnel(listOf(
+fun tunnel(context: suspend () -> Any): Tunnel = ::generatedInvoke.tunnel(
     CalculatorId(CalculatorImpl),
     EchoId(GeneratedProxyFactory(EchoImpl) { _, _, invocation: SuspendInvocation ->
         println("context<${context()}>")
         invocation()
     }),
     FlowServiceId(FlowServiceImpl)
-))
+)
 
 suspend fun Tunnel.test(iterations: Int): Unit = with(generatedRemoteProxyFactory(this)) {
     val calculator = this(CalculatorId)
@@ -54,7 +54,7 @@ fun CoroutineScope.acceptorSessionFactory(context: suspend Session.() -> Any): S
 
 fun CoroutineScope.initiatorSessionFactory(iterations: Int): SessionFactory = {
     object : Session() {
-        override val serverTunnel = ::generatedInvoke.tunnel(listOf(EchoId(EchoImpl)))
+        override val serverTunnel = ::generatedInvoke.tunnel(EchoId(EchoImpl))
 
         override fun opened() {
             launch {
@@ -131,7 +131,7 @@ class SessionTest {
 
             override suspend fun closed(e: Exception?) = println("session1 closed: $e")
         }
-        val serverTunnel = ::generatedInvoke.tunnel(listOf(EchoId(EchoImpl)))
+        val serverTunnel = ::generatedInvoke.tunnel(EchoId(EchoImpl))
         val session2 = object : Session() {
             override val serverTunnel = serverTunnel
             override suspend fun closed(e: Exception?) = println("session2 closed: $e")
@@ -155,7 +155,7 @@ class SessionTest {
             }
         }
 
-        val serverTunnel = ::generatedInvoke.tunnel(listOf(EchoId(EchoImpl)))
+        val serverTunnel = ::generatedInvoke.tunnel(EchoId(EchoImpl))
         val acceptorSessionFactory = {
             object : Session() {
                 override val serverTunnel = serverTunnel

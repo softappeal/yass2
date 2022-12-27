@@ -20,7 +20,7 @@ public typealias Tunnel = suspend (request: Request) -> Reply
 
 public typealias Invoker = suspend (request: Request, service: Service) -> Any?
 
-public fun Invoker.tunnel(services: Collection<Service>): Tunnel {
+public fun Invoker.tunnel(vararg services: Service): Tunnel {
     val id2service = services.associateBy { it.serviceId.id }
     require(id2service.size == services.size) { "duplicated service id" }
     return { request ->

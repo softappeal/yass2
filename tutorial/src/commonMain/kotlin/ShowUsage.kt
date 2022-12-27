@@ -73,15 +73,11 @@ public suspend fun useServices(tunnel: Tunnel) {
     useCalculator(calculator)
 }
 
-public val Services: List<Service> = listOf(CalculatorId(CalculatorImpl)) // register services
-
 // The following code is only needed if you use session based bidirectional remoting.
 
 public fun CoroutineScope.initiatorSessionFactory(): SessionFactory = {
     object : Session() {
-        override val serverTunnel = ::generatedInvoke.tunnel(listOf(
-            NewsListenerId(NewsListenerImpl) // register service
-        ))
+        override val serverTunnel = ::generatedInvoke.tunnel(NewsListenerId(NewsListenerImpl))
 
         override fun opened() {
             launch {
@@ -99,7 +95,7 @@ public fun CoroutineScope.initiatorSessionFactory(): SessionFactory = {
 
 public fun CoroutineScope.acceptorSessionFactory(): SessionFactory = {
     object : Session() {
-        override val serverTunnel = ::generatedInvoke.tunnel(Services)
+        override val serverTunnel = ::generatedInvoke.tunnel(CalculatorId(CalculatorImpl))
 
         override fun opened() {
             launch {

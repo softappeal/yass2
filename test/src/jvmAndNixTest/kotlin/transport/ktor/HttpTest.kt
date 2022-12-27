@@ -107,7 +107,7 @@ class HttpTest {
 
                     override suspend fun divide(a: Int, b: Int): Int = error("not needed")
                 }
-                route(transport, PATH, ::generatedInvoke.tunnel(listOf(CalculatorId(calculator))))
+                route(transport, PATH, ::generatedInvoke.tunnel(CalculatorId(calculator)))
             }
         }
         engine.start()

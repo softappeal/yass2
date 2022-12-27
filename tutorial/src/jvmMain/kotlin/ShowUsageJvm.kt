@@ -4,6 +4,7 @@ package ch.softappeal.yass2.tutorial
 
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.transport.ktor.*
+import ch.softappeal.yass2.tutorial.contract.*
 import ch.softappeal.yass2.tutorial.contract.generated.*
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
@@ -28,7 +29,7 @@ private fun Application.theModule() {
         }
 
         // shows server-side unidirectional remoting with Http
-        route(MessageTransport, PATH, ::generatedInvoke.tunnel(Services))
+        route(MessageTransport, PATH, ::generatedInvoke.tunnel(CalculatorId(CalculatorImpl)))
 
         // shows server-side session based bidirectional remoting with WebSocket
         webSocket(PATH) { receiveLoop(PacketTransport, acceptorSessionFactory()) }

@@ -12,13 +12,13 @@ open class RemoteTest {
 
     @Test
     fun duplicatedService() = assertFailsMessage<IllegalArgumentException>("duplicated service id") {
-        invoke.tunnel(listOf(EchoId(EchoImpl), EchoId(EchoImpl)))
+        invoke.tunnel(EchoId(EchoImpl), EchoId(EchoImpl))
     }
 
     @Test
     fun missingService() = runTest {
         assertFailsMessage<IllegalStateException>("no service id 1") {
-            remoteProxyFactory(invoke.tunnel(emptyList()))(CalculatorId).add(1, 2)
+            remoteProxyFactory(invoke.tunnel())(CalculatorId).add(1, 2)
         }
     }
 
@@ -53,7 +53,7 @@ open class RemoteTest {
         assertSame(value, ValueReply(value).value)
     }
 
-    private fun remoteProxyFactory() = remoteProxyFactory(invoke.tunnel(listOf(CalculatorId(CalculatorImpl), EchoId(EchoImpl))))
+    private fun remoteProxyFactory() = remoteProxyFactory(invoke.tunnel(CalculatorId(CalculatorImpl), EchoId(EchoImpl)))
 
     @Test
     fun test() = runTest {
