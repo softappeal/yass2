@@ -3,6 +3,7 @@ package ch.softappeal.yass2.generate
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.serialize.binary.*
 import java.io.*
+import java.nio.file.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
 
@@ -32,7 +33,9 @@ internal fun StringBuilder.writeFunctionSignature(indent: String, function: KFun
 public enum class GenerateAction {
     Write {
         override fun execute(filePath: String, code: String) {
-            File(filePath).writeText(code)
+            val file = File(filePath)
+            Files.createDirectories(file.parentFile.toPath())
+            file.writeText(code)
         }
     },
     Verify {
