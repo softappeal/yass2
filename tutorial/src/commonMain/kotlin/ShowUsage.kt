@@ -62,7 +62,7 @@ public suspend fun showUsage() {
         val calculator = proxyFactory(CalculatorImpl, interceptor)
         useCalculator(calculator)
     }
-    useDumper(dumper)
+    useDumper(Dumper)
     useSerializer(ContractSerializer)
     useInterceptor(GeneratedProxyFactory)
 }
