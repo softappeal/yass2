@@ -2,6 +2,7 @@ package ch.softappeal.yass2.remote.coroutines
 
 import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
+import ch.softappeal.yass2.contract.generated.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.*
@@ -19,12 +20,13 @@ private val Range2 = 2000..2020
 private suspend fun test(flow0: Flow<Int>, flow1: Flow<Int>, flow2: Flow<Int>, flow3: Flow<Int>) {
     assertEquals(Range0.toList(), flow0.toList())
 
+    assertEquals(Range1.toList(), flow1.toList())
     class CollectException : RuntimeException()
     assertSuspendFailsWith<CollectException> {
         flow1.collect { throw CollectException() }
     }
 
-    assertSuspendFailsWith<DivideByZeroException> { flow3.collect() }
+    assertSuspendFailsWith<DivideByZeroException> { flow3.toList() }
 
     val counter = AtomicInteger(0)
     coroutineScope {
@@ -43,12 +45,12 @@ private suspend fun test(flow0: Flow<Int>, flow1: Flow<Int>, flow2: Flow<Int>, f
 }
 
 @Suppress("PrivatePropertyName")
-private val TestFlowFactory: FlowFactory = { flowId ->
+private val TestFlowFactory = { flowId: Int ->
     when (flowId) {
         0 -> Range0.asFlow()
         1 -> Range1.asFlow()
         2 -> Range2.asFlow()
-        3 -> flow<Int> { throw DivideByZeroException() }
+        3 -> flow { throw DivideByZeroException() }
         else -> error("unexpected flowId $flowId")
     }
 }
@@ -57,22 +59,22 @@ suspend fun FlowService.test() {
     test(createFlow(0), createFlow(1), createFlow(2), createFlow(3))
 }
 
-val FlowServiceImpl: FlowService = flowService(TestFlowFactory)
+@Suppress("UNCHECKED_CAST") val FlowServiceImpl = flowService(TestFlowFactory as FlowFactory)
 
 class RemoteFlowTest {
     @Test
     fun noService() = runTest {
-        @Suppress("UNCHECKED_CAST")
         test(
-            TestFlowFactory(0) as Flow<Int>,
-            TestFlowFactory(1) as Flow<Int>,
-            TestFlowFactory(2) as Flow<Int>,
-            TestFlowFactory(3) as Flow<Int>,
+            TestFlowFactory(0),
+            TestFlowFactory(1),
+            TestFlowFactory(2),
+            TestFlowFactory(3),
         )
+        assertFailsMessage<Exception>("unexpected flowId 13") { TestFlowFactory(13) }
     }
 
     @Test
     fun withService() = runTest {
-        FlowServiceImpl.test()
+        GeneratedProxyFactory(FlowServiceImpl, Printer).test()
     }
 }

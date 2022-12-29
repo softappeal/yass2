@@ -2,12 +2,14 @@ package ch.softappeal.yass2.tutorial
 
 import ch.softappeal.yass2.*
 import ch.softappeal.yass2.remote.*
+import ch.softappeal.yass2.remote.coroutines.*
 import ch.softappeal.yass2.remote.coroutines.session.*
 import ch.softappeal.yass2.serialize.*
 import ch.softappeal.yass2.transport.*
 import ch.softappeal.yass2.tutorial.contract.*
 import ch.softappeal.yass2.tutorial.contract.generated.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 
 public val CalculatorImpl: Calculator = object : Calculator {
     override suspend fun add(a: Int, b: Int) = a + b
@@ -65,6 +67,21 @@ public suspend fun useServices(tunnel: Tunnel) {
     val remoteProxyFactory = generatedRemoteProxyFactory(tunnel)
     val calculator = remoteProxyFactory(CalculatorId)
     useCalculator(calculator)
+    val flowService = remoteProxyFactory(FlowServiceId)
+    val booleanFlow = flowService.createFlow<Boolean>(BooleanFlowId())
+    println(booleanFlow.toList())
+    val intFlow = flowService.createFlow<Int>(IntFlowId(10))
+    println(intFlow.toList())
+}
+
+public fun flowService(): Service {
+    val flowFactory = { flowId: FlowId ->
+        when (flowId) {
+            is IntFlowId -> (1..flowId.max).asFlow()
+            is BooleanFlowId -> flowOf(false, true)
+        }
+    }
+    @Suppress("UNCHECKED_CAST") return FlowServiceId(flowService(flowFactory as FlowFactory))
 }
 
 // The following code is only needed if you use session based bidirectional remoting.
@@ -89,7 +106,10 @@ public fun CoroutineScope.initiatorSessionFactory(): SessionFactory = {
 
 public fun CoroutineScope.acceptorSessionFactory(): SessionFactory = {
     object : Session() {
-        override val serverTunnel = ::generatedInvoke.tunnel(CalculatorId(CalculatorImpl))
+        override val serverTunnel = ::generatedInvoke.tunnel(
+            CalculatorId(CalculatorImpl),
+            flowService(),
+        )
 
         override fun opened() {
             launch {

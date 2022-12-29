@@ -24,18 +24,19 @@ val MixedImpl = object : Mixed {
     override fun noParametersNoResult() {}
 }
 
-suspend fun ProxyFactory.test(calculatorImpl: Calculator, echoImpl: Echo) {
-    val printer: SuspendInterceptor = { function, parameters, invocation ->
-        print("${function.name} $parameters -> ")
-        try {
-            val result = invocation()
-            println(result)
-            result
-        } catch (e: Exception) {
-            println(e)
-            throw e
-        }
+val Printer: SuspendInterceptor = { function, parameters, invocation ->
+    print("${function.name} $parameters -> ")
+    try {
+        val result = invocation()
+        println(result)
+        result
+    } catch (e: Exception) {
+        println(e)
+        throw e
     }
+}
+
+suspend fun ProxyFactory.test(calculatorImpl: Calculator, echoImpl: Echo) {
     var counter = 0
     var functionName: String? = null
     var params: List<Any?>? = null
@@ -45,7 +46,7 @@ suspend fun ProxyFactory.test(calculatorImpl: Calculator, echoImpl: Echo) {
         params = parameters
         invocation()
     }
-    val interceptor = testInterceptor + printer
+    val interceptor = testInterceptor + Printer
     val calculator = this(calculatorImpl, interceptor)
     val echo = this(echoImpl, interceptor)
     assertEquals(5, calculator.add(2, 3))

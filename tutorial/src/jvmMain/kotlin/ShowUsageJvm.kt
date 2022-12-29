@@ -29,7 +29,10 @@ private fun Application.theModule() {
         }
 
         // shows server-side unidirectional remoting with Http
-        route(MessageTransport, PATH, ::generatedInvoke.tunnel(CalculatorId(CalculatorImpl)))
+        route(MessageTransport, PATH, ::generatedInvoke.tunnel(
+            CalculatorId(CalculatorImpl),
+            flowService(),
+        ))
 
         // shows server-side session based bidirectional remoting with WebSocket
         webSocket(PATH) { receiveLoop(PacketTransport, acceptorSessionFactory()) }

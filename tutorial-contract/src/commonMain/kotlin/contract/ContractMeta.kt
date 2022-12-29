@@ -1,6 +1,7 @@
 package ch.softappeal.yass2.tutorial.contract
 
 import ch.softappeal.yass2.remote.*
+import ch.softappeal.yass2.remote.coroutines.*
 import ch.softappeal.yass2.remote.coroutines.session.*
 import ch.softappeal.yass2.serialize.binary.*
 
@@ -20,9 +21,13 @@ internal fun StringBuilder.valueDumper(value: Any) {
     }
 }
 
-/** Define all the base encoders needed by the contract (including enumerations and own base types). */
+/**
+ * Define all the base encoders needed by the contract (including enumerations and own base types).
+ * [BooleanEncoder] is needed because [BooleanFlowId] returns a `Flow<Boolean>`.
+ */
 internal val BaseEncoders = listOf(
     IntEncoder,
+    BooleanEncoder,
     StringEncoder,
     enumEncoder<Gender>(),
     MyDateEncoder,
@@ -34,15 +39,20 @@ internal val ConcreteClasses = listOf(
     Person::class,
     DivideByZeroException::class,
     SubClass::class,
+    BooleanFlowId::class,
+    IntFlowId::class,
 )
 
-// Define the ServiceId for each contract interface.
-
+/** Define the [ServiceId] for each contract interface. */
 @MustBeImplementedByAcceptor
 public val CalculatorId: ServiceId<Calculator> = serviceId(1)
 
 @MustBeImplementedByInitiator
 public val NewsListenerId: ServiceId<NewsListener> = serviceId(2)
 
+/** Needed for [kotlinx.coroutines.flow.Flow] example. */
+@MustBeImplementedByAcceptor
+public val FlowServiceId: ServiceId<FlowService> = serviceId(3)
+
 /** Define all used [ServiceId]. */
-internal val ServiceIds = listOf(CalculatorId, NewsListenerId)
+internal val ServiceIds = listOf(CalculatorId, NewsListenerId, FlowServiceId)

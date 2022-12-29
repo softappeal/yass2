@@ -17,4 +17,9 @@ public val GeneratedDumperProperties: ch.softappeal.yass2.DumperProperties = ch.
         ch.softappeal.yass2.tutorial.contract.SubClass::baseClassProperty as kotlin.reflect.KProperty1<Any, Any?>,
         ch.softappeal.yass2.tutorial.contract.SubClass::subClassProperty as kotlin.reflect.KProperty1<Any, Any?>,
     ),
+    ch.softappeal.yass2.tutorial.contract.BooleanFlowId::class to listOf(
+    ),
+    ch.softappeal.yass2.tutorial.contract.IntFlowId::class to listOf(
+        ch.softappeal.yass2.tutorial.contract.IntFlowId::max as kotlin.reflect.KProperty1<Any, Any?>,
+    ),
 )

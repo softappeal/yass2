@@ -16,7 +16,7 @@ fun tunnel(context: suspend () -> Any): Tunnel = ::generatedInvoke.tunnel(
         println("context<${context()}>")
         invocation()
     }),
-    FlowServiceId(FlowServiceImpl)
+    FlowServiceId(FlowServiceImpl),
 )
 
 suspend fun Tunnel.test(iterations: Int): Unit = with(generatedRemoteProxyFactory(this)) {

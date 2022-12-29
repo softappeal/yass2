@@ -8,13 +8,13 @@ import kotlinx.coroutines.flow.*
 import kotlin.coroutines.*
 
 /** The used serializer must be able to serialize [Int], the involved flowId and optional [Flow] types. */
-interface FlowService {
-    suspend fun create(flowId: Any): Int
-    suspend fun next(collectId: Int): Any?
-    suspend fun cancel(collectId: Int)
+public interface FlowService {
+    public suspend fun create(flowId: Any): Int
+    public suspend fun next(collectId: Int): Any?
+    public suspend fun cancel(collectId: Int)
 }
 
-fun <T> FlowService.createFlow(flowId: Any): Flow<T> = @OptIn(FlowPreview::class) object : AbstractFlow<T>() {
+public fun <T> FlowService.createFlow(flowId: Any): Flow<T> = @OptIn(FlowPreview::class) object : AbstractFlow<T>() {
     override suspend fun collectSafely(collector: FlowCollector<T>) {
         val collectId = create(flowId)
         try {
@@ -28,22 +28,22 @@ fun <T> FlowService.createFlow(flowId: Any): Flow<T> = @OptIn(FlowPreview::class
     }
 }
 
-typealias FlowFactory = (flowId: Any) -> Flow<*>
+public typealias FlowFactory = (flowId: Any) -> Flow<*>
 
-fun flowService(flowFactory: FlowFactory): FlowService {
+public fun flowService(flowFactory: FlowFactory): FlowService {
     val nextCollectId = AtomicInteger(0)
     val collectId2channel = ThreadSafeMap<Int, Channel<Reply?>>(16)
     return object : FlowService {
         override suspend fun create(flowId: Any): Int {
-            val flow = flowFactory(flowId)
             val collectId = nextCollectId.incrementAndGet()
             val channel = Channel<Reply?>()
             collectId2channel.put(collectId, channel)
             try {
+                val flow = flowFactory(flowId)
                 CoroutineScope(coroutineContext).launch {
                     tryFinally({
                         try {
-                            flow.collect { value -> channel.send(ValueReply(value)) }
+                            flow.collect { channel.send(ValueReply(it)) }
                             channel.send(null)
                         } catch (e: Exception) {
                             channel.send(ExceptionReply(e))

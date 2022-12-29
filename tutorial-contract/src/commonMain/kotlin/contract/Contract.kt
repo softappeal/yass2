@@ -53,6 +53,11 @@ public class SubClass(
     public val subClassProperty: String,
 ) : BaseClass()
 
+/** Needed for [kotlinx.coroutines.flow.Flow] example. */
+public sealed class FlowId
+@Suppress("CanSealedSubClassBeObject") public class BooleanFlowId : FlowId()
+public class IntFlowId(public val max: Int) : FlowId()
+
 /**
  * All functions must be suspendable because they need IO.
  * Overloading is not allowed.
