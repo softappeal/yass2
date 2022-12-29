@@ -214,7 +214,7 @@ val tutorialContractProject = project("tutorial-contract") {
         sourceSets {
             val commonMain by getting {
                 dependencies {
-                    api(coreProject)
+                    api(coroutinesProject)
                 }
             }
             val jvmTest by getting {
@@ -233,7 +233,6 @@ project("tutorial") {
             val commonMain by getting {
                 dependencies {
                     implementation(tutorialContractProject)
-                    implementation(coroutinesProject)
                 }
             }
             val commonTest by getting {
