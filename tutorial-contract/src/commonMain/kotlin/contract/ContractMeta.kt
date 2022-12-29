@@ -1,6 +1,7 @@
 package ch.softappeal.yass2.tutorial.contract
 
 import ch.softappeal.yass2.remote.*
+import ch.softappeal.yass2.remote.coroutines.session.*
 import ch.softappeal.yass2.serialize.binary.*
 
 // This file describes the needed contract metadata.
@@ -35,8 +36,12 @@ internal val ConcreteClasses = listOf(
     SubClass::class,
 )
 
-/** Define the [ServiceId] for each contract interface. */
+// Define the ServiceId for each contract interface.
+
+@MustBeImplementedByAcceptor
 public val CalculatorId: ServiceId<Calculator> = serviceId(1)
+
+@MustBeImplementedByInitiator
 public val NewsListenerId: ServiceId<NewsListener> = serviceId(2)
 
 /** Define all used [ServiceId]. */

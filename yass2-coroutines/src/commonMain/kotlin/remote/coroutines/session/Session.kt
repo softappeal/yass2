@@ -114,3 +114,13 @@ public suspend fun Connection.receiveLoop(sessionFactory: SessionFactory, receiv
         session.close(e)
     }
 }
+
+@Target(AnnotationTarget.PROPERTY)
+@MustBeDocumented
+/** Documents a [ServiceId] that must be implemented by initiator. */
+public annotation class MustBeImplementedByInitiator
+
+@Target(AnnotationTarget.PROPERTY)
+@MustBeDocumented
+/** Documents a [ServiceId] that must be implemented by acceptor. */
+public annotation class MustBeImplementedByAcceptor
