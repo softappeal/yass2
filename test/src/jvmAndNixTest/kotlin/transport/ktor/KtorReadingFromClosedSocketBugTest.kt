@@ -34,7 +34,7 @@ class KtorReadingFromClosedSocketBugTest {
                 try {
                     println("trying to read from clientReadChannel")
                     clientReadChannel.readByte()
-                    println("reading from clientReadChannel succeeded^")
+                    println("reading from clientReadChannel succeeded")
                 } catch (e: Exception) {
                     println("reading from clientReadChannel failed")
                 }
