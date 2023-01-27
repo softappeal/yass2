@@ -219,15 +219,15 @@ val tutorialContractProject = project("tutorial-contract") {
             }
             val jvmTest by getting {
                 dependencies {
-                    implementation(kotlin("test"))
                     implementation(generateProject)
+                    implementation(kotlin("test"))
                 }
             }
         }
     }
 }
 
-project("tutorial") {
+project("tutorial-app") {
     kotlin {
         sourceSets {
             val commonMain by getting {

@@ -8,7 +8,7 @@ include(
     "yass2-ktor",
     "test",
     "tutorial-contract",
-    "tutorial",
+    "tutorial-app",
 )
 
 pluginManagement {

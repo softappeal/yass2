@@ -25,7 +25,7 @@ private fun Application.theModule() {
     routing {
         static {
             files("./") // needed for debugging (sources)
-            files("./build/js/packages/tutorial/kotlin")
+            files("./build/js/packages/tutorial-app/kotlin")
         }
 
         // shows server-side unidirectional remoting with Http
