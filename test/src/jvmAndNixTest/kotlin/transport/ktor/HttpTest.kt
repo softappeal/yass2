@@ -24,7 +24,7 @@ import kotlin.coroutines.*
 import kotlin.test.*
 import kotlin.time.*
 
-const val HOST = "localhost"
+const val LOCAL_HOST = "localhost"
 const val PATH = "/yass"
 
 class HttpTest {
@@ -44,7 +44,7 @@ class HttpTest {
             runBlocking {
                 val randomPort = engine.resolvedConnectors().first().port
                 HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
-                    client.tunnel(MessageTransport, "http://$HOST:$randomPort$PATH") { headersOf(DEMO_HEADER_KEY, DEMO_HEADER_VALUE) }
+                    client.tunnel(MessageTransport, "http://$LOCAL_HOST:$randomPort$PATH") { headersOf(DEMO_HEADER_KEY, DEMO_HEADER_VALUE) }
                         .test(100)
                 }
             }
@@ -76,7 +76,7 @@ class HttpTest {
                 HttpClient(io.ktor.client.engine.cio.CIO) {
                     install(io.ktor.client.plugins.websocket.WebSockets)
                 }.use { client ->
-                    client.ws(HttpMethod.Get, HOST, randomPort, PATH, { header(DEMO_HEADER_KEY, DEMO_HEADER_VALUE) }) {
+                    client.ws("ws://$LOCAL_HOST:$randomPort$PATH", { header(DEMO_HEADER_KEY, DEMO_HEADER_VALUE) }) {
                         receiveLoop(PacketTransport, initiatorSessionFactory(1000))
                     }
                 }
@@ -115,7 +115,7 @@ class HttpTest {
             runBlocking {
                 val randomPort = engine.resolvedConnectors().first().port
                 HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
-                    val clientTunnel = client.tunnel(transport, "http://$HOST:$randomPort$PATH")
+                    val clientTunnel = client.tunnel(transport, "http://$LOCAL_HOST:$randomPort$PATH")
                     val calculator = generatedRemoteProxyFactory(clientTunnel)(CalculatorId)
                     context = "client"
                     assertEquals(5, calculator.add(2, 3))

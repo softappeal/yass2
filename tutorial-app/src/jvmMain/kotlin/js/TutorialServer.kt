@@ -5,7 +5,7 @@ package ch.softappeal.yass2.tutorial.js
 import ch.softappeal.yass2.tutorial.*
 
 public fun main() {
-    println("http://$HOST:$PORT/index.html")
+    println("http://$LOCAL_HOST:$PORT/index.html")
     createKtorEngine()
         .start(wait = true)
 }

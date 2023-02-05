@@ -16,7 +16,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import kotlinx.coroutines.*
 
-public const val HOST: String = "localhost"
+public const val LOCAL_HOST: String = "localhost"
 public const val PORT: Int = 28947
 private const val PATH = "/yass"
 
@@ -50,10 +50,10 @@ private suspend fun useKtorRemoting() {
             install(io.ktor.client.plugins.websocket.WebSockets)
         }.use { client ->
             // shows client-side unidirectional remoting with Http
-            useServices(client.tunnel(MessageTransport, "http://$HOST:$PORT$PATH"))
+            useServices(client.tunnel(MessageTransport, "http://$LOCAL_HOST:$PORT$PATH"))
 
             // shows client-side session based bidirectional remoting with WebSocket
-            client.ws(HttpMethod.Get, HOST, PORT, PATH) { receiveLoop(PacketTransport, initiatorSessionFactory()) }
+            client.ws("ws://$LOCAL_HOST:$PORT$PATH") { receiveLoop(PacketTransport, initiatorSessionFactory()) }
         }
     } finally {
         engine.stop()

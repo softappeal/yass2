@@ -6,63 +6,76 @@ import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
-import kotlin.coroutines.*
-import kotlin.random.*
 import kotlin.test.*
 
-private fun createRandomAddress() = InetSocketAddress(HOST, Random.nextInt(2_000..65_000))
+private fun runServer(block: suspend CoroutineScope.(tcp: TcpSocketBuilder, serverSocket: ServerSocket) -> Unit) {
+    SelectorManager().use { selector ->
+        val tcp = aSocket(selector).tcp()
+        tcp.bind().use { serverSocket ->
+            runBlocking { block(tcp, serverSocket) }
+        }
+    }
+}
 
-/** see [KtorReadingFromClosedSocketBugTest] */
-@Ignore // TODO: runs yet only on JVM due to ktor bug
 class SocketTest {
     @Test
-    fun socketTest() {
-        val address = createRandomAddress()
-        val tcp = aSocket(SelectorManager(EmptyCoroutineContext)).tcp()
-        tcp.bind(address).use { serverSocket ->
-            runBlocking {
-                val listenerJob = launch {
-                    val serverTunnel = tunnel { currentCoroutineContext()[SocketCce]!!.socket.remoteAddress }
-                    while (true) {
-                        val socket = serverSocket.accept()
-                        launch {
-                            socket.handleRequest(MessageTransport, serverTunnel)
-                        }
+    fun closeSocket() {
+        runServer { tcp, serverSocket ->
+            val acceptedSocket = async { serverSocket.accept() }
+            val clientSocket = tcp.connect(serverSocket.localAddress)
+            assertFalse(acceptedSocket.await().isClosed)
+            val clientByte = async { clientSocket.openReadChannel().readByte() }
+            assertTrue(clientByte.isActive)
+            assertFalse(clientSocket.isClosed)
+            // the following line closes clientSocket on jvm and native,
+            // see https://youtrack.jetbrains.com/issue/KTOR-5093/Native-Read-from-a-closed-socket-doesnt-throw-an-exception
+            (clientSocket as CoroutineScope).cancel() // TODO: remove cast if this is fixed in Ktor
+            assertFailsWith<CancellationException> { clientByte.await() }
+            assertTrue(clientSocket.isClosed)
+        }
+    }
+
+    @Test
+    fun socket() {
+        runServer { tcp, serverSocket ->
+            val listenerJob = launch {
+                val serverTunnel = tunnel { currentCoroutineContext()[SocketCce]!!.socket.remoteAddress }
+                while (true) {
+                    val socket = serverSocket.accept()
+                    launch {
+                        socket.handleRequest(MessageTransport, serverTunnel)
                     }
                 }
-                try {
-                    val clientTunnel = MessageTransport.socketTunnel { tcp.connect(address) }
-                    clientTunnel.test(100)
-                } finally {
-                    listenerJob.cancel()
-                }
+            }
+            try {
+                val clientTunnel = MessageTransport.socketTunnel { tcp.connect(serverSocket.localAddress) }
+                clientTunnel.test(100)
+            } finally {
+                listenerJob.cancel()
             }
         }
     }
 
     @Test
     fun socketSession() {
-        val address = createRandomAddress()
-        val tcp = aSocket(SelectorManager(EmptyCoroutineContext)).tcp()
-        tcp.bind(address).use { serverSocket ->
-            runBlocking {
-                val acceptorJob = launch {
-                    while (true) {
-                        val socket = serverSocket.accept()
-                        launch {
-                            socket.receiveLoop(
-                                PacketTransport,
-                                acceptorSessionFactory { (connection as SocketConnection).socket.remoteAddress }
-                            )
-                        }
+        runServer { tcp, serverSocket ->
+            val acceptorJob = launch {
+                while (true) {
+                    val socket = serverSocket.accept()
+                    launch {
+                        socket.receiveLoop(
+                            PacketTransport,
+                            acceptorSessionFactory { (connection as SocketConnection).socket.remoteAddress }
+                        )
                     }
                 }
-                try {
-                    tcp.connect(address)
-                        .receiveLoop(PacketTransport, initiatorSessionFactory(1000))
-                } finally {
-                    acceptorJob.cancel()
-                }
+            }
+            try {
+                tcp.connect(serverSocket.localAddress)
+                    .receiveLoop(PacketTransport, initiatorSessionFactory(1000))
+            } finally {
+                delay(100) // give some time for closing of socket
+                acceptorJob.cancel()
             }
         }
     }

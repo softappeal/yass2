@@ -36,6 +36,6 @@ private fun Application.theModule() {
 
 fun main() {
     val port = 28947
-    println("http://$HOST:$port/index.html")
+    println("http://$LOCAL_HOST:$port/index.html")
     embeddedServer(CIO, port, module = Application::theModule).start(wait = true)
 }

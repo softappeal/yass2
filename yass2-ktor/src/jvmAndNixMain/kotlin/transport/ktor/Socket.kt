@@ -46,7 +46,11 @@ public class SocketConnection internal constructor(
         writeChannel.flush()
     }
 
-    override suspend fun closed(): Unit = socket.close()
+    override suspend fun closed() {
+        // the following line closes socket on jvm and native,
+        // see https://youtrack.jetbrains.com/issue/KTOR-5093/Native-Read-from-a-closed-socket-doesnt-throw-an-exception
+        (socket as CoroutineScope).cancel() // TODO: remove cast if this is fixed in Ktor
+    }
 }
 
 public suspend fun Socket.receiveLoop(transport: Transport, sessionFactory: SessionFactory): Unit = use {
