@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17.0.5_8-jre-jammy
+FROM eclipse-temurin:17.0.6_10-jre-jammy
 
 COPY  . /project
 WORKDIR /project
