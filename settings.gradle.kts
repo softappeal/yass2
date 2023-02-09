@@ -1,3 +1,13 @@
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    plugins {
+        kotlin("multiplatform").version(extra["kotlin.version"] as String)
+    }
+}
+
 rootProject.name = "yass2"
 
 include(
@@ -10,9 +20,3 @@ include(
     "tutorial-contract",
     "tutorial-app",
 )
-
-pluginManagement {
-    plugins {
-        kotlin("multiplatform").version(extra["kotlin.version"] as String)
-    }
-}
