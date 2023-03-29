@@ -1,6 +1,7 @@
 package ch.softappeal.yass2
 
-import java.io.*
+import java.nio.file.*
+import kotlin.io.path.*
 
 private sealed class Node(val name: String)
 
@@ -13,43 +14,42 @@ private class DirectoryNode(name: String) : Node(name) {
     val name2node = mutableMapOf<String, Node>()
 }
 
-private fun Node.print(print: (String) -> Unit, indent: Int = 0) {
-    print("    ".repeat(indent))
-    print("- $name ")
+private fun Node.print(indent: Int = 0) {
+    print("${"    ".repeat(indent)}- $name ")
     when (this) {
-        is FileNode -> print("`${targets.sorted()}`\n")
+        is FileNode -> println("`${targets.sorted()}`")
         is DirectoryNode -> {
-            print("`${module ?: "<no-module>"}`\n")
-            name2node.values.sortedBy(Node::name).forEach { it.print(print, indent + 1) }
+            println("`${module ?: "<no-module>"}`")
+            name2node.values.sortedBy(Node::name).forEach { it.print(indent + 1) }
         }
     }
 }
 
-private fun File.forEach(action: (File) -> Unit) = listFiles()!!.filter { ".DS_Store" != it.name }.sorted().forEach(action)
-
 private const val MAIN_SUFFIX = "Main"
 
-private fun File.createNodes(modules: Set<String>?): DirectoryNode {
+private fun Path.forEachPath(action: (Path) -> Unit) = Files.newDirectoryStream(this).filter { ".DS_Store" != it.name }.sorted().forEach(action)
+
+private fun Path.createNodes(modules: Set<String>?): DirectoryNode {
     val node = DirectoryNode(".")
-    forEach { moduleDir ->
+    forEachPath { moduleDir ->
         val moduleName = moduleDir.name
-        if (modules != null && moduleName !in modules) return@forEach
-        File(moduleDir, "src").forEach { targetDir ->
+        if (modules != null && moduleName !in modules) return@forEachPath
+        moduleDir.resolve("src").forEachPath { targetDir ->
             check(targetDir.name.endsWith(MAIN_SUFFIX)) { "target '${targetDir.name}' must end with '$MAIN_SUFFIX'" }
             val target = targetDir.name.removeSuffix(MAIN_SUFFIX)
 
-            fun DirectoryNode.add(directory: File) {
-                directory.forEach { file ->
+            fun DirectoryNode.add(directory: Path) {
+                directory.forEachPath { file ->
                     fun checkSplitPackage() {
                         check(module == moduleName) {
-                            "modules '$module' and '$moduleName' have split package '${targetDir.toPath().relativize(file.toPath()).toString().replace('\\', '/')}'"
+                            "modules '$module' and '$moduleName' have split package '${targetDir.relativize(file).toString().replace('\\', '/')}'"
                         }
                     }
 
                     val name = file.name
                     when (val found = name2node[name]) {
                         null -> {
-                            if (file.isFile) {
+                            if (file.isRegularFile()) {
                                 if (module == null) module = moduleName
                                 checkSplitPackage()
                                 name2node[name] = FileNode(name, target)
@@ -68,12 +68,10 @@ private fun File.createNodes(modules: Set<String>?): DirectoryNode {
                 }
             }
 
-            node.add(File(targetDir, "kotlin"))
+            node.add(targetDir.resolve("kotlin"))
         }
     }
     return node
 }
 
-fun printModules(modules: Set<String>?, directory: String, print: (String) -> Unit) {
-    File(directory).createNodes(modules).print(print)
-}
+fun Path.printModules(modules: Set<String>? = null) = createNodes(modules).print()

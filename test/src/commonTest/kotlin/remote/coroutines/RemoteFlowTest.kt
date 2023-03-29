@@ -8,13 +8,8 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.*
 import kotlin.test.*
 
-@Suppress("PrivatePropertyName")
 private val Range0 = 1..2
-
-@Suppress("PrivatePropertyName")
 private val Range1 = 1..10
-
-@Suppress("PrivatePropertyName")
 private val Range2 = 2000..2020
 
 private suspend fun test(flow0: Flow<Int>, flow1: Flow<Int>, flow2: Flow<Int>, flow3: Flow<Int>) {
@@ -44,7 +39,6 @@ private suspend fun test(flow0: Flow<Int>, flow1: Flow<Int>, flow2: Flow<Int>, f
     assertEquals(5, counter.incrementAndGet())
 }
 
-@Suppress("PrivatePropertyName")
 private val TestFlowFactory = { flowId: Int ->
     when (flowId) {
         0 -> Range0.asFlow()

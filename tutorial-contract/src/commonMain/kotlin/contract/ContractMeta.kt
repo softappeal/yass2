@@ -7,7 +7,6 @@ import ch.softappeal.yass2.serialize.binary.*
 
 // This file describes the needed contract metadata.
 
-@Suppress("PrivatePropertyName")
 // Shows how to implement an own base type encoder.
 private val MyDateEncoder = BaseEncoder(MyDate::class,
     { writer, value -> writer.writeLong(value.currentTimeMillis) },

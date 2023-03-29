@@ -12,33 +12,46 @@ import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.network.selector.*
-import io.ktor.network.sockets.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
-import kotlin.coroutines.*
 import kotlin.test.*
-import kotlin.time.*
 
 const val LOCAL_HOST = "localhost"
 const val PATH = "/yass"
 
+private fun Application.httpModule() {
+    routing {
+        route(
+            MessageTransport,
+            PATH,
+            tunnel { currentCoroutineContext()[CallCce]!!.call.request.headers[DEMO_HEADER_KEY]!! }
+        )
+    }
+}
+
+private fun Application.webSocketModule() {
+    install(io.ktor.server.websocket.WebSockets)
+    routing {
+        webSocket(PATH) {
+            receiveLoop(
+                PacketTransport,
+                acceptorSessionFactory {
+                    ((connection as WebSocketConnection).session as WebSocketServerSession)
+                        .call.request.headers[DEMO_HEADER_KEY]!!
+                }
+            )
+        }
+    }
+}
+
 class HttpTest {
     @Test
     fun http() {
-        val engine = embeddedServer(io.ktor.server.cio.CIO, 0) {
-            routing {
-                route(
-                    MessageTransport,
-                    PATH,
-                    tunnel { currentCoroutineContext()[CallCce]!!.call.request.headers[DEMO_HEADER_KEY]!! }
-                )
-            }
-        }
+        val engine = embeddedServer(io.ktor.server.cio.CIO, 0, module = Application::httpModule)
         engine.start()
         try {
             runBlocking {
@@ -55,20 +68,7 @@ class HttpTest {
 
     @Test
     fun webSocket() {
-        val engine = embeddedServer(io.ktor.server.cio.CIO, 0) {
-            install(io.ktor.server.websocket.WebSockets)
-            routing {
-                webSocket(PATH) {
-                    receiveLoop(
-                        PacketTransport,
-                        acceptorSessionFactory {
-                            ((connection as WebSocketConnection).session as WebSocketServerSession)
-                                .call.request.headers[DEMO_HEADER_KEY]!!
-                        }
-                    )
-                }
-            }
-        }
+        val engine = embeddedServer(io.ktor.server.cio.CIO, 0, module = Application::webSocketModule)
         engine.start()
         try {
             runBlocking {
@@ -86,6 +86,7 @@ class HttpTest {
         }
     }
 
+    @Suppress("ExtractKtorModule")
     @Test
     fun context() {
         var context: String? = null

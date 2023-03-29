@@ -1,11 +1,12 @@
 package ch.softappeal.yass2.contract
 
 import ch.softappeal.yass2.generate.*
+import kotlin.io.path.*
 import kotlin.test.*
 
 private fun generate(fileName: String, code: String) {
     GenerateAction.Verify.execute(
-        "src/commonTest/kotlin/contract/generated/$fileName",
+        Path("src/commonTest/kotlin/contract/generated/$fileName"),
         "package ch.softappeal.yass2.contract.generated\n\n$code",
     )
 }
