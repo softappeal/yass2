@@ -10,7 +10,7 @@ import io.ktor.http.content.*
 import io.ktor.utils.io.*
 
 internal fun Transport.write(message: Message): OutgoingContent.WriteChannelContent {
-    val writer = writer()
+    val writer = createWriter()
     write(writer, message)
     return object : OutgoingContent.WriteChannelContent() {
         override suspend fun writeTo(channel: ByteWriteChannel) = channel.writeFully(writer.buffer, 0, writer.current)

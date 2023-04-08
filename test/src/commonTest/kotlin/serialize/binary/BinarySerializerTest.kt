@@ -192,12 +192,10 @@ open class BinarySerializerTest {
 
     @Test
     fun performance() {
-        val buffer = ByteArray(1000)
         performance(100_000) {
-            val writer = BytesWriter(buffer)
+            val writer = BytesWriter(1000)
             serializer.write(writer, ManyPropertiesConst)
-            assertSame(buffer, writer.buffer)
-            (serializer.read(BytesReader(buffer)) as ManyProperties).assertManyProperties()
+            (serializer.read(BytesReader(writer.buffer)) as ManyProperties).assertManyProperties()
         }
     }
 }

@@ -13,9 +13,9 @@ public fun Transport.connect(url: String, sessionFactory: SessionFactory) {
             val session = sessionFactory()
             session.connection = object : Connection {
                 override suspend fun write(packet: Packet?) {
-                    val writer = writer()
+                    val writer = createWriter()
                     write(writer, packet)
-                    val data = (writer.buffer.asDynamic()).subarray(0, writer.current)
+                    val data = writer.buffer.asDynamic().subarray(0, writer.current)
                     send(@Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE") (data as ArrayBufferView))
                 }
 

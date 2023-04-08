@@ -12,7 +12,7 @@ public class Transport(
         require(maxReadBytesInitialSize > 0)
     }
 
-    public fun writer(): BytesWriter = BytesWriter(initialWriterCapacity)
+    public fun createWriter(): BytesWriter = BytesWriter(initialWriterCapacity)
 
     public suspend fun readBytes(
         length: Int, readBytes: suspend (bytes: ByteArray, offset: Int, length: Int) -> Unit,

@@ -8,7 +8,7 @@ import org.khronos.webgl.*
 import org.w3c.fetch.*
 
 public fun Transport.tunnel(url: String): Tunnel = { request ->
-    val writer = writer()
+    val writer = createWriter()
     write(writer, request)
     val response = window.fetch(url, object : RequestInit {
         override var method: String? = "POST"

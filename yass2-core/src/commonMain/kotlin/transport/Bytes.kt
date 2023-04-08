@@ -2,10 +2,8 @@ package ch.softappeal.yass2.transport
 
 import ch.softappeal.yass2.serialize.*
 
-public class BytesWriter(initialBuffer: ByteArray) : Writer {
-    public constructor(initialCapacity: Int) : this(ByteArray(initialCapacity))
-
-    public var buffer: ByteArray = initialBuffer
+public class BytesWriter(initialCapacity: Int) : Writer {
+    public var buffer: ByteArray = ByteArray(initialCapacity)
         private set
 
     public var current: Int = 0
@@ -31,13 +29,13 @@ public class BytesReader(private val buffer: ByteArray) : Reader {
     public val isDrained: Boolean get() = current >= buffer.size
 
     override fun readByte(): Byte {
-        check(current < buffer.size)
+        require(current < buffer.size)
         return buffer[current++]
     }
 
     override fun readBytes(length: Int): ByteArray {
         val newCurrent = current + length
-        check(newCurrent <= buffer.size)
+        require(newCurrent <= buffer.size)
         return ByteArray(length).apply {
             buffer.copyInto(this, 0, current, newCurrent)
             current = newCurrent

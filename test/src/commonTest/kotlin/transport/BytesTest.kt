@@ -43,12 +43,12 @@ class BytesTest {
             assertEquals(2, current)
             assertEquals(0, readBytes(0).size)
             assertEquals(2, current)
-            assertFailsWith<IllegalStateException> { readBytes(3) }
+            assertFailsWith<IllegalArgumentException> { readBytes(3) }
             assertEquals(2, current)
             assertEquals(byteArrayOf(1, 2).toList(), readBytes(2).toList())
             assertEquals(4, current)
             assertTrue(isDrained)
-            assertFailsWith<IllegalStateException> { readByte() }
+            assertFailsWith<IllegalArgumentException> { readByte() }
             assertEquals(4, current)
         }
         writer = BytesWriter(0)

@@ -8,14 +8,14 @@ class Utf8Test {
     @Test
     fun test() {
         fun check(s: String, vararg bytes: Int) {
-            val buffer = ByteArray(s.utf8Length())
-            with(BytesWriter(buffer)) {
+            val writer = BytesWriter(s.utf8Length())
+            with(writer) {
                 toUtf8(s)
                 assertEquals(buffer.size, current)
                 assertEquals(current, bytes.size)
                 checkTail(*bytes)
             }
-            with(BytesReader(buffer)) {
+            with(BytesReader(writer.buffer)) {
                 val s2 = fromUtf8(bytes.size)
                 assertTrue(isDrained)
                 assertEquals(s, s2)

@@ -9,7 +9,7 @@ class TransportTest {
     fun testReadBytes() = runTest {
         val transport = Transport(ContractSerializer, 50, 100)
 
-        assertEquals(50, transport.writer().buffer.size)
+        assertEquals(50, transport.createWriter().buffer.size)
 
         class Step(val size: Int, val offset: Int, val length: Int)
 

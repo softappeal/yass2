@@ -4,7 +4,7 @@ import ch.softappeal.yass2.transport.*
 import io.ktor.utils.io.*
 
 internal suspend fun ByteWriteChannel.write(transport: Transport, value: Any?) {
-    val writer = transport.writer()
+    val writer = transport.createWriter()
     transport.write(writer, value)
     writeInt(writer.current)
     writeFully(writer.buffer, 0, writer.current)

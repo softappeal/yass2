@@ -9,7 +9,7 @@ public class WebSocketConnection internal constructor(
     public val session: WebSocketSession,
 ) : Connection {
     override suspend fun write(packet: Packet?) {
-        val writer = transport.writer()
+        val writer = transport.createWriter()
         transport.write(writer, packet)
         session.outgoing.send(Frame.Binary(true, writer.buffer.copyOfRange(0, writer.current)))
     }
