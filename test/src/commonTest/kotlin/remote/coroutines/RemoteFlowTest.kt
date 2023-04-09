@@ -55,6 +55,7 @@ suspend fun FlowService.test() {
 
 @Suppress("UNCHECKED_CAST") val FlowServiceImpl = flowService(TestFlowFactory as FlowFactory)
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class RemoteFlowTest {
     @Test
     fun noService() = runTest {

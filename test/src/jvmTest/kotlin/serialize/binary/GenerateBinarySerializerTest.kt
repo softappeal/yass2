@@ -9,7 +9,7 @@ import kotlin.test.*
 
 class GenerateBinarySerializerTest {
     @Test
-    fun enumClass() = assertFailsMessage<IllegalArgumentException>("type 'class ch.softappeal.yass2.serialize.binary.Color' is enum") {
+    fun enumClass() = assertFailsMessage<IllegalArgumentException>("type 'class ch.softappeal.yass2.Color' is enum") {
         generateBinarySerializer(listOf(), listOf(Color::class))
     }
 

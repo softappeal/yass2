@@ -3,7 +3,7 @@ package ch.softappeal.yass2.serialize.binary
 import ch.softappeal.yass2.transport.*
 import kotlin.test.*
 
-enum class Color { Red, Green }
+private enum class Color { Red, Green }
 
 class BaseEncodersTest {
     @Test

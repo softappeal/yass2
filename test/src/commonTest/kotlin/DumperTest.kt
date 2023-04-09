@@ -5,6 +5,8 @@ import ch.softappeal.yass2.contract.generated.*
 import ch.softappeal.yass2.serialize.binary.*
 import kotlin.test.*
 
+enum class Color { Green }
+
 open class DumperTest {
     protected open val properties = GeneratedDumperProperties
 

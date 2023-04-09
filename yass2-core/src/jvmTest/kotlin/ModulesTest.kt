@@ -19,6 +19,9 @@ private fun assertModules(expected: String, directory: String, modules: Set<Stri
     assertEquals((expected + "\n").trimIndent(), bytes.toString(charset))
 }
 
+private inline fun <reified T : Throwable> assertFailsMessage(expectedMessage: String, block: () -> Unit) =
+    assertEquals(expectedMessage, assertFailsWith(T::class, block).message)
+
 class ModulesTest {
     @Test
     fun test() {
@@ -26,7 +29,7 @@ class ModulesTest {
     }
 
     @Test
-    fun notMain() = assertFailsMessage<IllegalStateException>("target 'testTest' must end with 'Main'") {
+    fun notMain() = assertFailsMessage<IllegalStateException>("target 'testWrong' must end with 'Main'") {
         Path("src/jvmTest/resources/notMain").printModules()
     }
 

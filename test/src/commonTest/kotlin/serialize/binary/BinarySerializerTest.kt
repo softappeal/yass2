@@ -6,6 +6,10 @@ import ch.softappeal.yass2.serialize.*
 import ch.softappeal.yass2.transport.*
 import kotlin.test.*
 
+private fun BytesWriter.checkTail(vararg bytes: Int) {
+    assertEquals(bytes.map { it.toByte() }, buffer.copyOfRange(current - bytes.size, current).toList())
+}
+
 private fun <T> Serializer.copy(value: T, bytes: IntArray): T {
     val writer = BytesWriter(1000)
     with(writer) {
@@ -15,7 +19,7 @@ private fun <T> Serializer.copy(value: T, bytes: IntArray): T {
     }
     return with(BytesReader(writer.buffer)) {
         @Suppress("UNCHECKED_CAST") val result = read(this) as T
-        assertEquals(bytes.size, current)
+        assertEquals(bytes.size, internalCurrent(this))
         result
     }
 }
@@ -192,10 +196,39 @@ open class BinarySerializerTest {
 
     @Test
     fun performance() {
+        class WriterReader : Writer, Reader {
+            private val buffer = ByteArray(1000)
+            var current: Int = 0
+
+            override fun writeByte(byte: Byte) {
+                buffer[current++] = byte
+            }
+
+            override fun writeBytes(bytes: ByteArray) {
+                val newCurrent = current + bytes.size
+                bytes.copyInto(buffer, current)
+                current = newCurrent
+            }
+
+            override fun readByte(): Byte {
+                return buffer[current++]
+            }
+
+            override fun readBytes(length: Int): ByteArray {
+                val newCurrent = current + length
+                return ByteArray(length).apply {
+                    buffer.copyInto(this, 0, current, newCurrent)
+                    current = newCurrent
+                }
+            }
+        }
+
+        val writerReader = WriterReader()
         performance(100_000) {
-            val writer = BytesWriter(1000)
-            serializer.write(writer, ManyPropertiesConst)
-            (serializer.read(BytesReader(writer.buffer)) as ManyProperties).assertManyProperties()
+            writerReader.current = 0
+            serializer.write(writerReader, ManyPropertiesConst)
+            writerReader.current = 0
+            (serializer.read(writerReader) as ManyProperties).assertManyProperties()
         }
     }
 }

@@ -26,6 +26,7 @@ private fun Node.print(indent: Int = 0) {
 }
 
 private const val MAIN_SUFFIX = "Main"
+private const val TEST_SUFFIX = "Test"
 
 private fun Path.forEachPath(action: (Path) -> Unit) = Files.newDirectoryStream(this).filter { ".DS_Store" != it.name }.sorted().forEach(action)
 
@@ -34,7 +35,8 @@ private fun Path.createNodes(modules: Set<String>?): DirectoryNode {
     forEachPath { moduleDir ->
         val moduleName = moduleDir.name
         if (modules != null && moduleName !in modules) return@forEachPath
-        moduleDir.resolve("src").forEachPath { targetDir ->
+        moduleDir.resolve("src").forEachPath srcFor@{ targetDir ->
+            if (targetDir.name.endsWith(TEST_SUFFIX)) return@srcFor
             check(targetDir.name.endsWith(MAIN_SUFFIX)) { "target '${targetDir.name}' must end with '$MAIN_SUFFIX'" }
             val target = targetDir.name.removeSuffix(MAIN_SUFFIX)
 

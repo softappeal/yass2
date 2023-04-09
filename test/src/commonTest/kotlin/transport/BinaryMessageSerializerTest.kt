@@ -15,7 +15,7 @@ fun <T> Serializer.copy(value: T): T {
     }
     return with(BytesReader(writer.buffer)) {
         @Suppress("UNCHECKED_CAST") val result = read(this) as T
-        assertEquals(size, current)
+        assertEquals(size, internalCurrent(this))
         result
     }
 }

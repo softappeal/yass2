@@ -90,7 +90,18 @@ allprojects {
 fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:${extra["kotlinx-coroutines.version"]}"
 fun ktor(module: String) = "io.ktor:ktor-$module:${extra["ktor.version"]}"
 
-val coreProject = project("yass2-core")
+val coreProject = project("yass2-core") {
+    kotlin {
+        sourceSets {
+            val commonTest by getting {
+                dependencies {
+                    implementation(kotlin("test"))
+                    implementation(coroutines("test"))
+                }
+            }
+        }
+    }
+}
 
 val coroutinesProject = project("yass2-coroutines") {
     kotlin {
@@ -167,13 +178,10 @@ val ktorProject = project("yass2-ktor") {
     }
 }
 
-project("test") {
+project("test") { // this project is needed due to https://youtrack.jetbrains.com/issue/KT-35073
     kotlin {
         sourceSets {
             val commonTest by getting {
-                all {
-                    languageSettings.optIn("kotlinx.coroutines.ExperimentalCoroutinesApi") // for runTest
-                }
                 dependencies {
                     implementation(coroutinesProject)
                     implementation(kotlin("test"))

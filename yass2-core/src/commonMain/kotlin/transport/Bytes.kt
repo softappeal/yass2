@@ -23,7 +23,7 @@ public class BytesWriter(initialCapacity: Int) : Writer {
 }
 
 public class BytesReader(private val buffer: ByteArray) : Reader {
-    public var current: Int = 0
+    internal var current: Int = 0
         private set
 
     public val isDrained: Boolean get() = current >= buffer.size
@@ -42,3 +42,5 @@ public class BytesReader(private val buffer: ByteArray) : Reader {
         }
     }
 }
+
+public fun internalCurrent(reader: BytesReader): Int = reader.current

@@ -1,10 +1,12 @@
 package ch.softappeal.yass2.transport
 
 import ch.softappeal.yass2.contract.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
 import kotlin.test.*
 
 class TransportTest {
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun testReadBytes() = runTest {
         val transport = Transport(ContractSerializer, 50, 100)
