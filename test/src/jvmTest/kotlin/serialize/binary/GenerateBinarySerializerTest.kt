@@ -7,35 +7,39 @@ import ch.softappeal.yass2.serialize.binary.reflect.*
 import kotlin.reflect.full.*
 import kotlin.test.*
 
+private val NoBaseEncoders = listOf<BaseEncoder<*>>()
+private val IntBaseEncoders = listOf(IntEncoder)
+private val TwoIntBaseEncoders = listOf(IntEncoder, IntEncoder)
+
 class GenerateBinarySerializerTest {
     @Test
     fun enumClass() = assertFailsMessage<IllegalArgumentException>("type 'class ch.softappeal.yass2.Color' is enum") {
-        generateBinarySerializer(listOf(), listOf(Color::class))
+        generateBinarySerializer(::NoBaseEncoders, listOf(Color::class))
     }
 
     @Test
     fun abstractClass() = assertFailsMessage<IllegalArgumentException>(("type 'class ch.softappeal.yass2.contract.Id' is abstract")) {
-        generateBinarySerializer(listOf(), listOf(Id::class))
+        generateBinarySerializer(::NoBaseEncoders, listOf(Id::class))
     }
 
     @Test
     fun duplicatedTypes() = assertFailsMessage<IllegalArgumentException>("duplicated types") {
-        generateBinarySerializer(listOf(IntEncoder), listOf(Int::class))
+        generateBinarySerializer(::IntBaseEncoders, listOf(Int::class))
     }
 
     @Test
     fun duplicatedBaseEncoder() = assertFailsMessage<IllegalArgumentException>("duplicated types") {
-        generateBinarySerializer(listOf(IntEncoder, IntEncoder), listOf())
+        generateBinarySerializer(::TwoIntBaseEncoders, listOf())
     }
 
     @Test
     fun duplicatedTreeConcreteClass() = assertFailsMessage<IllegalArgumentException>("duplicated types") {
-        generateBinarySerializer(listOf(), listOf(Id2::class, Id2::class))
+        generateBinarySerializer(::NoBaseEncoders, listOf(Id2::class, Id2::class))
     }
 
     @Test
     fun duplicatedGraphConcreteClass() = assertFailsMessage<IllegalArgumentException>("duplicated types") {
-        generateBinarySerializer(listOf(), listOf(), listOf(Node::class, Node::class))
+        generateBinarySerializer(::NoBaseEncoders, listOf(), listOf(Node::class, Node::class))
     }
 
     @Test
@@ -46,7 +50,7 @@ class GenerateBinarySerializerTest {
             }
         }
         assertFailsMessage<IllegalArgumentException>("primary constructor parameter 'x' of 'class ch.softappeal.yass2.serialize.binary.GenerateBinarySerializerTest\$notPropertyParameter\$X' is not a property") {
-            generateBinarySerializer(listOf(IntEncoder), listOf(X::class))
+            generateBinarySerializer(::IntBaseEncoders, listOf(X::class))
         }
     }
 
@@ -57,7 +61,7 @@ class GenerateBinarySerializerTest {
             val x: Int = 0
         }
         assertFailsMessage<IllegalArgumentException>("body property 'x' of 'class ch.softappeal.yass2.serialize.binary.GenerateBinarySerializerTest\$bodyPropertyNotVar\$X' is not 'var'") {
-            generateBinarySerializer(listOf(IntEncoder), listOf(X::class))
+            generateBinarySerializer(::IntBaseEncoders, listOf(X::class))
         }
     }
 
@@ -68,7 +72,7 @@ class GenerateBinarySerializerTest {
             constructor()
         }
         assertFailsMessage<IllegalStateException>("'class ch.softappeal.yass2.serialize.binary.GenerateBinarySerializerTest\$noPrimaryConstructor\$X' has no primary constructor") {
-            generateBinarySerializer(listOf(IntEncoder), listOf(X::class))
+            generateBinarySerializer(::IntBaseEncoders, listOf(X::class))
         }
     }
 
@@ -81,10 +85,8 @@ class GenerateBinarySerializerTest {
         assertEquals(
             """
                 @Suppress("RedundantSuppression", "UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
-                public fun generatedBinarySerializer(
-                    baseEncoders: List<ch.softappeal.yass2.serialize.binary.BaseEncoder<*>>,
-                ): ch.softappeal.yass2.serialize.binary.BinarySerializer =
-                    ch.softappeal.yass2.serialize.binary.BinarySerializer(baseEncoders + listOf(
+                public val GeneratedBinarySerializer: ch.softappeal.yass2.serialize.binary.BinarySerializer =
+                    ch.softappeal.yass2.serialize.binary.BinarySerializer(ch.softappeal.yass2.serialize.binary.IntBaseEncoders + listOf(
                         ch.softappeal.yass2.serialize.binary.ClassEncoder(null::class, false,
                             { w, i ->
                                 w.writeNoIdRequired(3, i.cause)
@@ -120,7 +122,7 @@ class GenerateBinarySerializerTest {
                     ))
 
             """.trimIndent(),
-            generateBinarySerializer(listOf(IntEncoder), listOf(X::class, Y::class, Z::class))
+            generateBinarySerializer(::IntBaseEncoders, listOf(X::class, Y::class, Z::class))
         )
     }
 

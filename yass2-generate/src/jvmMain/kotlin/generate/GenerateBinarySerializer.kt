@@ -3,23 +3,23 @@ package ch.softappeal.yass2.generate
 import ch.softappeal.yass2.serialize.binary.*
 import ch.softappeal.yass2.serialize.binary.reflect.*
 import kotlin.reflect.*
+import kotlin.reflect.jvm.*
 
 public fun generateBinarySerializer(
-    baseEncoders: List<BaseEncoder<*>>,
+    baseEncodersProperty: KProperty0<List<BaseEncoder<out Any>>>,
     treeConcreteClasses: List<KClass<*>> = emptyList(),
     graphConcreteClasses: List<KClass<*>> = emptyList(),
-    name: String = "generatedBinarySerializer",
+    name: String = "GeneratedBinarySerializer",
 ): String = writer {
+    val baseEncoders = baseEncodersProperty.get()
     require(
         (baseEncoders.map { it.type }.toSet() + treeConcreteClasses.toSet() + graphConcreteClasses.toSet()).size ==
             (baseEncoders.size + treeConcreteClasses.size + graphConcreteClasses.size)
     ) { "duplicated types" }
     write("""
         @Suppress("RedundantSuppression", "UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
-        public fun $name(
-            baseEncoders: List<${BaseEncoder::class.qualifiedName}<*>>,
-        ): ${BinarySerializer::class.qualifiedName} =
-            ${BinarySerializer::class.qualifiedName}(baseEncoders + listOf(
+        public val $name: ${BinarySerializer::class.qualifiedName} =
+            ${BinarySerializer::class.qualifiedName}(${baseEncodersProperty.javaField!!.declaringClass.packageName}.${baseEncodersProperty.name} + listOf(
     """)
     val baseEncoderTypes = baseEncoders.map { it.type }
     fun List<KClass<*>>.add(graph: Boolean) = forEach { klass ->

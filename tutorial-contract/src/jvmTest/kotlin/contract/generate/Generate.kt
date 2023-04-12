@@ -9,7 +9,7 @@ internal fun GenerateAction.execute() {
         Path("src/commonMain/kotlin/contract/generated"),
         "ch.softappeal.yass2.tutorial.contract.generated",
         ServiceIds,
-        BaseEncoders, ConcreteClasses,
+        ::BaseEncoders, ConcreteClasses,
     )
 }
 

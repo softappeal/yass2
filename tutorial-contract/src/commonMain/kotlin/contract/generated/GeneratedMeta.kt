@@ -11,7 +11,7 @@ import ch.softappeal.yass2.tutorial.contract.*
 
 public val Dumper: Dumper = dumper(GeneratedDumperProperties, StringBuilder::valueDumper)
 
-public val ContractSerializer: BinarySerializer = generatedBinarySerializer(BaseEncoders)
+public val ContractSerializer: BinarySerializer = GeneratedBinarySerializer
 public val MessageSerializer: Serializer = binaryMessageSerializer(ContractSerializer)
 public val PacketSerializer: Serializer = binaryPacketSerializer(MessageSerializer)
 

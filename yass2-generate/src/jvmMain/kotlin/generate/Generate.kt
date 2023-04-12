@@ -53,11 +53,11 @@ public enum class GenerateAction {
 public fun GenerateAction.all(
     dir: Path, pkg: String,
     serviceIds: List<ServiceId<out Any>>,
-    baseEncoders: List<BaseEncoder<out Any>>, treeConcreteClasses: List<KClass<out Any>>, graphConcreteClasses: List<KClass<out Any>> = emptyList(),
+    baseEncodersProperty: KProperty0<List<BaseEncoder<out Any>>>, treeConcreteClasses: List<KClass<out Any>>, graphConcreteClasses: List<KClass<out Any>> = emptyList(),
 ) {
     fun execute(fileName: String, code: String) = execute(dir.resolve(fileName), "package $pkg\n\n$code")
     execute("GeneratedProxyFactory.kt", generateProxyFactory(serviceIds.map { it.service }))
     execute("GeneratedRemote.kt", generateRemoteProxyFactory(serviceIds) + "\n" + generateInvoke(serviceIds))
-    execute("GeneratedBinarySerializer.kt", generateBinarySerializer(baseEncoders, treeConcreteClasses, graphConcreteClasses))
+    execute("GeneratedBinarySerializer.kt", generateBinarySerializer(baseEncodersProperty, treeConcreteClasses, graphConcreteClasses))
     execute("GeneratedDumperProperties.kt", generateDumperProperties(treeConcreteClasses + graphConcreteClasses))
 }
