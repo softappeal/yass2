@@ -117,10 +117,11 @@ class SessionTest {
     fun watch() = runTest {
         val session1 = object : Session() {
             override fun opened() {
+                val session = this
                 launch {
                     val echo = generatedRemoteProxyFactory(clientTunnel)(EchoId)
                     var timeout = 20
-                    val job = watch(200, 40) {
+                    val job = watch(session, 200, 40) {
                         println("check")
                         echo.delay(timeout)
                         timeout += 4

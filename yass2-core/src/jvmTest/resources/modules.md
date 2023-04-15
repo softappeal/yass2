@@ -20,6 +20,7 @@
             - session `yass2-coroutines`
                 - Session.kt `[common]`
                 - SessionConnector.kt `[common]`
+                - SessionWatcher.kt `[common]`
         - reflect `yass2-reflect`
             - ReflectionRemote.kt `[jvm]`
     - serialize `yass2-core`
