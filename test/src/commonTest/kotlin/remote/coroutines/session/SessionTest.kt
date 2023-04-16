@@ -31,11 +31,8 @@ fun CoroutineScope.acceptorSessionFactory(context: suspend Session.() -> Any): S
         override val serverTunnel = tunnel { context() }
 
         override fun opened() {
-            val ct = clientTunnel
-            // If we move the line above into the block below, we get an IllegalAccessError on linux/mac if Ktor > 1.5.2:
-            //   trying to access protected method 'clientTunnel' ('opened' is in unnamed module of loader io.ktor.server.engine.OverridingClassLoader; 'Session' is in unnamed module of loader 'app')
             launch {
-                val echo = generatedRemoteProxyFactory(ct)(EchoId)
+                val echo = generatedRemoteProxyFactory(clientTunnel)(EchoId)
                 val value = "echo from acceptor"
                 val result = echo.echo(value)
                 print("<$result>")
