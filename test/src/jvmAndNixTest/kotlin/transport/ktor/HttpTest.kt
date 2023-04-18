@@ -39,10 +39,7 @@ private fun Application.webSocketModule() {
         webSocket(PATH) {
             receiveLoop(
                 PacketTransport,
-                acceptorSessionFactory {
-                    ((connection as WebSocketConnection).session as WebSocketServerSession)
-                        .call.request.headers[DEMO_HEADER_KEY]!!
-                }
+                acceptorSessionFactory { (connection.session as WebSocketServerSession).call.request.headers[DEMO_HEADER_KEY]!! }
             )
         }
     }

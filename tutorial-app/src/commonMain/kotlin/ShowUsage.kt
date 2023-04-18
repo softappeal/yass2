@@ -86,8 +86,8 @@ public fun flowService(): Service {
 
 // The following code is only needed if you use session based bidirectional remoting.
 
-public fun CoroutineScope.initiatorSessionFactory(): SessionFactory = {
-    object : Session() {
+public fun <C : Connection> CoroutineScope.initiatorSessionFactory(): SessionFactory<C> = {
+    object : Session<C>() {
         override val serverTunnel = ::generatedInvoke.tunnel(NewsListenerId(NewsListenerImpl))
 
         override fun opened() {
@@ -104,8 +104,8 @@ public fun CoroutineScope.initiatorSessionFactory(): SessionFactory = {
     }
 }
 
-public fun CoroutineScope.acceptorSessionFactory(): SessionFactory = {
-    object : Session() {
+public fun <C : Connection> CoroutineScope.acceptorSessionFactory(): SessionFactory<C> = {
+    object : Session<C>() {
         override val serverTunnel = ::generatedInvoke.tunnel(
             CalculatorId(CalculatorImpl),
             flowService(),

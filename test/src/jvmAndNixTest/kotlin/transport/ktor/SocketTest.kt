@@ -65,7 +65,7 @@ class SocketTest {
                     launch {
                         socket.receiveLoop(
                             PacketTransport,
-                            acceptorSessionFactory { (connection as SocketConnection).socket.remoteAddress }
+                            acceptorSessionFactory { connection.socket.remoteAddress }
                         )
                     }
                 }

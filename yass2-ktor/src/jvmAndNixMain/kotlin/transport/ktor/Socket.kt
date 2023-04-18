@@ -53,7 +53,7 @@ public class SocketConnection internal constructor(
     }
 }
 
-public suspend fun Socket.receiveLoop(transport: Transport, sessionFactory: SessionFactory): Unit = use {
+public suspend fun Socket.receiveLoop(transport: Transport, sessionFactory: SessionFactory<SocketConnection>): Unit = use {
     val readChannel = openReadChannel()
     SocketConnection(transport, this).receiveLoop(sessionFactory) { readChannel.read(transport) as Packet? }
 }

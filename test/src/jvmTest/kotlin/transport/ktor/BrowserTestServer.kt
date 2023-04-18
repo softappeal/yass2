@@ -28,7 +28,7 @@ private fun Application.theModule() {
         webSocket(PATH) {
             receiveLoop(
                 PacketTransport,
-                acceptorSessionFactory { "ws-" + ((connection as WebSocketConnection).session as WebSocketServerSession).call.request.uri }
+                acceptorSessionFactory { "ws-" + (connection.session as WebSocketServerSession).call.request.uri }
             )
         }
     }

@@ -14,7 +14,7 @@ public interface Connection {
     public suspend fun closed()
 }
 
-public abstract class Session {
+public abstract class Session<C : Connection> {
     public open fun opened() {}
 
     /** [e] is `null` for regular close. */
@@ -22,6 +22,9 @@ public abstract class Session {
 
     /** Is idempotent. */
     public suspend fun close(): Unit = close(true, null)
+
+    /** Is idempotent. */
+    public suspend fun close(e: Exception): Unit = close(false, e)
 
     public suspend fun isClosed(): Boolean = closed.get()
 
@@ -41,7 +44,8 @@ public abstract class Session {
 
     protected open val serverTunnel: Tunnel = { throw UnsupportedOperationException() }
 
-    public lateinit var connection: Connection
+    public lateinit var internalConnection: C
+    public val connection: C get() = internalConnection
 
     private val closed = AtomicBoolean(false)
     private val nextRequestNumber = AtomicInteger(0)
@@ -60,9 +64,7 @@ public abstract class Session {
         }
     }
 
-    public suspend fun close(e: Exception): Unit = close(false, e)
-
-    public suspend fun received(packet: Packet?) {
+    public suspend fun implReceived(packet: Packet?) {
         if (packet == null) {
             close(false, null)
             return
@@ -74,16 +76,18 @@ public abstract class Session {
     }
 }
 
-public typealias SessionFactory = () -> Session
+public typealias SessionFactory<C> = () -> Session<C>
 
-public suspend fun Connection.receiveLoop(sessionFactory: SessionFactory, receive: suspend () -> Packet?) {
-    val session = sessionFactory()
-    session.connection = this
+public fun <C : Connection> C.createSession(sessionFactory: SessionFactory<C>): Session<C> =
+    sessionFactory().apply { internalConnection = this@createSession }
+
+public suspend fun <C : Connection> C.receiveLoop(sessionFactory: SessionFactory<C>, receive: suspend () -> Packet?) {
+    val session = createSession(sessionFactory)
     try {
         session.opened()
         while (true) {
             val packet = receive()
-            session.received(packet)
+            session.implReceived(packet)
             if (packet == null) return
         }
     } catch (e: Exception) {

@@ -17,7 +17,7 @@ public class WebSocketConnection internal constructor(
     override suspend fun closed(): Unit = session.close()
 }
 
-public suspend fun WebSocketSession.receiveLoop(transport: Transport, sessionFactory: SessionFactory) {
+public suspend fun WebSocketSession.receiveLoop(transport: Transport, sessionFactory: SessionFactory<WebSocketConnection>) {
     WebSocketConnection(transport, this).receiveLoop(sessionFactory) {
         val reader = BytesReader((incoming.receive() as Frame.Binary).data)
         val packet = transport.read(reader) as Packet?

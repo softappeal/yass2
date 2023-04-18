@@ -26,8 +26,8 @@ suspend fun Tunnel.test(iterations: Int): Unit = with(generatedRemoteProxyFactor
     this(FlowServiceId).test()
 }
 
-fun CoroutineScope.acceptorSessionFactory(context: suspend Session.() -> Any): SessionFactory = {
-    object : Session() {
+fun <C : Connection> CoroutineScope.acceptorSessionFactory(context: suspend Session<C>.() -> Any): SessionFactory<C> = {
+    object : Session<C>() {
         override val serverTunnel = tunnel { context() }
 
         override fun opened() {
@@ -49,8 +49,8 @@ fun CoroutineScope.acceptorSessionFactory(context: suspend Session.() -> Any): S
     }
 }
 
-fun CoroutineScope.initiatorSessionFactory(iterations: Int): SessionFactory = {
-    object : Session() {
+fun <C : Connection> CoroutineScope.initiatorSessionFactory(iterations: Int): SessionFactory<C> = {
+    object : Session<C>() {
         override val serverTunnel = ::generatedInvoke.tunnel(EchoId(EchoImpl))
 
         override fun opened() {
@@ -71,13 +71,13 @@ fun CoroutineScope.initiatorSessionFactory(iterations: Int): SessionFactory = {
     }
 }
 
-private fun connect(session1: Session, session2: Session) {
-    class LocalConnection(val session: Session) : Connection {
-        override suspend fun write(packet: Packet?) = session.received(packet)
+private fun connect(session1: Session<Connection>, session2: Session<Connection>) {
+    class LocalConnection(val session: Session<Connection>) : Connection {
+        override suspend fun write(packet: Packet?) = session.implReceived(packet)
         override suspend fun closed() = session.close()
     }
-    session1.connection = LocalConnection(session2)
-    session2.connection = LocalConnection(session1)
+    session1.internalConnection = LocalConnection(session2)
+    session2.internalConnection = LocalConnection(session1)
     session1.opened()
     session2.opened()
 }
@@ -86,7 +86,7 @@ private fun connect(session1: Session, session2: Session) {
 class SessionTest {
     @Test
     fun test() = runTest {
-        connect(initiatorSessionFactory(1000)(), acceptorSessionFactory { connection }())
+        connect(initiatorSessionFactory<Connection>(1000)(), acceptorSessionFactory { connection }())
     }
 
     @Test
@@ -112,7 +112,7 @@ class SessionTest {
 
     @Test
     fun watch() = runTest {
-        val session1 = object : Session() {
+        val session1 = object : Session<Connection>() {
             override fun opened() {
                 val session = this
                 launch {
@@ -131,7 +131,7 @@ class SessionTest {
             override suspend fun closed(e: Exception?) = println("session1 closed: $e")
         }
         val serverTunnel = ::generatedInvoke.tunnel(EchoId(EchoImpl))
-        val session2 = object : Session() {
+        val session2 = object : Session<Connection>() {
             override val serverTunnel = serverTunnel
             override suspend fun closed(e: Exception?) = println("session2 closed: $e")
         }
@@ -141,7 +141,7 @@ class SessionTest {
     @Test
     fun connect() = runTest {
         val initiatorSessionFactory = {
-            object : Session() {
+            object : Session<Connection>() {
                 override fun opened() {
                     launch {
                         val echo = generatedRemoteProxyFactory(clientTunnel)(EchoId)
@@ -156,7 +156,7 @@ class SessionTest {
 
         val serverTunnel = ::generatedInvoke.tunnel(EchoId(EchoImpl))
         val acceptorSessionFactory = {
-            object : Session() {
+            object : Session<Connection>() {
                 override val serverTunnel = serverTunnel
                 override suspend fun closed(e: Exception?) = println("acceptorSession closed: $e")
             }
