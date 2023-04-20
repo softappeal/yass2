@@ -29,7 +29,7 @@ class SocketTest {
             assertFalse(clientSocket.isClosed)
             // the following line closes clientSocket on jvm and native,
             // see https://youtrack.jetbrains.com/issue/KTOR-5093/Native-Read-from-a-closed-socket-doesnt-throw-an-exception
-            (clientSocket as CoroutineScope).cancel() // TODO: remove cast if this is fixed in Ktor
+            clientSocket.cancel()
             assertFailsWith<CancellationException> { clientByte.await() }
             assertTrue(clientSocket.isClosed)
         }

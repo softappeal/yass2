@@ -1,11 +1,9 @@
 package ch.softappeal.yass2
 
-import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
 import kotlin.test.*
 
 class TestUtilsTest {
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun assertSuspendFailsWith() = runTest {
         assertEquals(

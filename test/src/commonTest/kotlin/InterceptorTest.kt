@@ -109,7 +109,6 @@ fun noSuchService(thePackage: String) {
     }
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 open class InterceptorTest {
     protected open val proxyFactory: ProxyFactory = GeneratedProxyFactory
 

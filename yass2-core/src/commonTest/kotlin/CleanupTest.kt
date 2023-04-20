@@ -1,10 +1,8 @@
 package ch.softappeal.yass2
 
-import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
 import kotlin.test.*
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class CleanupTest {
     @Test
     fun addSuppressedWithoutException() {

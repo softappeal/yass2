@@ -82,7 +82,6 @@ private fun connect(session1: Session<Connection>, session2: Session<Connection>
     session2.opened()
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class SessionTest {
     @Test
     fun test() = runTest {

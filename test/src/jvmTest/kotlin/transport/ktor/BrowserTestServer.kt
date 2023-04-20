@@ -12,14 +12,13 @@ import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import kotlinx.coroutines.*
+import java.io.*
 
 private fun Application.theModule() {
     install(WebSockets)
     routing {
-        static {
-            files("./") // needed for debugging (sources)
-            files("./build/js/packages/test-test/kotlin")
-        }
+        staticFiles("/", File("./")) // needed for debugging (sources)
+        staticFiles("/", File("./build/js/packages/test-test/kotlin"))
         route(
             MessageTransport,
             PATH,
@@ -36,6 +35,6 @@ private fun Application.theModule() {
 
 fun main() {
     val port = 28947
-    println("http://$LOCAL_HOST:$port/index.html")
+    println("http://$LOCAL_HOST:$port")
     embeddedServer(CIO, port, module = Application::theModule).start(wait = true)
 }
