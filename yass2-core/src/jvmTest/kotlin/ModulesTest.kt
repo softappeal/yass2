@@ -25,22 +25,22 @@ private inline fun <reified T : Throwable> assertFailsMessage(expectedMessage: S
 class ModulesTest {
     @Test
     fun test() {
-        assertModules(Path("src/jvmTest/resources/modules.md").readText().replace("\r\n", "\n"), "..", Modules)
+        assertModules(Path("src/commonTest/resources/modules.md").readText().replace("\r\n", "\n"), "..", Modules)
     }
 
     @Test
     fun notMain() = assertFailsMessage<IllegalStateException>("target 'testWrong' must end with 'Main'") {
-        Path("src/jvmTest/resources/notMain").printModules()
+        Path("src/commonTest/resources/notMain").printModules()
     }
 
     @Test
     fun split1() = assertFailsMessage<IllegalStateException>("modules 'module1' and 'module2' have split package 'kotlin/Test.kt'") {
-        Path("src/jvmTest/resources/split1").printModules()
+        Path("src/commonTest/resources/split1").printModules()
     }
 
     @Test
     fun split2() = assertFailsMessage<IllegalStateException>("modules 'module1' and 'module2' have split package 'kotlin/Test2.kt'") {
-        Path("src/jvmTest/resources/split2").printModules()
+        Path("src/commonTest/resources/split2").printModules()
     }
 
     @Test
@@ -50,7 +50,7 @@ class ModulesTest {
                 - . `module1`
                     - Test.kt `[common, jvm]`
             """,
-            "src/jvmTest/resources/targets"
+            "src/commonTest/resources/targets"
         )
     }
 
@@ -63,7 +63,7 @@ class ModulesTest {
                     - nofile `module1`
                         - Test.kt `[common]`
             """,
-            "src/jvmTest/resources/noModule"
+            "src/commonTest/resources/noModule"
         )
     }
 }
