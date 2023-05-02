@@ -27,7 +27,7 @@ private fun Application.theModule() {
         staticFiles("/", File("./build/js/packages/tutorial-app/kotlin"))
 
         // shows server-side unidirectional remoting with Http
-        route(MessageTransport, PATH, ::generatedInvoke.tunnel(
+        route(MessageTransport, PATH, ::tutorialInvoke.tunnel(
             CalculatorId(CalculatorImpl),
             flowService(),
         ))

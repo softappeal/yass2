@@ -5,11 +5,13 @@ import ch.softappeal.yass2.serialize.binary.reflect.*
 import kotlin.reflect.*
 import kotlin.reflect.jvm.*
 
+public const val BINARY_SERIALIZER: String = "BinarySerializer"
+
 public fun generateBinarySerializer(
     baseEncodersProperty: KProperty0<List<BaseEncoder<out Any>>>,
     treeConcreteClasses: List<KClass<*>> = emptyList(),
     graphConcreteClasses: List<KClass<*>> = emptyList(),
-    name: String = "GeneratedBinarySerializer",
+    name: String = GENERATED + BINARY_SERIALIZER,
 ): String = writer {
     val baseEncoders = baseEncodersProperty.get()
     require(
@@ -18,7 +20,7 @@ public fun generateBinarySerializer(
     ) { "duplicated types" }
     write("""
         @Suppress("RedundantSuppression", "UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
-        public val $name: ${BinarySerializer::class.qualifiedName} =
+        public val ${name.firstCharToUppercase()}: ${BinarySerializer::class.qualifiedName} =
             ${BinarySerializer::class.qualifiedName}(${baseEncodersProperty.javaField!!.declaringClass.packageName}.${baseEncodersProperty.name} + listOf(
     """)
     val baseEncoderTypes = baseEncoders.map { it.type }

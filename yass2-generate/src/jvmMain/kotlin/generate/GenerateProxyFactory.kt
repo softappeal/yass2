@@ -5,14 +5,16 @@ import ch.softappeal.yass2.reflect.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
 
+public const val PROXY_FACTORY: String = "ProxyFactory"
+
 public fun generateProxyFactory(
     services: List<KClass<*>>,
-    name: String = "GeneratedProxyFactory",
+    name: String = GENERATED + PROXY_FACTORY,
 ): String = writer {
     require(services.toSet().size == services.size) { "duplicated service" }
     write("""
         @Suppress("RedundantSuppression", "UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
-        public object $name : ${ProxyFactory::class.qualifiedName} {
+        public object ${name.firstCharToUppercase()} : ${ProxyFactory::class.qualifiedName} {
             override fun <S : Any> create(
                 service: ${KClass::class.qualifiedName}<S>, implementation: S,
                 interceptor: $CSY.Interceptor, suspendInterceptor: $CSY.SuspendInterceptor,

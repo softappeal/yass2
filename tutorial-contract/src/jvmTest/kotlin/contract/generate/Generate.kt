@@ -10,6 +10,7 @@ internal fun GenerateAction.execute() {
         "ch.softappeal.yass2.tutorial.contract.generated",
         ServiceIds,
         ::BaseEncoders, ConcreteClasses,
+        generated = "tutorial"
     )
 }
 

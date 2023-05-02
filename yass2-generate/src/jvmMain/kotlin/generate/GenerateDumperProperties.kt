@@ -3,14 +3,16 @@ package ch.softappeal.yass2.generate
 import ch.softappeal.yass2.reflect.*
 import kotlin.reflect.*
 
+public const val DUMPER_PROPERTIES: String = "DumperProperties"
+
 public fun generateDumperProperties(
     concreteClasses: List<KClass<*>>,
-    name: String = "GeneratedDumperProperties",
+    name: String = GENERATED + DUMPER_PROPERTIES,
 ): String = writer {
     require(concreteClasses.toSet().size == concreteClasses.size) { "duplicated concreteClass" }
     write("""
         @Suppress("RedundantSuppression", "UNCHECKED_CAST", "RedundantVisibilityModifier")
-        public val $name: $CSY.DumperProperties = $CSY.dumperProperties(
+        public val ${name.firstCharToUppercase()}: $CSY.DumperProperties = $CSY.dumperProperties(
     """)
     concreteClasses.forEach { klass ->
         write("""

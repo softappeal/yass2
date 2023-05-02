@@ -59,12 +59,12 @@ public suspend fun showUsage() {
         useCalculator(calculator)
     }
     useDumper(Dumper)
-    useSerializer(ContractSerializer)
-    useInterceptor(GeneratedProxyFactory)
+    useSerializer(TutorialBinarySerializer)
+    useInterceptor(TutorialProxyFactory)
 }
 
 public suspend fun useServices(tunnel: Tunnel) {
-    val remoteProxyFactory = generatedRemoteProxyFactory(tunnel)
+    val remoteProxyFactory = tutorialRemoteProxyFactory(tunnel)
     val calculator = remoteProxyFactory(CalculatorId)
     useCalculator(calculator)
     val flowService = remoteProxyFactory(FlowServiceId)
@@ -88,7 +88,7 @@ public fun flowService(): Service {
 
 public fun <C : Connection> CoroutineScope.initiatorSessionFactory(): SessionFactory<C> = {
     object : Session<C>() {
-        override val serverTunnel = ::generatedInvoke.tunnel(NewsListenerId(NewsListenerImpl))
+        override val serverTunnel = ::tutorialInvoke.tunnel(NewsListenerId(NewsListenerImpl))
 
         override fun opened() {
             launch {
@@ -106,14 +106,14 @@ public fun <C : Connection> CoroutineScope.initiatorSessionFactory(): SessionFac
 
 public fun <C : Connection> CoroutineScope.acceptorSessionFactory(): SessionFactory<C> = {
     object : Session<C>() {
-        override val serverTunnel = ::generatedInvoke.tunnel(
+        override val serverTunnel = ::tutorialInvoke.tunnel(
             CalculatorId(CalculatorImpl),
             flowService(),
         )
 
         override fun opened() {
             launch {
-                val remoteProxyFactory = generatedRemoteProxyFactory(clientTunnel)
+                val remoteProxyFactory = tutorialRemoteProxyFactory(clientTunnel)
                 val newsListener = remoteProxyFactory(NewsListenerId)
                 newsListener.notify("News 1")
                 newsListener.notify("News 2")

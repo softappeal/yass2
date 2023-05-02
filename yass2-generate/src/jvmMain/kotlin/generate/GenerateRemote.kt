@@ -4,14 +4,16 @@ import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.reflect.*
 import kotlin.reflect.full.*
 
+public const val REMOTE_PROXY_FACTORY: String = "RemoteProxyFactory"
+
 public fun generateRemoteProxyFactory(
     serviceIds: List<ServiceId<*>>,
-    name: String = "generatedRemoteProxyFactory",
+    name: String = GENERATED + REMOTE_PROXY_FACTORY,
 ): String = writer {
     require(serviceIds.map { it.id }.toSet().size == serviceIds.size) { "duplicated service id" }
     write("""
         @Suppress("RedundantSuppression", "UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
-        public fun $name(
+        public fun ${name.firstCharToLowercase()}(
             tunnel: $CSY.remote.Tunnel,
         ): ${RemoteProxyFactory::class.qualifiedName} =
             object : ${RemoteProxyFactory::class.qualifiedName} {
@@ -48,14 +50,16 @@ public fun generateRemoteProxyFactory(
     """, 1)
 }
 
+public const val INVOKE: String = "Invoke"
+
 public fun generateInvoke(
     serviceIds: List<ServiceId<*>>,
-    name: String = "generatedInvoke",
+    name: String = GENERATED + INVOKE,
 ): String = writer {
     require(serviceIds.map { it.id }.toSet().size == serviceIds.size) { "duplicated service id" }
     write("""
         @Suppress("RedundantSuppression", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier", "RedundantNullableReturnType")
-        public suspend fun $name(
+        public suspend fun ${name.firstCharToLowercase()}(
             request: ${Request::class.qualifiedName}, service: ${Service::class.qualifiedName},
         ): Any? {
             val p = request.parameters
