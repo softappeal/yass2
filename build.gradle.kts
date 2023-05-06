@@ -5,10 +5,12 @@
 import java.util.regex.*
 
 plugins {
-    kotlin("multiplatform")
+    @Suppress("DSL_SCOPE_VIOLATION") alias(libs.plugins.multiplatform) // https://github.com/gradle/gradle/issues/22797
     id("maven-publish")
     signing
 }
+
+val libraries = libs
 
 val publishYass2 = "publishYass2"
 fun Boolean.disableNativeTargetIfPublish() = this && (publishYass2 !in project.gradle.startParameter.taskNames)
@@ -87,16 +89,13 @@ allprojects {
     }
 }
 
-fun coroutines(module: String) = "org.jetbrains.kotlinx:kotlinx-coroutines-$module:${extra["kotlinx-coroutines.version"]}"
-fun ktor(module: String) = "io.ktor:ktor-$module:${extra["ktor.version"]}"
-
 val coreProject = project("yass2-core") {
     kotlin {
         sourceSets {
             val commonTest by getting {
                 dependencies {
                     implementation(kotlin("test"))
-                    implementation(coroutines("test"))
+                    implementation(libraries.coroutines.test)
                 }
             }
         }
@@ -109,7 +108,7 @@ val coroutinesProject = project("yass2-coroutines") {
             val commonMain by getting {
                 dependencies {
                     api(coreProject)
-                    api(coroutines("core"))
+                    api(libraries.coroutines.core)
                 }
             }
         }
@@ -151,14 +150,14 @@ val ktorProject = project("yass2-ktor") {
             val commonMain by getting {
                 dependencies {
                     api(coroutinesProject)
-                    api(ktor("client-core"))
+                    api(libraries.ktor.client.core)
                 }
             }
             val jvmAndNixMain by creating {
                 dependsOn(commonMain)
                 dependencies {
-                    api(ktor("server-core"))
-                    api(ktor("network"))
+                    api(libraries.ktor.server.core)
+                    api(libraries.ktor.network)
                 }
             }
             val jvmMain by getting {
@@ -185,16 +184,14 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
                 dependencies {
                     implementation(coroutinesProject)
                     implementation(kotlin("test"))
-                    implementation(coroutines("test"))
+                    implementation(libraries.coroutines.test)
                 }
             }
             val jvmAndNixTest by creating {
                 dependsOn(commonTest)
                 dependencies {
                     implementation(ktorProject)
-                    implementation(ktor("client-cio"))
-                    implementation(ktor("server-cio"))
-                    implementation(ktor("server-websockets"))
+                    implementation(libraries.bundles.ktor.cio)
                 }
             }
             val jvmTest by getting {
@@ -251,15 +248,13 @@ project("tutorial-app") {
             val jvmMain by getting {
                 dependencies {
                     implementation(ktorProject)
-                    implementation(ktor("client-cio"))
-                    implementation(ktor("server-cio"))
-                    implementation(ktor("server-websockets"))
+                    implementation(libraries.bundles.ktor.cio)
                 }
             }
             if (jsTarget) {
                 val jsTest by getting {
                     dependencies {
-                        implementation(coroutines("test"))
+                        implementation(libraries.coroutines.test)
                     }
                 }
             }
