@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.generate
+package ch.softappeal.yass2.ksp
 
 import ch.softappeal.yass2.remote.*
 import kotlin.reflect.*
@@ -8,14 +8,21 @@ private fun KClass<*>.suspendServiceFunctions(): List<KFunction<*>> = serviceFun
     require(it.isSuspend) { "'$it' is not a suspend function" }
 }
 
-public fun generateRemoteProxyFactory(
-    name: String,
+public fun Appendable.generateRemote(
     serviceIds: List<ServiceId<*>>,
-): String = writer {
+) {
     require(serviceIds.map { it.id }.toSet().size == serviceIds.size) { "duplicated service id" }
+    generateRemoteProxyFactory(serviceIds)
+    appendLine()
+    generateInvoke(serviceIds)
+}
+
+private fun Appendable.generateRemoteProxyFactory(
+    serviceIds: List<ServiceId<*>>,
+) {
     write("""
         @Suppress("RedundantSuppression", "UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
-        public fun ${name.firstCharToLowercase()}(
+        public fun generatedRemoteProxyFactory(
             tunnel: $CSY.remote.Tunnel,
         ): ${RemoteProxyFactory::class.qualifiedName} =
             object : ${RemoteProxyFactory::class.qualifiedName} {
@@ -52,14 +59,12 @@ public fun generateRemoteProxyFactory(
     """, 1)
 }
 
-public fun generateInvoke(
-    name: String,
+private fun Appendable.generateInvoke(
     serviceIds: List<ServiceId<*>>,
-): String = writer {
-    require(serviceIds.map { it.id }.toSet().size == serviceIds.size) { "duplicated service id" }
+) {
     write("""
         @Suppress("RedundantSuppression", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier", "RedundantNullableReturnType")
-        public suspend fun ${name.firstCharToLowercase()}(
+        public suspend fun generatedInvoke(
             request: ${Request::class.qualifiedName}, service: ${Service::class.qualifiedName},
         ): Any? {
             val p = request.parameters

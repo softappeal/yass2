@@ -8,32 +8,32 @@ import kotlin.test.*
 class RemoteTest {
     @Test
     fun duplicatedService() = assertFailsMessage<IllegalArgumentException>("duplicated service id") {
-        ::contractInvoke.tunnel(EchoId(EchoImpl), EchoId(EchoImpl))
+        ::generatedInvoke.tunnel(EchoId(EchoImpl), EchoId(EchoImpl))
     }
 
     @Test
     fun missingService() = runTest {
         assertFailsMessage<IllegalStateException>("no service id 1") {
-            contractRemoteProxyFactory(::contractInvoke.tunnel())(CalculatorId).add(1, 2)
+            generatedRemoteProxyFactory(::generatedInvoke.tunnel())(CalculatorId).add(1, 2)
         }
     }
 
     @Test
     fun noServiceIdRemoteProxyFactory() = assertFailsMessage<IllegalStateException>("no service id 123") {
-        contractRemoteProxyFactory { ValueReply(null) }.create(serviceId<Calculator>(123))
+        generatedRemoteProxyFactory { ValueReply(null) }.create(serviceId<Calculator>(123))
     }
 
     @Test
     fun noServiceIdInvoker() = runTest {
         assertFailsMessage<IllegalStateException>("no service id 123") {
-            contractInvoke(Request(123, 0, emptyList()), EchoId(EchoImpl))
+            generatedInvoke(Request(123, 0, emptyList()), EchoId(EchoImpl))
         }
     }
 
     @Test
     fun noFunctionId() = runTest {
         assertFailsMessage<IllegalStateException>("no function id 123 for service id 2") {
-            contractInvoke(Request(2, 123, emptyList()), EchoId(EchoImpl))
+            generatedInvoke(Request(2, 123, emptyList()), EchoId(EchoImpl))
         }
     }
 
@@ -49,11 +49,11 @@ class RemoteTest {
         assertSame(value, ValueReply(value).value)
     }
 
-    private val remoteProxyFactory = contractRemoteProxyFactory(::contractInvoke.tunnel(CalculatorId(CalculatorImpl), EchoId(EchoImpl)))
+    private val remoteProxyFactory = generatedRemoteProxyFactory(::generatedInvoke.tunnel(CalculatorId(CalculatorImpl), EchoId(EchoImpl)))
 
     @Test
     fun test() = runTest {
-        ContractProxyFactory.test(remoteProxyFactory(CalculatorId), remoteProxyFactory(EchoId))
+        GeneratedProxyFactory.test(remoteProxyFactory(CalculatorId), remoteProxyFactory(EchoId))
     }
 
     @Test

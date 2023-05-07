@@ -1,7 +1,7 @@
 package ch.softappeal.yass2.contract
 
 @Suppress("RedundantSuppression", "UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
-public fun contractRemoteProxyFactory(
+public fun generatedRemoteProxyFactory(
     tunnel: ch.softappeal.yass2.remote.Tunnel,
 ): ch.softappeal.yass2.remote.RemoteProxyFactory =
     object : ch.softappeal.yass2.remote.RemoteProxyFactory {
@@ -41,7 +41,7 @@ public fun contractRemoteProxyFactory(
     }
 
 @Suppress("RedundantSuppression", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier", "RedundantNullableReturnType")
-public suspend fun contractInvoke(
+public suspend fun generatedInvoke(
     request: ch.softappeal.yass2.remote.Request, service: ch.softappeal.yass2.remote.Service,
 ): Any? {
     val p = request.parameters

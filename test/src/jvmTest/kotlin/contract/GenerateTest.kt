@@ -1,34 +1,31 @@
 package ch.softappeal.yass2.contract
 
-import ch.softappeal.yass2.generate.*
+import ch.softappeal.yass2.ksp.*
 import kotlin.io.path.*
 import kotlin.test.*
 
-private fun generate(fileName: String, code: String) {
-    GenerateAction.Verify.execute(
-        Path("src/commonTest/kotlin/contract/$fileName"),
-        "package ch.softappeal.yass2.contract\n\n$code",
-    )
+private fun generate(fileName: String, code: Appendable.() -> Unit) {
+    generate(Path("src/commonTest/kotlin/contract"), "ch.softappeal.yass2.contract", fileName, code)
 }
 
 class GenerateTest {
     @Test
     fun generateProxyFactory() {
-        generate("ContractProxyFactory.kt", generateProxyFactory("ContractProxyFactory", ServiceIds.map { it.service } + Mixed::class))
+        generate("GeneratedProxyFactory") { generateProxyFactory(ServiceIds.map { it.service } + Mixed::class) }
     }
 
     @Test
     fun generateRemote() {
-        generate("ContractRemote.kt", generateRemoteProxyFactory("ContractRemoteProxyFactory", ServiceIds) + "\n" + generateInvoke("contractInvoke", ServiceIds))
+        generate("GeneratedRemote") { generateRemote(ServiceIds) }
     }
 
     @Test
     fun generateBinarySerializer() {
-        generate("ContractBinarySerializer.kt", generateBinarySerializer("ContractBinarySerializer", ::BaseEncoders, TreeConcreteClasses, GraphConcreteClasses))
+        generate("GeneratedBinarySerializer") { generateBinarySerializer(::BaseEncoders, TreeConcreteClasses, GraphConcreteClasses) }
     }
 
     @Test
     fun generateDumper() {
-        generate("ContractDumperProperties.kt", generateDumperProperties("ContractDumperProperties", TreeConcreteClasses + GraphConcreteClasses))
+        generate("GeneratedDumperProperties") { generateDumperProperties(TreeConcreteClasses + GraphConcreteClasses) }
     }
 }

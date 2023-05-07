@@ -49,13 +49,10 @@
 yass2-core
      ^
      |
-     +--- yass2-generate ---> kotlin-reflect
+yass2-coroutines --> kotlinx-coroutines-core
+     ^
      |
-     |
-     \--- yass2-coroutines ---> kotlinx-coroutines-core
-               ^
-               |
-          yass2-ktor ---> io.ktor
+yass2-ktor --> io.ktor
 ```
 
 * artifacts on [Maven Central](https://search.maven.org/search?q=g:ch.softappeal.yass2) (GroupId: ch.softappeal.yass2)

@@ -18,7 +18,7 @@ val GraphConcreteClasses = listOf(
     Node::class
 )
 
-val ContractSerializer = ContractBinarySerializer
+val ContractSerializer = GeneratedBinarySerializer
 val MessageSerializer = binaryMessageSerializer(ContractSerializer)
 val PacketSerializer = binaryPacketSerializer(MessageSerializer)
 

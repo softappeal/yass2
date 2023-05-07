@@ -68,6 +68,6 @@ class RemoteFlowTest {
 
     @Test
     fun withService() = runTest {
-        ContractProxyFactory(FlowServiceImpl, Printer).test()
+        GeneratedProxyFactory(FlowServiceImpl, Printer).test()
     }
 }

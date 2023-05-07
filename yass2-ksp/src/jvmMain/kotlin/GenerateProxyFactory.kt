@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.generate
+package ch.softappeal.yass2.ksp
 
 import ch.softappeal.yass2.*
 import kotlin.reflect.*
@@ -12,14 +12,13 @@ internal fun KClass<*>.serviceFunctions(): List<KFunction<*>> = memberFunctions
         require(map { it.name }.toSet().size == size) { "'${this@serviceFunctions}' has overloaded functions" }
     }
 
-public fun generateProxyFactory(
-    name: String,
+public fun Appendable.generateProxyFactory(
     services: List<KClass<*>>,
-): String = writer {
+) {
     require(services.toSet().size == services.size) { "duplicated service" }
     write("""
         @Suppress("RedundantSuppression", "UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
-        public object ${name.firstCharToUppercase()} : ${ProxyFactory::class.qualifiedName} {
+        public object GeneratedProxyFactory : ${ProxyFactory::class.qualifiedName} {
             override fun <S : Any> create(
                 service: ${KClass::class.qualifiedName}<S>, implementation: S,
                 interceptor: $CSY.Interceptor, suspendInterceptor: $CSY.SuspendInterceptor,

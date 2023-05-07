@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.generate
+package ch.softappeal.yass2.ksp
 
 import kotlin.reflect.*
 import kotlin.reflect.full.*
@@ -8,14 +8,13 @@ private fun KClass<*>.properties(): List<KProperty1<Any, Any?>> = memberProperti
     .sortedBy { it.name }
     .map { @Suppress("UNCHECKED_CAST") (it as KProperty1<Any, Any?>) }
 
-public fun generateDumperProperties(
-    name: String,
+public fun Appendable.generateDumperProperties(
     concreteClasses: List<KClass<*>>,
-): String = writer {
+) {
     require(concreteClasses.toSet().size == concreteClasses.size) { "duplicated concreteClass" }
     write("""
         @Suppress("RedundantSuppression", "UNCHECKED_CAST", "RedundantVisibilityModifier", "RemoveRedundantQualifierName")
-        public val ${name.firstCharToUppercase()}: $CSY.DumperProperties = $CSY.dumperProperties(
+        public val GeneratedDumperProperties: $CSY.DumperProperties = $CSY.dumperProperties(
     """)
     concreteClasses.forEach { klass ->
         write("""

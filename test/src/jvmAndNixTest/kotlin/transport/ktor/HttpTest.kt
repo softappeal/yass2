@@ -104,7 +104,7 @@ class HttpTest {
 
                     override suspend fun divide(a: Int, b: Int): Int = error("not needed")
                 }
-                route(transport, PATH, ::contractInvoke.tunnel(CalculatorId(calculator)))
+                route(transport, PATH, ::generatedInvoke.tunnel(CalculatorId(calculator)))
             }
         }
         engine.start()
@@ -113,7 +113,7 @@ class HttpTest {
                 val randomPort = engine.resolvedConnectors().first().port
                 HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
                     val clientTunnel = client.tunnel(transport, "http://$LOCAL_HOST:$randomPort$PATH")
-                    val calculator = contractRemoteProxyFactory(clientTunnel)(CalculatorId)
+                    val calculator = generatedRemoteProxyFactory(clientTunnel)(CalculatorId)
                     context = "client"
                     assertEquals(5, calculator.add(2, 3))
                     assertEquals("server", context)

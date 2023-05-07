@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.generate
+package ch.softappeal.yass2.ksp
 
 import ch.softappeal.yass2.serialize.binary.*
 import kotlin.reflect.*
@@ -79,12 +79,11 @@ private fun KClass<*>.metaClass(baseEncoderTypes: List<KClass<*>>): MetaClass {
     )
 }
 
-public fun generateBinarySerializer(
-    name: String,
+public fun Appendable.generateBinarySerializer(
     baseEncodersProperty: KProperty0<List<BaseEncoder<out Any>>>,
     treeConcreteClasses: List<KClass<*>> = emptyList(),
     graphConcreteClasses: List<KClass<*>> = emptyList(),
-): String = writer {
+) {
     val baseEncoders = baseEncodersProperty.get()
     require(
         (baseEncoders.map { it.type }.toSet() + treeConcreteClasses.toSet() + graphConcreteClasses.toSet()).size ==
@@ -92,7 +91,7 @@ public fun generateBinarySerializer(
     ) { "duplicated types" }
     write("""
         @Suppress("RedundantSuppression", "UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
-        public val ${name.firstCharToUppercase()}: ${BinarySerializer::class.qualifiedName} =
+        public val GeneratedBinarySerializer: ${BinarySerializer::class.qualifiedName} =
             ${BinarySerializer::class.qualifiedName}(${baseEncodersProperty.javaField!!.declaringClass.packageName}.${baseEncodersProperty.name} + listOf(
     """)
     val baseEncoderTypes = baseEncoders.map { it.type }

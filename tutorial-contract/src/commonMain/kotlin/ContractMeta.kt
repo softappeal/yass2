@@ -1,5 +1,11 @@
+@file:Generate([
+    ServiceWithId(NewsListener::class, 123),
+    ServiceWithId(FlowService::class, 321),
+])
+
 package ch.softappeal.yass2.tutorial.contract
 
+import ch.softappeal.yass2.*
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.coroutines.*
 import ch.softappeal.yass2.remote.coroutines.session.*
@@ -55,3 +61,5 @@ public val FlowServiceId: ServiceId<FlowService> = serviceId(3)
 
 /** Define all used [ServiceId]. */
 internal val ServiceIds = listOf(CalculatorId, NewsListenerId, FlowServiceId)
+
+// TODO: public const val TEST_VALUE2: Int = TEST_VALUE

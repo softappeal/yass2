@@ -7,7 +7,7 @@ import kotlin.test.*
 enum class Color { Green }
 
 class DumperTest {
-    private val dumper = dumper(ContractDumperProperties, StringBuilder::valueDumper, GraphConcreteClasses.toSet())
+    private val dumper = dumper(GeneratedDumperProperties, StringBuilder::valueDumper, GraphConcreteClasses.toSet())
 
     @Test
     fun missingClass() {

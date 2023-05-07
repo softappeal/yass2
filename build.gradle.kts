@@ -4,8 +4,10 @@
 
 import java.util.regex.*
 
+@Suppress("DSL_SCOPE_VIOLATION") // https://github.com/gradle/gradle/issues/22797
 plugins {
-    @Suppress("DSL_SCOPE_VIOLATION") alias(libs.plugins.multiplatform) // https://github.com/gradle/gradle/issues/22797
+    alias(libs.plugins.multiplatform)
+    alias(libs.plugins.ksp)
     id("maven-publish")
     signing
 }
@@ -115,13 +117,14 @@ val coroutinesProject = project("yass2-coroutines") {
     }
 }
 
-val generateProject = project("yass2-generate") {
+val kspProject = project("yass2-ksp") {
     kotlin {
         sourceSets {
             val jvmMain by getting {
                 dependencies {
                     api(coreProject)
                     api(kotlin("reflect"))
+                    api(libraries.ksp)
                 }
             }
         }
@@ -181,7 +184,7 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
             val jvmTest by getting {
                 dependsOn(jvmAndNixTest)
                 dependencies {
-                    implementation(generateProject)
+                    implementation(kspProject)
                 }
             }
             if (linuxTarget) {
@@ -198,7 +201,8 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
     }
 }
 
-val tutorialContractProject = project("tutorial-contract") {
+val tutorialContractProject = project("tutorial-contract") { // TODO
+    // apply(plugin = "com.google.devtools.ksp")
     kotlin {
         sourceSets {
             val commonMain by getting {
@@ -208,12 +212,18 @@ val tutorialContractProject = project("tutorial-contract") {
             }
             val jvmTest by getting {
                 dependencies {
-                    implementation(generateProject)
+                    implementation(kspProject)
                     implementation(kotlin("test"))
                 }
             }
         }
     }
+    /*
+    dependencies {
+        ksp(kspProject)
+        //add("kspJvm", kspProject)
+    }
+    */
 }
 
 project("tutorial-app") {
@@ -247,7 +257,7 @@ project("tutorial-app") {
 }
 
 tasks.register(publishYass2) {
-    listOf(coreProject, coroutinesProject, generateProject, ktorProject).forEach {
+    listOf(coreProject, coroutinesProject, ktorProject, kspProject).forEach {
         dependsOn("${it.name}:publishAllPublicationsToOssrhRepository")
     }
 }

@@ -7,9 +7,9 @@ import ch.softappeal.yass2.transport.session.*
 
 // This file describes the needed contract metadata that depends on generated artifacts.
 
-public val Dumper: Dumper = dumper(TutorialDumperProperties, StringBuilder::valueDumper)
+public val Dumper: Dumper = dumper(GeneratedDumperProperties, StringBuilder::valueDumper)
 
-public val MessageSerializer: Serializer = binaryMessageSerializer(TutorialBinarySerializer)
+public val MessageSerializer: Serializer = binaryMessageSerializer(GeneratedBinarySerializer)
 public val PacketSerializer: Serializer = binaryPacketSerializer(MessageSerializer)
 
 private const val INITIAL_WRITER_CAPACITY = 100

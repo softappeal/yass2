@@ -4,7 +4,7 @@ import java.io.*
 import kotlin.io.path.*
 import kotlin.test.*
 
-private val Modules = setOf("yass2-core", "yass2-coroutines", "yass2-generate", "yass2-ktor")
+private val Modules = setOf("yass2-core", "yass2-coroutines", "yass2-ktor")
 
 private fun assertModules(expected: String, directory: String, modules: Set<String>? = null) {
     val charset = Charsets.UTF_8

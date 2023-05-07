@@ -104,7 +104,7 @@ private interface NoSuchService
 fun noSuchService(thePackage: String) {
     val noSuchService: NoSuchService = object : NoSuchService {}
     assertFailsMessage<IllegalStateException>("no proxy for 'class ${thePackage}NoSuchService'") {
-        ContractProxyFactory(noSuchService) { _, _, invocation: Invocation -> invocation() }
+        GeneratedProxyFactory(noSuchService) { _, _, invocation: Invocation -> invocation() }
     }
 }
 
@@ -155,18 +155,18 @@ class InterceptorTest {
 
     @Test
     fun proxyFactoryTest() {
-        ContractProxyFactory.test()
+        GeneratedProxyFactory.test()
     }
 
     @Test
     fun suspendProxyFactory() = runTest {
-        ContractProxyFactory.test(CalculatorImpl, EchoImpl)
+        GeneratedProxyFactory.test(CalculatorImpl, EchoImpl)
     }
 
     @Test
     fun performance() {
         var counter = 0
-        val proxy = ContractProxyFactory(MixedImpl,
+        val proxy = GeneratedProxyFactory(MixedImpl,
             { _, _, invocation: Invocation ->
                 counter++
                 invocation()
@@ -180,7 +180,7 @@ class InterceptorTest {
     @Test
     fun suspendPerformance() = runTest {
         var counter = 0
-        val proxy = ContractProxyFactory(CalculatorImpl) { _, _, invocation: SuspendInvocation ->
+        val proxy = GeneratedProxyFactory(CalculatorImpl) { _, _, invocation: SuspendInvocation ->
             counter++
             invocation()
         }
@@ -203,10 +203,10 @@ class InterceptorTest {
     @Test
     fun checkInterceptors() {
         assertFailsMessage<IllegalArgumentException>("missing Interceptor") {
-            ContractProxyFactory(MixedImpl) { _, _, _: SuspendInvocation -> }
+            GeneratedProxyFactory(MixedImpl) { _, _, _: SuspendInvocation -> }
         }
         assertFailsMessage<IllegalArgumentException>("missing SuspendInterceptor") {
-            ContractProxyFactory(MixedImpl) { _, _, _: Invocation -> }
+            GeneratedProxyFactory(MixedImpl) { _, _, _: Invocation -> }
         }
     }
 }

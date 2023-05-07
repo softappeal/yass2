@@ -1,13 +1,8 @@
 - . `yass2-core`
     - Cleanup.kt `[common]`
     - Dumper.kt `[common]`
+    - Generate.kt `[common]`
     - Interceptor.kt `[common]`
-    - generate `yass2-generate`
-        - Generate.kt `[jvm]`
-        - GenerateBinarySerializer.kt `[jvm]`
-        - GenerateDumperProperties.kt `[jvm]`
-        - GenerateProxyFactory.kt `[jvm]`
-        - GenerateRemote.kt `[jvm]`
     - remote `yass2-core`
         - Message.kt `[common]`
         - Remote.kt `[common]`
