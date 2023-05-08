@@ -1,10 +1,9 @@
-package ch.softappeal.yass2.tutorial.contract.generated
+package ch.softappeal.yass2.tutorial.contract
 
 import ch.softappeal.yass2.*
 import ch.softappeal.yass2.serialize.*
 import ch.softappeal.yass2.transport.*
 import ch.softappeal.yass2.transport.session.*
-import ch.softappeal.yass2.tutorial.contract.*
 
 // This file describes the needed contract metadata that depends on generated artifacts.
 

@@ -1,7 +1,7 @@
-package ch.softappeal.yass2.contract.generated
+package ch.softappeal.yass2.contract
 
 @Suppress("RedundantSuppression", "UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
-public val GeneratedBinarySerializer: ch.softappeal.yass2.serialize.binary.BinarySerializer =
+public val ContractBinarySerializer: ch.softappeal.yass2.serialize.binary.BinarySerializer =
     ch.softappeal.yass2.serialize.binary.BinarySerializer(ch.softappeal.yass2.contract.BaseEncoders + listOf(
         ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.contract.IntException::class, false,
             { w, i ->

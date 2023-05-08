@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.contract
 
-import ch.softappeal.yass2.contract.generated.*
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.coroutines.*
 import ch.softappeal.yass2.serialize.binary.*
@@ -19,7 +18,7 @@ val GraphConcreteClasses = listOf(
     Node::class
 )
 
-val ContractSerializer = GeneratedBinarySerializer
+val ContractSerializer = ContractBinarySerializer
 val MessageSerializer = binaryMessageSerializer(ContractSerializer)
 val PacketSerializer = binaryPacketSerializer(MessageSerializer)
 

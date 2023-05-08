@@ -8,6 +8,6 @@ import kotlin.test.*
 class GenerateRemoteTest {
     @Test
     fun duplicatedServiceId() = assertFailsMessage<IllegalArgumentException>("duplicated service id") {
-        generateInvoke(listOf(EchoId, EchoId))
+        generateInvoke("dummy", listOf(EchoId, EchoId))
     }
 }

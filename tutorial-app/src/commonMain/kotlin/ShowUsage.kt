@@ -7,7 +7,6 @@ import ch.softappeal.yass2.remote.coroutines.session.*
 import ch.softappeal.yass2.serialize.*
 import ch.softappeal.yass2.transport.*
 import ch.softappeal.yass2.tutorial.contract.*
-import ch.softappeal.yass2.tutorial.contract.generated.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 

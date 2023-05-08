@@ -3,7 +3,6 @@
 package ch.softappeal.yass2.transport.ktor
 
 import ch.softappeal.yass2.contract.*
-import ch.softappeal.yass2.contract.generated.*
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.coroutines.session.*
 import ch.softappeal.yass2.serialize.binary.*
@@ -105,7 +104,7 @@ class HttpTest {
 
                     override suspend fun divide(a: Int, b: Int): Int = error("not needed")
                 }
-                route(transport, PATH, ::generatedInvoke.tunnel(CalculatorId(calculator)))
+                route(transport, PATH, ::contractInvoke.tunnel(CalculatorId(calculator)))
             }
         }
         engine.start()
@@ -114,7 +113,7 @@ class HttpTest {
                 val randomPort = engine.resolvedConnectors().first().port
                 HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
                     val clientTunnel = client.tunnel(transport, "http://$LOCAL_HOST:$randomPort$PATH")
-                    val calculator = generatedRemoteProxyFactory(clientTunnel)(CalculatorId)
+                    val calculator = contractRemoteProxyFactory(clientTunnel)(CalculatorId)
                     context = "client"
                     assertEquals(5, calculator.add(2, 3))
                     assertEquals("server", context)

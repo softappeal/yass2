@@ -37,8 +37,7 @@
 
 * Javascript transport uses the Fetch and the WebSocket API instead of Ktor
 
-* provided either by generated code (works on any platform and is faster) or reflection (works only on the JVM platform
-  and is slower)
+* provided by generated code (works on any platform and is fast)
     * fast, compact and extendable binary serializer for high throughput and low latency
     * dumper (generic object printer)
     * interceptor (around advice, aspect-oriented programming)
@@ -50,10 +49,7 @@
 yass2-core
      ^
      |
-     +--- yass2-reflect ---> kotlin-reflect
-     |         ^
-     |         |
-     |    yass2-generate
+     +--- yass2-generate ---> kotlin-reflect
      |
      |
      \--- yass2-coroutines ---> kotlinx-coroutines-core

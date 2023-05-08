@@ -8,9 +8,6 @@
         - GenerateDumperProperties.kt `[jvm]`
         - GenerateProxyFactory.kt `[jvm]`
         - GenerateRemote.kt `[jvm]`
-    - reflect `yass2-reflect`
-        - ReflectionDumper.kt `[jvm]`
-        - ReflectionInterceptor.kt `[jvm]`
     - remote `yass2-core`
         - Message.kt `[common]`
         - Remote.kt `[common]`
@@ -21,8 +18,6 @@
                 - Session.kt `[common]`
                 - SessionConnector.kt `[common]`
                 - SessionWatcher.kt `[common]`
-        - reflect `yass2-reflect`
-            - ReflectionRemote.kt `[jvm]`
     - serialize `yass2-core`
         - Serializer.kt `[common]`
         - binary `yass2-core`
@@ -30,9 +25,6 @@
             - BinarySerializer.kt `[common]`
             - Int.kt `[common]`
             - VarInt.kt `[common]`
-            - reflect `yass2-reflect`
-                - BinarySerializerMeta.kt `[common]`
-                - ReflectionBinarySerializer.kt `[jvm]`
     - transport `yass2-core`
         - BinaryMessageSerializer.kt `[common]`
         - Bytes.kt `[common]`

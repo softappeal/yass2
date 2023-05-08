@@ -2,7 +2,6 @@ package ch.softappeal.yass2.remote.coroutines
 
 import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
-import ch.softappeal.yass2.contract.generated.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.*
@@ -69,6 +68,6 @@ class RemoteFlowTest {
 
     @Test
     fun withService() = runTest {
-        GeneratedProxyFactory(FlowServiceImpl, Printer).test()
+        ContractProxyFactory(FlowServiceImpl, Printer).test()
     }
 }

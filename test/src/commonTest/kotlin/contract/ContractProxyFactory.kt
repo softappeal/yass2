@@ -1,7 +1,7 @@
-package ch.softappeal.yass2.contract.generated
+package ch.softappeal.yass2.contract
 
 @Suppress("RedundantSuppression", "UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
-public object GeneratedProxyFactory : ch.softappeal.yass2.ProxyFactory {
+public object ContractProxyFactory : ch.softappeal.yass2.ProxyFactory {
     override fun <S : Any> create(
         service: kotlin.reflect.KClass<S>, implementation: S,
         interceptor: ch.softappeal.yass2.Interceptor, suspendInterceptor: ch.softappeal.yass2.SuspendInterceptor,

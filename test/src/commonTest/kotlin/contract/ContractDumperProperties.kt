@@ -1,7 +1,7 @@
-package ch.softappeal.yass2.contract.generated
+package ch.softappeal.yass2.contract
 
-@Suppress("RedundantSuppression", "UNCHECKED_CAST", "RedundantVisibilityModifier")
-public val GeneratedDumperProperties: ch.softappeal.yass2.DumperProperties = ch.softappeal.yass2.dumperProperties(
+@Suppress("RedundantSuppression", "UNCHECKED_CAST", "RedundantVisibilityModifier", "RemoveRedundantQualifierName")
+public val ContractDumperProperties: ch.softappeal.yass2.DumperProperties = ch.softappeal.yass2.dumperProperties(
     ch.softappeal.yass2.contract.IntException::class to listOf(
         ch.softappeal.yass2.contract.IntException::i as kotlin.reflect.KProperty1<Any, Any?>,
     ),

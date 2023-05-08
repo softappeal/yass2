@@ -1,21 +1,18 @@
 package ch.softappeal.yass2
 
 import ch.softappeal.yass2.contract.*
-import ch.softappeal.yass2.contract.generated.*
 import ch.softappeal.yass2.serialize.binary.*
 import kotlin.test.*
 
 enum class Color { Green }
 
-open class DumperTest {
-    protected open val properties = GeneratedDumperProperties
-
-    private fun dumper() = dumper(properties, StringBuilder::valueDumper, GraphConcreteClasses.toSet())
+class DumperTest {
+    private val dumper = dumper(ContractDumperProperties, StringBuilder::valueDumper, GraphConcreteClasses.toSet())
 
     @Test
     fun missingClass() {
         try {
-            StringBuilder().(dumper())(Any())
+            StringBuilder().dumper(Any())
         } catch (e: IllegalStateException) {
             println(e)
         }
@@ -24,9 +21,8 @@ open class DumperTest {
     @Test
     fun test() {
         val s = StringBuilder()
-        val d = dumper()
         fun dump(value: Any?) {
-            s.d(value).appendLine()
+            s.dumper(value).appendLine()
         }
 
         dump(null)

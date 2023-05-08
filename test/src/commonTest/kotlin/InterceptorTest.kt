@@ -1,7 +1,6 @@
 package ch.softappeal.yass2
 
 import ch.softappeal.yass2.contract.*
-import ch.softappeal.yass2.contract.generated.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
 import kotlin.test.*
@@ -105,13 +104,11 @@ private interface NoSuchService
 fun noSuchService(thePackage: String) {
     val noSuchService: NoSuchService = object : NoSuchService {}
     assertFailsMessage<IllegalStateException>("no proxy for 'class ${thePackage}NoSuchService'") {
-        GeneratedProxyFactory(noSuchService) { _, _, invocation: Invocation -> invocation() }
+        ContractProxyFactory(noSuchService) { _, _, invocation: Invocation -> invocation() }
     }
 }
 
-open class InterceptorTest {
-    protected open val proxyFactory: ProxyFactory = GeneratedProxyFactory
-
+class InterceptorTest {
     @Test
     fun compositeInterceptor() {
         val value = "string"
@@ -158,18 +155,18 @@ open class InterceptorTest {
 
     @Test
     fun proxyFactoryTest() {
-        proxyFactory.test()
+        ContractProxyFactory.test()
     }
 
     @Test
     fun suspendProxyFactory() = runTest {
-        proxyFactory.test(CalculatorImpl, EchoImpl)
+        ContractProxyFactory.test(CalculatorImpl, EchoImpl)
     }
 
     @Test
     fun performance() {
         var counter = 0
-        val proxy = proxyFactory(MixedImpl,
+        val proxy = ContractProxyFactory(MixedImpl,
             { _, _, invocation: Invocation ->
                 counter++
                 invocation()
@@ -183,7 +180,7 @@ open class InterceptorTest {
     @Test
     fun suspendPerformance() = runTest {
         var counter = 0
-        val proxy = proxyFactory(CalculatorImpl) { _, _, invocation: SuspendInvocation ->
+        val proxy = ContractProxyFactory(CalculatorImpl) { _, _, invocation: SuspendInvocation ->
             counter++
             invocation()
         }
@@ -206,10 +203,10 @@ open class InterceptorTest {
     @Test
     fun checkInterceptors() {
         assertFailsMessage<IllegalArgumentException>("missing Interceptor") {
-            proxyFactory(MixedImpl) { _, _, _: SuspendInvocation -> }
+            ContractProxyFactory(MixedImpl) { _, _, _: SuspendInvocation -> }
         }
         assertFailsMessage<IllegalArgumentException>("missing SuspendInterceptor") {
-            proxyFactory(MixedImpl) { _, _, _: Invocation -> }
+            ContractProxyFactory(MixedImpl) { _, _, _: Invocation -> }
         }
     }
 }

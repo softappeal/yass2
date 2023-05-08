@@ -1,15 +1,20 @@
 package ch.softappeal.yass2.generate
 
 import ch.softappeal.yass2.*
-import ch.softappeal.yass2.reflect.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
+import kotlin.reflect.jvm.*
 
-public const val PROXY_FACTORY: String = "ProxyFactory"
+internal fun KClass<*>.serviceFunctions(): List<KFunction<*>> = memberFunctions
+    .filter { it.javaMethod!!.declaringClass != Object::class.java }
+    .sortedBy { it.name } // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
+    .apply {
+        require(map { it.name }.toSet().size == size) { "'${this@serviceFunctions}' has overloaded functions" }
+    }
 
 public fun generateProxyFactory(
+    name: String,
     services: List<KClass<*>>,
-    name: String = GENERATED + PROXY_FACTORY,
 ): String = writer {
     require(services.toSet().size == services.size) { "duplicated service" }
     write("""

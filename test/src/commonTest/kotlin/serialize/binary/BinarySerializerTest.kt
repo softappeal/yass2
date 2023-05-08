@@ -74,10 +74,8 @@ fun missingType(thePackage: String) = assertFailsMessage<IllegalStateException>(
     ContractSerializer.write(BytesWriter(1000), true)
 }
 
-open class BinarySerializerTest {
-    protected open val serializer = ContractSerializer
-
-    private fun <T> copy(value: T, vararg bytes: Int): T = serializer.copy(value, bytes)
+class BinarySerializerTest {
+    private fun <T> copy(value: T, vararg bytes: Int): T = ContractSerializer.copy(value, bytes)
 
     @Test
     fun testNull() {
@@ -226,9 +224,9 @@ open class BinarySerializerTest {
         val writerReader = WriterReader()
         performance(100_000) {
             writerReader.current = 0
-            serializer.write(writerReader, ManyPropertiesConst)
+            ContractSerializer.write(writerReader, ManyPropertiesConst)
             writerReader.current = 0
-            (serializer.read(writerReader) as ManyProperties).assertManyProperties()
+            (ContractSerializer.read(writerReader) as ManyProperties).assertManyProperties()
         }
     }
 }

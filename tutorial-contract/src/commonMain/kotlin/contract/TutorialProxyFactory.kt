@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.tutorial.contract.generated
+package ch.softappeal.yass2.tutorial.contract
 
 @Suppress("RedundantSuppression", "UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
 public object TutorialProxyFactory : ch.softappeal.yass2.ProxyFactory {

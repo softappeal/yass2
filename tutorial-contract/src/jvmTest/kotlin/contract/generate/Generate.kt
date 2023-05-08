@@ -6,11 +6,11 @@ import kotlin.io.path.*
 
 internal fun GenerateAction.execute() {
     all(
-        Path("src/commonMain/kotlin/contract/generated"),
-        "ch.softappeal.yass2.tutorial.contract.generated",
+        "tutorial",
+        Path("src/commonMain/kotlin/contract"),
+        "ch.softappeal.yass2.tutorial.contract",
         ServiceIds,
         ::BaseEncoders, ConcreteClasses,
-        generated = "tutorial"
     )
 }
 
