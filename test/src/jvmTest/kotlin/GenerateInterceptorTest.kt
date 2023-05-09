@@ -15,21 +15,21 @@ private interface Overloaded {
 class GenerateInterceptorTest {
     @Test
     fun overloadedFunction() = assertFailsMessage<IllegalArgumentException>("'class ch.softappeal.yass2.Overloaded' has overloaded functions") {
-        StringBuilder().generateProxyFactory(listOf(Overloaded::class))
+        StringBuilder().generateProxy(listOf(Overloaded::class))
     }
 
     @Test
     fun duplicatedService() = assertFailsMessage<IllegalArgumentException>("duplicated service") {
-        StringBuilder().generateProxyFactory(listOf(Calculator::class, Calculator::class))
+        StringBuilder().generateProxy(listOf(Calculator::class, Calculator::class))
     }
 
     @Test
     fun annotation() = runBlocking {
         var hasAnnotation = false
-        val echo: Echo = GeneratedProxyFactory(EchoImpl) { function, parameters, invocation: SuspendInvocation ->
+        val echo: Echo = EchoImpl.proxy { function, parameters, invoke ->
             hasAnnotation = function.findAnnotation<TestAnnotation>() != null
             println("${function.name} $hasAnnotation $parameters")
-            invocation()
+            invoke()
         }
         echo.echo(null)
         assertTrue(hasAnnotation)

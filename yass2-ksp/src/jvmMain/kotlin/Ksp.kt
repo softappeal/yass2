@@ -19,8 +19,8 @@ public class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolProc
                     packageName,
                     "GeneratedFunction"
                 ).writer().use { out ->
-                    out.append("package $packageName\n")
-                    out.append("public const val TEST_VALUE: Int = 123\n")
+                    out.appendLine("package $packageName")
+                    out.appendLine("public const val TEST_VALUE: Int = 123")
                     annotation.arguments.forEach { argument ->
                         logger.warn(argument.name!!.getShortName())
                         @Suppress("UNCHECKED_CAST") val list = argument.value as List<KSAnnotation>

@@ -62,8 +62,11 @@ class DivideByZeroException : RuntimeException()
 @MustBeDocumented
 annotation class TestAnnotation
 
-interface Calculator {
+interface AddCalculator {
     suspend fun add(a: Int, b: Int): Int
+}
+
+interface Calculator : AddCalculator {
     suspend fun divide(a: Int, b: Int): Int
 }
 
@@ -82,4 +85,8 @@ interface Mixed {
     fun divide(a: Int, b: Int): Int
     suspend fun suspendDivide(a: Int, b: Int): Int
     fun noParametersNoResult()
+}
+
+interface NoSuspend {
+    fun x()
 }

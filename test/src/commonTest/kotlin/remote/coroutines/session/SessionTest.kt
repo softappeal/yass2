@@ -11,16 +11,16 @@ import kotlin.test.*
 
 fun tunnel(context: suspend () -> Any): Tunnel = ::generatedInvoke.tunnel(
     CalculatorId(CalculatorImpl),
-    EchoId(GeneratedProxyFactory(EchoImpl) { _, _, invocation: SuspendInvocation ->
+    EchoId(EchoImpl.proxy { _, _, invoke ->
         println("context<${context()}>")
-        invocation()
+        invoke()
     }),
     FlowServiceId(FlowServiceImpl),
 )
 
 suspend fun Tunnel.test(iterations: Int): Unit = with(generatedRemoteProxyFactory(this)) {
     val calculator = this(CalculatorId)
-    GeneratedProxyFactory.test(calculator, this(EchoId))
+    test(calculator, this(EchoId))
     performance(iterations) { assertEquals(5, calculator.add(2, 3)) }
     this(FlowServiceId).test()
 }

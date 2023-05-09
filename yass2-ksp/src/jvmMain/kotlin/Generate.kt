@@ -1,7 +1,5 @@
 package ch.softappeal.yass2.ksp
 
-import ch.softappeal.yass2.remote.*
-import ch.softappeal.yass2.serialize.binary.*
 import java.nio.file.*
 import kotlin.io.path.*
 import kotlin.reflect.*
@@ -31,19 +29,7 @@ internal fun Appendable.writeFunctionSignature(indent: String, function: KFuncti
 public fun generate(sourceDir: Path, packageName: String, fileName: String, code: Appendable.() -> Unit) {
     val builder = StringBuilder()
     builder.appendLine("package $packageName")
-    builder.appendLine()
     builder.code()
     Files.createDirectories(sourceDir)
     sourceDir.resolve("$fileName.kt").writeText(builder.toString())
-}
-
-public fun generateAll(
-    sourceDir: Path, packageName: String,
-    serviceIds: List<ServiceId<out Any>>,
-    baseEncodersProperty: KProperty0<List<BaseEncoder<out Any>>>, treeConcreteClasses: List<KClass<out Any>>, graphConcreteClasses: List<KClass<out Any>> = emptyList(),
-) {
-    generate(sourceDir, packageName, "GeneratedProxyFactory") { generateProxyFactory(serviceIds.map { it.service }) }
-    generate(sourceDir, packageName, "GeneratedRemote") { generateRemote(serviceIds) }
-    generate(sourceDir, packageName, "GeneratedBinarySerializer") { generateBinarySerializer(baseEncodersProperty, treeConcreteClasses, graphConcreteClasses) }
-    generate(sourceDir, packageName, "GeneratedDumperProperties") { generateDumperProperties(treeConcreteClasses + graphConcreteClasses) }
 }

@@ -53,7 +53,7 @@ class RemoteTest {
 
     @Test
     fun test() = runTest {
-        GeneratedProxyFactory.test(remoteProxyFactory(CalculatorId), remoteProxyFactory(EchoId))
+        test(remoteProxyFactory(CalculatorId), remoteProxyFactory(EchoId))
     }
 
     @Test

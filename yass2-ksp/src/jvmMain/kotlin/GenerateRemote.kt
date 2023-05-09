@@ -13,7 +13,6 @@ public fun Appendable.generateRemote(
 ) {
     require(serviceIds.map { it.id }.toSet().size == serviceIds.size) { "duplicated service id" }
     generateRemoteProxyFactory(serviceIds)
-    appendLine()
     generateInvoke(serviceIds)
 }
 
@@ -21,6 +20,7 @@ private fun Appendable.generateRemoteProxyFactory(
     serviceIds: List<ServiceId<*>>,
 ) {
     write("""
+
         @Suppress("RedundantSuppression", "UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
         public fun generatedRemoteProxyFactory(
             tunnel: $CSY.remote.Tunnel,
@@ -63,6 +63,7 @@ private fun Appendable.generateInvoke(
     serviceIds: List<ServiceId<*>>,
 ) {
     write("""
+
         @Suppress("RedundantSuppression", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier", "RedundantNullableReturnType")
         public suspend fun generatedInvoke(
             request: ${Request::class.qualifiedName}, service: ${Service::class.qualifiedName},
@@ -83,7 +84,7 @@ private fun Appendable.generateInvoke(
                 append("p[${parameter.index - 1}]")
                 if (parameter.type.needsCast()) append(" as ${parameter.type}")
             }
-            append(")\n")
+            appendLine(")")
         }
         write("""
                     else -> $CSY.remote.missingFunction(request)

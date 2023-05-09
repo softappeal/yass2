@@ -48,18 +48,17 @@ public suspend fun showUsage() {
         println(value)
     }
 
-    suspend fun useInterceptor(proxyFactory: ProxyFactory) {
+    suspend fun useInterceptor() {
         println("*** useInterceptor ***")
-        val interceptor: SuspendInterceptor = { function, _, invocation ->
+        val calculator = CalculatorImpl.proxy { function, _, invoke ->
             println("calling function '${function.name}'")
-            invocation()
+            invoke()
         }
-        val calculator = proxyFactory(CalculatorImpl, interceptor)
         useCalculator(calculator)
     }
     useDumper(Dumper)
     useSerializer(GeneratedBinarySerializer)
-    useInterceptor(GeneratedProxyFactory)
+    useInterceptor()
 }
 
 public suspend fun useServices(tunnel: Tunnel) {

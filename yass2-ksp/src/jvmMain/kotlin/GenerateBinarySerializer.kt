@@ -90,6 +90,7 @@ public fun Appendable.generateBinarySerializer(
             (baseEncoders.size + treeConcreteClasses.size + graphConcreteClasses.size)
     ) { "duplicated types" }
     write("""
+
         @Suppress("RedundantSuppression", "UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
         public val GeneratedBinarySerializer: ${BinarySerializer::class.qualifiedName} =
             ${BinarySerializer::class.qualifiedName}(${baseEncodersProperty.javaField!!.declaringClass.packageName}.${baseEncodersProperty.name} + listOf(

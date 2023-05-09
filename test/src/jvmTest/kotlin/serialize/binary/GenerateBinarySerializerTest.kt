@@ -86,6 +86,7 @@ class GenerateBinarySerializerTest {
         builder.generateBinarySerializer(::IntBaseEncoders, listOf(X::class, Y::class, Z::class))
         assertEquals(
             """
+
                 @Suppress("RedundantSuppression", "UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
                 public val GeneratedBinarySerializer: ch.softappeal.yass2.serialize.binary.BinarySerializer =
                     ch.softappeal.yass2.serialize.binary.BinarySerializer(ch.softappeal.yass2.serialize.binary.IntBaseEncoders + listOf(

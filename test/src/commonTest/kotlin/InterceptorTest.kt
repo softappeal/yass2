@@ -17,16 +17,20 @@ val EchoImpl = object : Echo {
     override suspend fun delay(milliSeconds: Int) = delay(milliSeconds.toLong())
 }
 
-val MixedImpl = object : Mixed {
+private val MixedImpl = object : Mixed {
     override fun divide(a: Int, b: Int) = if (b == 0) throw DivideByZeroException() else a / b
     override suspend fun suspendDivide(a: Int, b: Int) = divide(a, b)
     override fun noParametersNoResult() {}
 }
 
-val Printer: SuspendInterceptor = { function, parameters, invocation ->
+private val NoSuspendImpl = object : NoSuspend {
+    override fun x() {}
+}
+
+val Printer: SuspendInterceptor = { function, parameters, invoke ->
     print("${function.name} $parameters -> ")
     try {
-        val result = invocation()
+        val result = invoke()
         println(result)
         result
     } catch (e: Exception) {
@@ -35,19 +39,19 @@ val Printer: SuspendInterceptor = { function, parameters, invocation ->
     }
 }
 
-suspend fun ProxyFactory.test(calculatorImpl: Calculator, echoImpl: Echo) {
+suspend fun test(calculatorImpl: Calculator, echoImpl: Echo) {
     var counter = 0
     var functionName: String? = null
     var params: List<Any?>? = null
-    val testInterceptor: SuspendInterceptor = { function, parameters, invocation ->
+    val testInterceptor: SuspendInterceptor = { function, parameters, invoke ->
         counter++
         functionName = function.name
         params = parameters
-        invocation()
+        invoke()
     }
     val interceptor = testInterceptor + Printer
-    val calculator = this(calculatorImpl, interceptor)
-    val echo = this(echoImpl, interceptor)
+    val calculator = calculatorImpl.proxy(interceptor)
+    val echo = echoImpl.proxy(interceptor)
     assertEquals(5, calculator.add(2, 3))
     assertEquals("add", functionName)
     assertEquals(listOf(2, 3), params)
@@ -65,66 +69,23 @@ suspend fun ProxyFactory.test(calculatorImpl: Calculator, echoImpl: Echo) {
     })
 }
 
-private fun ProxyFactory.test() {
-    val printer: Interceptor = { function, parameters, invocation ->
-        print("${function.name} $parameters -> ")
-        try {
-            val result = invocation()
-            println(result)
-            result
-        } catch (e: Exception) {
-            println(e)
-            throw e
-        }
-    }
-    var counter = 0
-    var functionName: String? = null
-    var params: List<Any?>? = null
-    val testInterceptor: Interceptor = { function, parameters, invocation ->
-        counter++
-        functionName = function.name
-        params = parameters
-        invocation()
-    }
-    val mixed = this(MixedImpl, testInterceptor + printer) { _, _, _ -> error("") }
-    assertEquals(3, mixed.divide(12, 4))
-    assertEquals("divide", functionName)
-    assertEquals(listOf(12, 4), params)
-    assertEquals(1, counter)
-    println(assertFailsWith<DivideByZeroException> { mixed.divide(12, 0) })
-    assertEquals(2, counter)
-    mixed.noParametersNoResult()
-    println(mixed.toString())
-    println(mixed.hashCode())
-    assertNotEquals(mixed, Any())
-}
-
-private interface NoSuchService
-
-fun noSuchService(thePackage: String) {
-    val noSuchService: NoSuchService = object : NoSuchService {}
-    assertFailsMessage<IllegalStateException>("no proxy for 'class ${thePackage}NoSuchService'") {
-        GeneratedProxyFactory(noSuchService) { _, _, invocation: Invocation -> invocation() }
-    }
-}
-
 class InterceptorTest {
     @Test
     fun compositeInterceptor() {
         val value = "string"
         var value1: Int? = null
         var value2: Int? = null
-        val interceptor1: Interceptor = { _, _, invocation ->
+        val interceptor1: Interceptor = { _, _, invoke ->
             assertNull(value1)
             assertNull(value2)
             value1 = 1
-            invocation()
+            invoke()
         }
-        val interceptor2: Interceptor = { _, _, invocation ->
+        val interceptor2: Interceptor = { _, _, invoke ->
             assertNotNull(value1)
             assertNull(value2)
             value2 = 1
-            invocation()
+            invoke()
         }
         assertSame(value, (interceptor1 + interceptor2)(Calculator::add, emptyList()) { value })
         assertNotNull(value1)
@@ -136,17 +97,17 @@ class InterceptorTest {
         val value = "string"
         var value1: Int? = null
         var value2: Int? = null
-        val interceptor1: SuspendInterceptor = { _, _, invocation ->
+        val interceptor1: SuspendInterceptor = { _, _, invoke ->
             assertNull(value1)
             assertNull(value2)
             value1 = 1
-            invocation()
+            invoke()
         }
-        val interceptor2: SuspendInterceptor = { _, _, invocation ->
+        val interceptor2: SuspendInterceptor = { _, _, invoke ->
             assertNotNull(value1)
             assertNull(value2)
             value2 = 1
-            invocation()
+            invoke()
         }
         assertSame(value, (interceptor1 + interceptor2)(Calculator::add, emptyList()) { value })
         assertNotNull(value1)
@@ -154,24 +115,58 @@ class InterceptorTest {
     }
 
     @Test
-    fun proxyFactoryTest() {
-        GeneratedProxyFactory.test()
+    fun test() {
+        val printer: Interceptor = { function, parameters, invoke ->
+            print("${function.name} $parameters -> ")
+            try {
+                val result = invoke()
+                println(result)
+                result
+            } catch (e: Exception) {
+                println(e)
+                throw e
+            }
+        }
+        var counter = 0
+        var functionName: String? = null
+        var params: List<Any?>? = null
+        val testInterceptor: Interceptor = { function, parameters, invoke ->
+            counter++
+            functionName = function.name
+            params = parameters
+            invoke()
+        }
+        val mixed = MixedImpl.proxy(testInterceptor + printer) { _, _, _ -> error("") }
+        assertEquals(3, mixed.divide(12, 4))
+        assertEquals("divide", functionName)
+        assertEquals(listOf(12, 4), params)
+        assertEquals(1, counter)
+        println(assertFailsWith<DivideByZeroException> { mixed.divide(12, 0) })
+        assertEquals(2, counter)
+        mixed.noParametersNoResult()
+        println(mixed.toString())
+        println(mixed.hashCode())
+        assertNotEquals(mixed, Any())
+        assertEquals(3, counter)
+        val noSuspend = NoSuspendImpl.proxy(testInterceptor + printer)
+        noSuspend.x()
+        assertEquals(4, counter)
     }
 
     @Test
-    fun suspendProxyFactory() = runTest {
-        GeneratedProxyFactory.test(CalculatorImpl, EchoImpl)
+    fun suspendTest() = runTest {
+        test(CalculatorImpl, EchoImpl)
     }
 
     @Test
     fun performance() {
         var counter = 0
-        val proxy = GeneratedProxyFactory(MixedImpl,
-            { _, _, invocation: Invocation ->
+        val proxy = MixedImpl.proxy(
+            { _, _, invoke ->
                 counter++
-                invocation()
+                invoke()
             },
-            { _, _, _: SuspendInvocation -> }
+            { _, _, _ -> }
         )
         performance(100_000) { assertEquals(4, proxy.divide(12, 3)) }
         assertEquals(200_000, counter)
@@ -180,33 +175,11 @@ class InterceptorTest {
     @Test
     fun suspendPerformance() = runTest {
         var counter = 0
-        val proxy = GeneratedProxyFactory(CalculatorImpl) { _, _, invocation: SuspendInvocation ->
+        val proxy = CalculatorImpl.proxy { _, _, invoke ->
             counter++
-            invocation()
+            invoke()
         }
         performance(100_000) { assertEquals(4, proxy.divide(12, 3)) }
         assertEquals(200_000, counter)
-    }
-
-    @Test
-    fun missingInterceptor() = assertFailsMessage<RuntimeException>("missing Interceptor") {
-        MissingInterceptor(Calculator::add, emptyList()) {}
-    }
-
-    @Test
-    fun missingSuspendInterceptor() = runTest {
-        assertFailsMessage<RuntimeException>("missing SuspendInterceptor") {
-            MissingSuspendInterceptor(Calculator::add, emptyList()) {}
-        }
-    }
-
-    @Test
-    fun checkInterceptors() {
-        assertFailsMessage<IllegalArgumentException>("missing Interceptor") {
-            GeneratedProxyFactory(MixedImpl) { _, _, _: SuspendInvocation -> }
-        }
-        assertFailsMessage<IllegalArgumentException>("missing SuspendInterceptor") {
-            GeneratedProxyFactory(MixedImpl) { _, _, _: Invocation -> }
-        }
     }
 }
