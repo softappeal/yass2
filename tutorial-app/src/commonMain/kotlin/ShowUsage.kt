@@ -62,10 +62,9 @@ public suspend fun showUsage() {
 }
 
 public suspend fun useServices(tunnel: Tunnel) {
-    val remoteProxyFactory = generatedRemoteProxyFactory(tunnel)
-    val calculator = remoteProxyFactory(CalculatorId)
+    val calculator = CalculatorId.proxy(tunnel)
     useCalculator(calculator)
-    val flowService = remoteProxyFactory(FlowServiceId)
+    val flowService = FlowServiceId.proxy(tunnel)
     val booleanFlow = flowService.createFlow<Boolean>(BooleanFlowId())
     println(booleanFlow.toList())
     val intFlow = flowService.createFlow<Int>(IntFlowId(10))
@@ -79,14 +78,14 @@ public fun flowService(): Service {
             is BooleanFlowId -> flowOf(false, true)
         }
     }
-    @Suppress("UNCHECKED_CAST") return FlowServiceId(flowService(flowFactory as FlowFactory))
+    @Suppress("UNCHECKED_CAST") return FlowServiceId.service(flowService(flowFactory as FlowFactory))
 }
 
 // The following code is only needed if you use session based bidirectional remoting.
 
 public fun <C : Connection> CoroutineScope.initiatorSessionFactory(): SessionFactory<C> = {
     object : Session<C>() {
-        override val serverTunnel = ::generatedInvoke.tunnel(NewsListenerId(NewsListenerImpl))
+        override val serverTunnel = tunnel(NewsListenerId.service(NewsListenerImpl))
 
         override fun opened() {
             launch {
@@ -104,15 +103,14 @@ public fun <C : Connection> CoroutineScope.initiatorSessionFactory(): SessionFac
 
 public fun <C : Connection> CoroutineScope.acceptorSessionFactory(): SessionFactory<C> = {
     object : Session<C>() {
-        override val serverTunnel = ::generatedInvoke.tunnel(
-            CalculatorId(CalculatorImpl),
+        override val serverTunnel = tunnel(
+            CalculatorId.service(CalculatorImpl),
             flowService(),
         )
 
         override fun opened() {
             launch {
-                val remoteProxyFactory = generatedRemoteProxyFactory(clientTunnel)
-                val newsListener = remoteProxyFactory(NewsListenerId)
+                val newsListener = NewsListenerId.proxy(clientTunnel)
                 newsListener.notify("News 1")
                 newsListener.notify("News 2")
             }

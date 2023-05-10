@@ -8,8 +8,7 @@ class GenerateTest {
     @Test
     fun test() {
         fun generate(fileName: String, code: Appendable.() -> Unit) = generate(Path("src/commonMain/kotlin"), "ch.softappeal.yass2.tutorial.contract", fileName, code)
-        generate("GeneratedProxy") { generateProxy(ServiceIds.map { it.service }) }
-        generate("GeneratedRemote") { generateRemote(ServiceIds) }
+        generate("GeneratedProxy") { generateProxy(Services) }
         generate("GeneratedBinarySerializer") { generateBinarySerializer(::BaseEncoders, ConcreteClasses) }
         generate("GeneratedDumperProperties") { generateDumperProperties(ConcreteClasses) }
     }

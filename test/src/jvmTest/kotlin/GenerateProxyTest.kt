@@ -12,7 +12,7 @@ private interface Overloaded {
     suspend fun f(i: Int)
 }
 
-class GenerateInterceptorTest {
+class GenerateProxyTest {
     @Test
     fun overloadedFunction() = assertFailsMessage<IllegalArgumentException>("'class ch.softappeal.yass2.Overloaded' has overloaded functions") {
         StringBuilder().generateProxy(listOf(Overloaded::class))
@@ -27,7 +27,7 @@ class GenerateInterceptorTest {
     fun annotation() = runBlocking {
         var hasAnnotation = false
         val echo: Echo = EchoImpl.proxy { function, parameters, invoke ->
-            hasAnnotation = function.findAnnotation<TestAnnotation>() != null
+            hasAnnotation = function.hasAnnotation<TestAnnotation>()
             println("${function.name} $hasAnnotation $parameters")
             invoke()
         }

@@ -9,20 +9,20 @@ import kotlinx.coroutines.test.*
 import kotlin.coroutines.*
 import kotlin.test.*
 
-fun tunnel(context: suspend () -> Any): Tunnel = ::generatedInvoke.tunnel(
-    CalculatorId(CalculatorImpl),
-    EchoId(EchoImpl.proxy { _, _, invoke ->
+fun tunnel(context: suspend () -> Any): Tunnel = tunnel(
+    CalculatorId.service(CalculatorImpl),
+    EchoId.service(EchoImpl.proxy { _, _, invoke ->
         println("context<${context()}>")
         invoke()
     }),
-    FlowServiceId(FlowServiceImpl),
+    FlowServiceId.service(FlowServiceImpl),
 )
 
-suspend fun Tunnel.test(iterations: Int): Unit = with(generatedRemoteProxyFactory(this)) {
-    val calculator = this(CalculatorId)
-    test(calculator, this(EchoId))
+suspend fun Tunnel.test(iterations: Int) {
+    val calculator = CalculatorId.proxy(this)
+    test(calculator, EchoId.proxy(this))
     performance(iterations) { assertEquals(5, calculator.add(2, 3)) }
-    this(FlowServiceId).test()
+    FlowServiceId.proxy(this).test()
 }
 
 fun <C : Connection> CoroutineScope.acceptorSessionFactory(context: suspend Session<C>.() -> Any): SessionFactory<C> = {
@@ -31,7 +31,7 @@ fun <C : Connection> CoroutineScope.acceptorSessionFactory(context: suspend Sess
 
         override fun opened() {
             launch {
-                val echo = generatedRemoteProxyFactory(clientTunnel)(EchoId)
+                val echo = EchoId.proxy(clientTunnel)
                 val value = "echo from acceptor"
                 val result = echo.echo(value)
                 print("<$result>")
@@ -50,7 +50,7 @@ fun <C : Connection> CoroutineScope.acceptorSessionFactory(context: suspend Sess
 
 fun <C : Connection> CoroutineScope.initiatorSessionFactory(iterations: Int): SessionFactory<C> = {
     object : Session<C>() {
-        override val serverTunnel = ::generatedInvoke.tunnel(EchoId(EchoImpl))
+        override val serverTunnel = tunnel(EchoId.service(EchoImpl))
 
         override fun opened() {
             launch {
@@ -114,7 +114,7 @@ class SessionTest {
             override fun opened() {
                 val session = this
                 launch {
-                    val echo = generatedRemoteProxyFactory(clientTunnel)(EchoId)
+                    val echo = EchoId.proxy(clientTunnel)
                     var timeout = 20
                     val job = watch(session, 200, 40) {
                         println("check")
@@ -128,7 +128,7 @@ class SessionTest {
 
             override suspend fun closed(e: Exception?) = println("session1 closed: $e")
         }
-        val serverTunnel = ::generatedInvoke.tunnel(EchoId(EchoImpl))
+        val serverTunnel = tunnel(EchoId.service(EchoImpl))
         val session2 = object : Session<Connection>() {
             override val serverTunnel = serverTunnel
             override suspend fun closed(e: Exception?) = println("session2 closed: $e")
@@ -142,7 +142,7 @@ class SessionTest {
             object : Session<Connection>() {
                 override fun opened() {
                     launch {
-                        val echo = generatedRemoteProxyFactory(clientTunnel)(EchoId)
+                        val echo = EchoId.proxy(clientTunnel)
                         println(echo.echo("hello"))
                         close()
                     }
@@ -152,7 +152,7 @@ class SessionTest {
             }
         }
 
-        val serverTunnel = ::generatedInvoke.tunnel(EchoId(EchoImpl))
+        val serverTunnel = tunnel(EchoId.service(EchoImpl))
         val acceptorSessionFactory = {
             object : Session<Connection>() {
                 override val serverTunnel = serverTunnel

@@ -26,7 +26,7 @@ val CalculatorId: ServiceId<Calculator> = serviceId(1)
 val EchoId: ServiceId<Echo> = serviceId(2)
 val FlowServiceId: ServiceId<FlowService> = serviceId(3)
 
-val ServiceIds = listOf(CalculatorId, EchoId, FlowServiceId)
+val Services = listOf(Calculator::class, Echo::class, FlowService::class, Mixed::class, NoSuspend::class)
 
 fun StringBuilder.valueDumper(value: Any) {
     when (value) {

@@ -13,11 +13,9 @@ public annotation class Generate(
     val list: Array<ServiceWithId>,
 )
 
-// infer package
+// @Target(AnnotationTarget.CLASS)
+//public annotation class Generate // flags interfaces and classes for generating metadata for remote and dumper and binarySerializer
 
-// make Proxy instead of ProxyFactory, move into matching package
-
-// generate service Ids
 /*
 
 @Target(AnnotationTarget.FILE)
@@ -37,17 +35,5 @@ public annotation class GenerateBinarySerializerAndDumper(
 public annotation class GenerateDumper(
     val concreteClasses: Array<KClass<*>>,
 )
-
-@Target(AnnotationTarget.FILE)
-public annotation class GenerateProxyFactory(
-    val services: Array<KClass<*>>,
-)
-
-@Target(AnnotationTarget.FILE)
-public annotation class GenerateRemote(
-    serviceIds: List<ServiceId<*>>,
-)
-
-// and both of above!
 
  */

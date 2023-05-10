@@ -3,14 +3,12 @@ package ch.softappeal.yass2.ksp
 import kotlin.reflect.*
 import kotlin.reflect.full.*
 
-private fun KClass<*>.properties(): List<KProperty1<Any, Any?>> = memberProperties
+private fun KClass<*>.properties() = memberProperties
     .filter { !isSubclassOf(Throwable::class) || (it.name != "cause" && it.name != "message") }
     .sortedBy { it.name }
     .map { @Suppress("UNCHECKED_CAST") (it as KProperty1<Any, Any?>) }
 
-public fun Appendable.generateDumperProperties(
-    concreteClasses: List<KClass<*>>,
-) {
+public fun Appendable.generateDumperProperties(concreteClasses: List<KClass<*>>) {
     require(concreteClasses.toSet().size == concreteClasses.size) { "duplicated concreteClass" }
     write("""
 

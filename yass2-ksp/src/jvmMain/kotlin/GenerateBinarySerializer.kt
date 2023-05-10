@@ -7,19 +7,11 @@ import kotlin.reflect.jvm.*
 
 private enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
 
-private class MetaProperty(
-    val property: KProperty1<Any, Any?>,
-    val kind: PropertyKind,
-    val encoderId: Int = -1,
-) {
-    fun mutableProperty(): KMutableProperty1<Any, Any?> = property as KMutableProperty1<Any, Any?>
+private class MetaProperty(val property: KProperty1<Any, Any?>, val kind: PropertyKind, val encoderId: Int = -1) {
+    fun mutableProperty() = property as KMutableProperty1<Any, Any?>
 }
 
-private fun KClass<*>.metaProperty(
-    property: KProperty1<Any, Any?>,
-    baseEncoderTypes: List<KClass<*>>,
-    optional: Boolean,
-): MetaProperty {
+private fun KClass<*>.metaProperty(property: KProperty1<Any, Any?>, baseEncoderTypes: List<KClass<*>>, optional: Boolean): MetaProperty {
     val kind = if (optional) PropertyKind.NoIdOptional else PropertyKind.NoIdRequired
     return if (this == List::class) MetaProperty(property, kind, ListEncoderId.id) else {
         val index = baseEncoderTypes.indexOfFirst { it == this }
@@ -27,11 +19,7 @@ private fun KClass<*>.metaProperty(
     }
 }
 
-private class MetaClass(
-    klass: KClass<*>,
-    properties: List<MetaProperty>,
-    parameterNames: List<String>,
-) {
+private class MetaClass(klass: KClass<*>, properties: List<MetaProperty>, parameterNames: List<String>) {
     val parameterProperties: List<MetaProperty>
     val bodyProperties: List<MetaProperty>
     val properties: List<MetaProperty>

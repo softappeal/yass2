@@ -5,35 +5,26 @@ import ch.softappeal.yass2.contract.*
 import kotlinx.coroutines.test.*
 import kotlin.test.*
 
+private val TestTunnel = tunnel(CalculatorId.service(CalculatorImpl), EchoId.service(EchoImpl))
+
 class RemoteTest {
     @Test
     fun duplicatedService() = assertFailsMessage<IllegalArgumentException>("duplicated service id") {
-        ::generatedInvoke.tunnel(EchoId(EchoImpl), EchoId(EchoImpl))
+        tunnel(EchoId.service(EchoImpl), EchoId.service(EchoImpl))
     }
 
     @Test
-    fun missingService() = runTest {
-        assertFailsMessage<IllegalStateException>("no service id 1") {
-            generatedRemoteProxyFactory(::generatedInvoke.tunnel())(CalculatorId).add(1, 2)
+    fun noService() = runTest {
+        assertFailsMessage<IllegalStateException>("no service with id 123") {
+            FlowServiceId.proxy(TestTunnel)
+            TestTunnel(Request(123, 0, listOf()))
         }
     }
 
     @Test
-    fun noServiceIdRemoteProxyFactory() = assertFailsMessage<IllegalStateException>("no service id 123") {
-        generatedRemoteProxyFactory { ValueReply(null) }.create(serviceId<Calculator>(123))
-    }
-
-    @Test
-    fun noServiceIdInvoker() = runTest {
-        assertFailsMessage<IllegalStateException>("no service id 123") {
-            generatedInvoke(Request(123, 0, emptyList()), EchoId(EchoImpl))
-        }
-    }
-
-    @Test
-    fun noFunctionId() = runTest {
-        assertFailsMessage<IllegalStateException>("no function id 123 for service id 2") {
-            generatedInvoke(Request(2, 123, emptyList()), EchoId(EchoImpl))
+    fun noFunction() = runTest {
+        assertFailsMessage<IllegalStateException>("service with id 1 has no function with id 3") {
+            serviceId<Echo>(CalculatorId.id).proxy(tunnel(CalculatorId.service(CalculatorImpl))).noParametersNoResult()
         }
     }
 
@@ -49,16 +40,14 @@ class RemoteTest {
         assertSame(value, ValueReply(value).value)
     }
 
-    private val remoteProxyFactory = generatedRemoteProxyFactory(::generatedInvoke.tunnel(CalculatorId(CalculatorImpl), EchoId(EchoImpl)))
-
     @Test
     fun test() = runTest {
-        test(remoteProxyFactory(CalculatorId), remoteProxyFactory(EchoId))
+        test(CalculatorId.proxy(TestTunnel), EchoId.proxy(TestTunnel))
     }
 
     @Test
     fun performance() = runTest {
-        val calculator = remoteProxyFactory(CalculatorId)
+        val calculator = CalculatorId.proxy(TestTunnel)
         performance(100_000) { assertEquals(5, calculator.add(2, 3)) }
     }
 }
