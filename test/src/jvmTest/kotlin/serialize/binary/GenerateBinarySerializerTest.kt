@@ -2,7 +2,7 @@ package ch.softappeal.yass2.serialize.binary
 
 import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
-import ch.softappeal.yass2.ksp.*
+import ch.softappeal.yass2.generate.manual.*
 import kotlin.reflect.full.*
 import kotlin.test.*
 

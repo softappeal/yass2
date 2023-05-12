@@ -95,7 +95,6 @@ public class BinarySerializer(encoders: List<Encoder>) : Serializer {
     override fun read(reader: Reader): Any? = EncoderReader(reader, encoders).readWithId()
 }
 
-// TODO: solution for KSP generate
 public class BaseEncoder<T : Any>(
     type: KClass<T>,
     public val write: (writer: Writer, value: T) -> Unit,

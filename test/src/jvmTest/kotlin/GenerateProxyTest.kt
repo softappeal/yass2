@@ -1,7 +1,7 @@
 package ch.softappeal.yass2
 
 import ch.softappeal.yass2.contract.*
-import ch.softappeal.yass2.ksp.*
+import ch.softappeal.yass2.generate.manual.*
 import kotlinx.coroutines.*
 import kotlin.reflect.full.*
 import kotlin.test.*

@@ -1,5 +1,6 @@
-package ch.softappeal.yass2.ksp // TODO
+package ch.softappeal.yass2.generate.ksp // TODO
 
+import ch.softappeal.yass2.*
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 
@@ -8,6 +9,11 @@ public class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolProc
     private val codeGenerator = environment.codeGenerator
     private val logger = environment.logger
     override fun process(resolver: Resolver): List<KSAnnotated> {
+        val symbols = resolver.getSymbolsWithAnnotation(Proxy::class.qualifiedName!!)
+        symbols.forEach {
+            logger.warn("xxx", it)
+        }
+        /*
         if (invoked) return emptyList()
         invoked = true
         logger.warn("----------------")
@@ -38,6 +44,7 @@ public class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolProc
                 }
             }
         }
+         */
         return emptyList()
     }
 }

@@ -1,6 +1,7 @@
 package ch.softappeal.yass2.contract
 
-import ch.softappeal.yass2.ksp.*
+import ch.softappeal.yass2.contract.child.*
+import ch.softappeal.yass2.generate.manual.*
 import ch.softappeal.yass2.remote.coroutines.*
 import kotlin.io.path.*
 import kotlin.test.*
@@ -8,15 +9,15 @@ import kotlin.test.*
 class GenerateTest {
     @Test
     fun test() {
-        fun generate(fileName: String, code: Appendable.() -> Unit) = generate(Path("src/commonTest/kotlin/contract"), "ch.softappeal.yass2.contract", fileName, code)
-        generate("GeneratedProxy") { generateProxy(Services) }
+        fun generate(fileName: String, code: Appendable.() -> Unit) = generate(Mode.Verify, Path("src/commonTest/kotlin/contract"), "ch.softappeal.yass2.contract", fileName, code)
+        generate("GeneratedProxy") { generateProxy(listOf(Calculator::class, Echo::class, Mixed::class)) }
         generate("GeneratedBinarySerializer") { generateBinarySerializer(::BaseEncoders, TreeConcreteClasses, GraphConcreteClasses) }
         generate("GeneratedDumperProperties") { generateDumperProperties(TreeConcreteClasses + GraphConcreteClasses) }
+        generate(Mode.Verify, Path("src/commonTest/kotlin/contract/child"), "ch.softappeal.yass2.contract.child", "GeneratedProxy") { generateProxy(listOf(NoSuspend::class)) }
     }
 
     @Test
     fun testFlowService() {
-        fun generate(fileName: String, code: Appendable.() -> Unit) = generate(Path("../yass2-coroutines/src/commonMain/kotlin/remote/coroutines"), "ch.softappeal.yass2.remote.coroutines", fileName, code)
-        generate("GeneratedProxy") { generateProxy(listOf(FlowService::class)) }
+        generate(Mode.Verify, Path("../yass2-coroutines/src/commonMain/kotlin/remote/coroutines"), "ch.softappeal.yass2.remote.coroutines", "GeneratedProxy") { generateProxy(listOf(FlowService::class)) }
     }
 }

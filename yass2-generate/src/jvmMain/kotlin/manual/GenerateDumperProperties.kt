@@ -1,5 +1,6 @@
-package ch.softappeal.yass2.ksp
+package ch.softappeal.yass2.generate.manual
 
+import ch.softappeal.yass2.generate.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
 

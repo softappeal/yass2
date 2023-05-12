@@ -1,5 +1,7 @@
 package ch.softappeal.yass2.contract
 
+import ch.softappeal.yass2.*
+
 class IntException(
     val i: Int?,
 ) : RuntimeException()
@@ -66,10 +68,12 @@ interface AddCalculator {
     suspend fun add(a: Int, b: Int): Int
 }
 
+@Proxy
 interface Calculator : AddCalculator {
     suspend fun divide(a: Int, b: Int): Int
 }
 
+@Proxy
 interface Echo {
     @TestAnnotation
     suspend fun echo(value: Any?): Any?
@@ -81,12 +85,9 @@ interface Echo {
     suspend fun delay(milliSeconds: Int)
 }
 
+@Proxy
 interface Mixed {
     fun divide(a: Int, b: Int): Int
     suspend fun suspendDivide(a: Int, b: Int): Int
     fun noParametersNoResult()
-}
-
-interface NoSuspend {
-    fun x()
 }

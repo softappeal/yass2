@@ -117,7 +117,7 @@ val coroutinesProject = project("yass2-coroutines") {
     }
 }
 
-val kspProject = project("yass2-ksp") {
+val generateProject = project("yass2-generate") {
     kotlin {
         sourceSets {
             val jvmMain by getting {
@@ -165,6 +165,7 @@ val ktorProject = project("yass2-ktor") {
 }
 
 project("test") { // this project is needed due to https://youtrack.jetbrains.com/issue/KT-35073
+    apply(plugin = "com.google.devtools.ksp")
     kotlin {
         sourceSets {
             val commonTest by getting {
@@ -184,7 +185,7 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
             val jvmTest by getting {
                 dependsOn(jvmAndNixTest)
                 dependencies {
-                    implementation(kspProject)
+                    implementation(generateProject)
                 }
             }
             if (linuxTarget) {
@@ -199,10 +200,13 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
             }
         }
     }
+    dependencies {
+        add("kspJvmTest", generateProject)
+    }
+
 }
 
-val tutorialContractProject = project("tutorial-contract") { // TODO
-    // apply(plugin = "com.google.devtools.ksp")
+val tutorialContractProject = project("tutorial-contract") {
     kotlin {
         sourceSets {
             val commonMain by getting {
@@ -212,18 +216,12 @@ val tutorialContractProject = project("tutorial-contract") { // TODO
             }
             val jvmTest by getting {
                 dependencies {
-                    implementation(kspProject)
+                    implementation(generateProject)
                     implementation(kotlin("test"))
                 }
             }
         }
     }
-    /*
-    dependencies {
-        ksp(kspProject)
-        //add("kspJvm", kspProject)
-    }
-    */
 }
 
 project("tutorial-app") {
@@ -257,7 +255,7 @@ project("tutorial-app") {
 }
 
 tasks.register(publishYass2) {
-    listOf(coreProject, coroutinesProject, ktorProject, kspProject).forEach {
+    listOf(coreProject, coroutinesProject, ktorProject, generateProject).forEach {
         dependsOn("${it.name}:publishAllPublicationsToOssrhRepository")
     }
 }

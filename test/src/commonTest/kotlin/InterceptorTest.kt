@@ -1,6 +1,7 @@
 package ch.softappeal.yass2
 
 import ch.softappeal.yass2.contract.*
+import ch.softappeal.yass2.contract.child.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
 import kotlin.test.*

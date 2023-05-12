@@ -1,7 +1,6 @@
 - . `yass2-core`
     - Cleanup.kt `[common]`
     - Dumper.kt `[common]`
-    - Generate.kt `[common]`
     - Interceptor.kt `[common]`
     - remote `yass2-core`
         - Message.kt `[common]`

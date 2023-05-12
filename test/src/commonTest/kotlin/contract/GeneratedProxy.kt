@@ -97,12 +97,3 @@ public fun ch.softappeal.yass2.contract.Mixed.proxy(
         return suspendIntercept(ch.softappeal.yass2.contract.Mixed::suspendDivide, listOf(p1, p2)) { this@proxy.suspendDivide(p1, p2) } as kotlin.Int
     }
 }
-
-@Suppress("RedundantSuppression", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier", "KotlinRedundantDiagnosticSuppress")
-public fun ch.softappeal.yass2.contract.NoSuspend.proxy(
-    intercept: ch.softappeal.yass2.Interceptor,
-): ch.softappeal.yass2.contract.NoSuspend = object : ch.softappeal.yass2.contract.NoSuspend {
-    override fun x() {
-        intercept(ch.softappeal.yass2.contract.NoSuspend::x, listOf()) { this@proxy.x() }
-    }
-}
