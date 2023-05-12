@@ -25,6 +25,7 @@ allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
     apply(plugin = "maven-publish")
     apply(plugin = "signing")
+    apply(plugin = "com.google.devtools.ksp")
 
     group = "ch.softappeal.yass2"
 
@@ -117,20 +118,6 @@ val coroutinesProject = project("yass2-coroutines") {
     }
 }
 
-val generateProject = project("yass2-generate") {
-    kotlin {
-        sourceSets {
-            val jvmMain by getting {
-                dependencies {
-                    api(coreProject)
-                    api(kotlin("reflect"))
-                    api(libraries.ksp)
-                }
-            }
-        }
-    }
-}
-
 val ktorProject = project("yass2-ktor") {
     kotlin {
         sourceSets {
@@ -164,8 +151,21 @@ val ktorProject = project("yass2-ktor") {
     }
 }
 
+val generateProject = project("yass2-generate") {
+    kotlin {
+        sourceSets {
+            val jvmMain by getting {
+                dependencies {
+                    api(coreProject)
+                    api(kotlin("reflect"))
+                    api(libraries.ksp)
+                }
+            }
+        }
+    }
+}
+
 project("test") { // this project is needed due to https://youtrack.jetbrains.com/issue/KT-35073
-    apply(plugin = "com.google.devtools.ksp")
     kotlin {
         sourceSets {
             val commonTest by getting {

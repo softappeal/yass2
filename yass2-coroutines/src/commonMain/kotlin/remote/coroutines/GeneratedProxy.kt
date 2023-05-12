@@ -1,6 +1,17 @@
+@file:Suppress(
+    "UNCHECKED_CAST",
+    "USELESS_CAST",
+    "PARAMETER_NAME_CHANGED_ON_OVERRIDE",
+    "RemoveRedundantQualifierName",
+    "SpellCheckingInspection",
+    "RedundantVisibilityModifier",
+    "RedundantNullableReturnType",
+    "KotlinRedundantDiagnosticSuppress",
+    "RedundantSuppression",
+)
+
 package ch.softappeal.yass2.remote.coroutines
 
-@Suppress("RedundantSuppression", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier", "KotlinRedundantDiagnosticSuppress")
 public fun ch.softappeal.yass2.remote.coroutines.FlowService.proxy(
     suspendIntercept: ch.softappeal.yass2.SuspendInterceptor,
 ): ch.softappeal.yass2.remote.coroutines.FlowService = object : ch.softappeal.yass2.remote.coroutines.FlowService {
@@ -13,11 +24,10 @@ public fun ch.softappeal.yass2.remote.coroutines.FlowService.proxy(
     }
 
     override suspend fun next(p1: kotlin.Int): kotlin.Any? {
-        return suspendIntercept(ch.softappeal.yass2.remote.coroutines.FlowService::next, listOf(p1)) { this@proxy.next(p1) }
+        return suspendIntercept(ch.softappeal.yass2.remote.coroutines.FlowService::next, listOf(p1)) { this@proxy.next(p1) } as kotlin.Any?
     }
 }
 
-@Suppress("RedundantSuppression", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
 public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.remote.coroutines.FlowService>.proxy(tunnel: ch.softappeal.yass2.remote.Tunnel): ch.softappeal.yass2.remote.coroutines.FlowService =
     object : ch.softappeal.yass2.remote.coroutines.FlowService {
         override suspend fun cancel(p1: kotlin.Int) {
@@ -26,10 +36,9 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.remote.corou
 
         override suspend fun create(p1: kotlin.Any) = tunnel(ch.softappeal.yass2.remote.Request(id, 1, listOf(p1))).process() as kotlin.Int
 
-        override suspend fun next(p1: kotlin.Int) = tunnel(ch.softappeal.yass2.remote.Request(id, 2, listOf(p1))).process()
+        override suspend fun next(p1: kotlin.Int) = tunnel(ch.softappeal.yass2.remote.Request(id, 2, listOf(p1))).process() as kotlin.Any?
     }
 
-@Suppress("RedundantSuppression", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier", "RedundantNullableReturnType")
 public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.remote.coroutines.FlowService>.service(implementation: ch.softappeal.yass2.remote.coroutines.FlowService): ch.softappeal.yass2.remote.Service =
     ch.softappeal.yass2.remote.Service(id) { functionId, parameters ->
         when (functionId) {

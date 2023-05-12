@@ -80,7 +80,6 @@ public fun Appendable.generateBinarySerializer(
     ) { "duplicated types" }
     write("""
 
-        @Suppress("RedundantSuppression", "UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
         public val GeneratedBinarySerializer: ${BinarySerializer::class.qualifiedName} =
             ${BinarySerializer::class.qualifiedName}(${baseEncodersProperty.javaField!!.declaringClass.packageName}.${baseEncodersProperty.name} + listOf(
     """)
@@ -108,7 +107,7 @@ public fun Appendable.generateBinarySerializer(
         write("""
             val i = ${if (graph) "r.created(" else ""}${klass.qualifiedName}(
         """, 4)
-        fun cast(p: MetaProperty) = if (p.property.returnType.needsCast()) " as ${p.property.returnType}" else ""
+        fun cast(p: MetaProperty) = " as ${p.property.returnType}"
         metaClass.parameterProperties.forEach { write("r.read${it.kind}(${it.encoderId()})${cast(it)},", 5) }
         write("""
             )${if (graph) ')' else ""}

@@ -13,7 +13,6 @@ public fun Appendable.generateDumperProperties(concreteClasses: List<KClass<*>>)
     require(concreteClasses.toSet().size == concreteClasses.size) { "duplicated concreteClass" }
     write("""
 
-        @Suppress("RedundantSuppression", "UNCHECKED_CAST", "RedundantVisibilityModifier", "RemoveRedundantQualifierName")
         public val GeneratedDumperProperties: $CSY.DumperProperties = $CSY.dumperProperties(
     """)
     concreteClasses.forEach { klass ->

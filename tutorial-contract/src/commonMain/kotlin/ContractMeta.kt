@@ -44,13 +44,13 @@ internal val ConcreteClasses = listOf(
 
 /** Define the [ServiceId] for each contract interface. */
 @MustBeImplementedByAcceptor
-public val CalculatorId: ServiceId<Calculator> = serviceId(1)
+public val CalculatorId: ServiceId<Calculator> = ServiceId(1)
 
 @MustBeImplementedByInitiator
-public val NewsListenerId: ServiceId<NewsListener> = serviceId(2)
+public val NewsListenerId: ServiceId<NewsListener> = ServiceId(2)
 
 /** Needed for [kotlinx.coroutines.flow.Flow] example. */
 @MustBeImplementedByAcceptor
-public val FlowServiceId: ServiceId<FlowService> = serviceId(3)
+public val FlowServiceId: ServiceId<FlowService> = ServiceId(3)
 
 internal val Services = listOf(Calculator::class, NewsListener::class)

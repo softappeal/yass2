@@ -1,9 +1,7 @@
 package ch.softappeal.yass2.remote
 
 @Suppress("unused")
-public class ServiceId<S : Any> @PublishedApi internal constructor(public val id: Int)
-
-public inline fun <reified S : Any> serviceId(id: Int): ServiceId<S> = ServiceId(id)
+public class ServiceId<S : Any>(public val id: Int)
 
 public class Service(internal val id: Int, internal val tunnel: suspend (functionId: Int, parameters: List<Any?>) -> Any?)
 

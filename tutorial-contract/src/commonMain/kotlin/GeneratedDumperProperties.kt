@@ -1,6 +1,17 @@
+@file:Suppress(
+    "UNCHECKED_CAST",
+    "USELESS_CAST",
+    "PARAMETER_NAME_CHANGED_ON_OVERRIDE",
+    "RemoveRedundantQualifierName",
+    "SpellCheckingInspection",
+    "RedundantVisibilityModifier",
+    "RedundantNullableReturnType",
+    "KotlinRedundantDiagnosticSuppress",
+    "RedundantSuppression",
+)
+
 package ch.softappeal.yass2.tutorial.contract
 
-@Suppress("RedundantSuppression", "UNCHECKED_CAST", "RedundantVisibilityModifier", "RemoveRedundantQualifierName")
 public val GeneratedDumperProperties: ch.softappeal.yass2.DumperProperties = ch.softappeal.yass2.dumperProperties(
     ch.softappeal.yass2.tutorial.contract.Address::class to listOf(
         ch.softappeal.yass2.tutorial.contract.Address::number as kotlin.reflect.KProperty1<Any, Any?>,

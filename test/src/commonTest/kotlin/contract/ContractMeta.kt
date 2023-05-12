@@ -22,9 +22,9 @@ val ContractSerializer = GeneratedBinarySerializer
 val MessageSerializer = binaryMessageSerializer(ContractSerializer)
 val PacketSerializer = binaryPacketSerializer(MessageSerializer)
 
-val CalculatorId: ServiceId<Calculator> = serviceId(1)
-val EchoId: ServiceId<Echo> = serviceId(2)
-val FlowServiceId: ServiceId<FlowService> = serviceId(3)
+val CalculatorId: ServiceId<Calculator> = ServiceId(1)
+val EchoId: ServiceId<Echo> = ServiceId(2)
+val FlowServiceId: ServiceId<FlowService> = ServiceId(3)
 
 fun StringBuilder.valueDumper(value: Any) {
     when (value) {

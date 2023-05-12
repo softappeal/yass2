@@ -1,6 +1,17 @@
+@file:Suppress(
+    "UNCHECKED_CAST",
+    "USELESS_CAST",
+    "PARAMETER_NAME_CHANGED_ON_OVERRIDE",
+    "RemoveRedundantQualifierName",
+    "SpellCheckingInspection",
+    "RedundantVisibilityModifier",
+    "RedundantNullableReturnType",
+    "KotlinRedundantDiagnosticSuppress",
+    "RedundantSuppression",
+)
+
 package ch.softappeal.yass2.contract
 
-@Suppress("RedundantSuppression", "UNCHECKED_CAST", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
 public val GeneratedBinarySerializer: ch.softappeal.yass2.serialize.binary.BinarySerializer =
     ch.softappeal.yass2.serialize.binary.BinarySerializer(ch.softappeal.yass2.contract.BaseEncoders + listOf(
         ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.contract.IntException::class, false,

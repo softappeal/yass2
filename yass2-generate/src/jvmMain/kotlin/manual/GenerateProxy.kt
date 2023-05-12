@@ -1,6 +1,7 @@
 package ch.softappeal.yass2.generate.manual
 
 import ch.softappeal.yass2.generate.*
+import ch.softappeal.yass2.generate.ksp.*
 import ch.softappeal.yass2.remote.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
@@ -26,24 +27,25 @@ public fun Appendable.generateProxy(services: List<KClass<*>>) {
 
 private fun KFunction<*>.hasResult() = returnType.classifier != Unit::class
 
-private fun Appendable.writeFunctionSignature(indent: String, function: KFunction<*>): Unit = with(function) {
-    append("${indent}override ${if (function.isSuspend) "suspend " else ""}fun $name(")
-    valueParameters.forEach { parameter ->
+private fun Appendable.writeFunctionSignature(indent: String, function: KFunction<*>) {
+    append("${indent}override ${if (function.isSuspend) "suspend " else ""}fun ${function.name}(")
+    function.valueParameters.forEach { parameter ->
         if (parameter.index != 1) append(", ")
         append("p${parameter.index}: ${parameter.type}")
     }
     append(")")
 }
 
-private fun Appendable.parameterList(function: KFunction<*>) = function.valueParameters.forEach { parameter ->
-    if (parameter.index != 1) append(", ")
-    append("p${parameter.index}")
+private fun Appendable.parameterList(function: KFunction<*>) {
+    function.valueParameters.forEach { parameter ->
+        if (parameter.index != 1) append(", ")
+        append("p${parameter.index}")
+    }
 }
 
 private fun Appendable.generateLocalProxy(service: KClass<*>) {
     write("""
 
-        @Suppress("RedundantSuppression", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier", "KotlinRedundantDiagnosticSuppress")
         public fun ${service.qualifiedName}.proxy(
     """)
     val functions = service.serviceFunctions()
@@ -53,21 +55,20 @@ private fun Appendable.generateLocalProxy(service: KClass<*>) {
         ): ${service.qualifiedName} = object : ${service.qualifiedName} {
     """)
     functions.forEachIndexed { functionIndex, function ->
-        with(function) {
-            if (functionIndex != 0) appendLine()
-            writeFunctionSignature("    ", this)
-            if (hasResult()) append(": $returnType")
-            appendLine(" {")
-            append("        ${if (hasResult()) "return " else ""}${if (isSuspend) "suspendIntercept" else "intercept"}(${service.qualifiedName}::$name, ")
-            append("listOf(")
-            parameterList(this)
-            append(")) { this@proxy.$name(")
-            parameterList(this)
-            append(") }")
-            if (hasResult() && returnType.needsCast()) append(" as $returnType")
-            appendLine()
-            appendLine("    }")
-        }
+        val hasResult = function.hasResult()
+        if (functionIndex != 0) appendLine()
+        writeFunctionSignature("    ", function)
+        if (hasResult) append(": ${function.returnType}")
+        appendLine(" {")
+        append("        ${if (hasResult) "return " else ""}${if (function.isSuspend) "suspendIntercept" else "intercept"}(${service.qualifiedName}::${function.name}, ")
+        append("listOf(")
+        parameterList(function)
+        append(")) { this@proxy.${function.name}(")
+        parameterList(function)
+        append(") }")
+        if (hasResult) append(" as ${function.returnType}")
+        appendLine()
+        appendLine("    }")
     }
     write("""
         }
@@ -77,22 +78,19 @@ private fun Appendable.generateLocalProxy(service: KClass<*>) {
 private fun Appendable.generateRemoteProxy(service: KClass<*>) {
     write("""
 
-        @Suppress("RedundantSuppression", "PARAMETER_NAME_CHANGED_ON_OVERRIDE", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier")
         public fun ${ServiceId::class.qualifiedName}<${service.qualifiedName}>.proxy(tunnel: $CSY.remote.Tunnel): ${service.qualifiedName} =
             object : ${service.qualifiedName} {
     """)
     service.serviceFunctions().forEachIndexed { functionIndex, function ->
-        with(function) {
-            if (functionIndex != 0) appendLine()
-            writeFunctionSignature("        ", this)
-            if (hasResult()) append(" = ") else append(" {\n            ")
-            append("tunnel(${Request::class.qualifiedName}(id, $functionIndex, listOf(")
-            parameterList(this)
-            append("))).process()")
-            if (hasResult() && returnType.needsCast()) append(" as $returnType")
-            if (!hasResult()) append("\n        }")
-            appendLine()
-        }
+        val hasResult = function.hasResult()
+        if (functionIndex != 0) appendLine()
+        writeFunctionSignature("        ", function)
+        if (hasResult) append(" = ") else append(" {\n            ")
+        append("tunnel(${Request::class.qualifiedName}(id, $functionIndex, listOf(")
+        parameterList(function)
+        append("))).process()")
+        if (hasResult) append(" as ${function.returnType}") else append("\n        }")
+        appendLine()
     }
     write("""
         }
@@ -102,21 +100,17 @@ private fun Appendable.generateRemoteProxy(service: KClass<*>) {
 private fun Appendable.generateService(service: KClass<*>) {
     write("""
 
-        @Suppress("RedundantSuppression", "RemoveRedundantQualifierName", "SpellCheckingInspection", "RedundantVisibilityModifier", "RedundantNullableReturnType")
         public fun ${ServiceId::class.qualifiedName}<${service.qualifiedName}>.service(implementation: ${service.qualifiedName}): ${Service::class.qualifiedName} =
             ${Service::class.qualifiedName}(id) { functionId, parameters ->
                 when (functionId) {
     """)
     service.serviceFunctions().forEachIndexed { functionIndex, function ->
-        with(function) {
-            append("            $functionIndex -> implementation.$name(")
-            valueParameters.forEach { parameter ->
-                if (parameter.index != 1) append(", ")
-                append("parameters[${parameter.index - 1}]")
-                if (parameter.type.needsCast()) append(" as ${parameter.type}")
-            }
-            appendLine(")")
+        append("            $functionIndex -> implementation.${function.name}(")
+        function.valueParameters.forEach { parameter ->
+            if (parameter.index != 1) append(", ")
+            append("parameters[${parameter.index - 1}] as ${parameter.type}")
         }
+        appendLine(")")
     }
     write("""
                 else -> error("service with id ${'$'}id has no function with id ${'$'}functionId")
