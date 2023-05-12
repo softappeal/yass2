@@ -59,6 +59,6 @@ public val NewsListenerId: ServiceId<NewsListener> = serviceId(2)
 @MustBeImplementedByAcceptor
 public val FlowServiceId: ServiceId<FlowService> = serviceId(3)
 
-internal val Services = listOf(Calculator::class, NewsListener::class, FlowService::class)
+internal val Services = listOf(Calculator::class, NewsListener::class)
 
 // TODO: public const val TEST_VALUE2: Int = TEST_VALUE
