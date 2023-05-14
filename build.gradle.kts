@@ -203,7 +203,6 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
     dependencies {
         add("kspJvmTest", generateProject)
     }
-
 }
 
 val tutorialContractProject = project("tutorial-contract") {
