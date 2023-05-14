@@ -83,6 +83,10 @@ interface Echo {
     suspend fun noParametersNoResult()
 
     suspend fun delay(milliSeconds: Int)
+
+    suspend fun echoNode(node: Node?): Node?
+
+    suspend fun echoNodeRequired(node: Node): Node
 }
 
 @Proxy

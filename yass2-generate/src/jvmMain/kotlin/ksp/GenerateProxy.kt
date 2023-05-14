@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.generate.ksp // TODO: test with generics and own types
+package ch.softappeal.yass2.generate.ksp
 
 import ch.softappeal.yass2.generate.*
 import ch.softappeal.yass2.remote.*

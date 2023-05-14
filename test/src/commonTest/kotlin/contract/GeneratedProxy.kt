@@ -51,6 +51,14 @@ public fun ch.softappeal.yass2.contract.Echo.proxy(
         return suspendIntercept(ch.softappeal.yass2.contract.Echo::echo, listOf(p1)) { this@proxy.echo(p1) } as kotlin.Any?
     }
 
+    override suspend fun echoNode(p1: ch.softappeal.yass2.contract.Node?): ch.softappeal.yass2.contract.Node? {
+        return suspendIntercept(ch.softappeal.yass2.contract.Echo::echoNode, listOf(p1)) { this@proxy.echoNode(p1) } as ch.softappeal.yass2.contract.Node?
+    }
+
+    override suspend fun echoNodeRequired(p1: ch.softappeal.yass2.contract.Node): ch.softappeal.yass2.contract.Node {
+        return suspendIntercept(ch.softappeal.yass2.contract.Echo::echoNodeRequired, listOf(p1)) { this@proxy.echoNodeRequired(p1) } as ch.softappeal.yass2.contract.Node
+    }
+
     override suspend fun echoRequired(p1: kotlin.Any): kotlin.Any {
         return suspendIntercept(ch.softappeal.yass2.contract.Echo::echoRequired, listOf(p1)) { this@proxy.echoRequired(p1) } as kotlin.Any
     }
@@ -68,10 +76,14 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Ech
 
         override suspend fun echo(p1: kotlin.Any?) = tunnel(ch.softappeal.yass2.remote.Request(id, 1, listOf(p1))).process() as kotlin.Any?
 
-        override suspend fun echoRequired(p1: kotlin.Any) = tunnel(ch.softappeal.yass2.remote.Request(id, 2, listOf(p1))).process() as kotlin.Any
+        override suspend fun echoNode(p1: ch.softappeal.yass2.contract.Node?) = tunnel(ch.softappeal.yass2.remote.Request(id, 2, listOf(p1))).process() as ch.softappeal.yass2.contract.Node?
+
+        override suspend fun echoNodeRequired(p1: ch.softappeal.yass2.contract.Node) = tunnel(ch.softappeal.yass2.remote.Request(id, 3, listOf(p1))).process() as ch.softappeal.yass2.contract.Node
+
+        override suspend fun echoRequired(p1: kotlin.Any) = tunnel(ch.softappeal.yass2.remote.Request(id, 4, listOf(p1))).process() as kotlin.Any
 
         override suspend fun noParametersNoResult() {
-            tunnel(ch.softappeal.yass2.remote.Request(id, 3, listOf())).process()
+            tunnel(ch.softappeal.yass2.remote.Request(id, 5, listOf())).process()
         }
     }
 
@@ -80,8 +92,10 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Ech
         when (functionId) {
             0 -> implementation.delay(parameters[0] as kotlin.Int)
             1 -> implementation.echo(parameters[0] as kotlin.Any?)
-            2 -> implementation.echoRequired(parameters[0] as kotlin.Any)
-            3 -> implementation.noParametersNoResult()
+            2 -> implementation.echoNode(parameters[0] as ch.softappeal.yass2.contract.Node?)
+            3 -> implementation.echoNodeRequired(parameters[0] as ch.softappeal.yass2.contract.Node)
+            4 -> implementation.echoRequired(parameters[0] as kotlin.Any)
+            5 -> implementation.noParametersNoResult()
             else -> error("service with id $id has no function with id $functionId")
         }
     }

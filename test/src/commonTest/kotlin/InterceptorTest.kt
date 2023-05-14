@@ -16,6 +16,8 @@ val EchoImpl = object : Echo {
     override suspend fun echoRequired(value: Any) = value
     override suspend fun noParametersNoResult() {}
     override suspend fun delay(milliSeconds: Int) = delay(milliSeconds.toLong())
+    override suspend fun echoNode(node: Node?) = node
+    override suspend fun echoNodeRequired(node: Node) = node
 }
 
 private val MixedImpl = object : Mixed {
@@ -68,6 +70,9 @@ suspend fun test(calculatorImpl: Calculator, echoImpl: Echo) {
     println(assertSuspendFailsWith<TimeoutCancellationException> {
         withTimeout(100) { echo.delay(200) }
     })
+    assertEquals(123, echo.echoNodeRequired(Node(123)).id)
+    assertEquals(123, echo.echoNode(Node(123))!!.id)
+    assertNull(echo.echoNode(null))
 }
 
 class InterceptorTest {

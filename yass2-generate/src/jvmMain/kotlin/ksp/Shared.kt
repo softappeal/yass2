@@ -5,6 +5,8 @@ import ch.softappeal.yass2.generate.*
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 
+// TODO: implement KSP for BinarySerializer and DumperProperties
+
 internal fun KSClassDeclaration.name() = qualifiedName!!.asString()
 
 @Suppress("SpellCheckingInspection")
