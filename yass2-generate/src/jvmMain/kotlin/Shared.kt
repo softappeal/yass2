@@ -15,6 +15,7 @@ internal fun Appendable.writeHeader(packageName: String) {
             "UNCHECKED_CAST",
             "USELESS_CAST",
             "PARAMETER_NAME_CHANGED_ON_OVERRIDE",
+            "unused",
             "RemoveRedundantQualifierName",
             "SpellCheckingInspection",
             "RedundantVisibilityModifier",

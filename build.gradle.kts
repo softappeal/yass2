@@ -183,6 +183,7 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
                 }
             }
             val jvmTest by getting {
+                kotlin.srcDir("build/generated/ksp/jvm/jvmTest/kotlin")
                 dependsOn(jvmAndNixTest)
                 dependencies {
                     implementation(generateProject)

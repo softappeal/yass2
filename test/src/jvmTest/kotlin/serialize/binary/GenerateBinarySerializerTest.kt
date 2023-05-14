@@ -7,8 +7,8 @@ import kotlin.reflect.full.*
 import kotlin.test.*
 
 private val NoBaseEncoders = listOf<BaseEncoder<*>>()
-private val IntBaseEncoders = listOf(IntEncoder)
-private val TwoIntBaseEncoders = listOf(IntEncoder, IntEncoder)
+private val IntBaseEncoders = listOf(IntEncoder())
+private val TwoIntBaseEncoders = listOf(IntEncoder(), IntEncoder())
 
 class GenerateBinarySerializerTest {
     @Test

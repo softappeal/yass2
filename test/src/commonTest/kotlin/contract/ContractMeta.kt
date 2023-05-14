@@ -1,12 +1,29 @@
+@file:GenerateBinarySerializer(
+    baseEncoders = [
+        IntEncoder::class,
+        StringEncoder::class,
+        ByteArrayEncoder::class,
+    ],
+    treeConcreteClasses = [
+        IntException::class, PlainId::class, ComplexId::class, Lists::class,
+        Id2::class, Id3::class, IdWrapper::class, ManyProperties::class,
+        DivideByZeroException::class,
+    ],
+    graphConcreteClasses = [
+        Node::class
+    ],
+)
+
 package ch.softappeal.yass2.contract
 
+import ch.softappeal.yass2.*
 import ch.softappeal.yass2.remote.*
 import ch.softappeal.yass2.remote.coroutines.*
 import ch.softappeal.yass2.serialize.binary.*
 import ch.softappeal.yass2.transport.*
 import ch.softappeal.yass2.transport.session.*
 
-val BaseEncoders = listOf(IntEncoder, StringEncoder, ByteArrayEncoder)
+val BaseEncoders = listOf(IntEncoder(), StringEncoder(), ByteArrayEncoder())
 
 val TreeConcreteClasses = listOf(
     IntException::class, PlainId::class, ComplexId::class, Lists::class,

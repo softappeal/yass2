@@ -3,57 +3,82 @@ package ch.softappeal.yass2.serialize.binary
 import ch.softappeal.yass2.serialize.*
 import kotlin.reflect.*
 
-public val BooleanEncoder: BaseEncoder<Boolean> = BaseEncoder(Boolean::class,
+public fun Writer.writeZigZagVarInt(value: Int) {
+    writeVarInt(value.toZigZag())
+}
+
+public fun Reader.readZigZagVarInt(): Int = readVarInt().fromZigZag()
+
+public fun Writer.writeZigZagVarLong(value: Long) {
+    writeVarLong(value.toZigZag())
+}
+
+public fun Reader.readZigZagVarLong(): Long = readVarLong().fromZigZag()
+
+public fun Writer.writeDouble(value: Double) {
+    writeLong(value.toBits())
+}
+
+public fun Reader.readDouble(): Double = Double.fromBits(readLong())
+
+public fun Writer.writeByteArray(value: ByteArray) {
+    writeVarInt(value.size)
+    writeBytes(value)
+}
+
+public fun Reader.readByteArray(): ByteArray = readBytes(readVarInt())
+
+public fun Writer.writeString(value: String) {
+    writeByteArray(value.encodeToByteArray(throwOnInvalidSequence = true))
+}
+
+public fun Reader.readString(): String = readByteArray().decodeToString(throwOnInvalidSequence = true)
+
+public class BooleanEncoder : BaseEncoder<Boolean>(Boolean::class,
     { writer, value -> writer.writeBoolean(value) },
     { reader -> reader.readBoolean() }
 )
 
-public val ByteEncoder: BaseEncoder<Byte> = BaseEncoder(Byte::class,
+public class ByteEncoder : BaseEncoder<Byte>(Byte::class,
     { writer, value -> writer.writeByte(value) },
     { reader -> reader.readByte() }
 )
 
-public val IntEncoder: BaseEncoder<Int> = BaseEncoder(Int::class,
-    { writer, value -> writer.writeVarInt(value.toZigZag()) },
-    { reader -> reader.readVarInt().fromZigZag() }
+public class IntEncoder : BaseEncoder<Int>(Int::class,
+    { writer, value -> writer.writeZigZagVarInt(value) },
+    { reader -> reader.readZigZagVarInt() }
 )
 
-public val LongEncoder: BaseEncoder<Long> = BaseEncoder(Long::class,
-    { writer, value -> writer.writeVarLong(value.toZigZag()) },
-    { reader -> reader.readVarLong().fromZigZag() }
+public class LongEncoder : BaseEncoder<Long>(Long::class,
+    { writer, value -> writer.writeZigZagVarLong(value) },
+    { reader -> reader.readZigZagVarLong() }
 )
 
-public val DoubleEncoder: BaseEncoder<Double> = BaseEncoder(Double::class,
-    { writer, value -> writer.writeLong(value.toBits()) },
-    { reader -> Double.fromBits(reader.readLong()) }
+public class DoubleEncoder : BaseEncoder<Double>(Double::class,
+    { writer, value -> writer.writeDouble(value) },
+    { reader -> reader.readDouble() }
 )
 
-public val ByteArrayEncoder: BaseEncoder<ByteArray> = BaseEncoder(ByteArray::class,
-    { writer, value ->
-        writer.writeVarInt(value.size)
-        writer.writeBytes(value)
-    },
-    { reader -> reader.readBytes(reader.readVarInt()) }
+public class ByteArrayEncoder : BaseEncoder<ByteArray>(ByteArray::class,
+    { writer, value -> writer.writeByteArray(value) },
+    { reader -> reader.readByteArray() }
 )
 
-public val StringEncoder: BaseEncoder<String> = BaseEncoder(String::class,
-    { writer, value -> ByteArrayEncoder.write(writer, value.encodeToByteArray(throwOnInvalidSequence = true)) },
-    { reader -> ByteArrayEncoder.read(reader).decodeToString(throwOnInvalidSequence = true) }
+public class StringEncoder : BaseEncoder<String>(String::class,
+    { writer, value -> writer.writeString(value) },
+    { reader -> reader.readString() }
 )
 
-@PublishedApi
-internal fun <T : Enum<T>> enumEncoder(type: KClass<T>, constants: Array<T>): BaseEncoder<T> = BaseEncoder(type,
+public abstract class EnumEncoder<T : Enum<T>>(type: KClass<T>, constants: Array<T>) : BaseEncoder<T>(type,
     { writer, value -> writer.writeVarInt(value.ordinal) },
     { reader -> constants[reader.readVarInt()] }
 )
 
-public inline fun <reified T : Enum<T>> enumEncoder(): BaseEncoder<T> = enumEncoder(T::class, enumValues())
-
-public fun <T : Any> BaseEncoder<T>.writeOptional(writer: Writer, value: T?): Unit = if (value == null) {
-    writer.writeBoolean(false)
+public fun <T : Any> Writer.writeOptional(value: T?, write: Writer.(value: T) -> Unit): Unit = if (value == null) {
+    writeBoolean(false)
 } else {
-    writer.writeBoolean(true)
-    write(writer, value)
+    writeBoolean(true)
+    write(value)
 }
 
-public fun <T : Any> BaseEncoder<T>.readOptional(reader: Reader): T? = if (reader.readBoolean()) read(reader) else null
+public fun <T : Any> Reader.readOptional(read: Reader.() -> T): T? = if (readBoolean()) read() else null
