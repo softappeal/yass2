@@ -2,7 +2,6 @@ package ch.softappeal.yass2.generate.ksp
 
 import ch.softappeal.yass2.generate.*
 import ch.softappeal.yass2.remote.*
-import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 
 private val AnyFunctions = setOf("toString", "equals", "hashCode")
@@ -22,15 +21,15 @@ private fun KSTypeReference.name(): String {
     return "${type.declaration.packageName.asString()}.${toString()}${if (type.isMarkedNullable) "?" else ""}"
 }
 
-internal fun Appendable.generateProxy(service: KSClassDeclaration, resolver: Resolver) {
-    generateLocalProxy(service, resolver)
+internal fun Appendable.generateProxy(service: KSClassDeclaration, unitType: KSType) {
+    generateLocalProxy(service, unitType)
     if (service.serviceFunctions().all { it.isSuspend() }) {
-        generateRemoteProxy(service, resolver)
+        generateRemoteProxy(service, unitType)
         generateService(service)
     }
 }
 
-private fun KSFunctionDeclaration.hasResult(resolver: Resolver) = resolver.builtIns.unitType != returnType!!.resolve()
+private fun KSFunctionDeclaration.hasResult(unitType: KSType) = unitType != returnType!!.resolve()
 
 private fun Appendable.writeFunctionSignature(indent: String, function: KSFunctionDeclaration) {
     append("${indent}override ${if (function.isSuspend()) "suspend " else ""}fun $function(")
@@ -48,7 +47,7 @@ private fun Appendable.parameterList(function: KSFunctionDeclaration) {
     }
 }
 
-private fun Appendable.generateLocalProxy(service: KSClassDeclaration, resolver: Resolver) {
+private fun Appendable.generateLocalProxy(service: KSClassDeclaration, unitType: KSType) {
     write("""
 
         public fun ${service.name()}.proxy(
@@ -60,7 +59,7 @@ private fun Appendable.generateLocalProxy(service: KSClassDeclaration, resolver:
         ): ${service.name()} = object : ${service.name()} {
     """)
     functions.forEachIndexed { functionIndex, function ->
-        val hasResult = function.hasResult(resolver)
+        val hasResult = function.hasResult(unitType)
         if (functionIndex != 0) appendLine()
         writeFunctionSignature("    ", function)
         if (hasResult) append(": ${function.returnType!!.name()}")
@@ -80,14 +79,14 @@ private fun Appendable.generateLocalProxy(service: KSClassDeclaration, resolver:
     """)
 }
 
-private fun Appendable.generateRemoteProxy(service: KSClassDeclaration, resolver: Resolver) {
+private fun Appendable.generateRemoteProxy(service: KSClassDeclaration, unitType: KSType) {
     write("""
 
         public fun ${ServiceId::class.qualifiedName}<${service.name()}>.proxy(tunnel: $CSY.remote.Tunnel): ${service.name()} =
             object : ${service.name()} {
     """)
     service.serviceFunctions().forEachIndexed { functionIndex, function ->
-        val hasResult = function.hasResult(resolver)
+        val hasResult = function.hasResult(unitType)
         if (functionIndex != 0) appendLine()
         writeFunctionSignature("        ", function)
         if (hasResult) append(" = ") else append(" {\n            ")

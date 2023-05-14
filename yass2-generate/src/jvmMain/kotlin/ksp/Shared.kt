@@ -17,10 +17,11 @@ public class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolProc
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols = resolver.getSymbolsWithAnnotation(Proxy::class.qualifiedName!!)
         val packageToServices = buildList { symbols.forEach { add(Pair((it as KSClassDeclaration).packageName.asString(), it)) } }.groupBy({ it.first }, { it.second })
+        val unitType = resolver.builtIns.unitType
         packageToServices.entries.forEach { (packageName, services) ->
             codeGenerator.createNewFile(Dependencies(false), "$packageName.$TEST_PACKAGE", GENERATED_PROXY).writer().use { writer ->
                 writer.writeHeader("$packageName.$TEST_PACKAGE")
-                services.sortedBy { it.name() }.forEach { writer.generateProxy(it, resolver) }
+                services.sortedBy { it.name() }.forEach { writer.generateProxy(it, unitType) }
             }
         }
         return emptyList()
