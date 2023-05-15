@@ -2,6 +2,8 @@ package ch.softappeal.yass2.contract
 
 import ch.softappeal.yass2.*
 
+// TODO: add enum for tests
+
 class IntException(
     val i: Int?,
 ) : RuntimeException()
@@ -87,6 +89,10 @@ interface Echo {
     suspend fun echoNode(node: Node?): Node?
 
     suspend fun echoNodeRequired(node: Node): Node
+
+    suspend fun echoGeneric(map: Map<String?, Node>): Map<Int, Node>?
+
+    suspend fun echoMonster(a: List<*>, b: List<List<String?>?>, c: Map<out Int, String>, d: Pair<*, *>): Map<in Int, String>?
 }
 
 @Proxy

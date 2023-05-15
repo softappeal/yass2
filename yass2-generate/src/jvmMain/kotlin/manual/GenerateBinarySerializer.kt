@@ -4,7 +4,6 @@ import ch.softappeal.yass2.generate.*
 import ch.softappeal.yass2.serialize.binary.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
-import kotlin.reflect.jvm.*
 
 private enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
 
@@ -69,11 +68,12 @@ private fun KClass<*>.metaClass(baseEncoderTypes: List<KClass<*>>): MetaClass {
 }
 
 public fun Appendable.generateBinarySerializer(
-    baseEncodersProperty: KProperty0<List<BaseEncoder<out Any>>>,
+    baseEncoderClasses: List<KClass<*>>,
     treeConcreteClasses: List<KClass<*>> = emptyList(),
     graphConcreteClasses: List<KClass<*>> = emptyList(),
 ) {
-    val baseEncoders = baseEncodersProperty.get()
+    @Suppress("UNCHECKED_CAST")
+    val baseEncoders = baseEncoderClasses.map { it.primaryConstructor!!.call() } as List<BaseEncoder<*>>
     require(
         (baseEncoders.map { it.type }.toSet() + treeConcreteClasses.toSet() + graphConcreteClasses.toSet()).size ==
             (baseEncoders.size + treeConcreteClasses.size + graphConcreteClasses.size)
@@ -81,8 +81,9 @@ public fun Appendable.generateBinarySerializer(
     write("""
 
         public val GeneratedBinarySerializer: ${BinarySerializer::class.qualifiedName} =
-            ${BinarySerializer::class.qualifiedName}(${baseEncodersProperty.javaField!!.declaringClass.packageName}.${baseEncodersProperty.name} + listOf(
+            ${BinarySerializer::class.qualifiedName}(listOf(
     """)
+    baseEncoderClasses.forEach { write("${it.qualifiedName}(),", 2) }
     val baseEncoderTypes = baseEncoders.map { it.type }
     fun List<KClass<*>>.add(graph: Boolean) = forEach { klass ->
         write("""

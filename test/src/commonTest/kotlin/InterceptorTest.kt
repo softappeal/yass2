@@ -18,6 +18,8 @@ val EchoImpl = object : Echo {
     override suspend fun delay(milliSeconds: Int) = delay(milliSeconds.toLong())
     override suspend fun echoNode(node: Node?) = node
     override suspend fun echoNodeRequired(node: Node) = node
+    @Suppress("RedundantNullableReturnType") override suspend fun echoGeneric(map: Map<String?, Node>): Map<Int, Node>? = mapOf(map.entries.first().key!!.toInt() to map.entries.first().value)
+    override suspend fun echoMonster(a: List<*>, b: List<List<String?>?>, c: Map<out Int, String>, d: Pair<*, *>) = null
 }
 
 private val MixedImpl = object : Mixed {
@@ -162,6 +164,17 @@ class InterceptorTest {
     @Test
     fun suspendTest() = runTest {
         test(CalculatorImpl, EchoImpl)
+    }
+
+    @Test
+    fun testGeneric() = runTest {
+        val echo = EchoImpl.proxy { _, _, invoke ->
+            invoke()
+        }
+        assertEquals("hello", echo.echo("hello"))
+        val map = echo.echoGeneric(mapOf("13" to Node(99)))!!
+        assertEquals(1, map.size)
+        assertEquals(99, map[13]!!.id)
     }
 
     @Test

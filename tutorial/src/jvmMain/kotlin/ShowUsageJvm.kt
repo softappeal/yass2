@@ -23,7 +23,7 @@ private fun Application.theModule() {
     install(io.ktor.server.websocket.WebSockets)
     routing {
         staticFiles("/", File("./")) // needed for debugging (sources)
-        staticFiles("/", File("./build/js/packages/tutorial-app/kotlin"))
+        staticFiles("/", File("./build/js/packages/tutorial/kotlin"))
 
         // shows server-side unidirectional remoting with Http
         route(MessageTransport, PATH, tunnel(

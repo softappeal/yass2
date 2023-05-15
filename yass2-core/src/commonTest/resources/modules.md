@@ -7,7 +7,6 @@
         - Message.kt `[common]`
         - Remote.kt `[common]`
         - coroutines `yass2-coroutines`
-            - GeneratedProxy.kt `[common]`
             - RemoteFlow.kt `[common]`
             - Sync.kt `[common]`
             - session `yass2-coroutines`

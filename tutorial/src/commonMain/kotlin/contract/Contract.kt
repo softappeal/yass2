@@ -1,7 +1,8 @@
 package ch.softappeal.yass2.tutorial.contract
 
+import ch.softappeal.yass2.*
+
 // This file describes the contract (data transfer objects and interfaces) between client and server.
-// It is plain Kotlin code without dependencies and can therefore be shared with every platform (common module).
 
 /**
  * The base types Boolean, Byte, Int, Long, Double, String and ByteArray are supported.
@@ -62,11 +63,13 @@ public class IntFlowId(public val max: Int) : FlowId()
  * All functions must be suspendable because they need IO.
  * Overloading is not allowed.
  */
+@Proxy
 public interface Calculator {
     public suspend fun add(a: Int, b: Int): Int
     public suspend fun divide(a: Int, b: Int): Int
 }
 
+@Proxy
 public interface NewsListener {
     public suspend fun notify(news: String)
 }

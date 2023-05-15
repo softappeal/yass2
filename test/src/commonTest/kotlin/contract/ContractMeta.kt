@@ -23,7 +23,11 @@ import ch.softappeal.yass2.serialize.binary.*
 import ch.softappeal.yass2.transport.*
 import ch.softappeal.yass2.transport.session.*
 
-val BaseEncoders = listOf(IntEncoder(), StringEncoder(), ByteArrayEncoder())
+val BaseEncoderClasses = listOf(
+    IntEncoder::class,
+    StringEncoder::class,
+    ByteArrayEncoder::class,
+)
 
 val TreeConcreteClasses = listOf(
     IntException::class, PlainId::class, ComplexId::class, Lists::class,

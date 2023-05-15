@@ -1,7 +1,6 @@
 package ch.softappeal.yass2.generate.manual
 
 import ch.softappeal.yass2.generate.*
-import ch.softappeal.yass2.generate.ksp.*
 import ch.softappeal.yass2.remote.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*

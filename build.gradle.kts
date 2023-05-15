@@ -21,6 +21,8 @@ val jsTarget = true
 val linuxTarget = true.disableNativeTargetIfPublish()
 val macTarget = true.disableNativeTargetIfPublish()
 
+// TODO: fun String.firstCharToUppercase() = this[0].toUpperCase() + this.substring(1)
+
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
     apply(plugin = "maven-publish")
@@ -58,6 +60,22 @@ allprojects {
 
         targets.all {
             compilations.all {
+                /*
+                kotlin.sourceSets {
+                    if (targetName == "metadata") {
+                        /* TODO
+                        getByName("commonMain") {
+                            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+                        }
+                        */
+                    } else {
+                        val name = compilationName.firstCharToUppercase()
+                        getByName("$targetName$name") {
+                            kotlin.srcDir("build/generated/ksp/$targetName/$targetName$name/kotlin")
+                        }
+                    }
+                }
+                 */
                 explicitApi()
                 kotlinOptions {
                     allWarningsAsErrors = true
@@ -105,6 +123,20 @@ val coreProject = project("yass2-core") {
     }
 }
 
+val generateProject = project("yass2-generate") {
+    kotlin {
+        sourceSets {
+            val jvmMain by getting {
+                dependencies {
+                    api(coreProject)
+                    api(kotlin("reflect")) // TODO: remove after switch to KSP
+                    api(libraries.ksp)
+                }
+            }
+        }
+    }
+}
+
 val coroutinesProject = project("yass2-coroutines") {
     kotlin {
         sourceSets {
@@ -115,6 +147,9 @@ val coroutinesProject = project("yass2-coroutines") {
                 }
             }
         }
+    }
+    dependencies { // TODO
+        ksp(generateProject)
     }
 }
 
@@ -151,20 +186,6 @@ val ktorProject = project("yass2-ktor") {
     }
 }
 
-val generateProject = project("yass2-generate") {
-    kotlin {
-        sourceSets {
-            val jvmMain by getting {
-                dependencies {
-                    api(coreProject)
-                    api(kotlin("reflect")) // TODO: remove after switch to KSP
-                    api(libraries.ksp)
-                }
-            }
-        }
-    }
-}
-
 project("test") { // this project is needed due to https://youtrack.jetbrains.com/issue/KT-35073
     kotlin {
         sourceSets {
@@ -183,7 +204,6 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
                 }
             }
             val jvmTest by getting {
-                kotlin.srcDir("build/generated/ksp/jvm/jvmTest/kotlin") // TODO: move to root project?
                 dependsOn(jvmAndNixTest)
                 dependencies {
                     implementation(generateProject)
@@ -201,35 +221,17 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
             }
         }
     }
-    dependencies {
-        add("kspJvmTest", generateProject) // TODO: move to root project?
+    dependencies { // TODO
+        ksp(generateProject)
     }
 }
 
-val tutorialContractProject = project("tutorial-contract") {
+project("tutorial") {
     kotlin {
         sourceSets {
             val commonMain by getting {
                 dependencies {
-                    api(coroutinesProject)
-                }
-            }
-            val jvmTest by getting {
-                dependencies {
-                    implementation(generateProject)
-                    implementation(kotlin("test"))
-                }
-            }
-        }
-    }
-}
-
-project("tutorial-app") {
-    kotlin {
-        sourceSets {
-            val commonMain by getting {
-                dependencies {
-                    implementation(tutorialContractProject)
+                    implementation(coroutinesProject)
                 }
             }
             val commonTest by getting {
@@ -251,6 +253,20 @@ project("tutorial-app") {
                 }
             }
         }
+    }
+    dependencies { // TODO
+        ksp(generateProject)
+        /*
+        add("kspCommonMainMetadata", generateProject)
+        add("kspJvm", generateProject)
+        add("kspJvmTest", generateProject)
+        add("kspJs", generateProject) // TODO: if (target)
+        add("kspJsTest", generateProject)
+        add("kspLinux", generateProject)
+        add("kspLinuxTest", generateProject)
+        add("kspMac", generateProject)
+        add("kspMacTest", generateProject)
+        */
     }
 }
 

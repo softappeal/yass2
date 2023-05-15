@@ -59,7 +59,7 @@ yass2-ktor --> io.ktor
 
 * uses [Semantic Versioning](https://semver.org)
 
-* [Tutorial](tutorial-app/src)
+* [Tutorial](tutorial/src)
 
 * Open Source ([BSD-3-Clause license](license.txt))
 
