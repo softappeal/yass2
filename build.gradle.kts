@@ -157,7 +157,7 @@ val generateProject = project("yass2-generate") {
             val jvmMain by getting {
                 dependencies {
                     api(coreProject)
-                    api(kotlin("reflect"))
+                    api(kotlin("reflect")) // TODO: remove after switch to KSP
                     api(libraries.ksp)
                 }
             }
@@ -183,7 +183,7 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
                 }
             }
             val jvmTest by getting {
-                kotlin.srcDir("build/generated/ksp/jvm/jvmTest/kotlin")
+                kotlin.srcDir("build/generated/ksp/jvm/jvmTest/kotlin") // TODO: move to root project?
                 dependsOn(jvmAndNixTest)
                 dependencies {
                     implementation(generateProject)
@@ -202,7 +202,7 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
         }
     }
     dependencies {
-        add("kspJvmTest", generateProject)
+        add("kspJvmTest", generateProject) // TODO: move to root project?
     }
 }
 

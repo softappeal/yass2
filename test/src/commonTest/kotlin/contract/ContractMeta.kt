@@ -1,5 +1,5 @@
 @file:GenerateBinarySerializer(
-    baseEncoders = [
+    baseEncoderClasses = [
         IntEncoder::class,
         StringEncoder::class,
         ByteArrayEncoder::class,
