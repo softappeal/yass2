@@ -3,11 +3,13 @@
         IntEncoder::class,
         StringEncoder::class,
         ByteArrayEncoder::class,
+        GenderEncoder::class,
     ],
     treeConcreteClasses = [
         IntException::class, PlainId::class, ComplexId::class, Lists::class,
         Id2::class, Id3::class, IdWrapper::class, ManyProperties::class,
         DivideByZeroException::class,
+        ThrowableFake::class,
     ],
     graphConcreteClasses = [
         Node::class
@@ -27,17 +29,21 @@ val BaseEncoderClasses = listOf(
     IntEncoder::class,
     StringEncoder::class,
     ByteArrayEncoder::class,
+    GenderEncoder::class,
 )
 
 val TreeConcreteClasses = listOf(
     IntException::class, PlainId::class, ComplexId::class, Lists::class,
     Id2::class, Id3::class, IdWrapper::class, ManyProperties::class,
     DivideByZeroException::class,
+    ThrowableFake::class,
 )
 
 val GraphConcreteClasses = listOf(
     Node::class
 )
+
+internal class GenderEncoder : EnumEncoder<Gender>(Gender::class, enumValues())
 
 val ContractSerializer = GeneratedBinarySerializer
 val MessageSerializer = binaryMessageSerializer(ContractSerializer)

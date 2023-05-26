@@ -1,6 +1,7 @@
 package ch.softappeal.yass2.generate // TODO: review all files in this directory
 
 import ch.softappeal.yass2.*
+import com.google.devtools.ksp.*
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 
@@ -60,6 +61,12 @@ internal fun Appendable.appendType(typeReference: KSTypeReference) {
     if (type.isMarkedNullable) append('?')
 }
 
+internal fun KSPropertyDeclaration.isPropertyOfThrowable(): Boolean {
+    val name = simpleName.asString()
+    return (name == "cause" || name == "message") && (parentDeclaration as KSClassDeclaration).getAllSuperTypes().map { it.declaration.name() }.contains("kotlin.Throwable")
+}
+
+
 public class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
     private val codeGenerator = environment.codeGenerator
     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -83,9 +90,15 @@ public class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolProc
                 }
             }
         }.entries.forEach { (packageName, annotation) ->
-            @Suppress("UNCHECKED_CAST") val baseEncoderClasses = annotation.arguments[0].value as List<KSType>
-            @Suppress("UNCHECKED_CAST") val treeConcreteClasses = annotation.arguments[1].value as List<KSType>
-            @Suppress("UNCHECKED_CAST") val graphConcreteClasses = annotation.arguments[2].value as List<KSType>
+            fun argument(index: Int): List<KSType> {
+                var value = annotation.arguments[index].value
+                if (value == null) value = emptyList<KSType>() // TODO: seems to be a bug in KSP for some platforms
+                @Suppress("UNCHECKED_CAST") return value as List<KSType>
+            }
+
+            val baseEncoderClasses = argument(0)
+            val treeConcreteClasses = argument(1)
+            val graphConcreteClasses = argument(2)
             generate(packageName, GENERATED_BINARY_SERIALIZER) { generateBinarySerializer(baseEncoderClasses, treeConcreteClasses, graphConcreteClasses) }
             generate(packageName, GENERATED_DUMPER_PROPERTIES) { generateDumperProperties(treeConcreteClasses + graphConcreteClasses) }
         }

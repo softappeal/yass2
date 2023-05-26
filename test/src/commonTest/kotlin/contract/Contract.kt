@@ -2,7 +2,7 @@ package ch.softappeal.yass2.contract
 
 import ch.softappeal.yass2.*
 
-// TODO: add enum for tests
+enum class Gender { Female, Male }
 
 class IntException(
     val i: Int?,
@@ -61,6 +61,11 @@ class Node(val id: Int) {
 }
 
 class DivideByZeroException : RuntimeException()
+
+class ThrowableFake(
+    val cause: String,
+    val message: String,
+)
 
 @Target(AnnotationTarget.FUNCTION)
 @MustBeDocumented

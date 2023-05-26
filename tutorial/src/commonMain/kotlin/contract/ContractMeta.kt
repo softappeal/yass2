@@ -17,8 +17,6 @@
         BooleanFlowId::class,
         IntFlowId::class,
     ],
-    graphConcreteClasses = [ // TODO: needed for js bug
-    ],
 )
 
 package ch.softappeal.yass2.tutorial.contract

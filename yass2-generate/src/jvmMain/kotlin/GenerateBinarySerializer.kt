@@ -43,7 +43,7 @@ internal fun Appendable.generateBinarySerializer(baseEncoderClasses: List<KSType
         val klass = declaration as KSClassDeclaration
         return MetaClass(
             klass.getAllProperties()
-                .filter { /* TODO !isSubclassOf(Throwable::class)  || */ (it.simpleName.asString() != "cause" && it.simpleName.asString() != "message") }
+                .filterNot { it.isPropertyOfThrowable() }
                 .toList()
                 .sortedBy { it.simpleName.asString() }
                 .map { it.metaProperty() },

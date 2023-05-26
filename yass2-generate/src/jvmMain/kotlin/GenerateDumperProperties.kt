@@ -11,7 +11,7 @@ internal fun Appendable.generateDumperProperties(concreteClasses: List<KSType>) 
         write("""
             ${klass.declaration.name()}::class to listOf(
         """, 1)
-        (klass.declaration as KSClassDeclaration).getAllProperties().toList().filter {/* TODO  !isSubclassOf(Throwable::class) || */(it.toString() != "cause" && it.toString() != "message") }.sortedBy { it.toString() }.forEach { property ->
+        (klass.declaration as KSClassDeclaration).getAllProperties().toList().filterNot { it.isPropertyOfThrowable() }.sortedBy { it.toString() }.forEach { property ->
             write("""
                 ${klass.declaration.name()}::${property} as kotlin.reflect.KProperty1<Any, Any?>,
             """, 2)
