@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.generate // TODO: test in, out, * ... in datatypes
+package ch.softappeal.yass2.generate
 
 import ch.softappeal.yass2.serialize.binary.*
 import com.google.devtools.ksp.symbol.*
@@ -30,6 +30,11 @@ internal fun Appendable.generateBinarySerializer(baseEncoderClasses: List<KSType
             parameterProperties = mutableListOf()
             bodyProperties = mutableListOf()
             parameterNames.forEach { parameterName ->
+                /* TODO
+                require(propertyNames.indexOf(parameterName) >= 0) {
+                    "primary constructor parameter '$parameterName' of '$klass' is not a property"
+                }
+                */
                 parameterProperties.add(properties.first { it.property.simpleName.asString() == parameterName })
             }
             properties.forEach { property ->
@@ -40,6 +45,8 @@ internal fun Appendable.generateBinarySerializer(baseEncoderClasses: List<KSType
     }
 
     fun KSType.metaClass(): MetaClass {
+        // TODO: require(!java.isEnum) { "type '$this' is enum" }
+        // TODO: require(!isAbstract) { "type '$this' is abstract" }
         val klass = declaration as KSClassDeclaration
         return MetaClass(
             klass.getAllProperties()

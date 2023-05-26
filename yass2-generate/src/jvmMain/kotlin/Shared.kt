@@ -11,7 +11,7 @@ internal fun Appendable.write(s: String, level: Int = 0) {
 
 internal const val CSY = "ch.softappeal.yass2"
 
-internal fun Appendable.writeHeader(packageName: String) {
+private fun Appendable.writeHeader(packageName: String) {
     appendLine("""
         @file:Suppress(
             "UNCHECKED_CAST",
@@ -63,9 +63,8 @@ internal fun Appendable.appendType(typeReference: KSTypeReference) {
 
 internal fun KSPropertyDeclaration.isPropertyOfThrowable(): Boolean {
     val name = simpleName.asString()
-    return (name == "cause" || name == "message") && (parentDeclaration as KSClassDeclaration).getAllSuperTypes().map { it.declaration.name() }.contains("kotlin.Throwable")
+    return (name == "cause" || name == "message") && "kotlin.Throwable" in (parentDeclaration as KSClassDeclaration).getAllSuperTypes().map { it.declaration.name() }
 }
-
 
 public class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
     private val codeGenerator = environment.codeGenerator
@@ -78,13 +77,13 @@ public class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolProc
         }
 
         buildMap {
-            resolver.getSymbolsWithAnnotation(GenerateBinarySerializer::class.qualifiedName!!).forEach { annotated ->
+            resolver.getSymbolsWithAnnotation(GenerateBinarySerializerAndDumper::class.qualifiedName!!).forEach { annotated ->
                 val file = annotated as KSFile
                 file.annotations.forEach { annotation ->
-                    if (annotation.shortName.asString() == GenerateBinarySerializer::class.simpleName) {
+                    if (annotation.shortName.asString() == GenerateBinarySerializerAndDumper::class.simpleName) {
                         val packageName = file.packageName.asString()
                         check(put(packageName, annotation) == null) {
-                            "duplicated annotation ${GenerateBinarySerializer::class.qualifiedName} in package $packageName: ${annotation.location}"
+                            "duplicated annotation ${GenerateBinarySerializerAndDumper::class.qualifiedName} in package $packageName: ${annotation.location}"
                         }
                     }
                 }
@@ -105,7 +104,7 @@ public class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolProc
 
         val unitType = resolver.builtIns.unitType
         buildList {
-            resolver.getSymbolsWithAnnotation(Proxy::class.qualifiedName!!)
+            resolver.getSymbolsWithAnnotation(GenerateProxy::class.qualifiedName!!)
                 .forEach { add(Pair((it as KSClassDeclaration).packageName.asString(), it)) }
         }.groupBy({ it.first }, { it.second }).entries.forEach { (packageName, services) ->
             generate(packageName, GENERATED_PROXY) {

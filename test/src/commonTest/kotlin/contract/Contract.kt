@@ -75,12 +75,12 @@ interface AddCalculator {
     suspend fun add(a: Int, b: Int): Int
 }
 
-@Proxy
+@GenerateProxy
 interface Calculator : AddCalculator {
     suspend fun divide(a: Int, b: Int): Int
 }
 
-@Proxy
+@GenerateProxy
 interface Echo {
     @TestAnnotation
     suspend fun echo(value: Any?): Any?
@@ -100,7 +100,7 @@ interface Echo {
     suspend fun echoMonster(a: List<*>, b: List<List<String?>?>, c: Map<out Int, String>, d: Pair<*, *>): Map<in Int, String>?
 }
 
-@Proxy
+@GenerateProxy
 interface Mixed {
     fun divide(a: Int, b: Int): Int
     suspend fun suspendDivide(a: Int, b: Int): Int

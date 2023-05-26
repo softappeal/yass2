@@ -63,13 +63,13 @@ public class IntFlowId(public val max: Int) : FlowId()
  * All functions must be suspendable because they need IO.
  * Overloading is not allowed.
  */
-@Proxy
+@GenerateProxy
 public interface Calculator {
     public suspend fun add(a: Int, b: Int): Int
     public suspend fun divide(a: Int, b: Int): Int
 }
 
-@Proxy
+@GenerateProxy
 public interface NewsListener {
     public suspend fun notify(news: String)
 }

@@ -1,4 +1,4 @@
-@file:GenerateBinarySerializer(
+@file:GenerateBinarySerializerAndDumper(
     baseEncoderClasses = [
         // Define all the base encoders needed by the contract (including enumerations and own base types).
         // [BooleanEncoder] is needed because [BooleanFlowId] returns a `Flow<Boolean>`.
@@ -40,13 +40,6 @@ internal class MyDateEncoder : BaseEncoder<MyDate>(MyDate::class,
 
 internal class GenderEncoder : EnumEncoder<Gender>(Gender::class, enumValues())
 
-/** Writes value (without line breaks) if responsible else does nothing. */
-internal fun StringBuilder.valueDumper(value: Any) {
-    when (value) {
-        is MyDate -> append("MyDate(${value.currentTimeMillis})")
-    }
-}
-
 /** Define the [ServiceId] for each contract interface. */
 @MustBeImplementedByAcceptor
 public val CalculatorId: ServiceId<Calculator> = ServiceId(1)
@@ -58,7 +51,13 @@ public val NewsListenerId: ServiceId<NewsListener> = ServiceId(2)
 @MustBeImplementedByAcceptor
 public val FlowServiceId: ServiceId<FlowService> = ServiceId(3)
 
-public val Dumper: Dumper = dumper(GeneratedDumperProperties, StringBuilder::valueDumper)
+public val Dump: Dumper = createDumper(GeneratedDumperProperties, emptySet()) { value ->
+    // Writes value (without line breaks) if responsible else does nothing.
+    when (value) {
+        is MyDate -> append("MyDate(${value.currentTimeMillis})")
+    }
+
+}
 
 public val MessageSerializer: Serializer = binaryMessageSerializer(GeneratedBinarySerializer)
 public val PacketSerializer: Serializer = binaryPacketSerializer(MessageSerializer)

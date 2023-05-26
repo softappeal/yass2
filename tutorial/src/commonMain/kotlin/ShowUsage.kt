@@ -26,7 +26,7 @@ private suspend fun useCalculator(calculator: Calculator) {
 }
 
 public suspend fun showUsage() {
-    fun useDumper(dumper: Dumper) {
+    fun useDumper(dump: Dumper) {
         println("*** useDumper ***")
         val person = Person(
             "Guru",
@@ -36,7 +36,7 @@ public suspend fun showUsage() {
                 Address("Hollywood Boulevard")
             )
         )
-        println(StringBuilder().dumper(person))
+        println(StringBuilder().dump(person))
     }
 
     fun useSerializer(serializer: Serializer) {
@@ -56,7 +56,7 @@ public suspend fun showUsage() {
         }
         useCalculator(calculator)
     }
-    useDumper(Dumper)
+    useDumper(Dump)
     useSerializer(GeneratedBinarySerializer)
     useInterceptor()
 }

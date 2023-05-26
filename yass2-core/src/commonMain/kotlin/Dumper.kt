@@ -4,18 +4,20 @@ import kotlin.reflect.*
 
 public typealias DumperProperties = (type: KClass<*>) -> List<KProperty1<Any, Any?>>
 
-public typealias Dumper = StringBuilder.(value: Any?) -> StringBuilder
+public typealias Dumper = Appendable.(value: Any?) -> Appendable
 
 /**
  * Supports the following types out-of-the-box:
  * `null`, [Boolean], [Number], [CharSequence], [List], [Enum] and classes with its properties.
- * [valueDumper] writes value (without line breaks) if responsible else does nothing.
+ * [dumpValue] writes value (without line breaks) if responsible else does nothing.
  */
-public fun dumper(
+public fun createDumper(
+    // TODO: generate properties and graphConcreteClasses into this
     properties: DumperProperties,
-    valueDumper: StringBuilder.(value: Any) -> Unit,
-    graphConcreteClasses: Set<KClass<*>> = emptySet(),
+    graphConcreteClasses: Set<KClass<*>>,
+    dumpValue: Appendable.(value: Any) -> Unit,
 ): Dumper = { value ->
+    val dumperAppendable = this
     val object2reference: HashMap<Any, Int> by lazy(LazyThreadSafetyMode.NONE) { HashMap(16) }
     var indent = 0
 
@@ -70,15 +72,33 @@ public fun dumper(
 
         when (value) {
             null -> append("null")
-            is Boolean -> append(value)
-            is Number -> append(value)
+            is Boolean -> append(value.toString())
+            is Number -> append(value.toString())
             is CharSequence -> append("\"$value\"")
             is Enum<*> -> append(value.name)
             is List<*> -> dumpList(value)
             else -> {
-                val oldLength = length
-                valueDumper(value)
-                if (oldLength == length) dumpObject(value)
+                var appended = false
+                object : Appendable {
+                    override fun append(value: Char): Appendable {
+                        appended = true
+                        dumperAppendable.append(value)
+                        return this
+                    }
+
+                    override fun append(value: CharSequence?): Appendable {
+                        appended = true
+                        dumperAppendable.append(value)
+                        return this
+                    }
+
+                    override fun append(value: CharSequence?, startIndex: Int, endIndex: Int): Appendable {
+                        appended = true
+                        dumperAppendable.append(value, startIndex, endIndex)
+                        return this
+                    }
+                }.dumpValue(value)
+                if (!appended) dumpObject(value)
             }
         }
     }

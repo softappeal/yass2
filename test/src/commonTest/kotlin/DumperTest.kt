@@ -7,12 +7,12 @@ import kotlin.test.*
 enum class Color { Green }
 
 class DumperTest {
-    private val dumper = dumper(GeneratedDumperProperties, StringBuilder::valueDumper, GraphConcreteClasses.toSet())
+    private val dump = createDumper(GeneratedDumperProperties, setOf(Node::class), Appendable::dumpValue)
 
     @Test
     fun missingClass() {
         try {
-            StringBuilder().dumper(Any())
+            StringBuilder().dump(Any())
         } catch (e: IllegalStateException) {
             println(e)
         }
@@ -22,7 +22,7 @@ class DumperTest {
     fun test() {
         val s = StringBuilder()
         fun dump(value: Any?) {
-            s.dumper(value).appendLine()
+            s.dump(value).appendLine()
         }
 
         dump(null)

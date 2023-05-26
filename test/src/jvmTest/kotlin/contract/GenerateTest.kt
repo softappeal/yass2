@@ -1,20 +1,25 @@
 package ch.softappeal.yass2.contract
 
-import ch.softappeal.yass2.contract.child.*
 import ch.softappeal.yass2.generate.*
-import ch.softappeal.yass2.generate.manual.*
-import ch.softappeal.yass2.remote.coroutines.*
+import java.nio.file.*
+import kotlin.io.path.*
 import kotlin.test.*
 
-private fun generatedDir(isMain: Boolean) = "build/generated/ksp/jvm/jvm${if (isMain) "Main" else "Test"}/kotlin/ch/softappeal/yass2"
+private fun Path.readAndFixLines(): String = readText().replace("\r\n", "\n")
 
 class GenerateTest {
     @Test
     fun test() {
-        verify("${generatedDir(false)}/contract", GENERATED_PROXY, Id::class.java.packageName) { generateProxy(listOf(Calculator::class, Echo::class, Mixed::class)) }
-        verify("${generatedDir(false)}/contract/child", GENERATED_PROXY, NoSuspend::class.java.packageName) { generateProxy(listOf(NoSuspend::class)) }
-        verify("${generatedDir(false)}/contract", GENERATED_BINARY_SERIALIZER, Id::class.java.packageName) { generateBinarySerializer(BaseEncoderClasses, TreeConcreteClasses, GraphConcreteClasses) }
-        verify("${generatedDir(false)}/contract", GENERATED_DUMPER_PROPERTIES, Id::class.java.packageName) { generateDumperProperties(TreeConcreteClasses + GraphConcreteClasses) }
-        verify("../yass2-coroutines/${generatedDir(true)}/remote/coroutines", GENERATED_PROXY, FlowService::class.java.packageName) { generateProxy(listOf(FlowService::class)) }
+        fun verify(fileName: String) {
+            val newGenerated = Path("build/generated/ksp/jvm/jvmTest/kotlin/ch/softappeal/yass2/contract/$fileName.kt").readAndFixLines()
+            val oldGenerated = Path("src/jvmTest/kotlin/contract/generated/$fileName.kt").readAndFixLines()
+                .replace("package ch.softappeal.yass2.contract.generated", "package ch.softappeal.yass2.contract")
+            check(newGenerated == oldGenerated) {
+                "$fileName is\n${">".repeat(120)}\n$newGenerated${"<".repeat(120)}\nbut should be\n${">".repeat(120)}\n$oldGenerated${"<".repeat(120)}"
+            }
+        }
+        verify(GENERATED_PROXY)
+        verify(GENERATED_BINARY_SERIALIZER)
+        verify(GENERATED_DUMPER_PROPERTIES)
     }
 }

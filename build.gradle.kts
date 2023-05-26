@@ -129,7 +129,6 @@ val generateProject = project("yass2-generate") {
             val jvmMain by getting {
                 dependencies {
                     api(coreProject)
-                    api(kotlin("reflect")) // TODO: remove after switch to KSP
                     api(libraries.ksp)
                 }
             }
@@ -207,6 +206,7 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
                 dependsOn(jvmAndNixTest)
                 dependencies {
                     implementation(generateProject)
+                    implementation(kotlin("reflect"))
                 }
             }
             if (linuxTarget) {

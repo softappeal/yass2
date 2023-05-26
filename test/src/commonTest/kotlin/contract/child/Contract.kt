@@ -2,7 +2,7 @@ package ch.softappeal.yass2.contract.child
 
 import ch.softappeal.yass2.*
 
-@Proxy
+@GenerateProxy
 interface NoSuspend {
     fun x()
 }

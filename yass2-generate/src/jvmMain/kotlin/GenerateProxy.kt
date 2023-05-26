@@ -5,13 +5,13 @@ import com.google.devtools.ksp.symbol.*
 
 private val AnyFunctions = setOf("toString", "equals", "hashCode")
 
-private fun KSFunctionDeclaration.isSuspend() = modifiers.contains(Modifier.SUSPEND)
+private fun KSFunctionDeclaration.isSuspend() = Modifier.SUSPEND in modifiers
 
 internal fun Appendable.generateProxy(service: KSClassDeclaration, unitType: KSType) {
     require(service.classKind == ClassKind.INTERFACE) { "'${service.name()}' must be an interface" }
 
     val functions = service.getAllFunctions()
-        .filter { !AnyFunctions.contains(it.toString()) }
+        .filter { it.toString() !in AnyFunctions }
         .toList()
         .sortedBy { it.toString() } // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
         .apply {

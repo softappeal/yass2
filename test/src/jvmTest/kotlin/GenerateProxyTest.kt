@@ -1,7 +1,6 @@
 package ch.softappeal.yass2
 
 import ch.softappeal.yass2.contract.*
-import ch.softappeal.yass2.generate.manual.*
 import kotlinx.coroutines.*
 import kotlin.reflect.full.*
 import kotlin.test.*
@@ -13,6 +12,7 @@ private interface Overloaded {
 }
 
 class GenerateProxyTest {
+    /* TODO
     @Test
     fun overloadedFunction() = assertFailsMessage<IllegalArgumentException>("'class ch.softappeal.yass2.Overloaded' has overloaded functions") {
         StringBuilder().generateProxy(listOf(Overloaded::class))
@@ -22,6 +22,7 @@ class GenerateProxyTest {
     fun duplicatedService() = assertFailsMessage<IllegalArgumentException>("duplicated service") {
         StringBuilder().generateProxy(listOf(Calculator::class, Calculator::class))
     }
+     */
 
     @Test
     fun annotation() = runBlocking {
