@@ -4,123 +4,86 @@ import ch.softappeal.yass2.remote.*
 import com.google.devtools.ksp.symbol.*
 
 private val AnyFunctions = setOf("toString", "equals", "hashCode")
-
 private fun KSFunctionDeclaration.isSuspend() = Modifier.SUSPEND in modifiers
+private fun KSFunctionDeclaration.hasResult() = "kotlin.Unit" != returnType!!.resolve().qualifiedName()
 
 internal fun Appendable.generateProxy(service: KSClassDeclaration) {
-    require(service.classKind == ClassKind.INTERFACE) { "'${service.name()}' must be an interface" }
+    require(service.classKind == ClassKind.INTERFACE) { "'${service.qualifiedName()}' must be an interface @${service.location}" }
 
     val functions = service.getAllFunctions()
-        .filter { it.toString() !in AnyFunctions }
         .toList()
-        .sortedBy { it.toString() } // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
+        .filter { it.simpleName() !in AnyFunctions }
+        .sortedBy { it.simpleName() } // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
         .apply {
-            require(map { it.toString() }.toSet().size == size) { "'${service.name()}' has overloaded functions" }
+            require(map { it.simpleName() }.toSet().size == size) { "interface '${service.qualifiedName()}' must not overload functions @${service.location}" }
         }
 
-    fun KSFunctionDeclaration.hasResult() = "kotlin.Unit" != returnType!!.resolve().declaration.name()
-
-    fun KSFunctionDeclaration.appendSignature(indent: String) {
-        append("${indent}override ${if (isSuspend()) "suspend " else ""}fun $this(")
-        parameters.forEachIndexed { parameterIndex, parameter ->
+    fun appendSignature(level: Int, function: KSFunctionDeclaration) {
+        append(level, "override ${if (function.isSuspend()) "suspend " else ""}fun ${function.simpleName()}(")
+        function.parameters.forEachIndexed { parameterIndex, parameter ->
             if (parameterIndex != 0) append(", ")
-            append("p${parameterIndex + 1}: ")
-            appendType(parameter.type)
+            append("p${parameterIndex + 1}: ").appendType(parameter.type)
         }
         append(')')
     }
 
-    fun KSFunctionDeclaration.appendParameters() {
-        for (parameterIndex in 1..parameters.size) {
+    fun Appendable.appendParameters(function: KSFunctionDeclaration): Appendable {
+        for (parameterIndex in 1..function.parameters.size) {
             if (parameterIndex != 1) append(", ")
             append("p$parameterIndex")
         }
+        return this
     }
 
-    run {
-        write("""
-
-            public fun ${service.name()}.proxy(
-        """)
-        if (functions.any { !it.isSuspend() }) appendLine("    intercept: $CSY.Interceptor,")
-        if (functions.any { it.isSuspend() }) appendLine("    suspendIntercept: $CSY.SuspendInterceptor,")
-        write("""
-            ): ${service.name()} = object : ${service.name()} {
-        """)
-        functions.forEachIndexed { functionIndex, function ->
-            val hasResult = function.hasResult()
-            if (functionIndex != 0) appendLine()
-            function.appendSignature("    ")
-            if (hasResult) {
-                append(": ")
-                appendType(function.returnType!!)
-            }
-            appendLine(" {")
-            append("        ${if (hasResult) "return " else ""}${if (function.isSuspend()) "suspendIntercept" else "intercept"}(${service.name()}::$function, ")
-            append("listOf(")
-            function.appendParameters()
-            append(")) { this@proxy.$function(")
-            function.appendParameters()
-            append(") }")
-            if (hasResult) {
-                append(" as ")
-                appendType(function.returnType!!)
-            }
-            appendLine()
-            appendLine("    }")
-        }
-        write("""
-            }
-        """)
+    appendLine()
+    appendLine("public fun ${service.qualifiedName()}.proxy(")
+    if (functions.any { !it.isSuspend() }) appendLine(1, "intercept: $CSY.Interceptor,")
+    if (functions.any { it.isSuspend() }) appendLine(1, "suspendIntercept: $CSY.SuspendInterceptor,")
+    appendLine("): ${service.qualifiedName()} = object : ${service.qualifiedName()} {")
+    functions.forEachIndexed { functionIndex, function ->
+        if (functionIndex != 0) appendLine()
+        val hasResult = function.hasResult()
+        appendSignature(1, function)
+        if (hasResult) append(": ").appendType(function.returnType!!)
+        appendLine(" {")
+        append(2, "${if (hasResult) "return " else ""}${if (function.isSuspend()) "suspendIntercept" else "intercept"}(${service.qualifiedName()}::${function.simpleName()}, ")
+        append("listOf(").appendParameters(function).append(")) { this@proxy.${function.simpleName()}(").appendParameters(function).append(") }")
+        if (hasResult) append(" as ").appendType(function.returnType!!)
+        appendLine()
+        appendLine(1, "}")
     }
+    appendLine("}")
 
     if (functions.any { !it.isSuspend() }) return
 
-    run {
-        write("""
-
-            public fun ${ServiceId::class.qualifiedName}<${service.name()}>.proxy(tunnel: $CSY.remote.Tunnel): ${service.name()} =
-                object : ${service.name()} {
-        """)
-        functions.forEachIndexed { functionIndex, function ->
-            val hasResult = function.hasResult()
-            if (functionIndex != 0) appendLine()
-            function.appendSignature("        ")
-            if (hasResult) append(" = ") else append(" {\n            ")
-            append("tunnel(${Request::class.qualifiedName}(id, $functionIndex, listOf(")
-            function.appendParameters()
-            append("))).process()")
-            if (hasResult) {
-                append(" as ")
-                appendType(function.returnType!!)
-            } else append("\n        }")
-            appendLine()
-        }
-        write("""
-            }
-        """, 1)
+    appendLine()
+    appendLine("public fun ${ServiceId::class.qualifiedName}<${service.qualifiedName()}>.proxy(tunnel: $CSY.remote.Tunnel): ${service.qualifiedName()} =")
+    appendLine("    object : ${service.qualifiedName()} {")
+    functions.forEachIndexed { functionIndex, function ->
+        if (functionIndex != 0) appendLine()
+        val hasResult = function.hasResult()
+        appendSignature(2, function)
+        if (hasResult) append(" =") else append(" {")
+        appendLine()
+        append(3, "tunnel(${Request::class.qualifiedName}(id, $functionIndex, listOf(").appendParameters(function).append("))).process()")
+        if (hasResult) append(" as ").appendType(function.returnType!!) else appendLine().append(2, "}")
+        appendLine()
     }
+    appendLine("    }")
 
-    run {
-        write("""
-
-            public fun ${ServiceId::class.qualifiedName}<${service.name()}>.service(implementation: ${service.name()}): ${Service::class.qualifiedName} =
-                ${Service::class.qualifiedName}(id) { functionId, parameters ->
-                    when (functionId) {
-        """)
-        functions.forEachIndexed { functionIndex, function ->
-            append("            $functionIndex -> implementation.$function(")
-            function.parameters.forEachIndexed { parameterIndex, parameter ->
-                if (parameterIndex != 0) append(", ")
-                append("parameters[$parameterIndex] as ")
-                appendType(parameter.type)
-            }
-            appendLine(')')
+    appendLine()
+    appendLine("public fun ${ServiceId::class.qualifiedName}<${service.qualifiedName()}>.service(implementation: ${service.qualifiedName()}): ${Service::class.qualifiedName} =")
+    appendLine("    ${Service::class.qualifiedName}(id) { functionId, parameters ->")
+    appendLine("        when (functionId) {")
+    functions.forEachIndexed { functionIndex, function ->
+        append(3, "$functionIndex -> implementation.${function.simpleName()}(")
+        function.parameters.forEachIndexed { parameterIndex, parameter ->
+            if (parameterIndex != 0) append(", ")
+            append("parameters[$parameterIndex] as ").appendType(parameter.type)
         }
-        write("""
-                    else -> error("service with id ${'$'}id has no function with id ${'$'}functionId")
-                }
-            }
-        """, 1)
+        appendLine(')')
     }
+    appendLine("            else -> error(\"service with id ${'$'}id has no function with id ${'$'}functionId\")")
+    appendLine("        }")
+    appendLine("    }")
 }

@@ -6,11 +6,15 @@ import kotlin.reflect.full.*
 import kotlin.test.*
 
 // TODO: comment out the following line for testing overloads
-// @GenerateProxy
+//@GenerateProxy
 @Suppress("unused") private interface Overloaded {
     suspend fun f()
     suspend fun f(i: Int)
 }
+
+// TODO: comment out the following line for testing interface
+//@GenerateProxy
+@Suppress("unused") private class NotAnInterface
 
 class GenerateProxyTest {
     @Test

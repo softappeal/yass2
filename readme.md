@@ -37,11 +37,11 @@
 
 * Javascript transport uses the Fetch and the WebSocket API instead of Ktor
 
-* provided by generated code (works on any platform and is fast)
+* provided by [KSP](https://kotlinlang.org/docs/ksp-overview.html) generated code (works on any platform and is fast)
     * fast, compact and extendable binary serializer for high throughput and low latency
-    * dumper (generic object printer)
+    * dumper (prints contract objects)
     * interceptor (around advice, aspect-oriented programming)
-    * remoting (remote proxy and invoker)
+    * remoting (proxy and service)
 
 * yass2 has multiple modules with the following dependencies
 

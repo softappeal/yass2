@@ -27,9 +27,11 @@ public fun ch.softappeal.yass2.contract.Calculator.proxy(
 
 public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Calculator>.proxy(tunnel: ch.softappeal.yass2.remote.Tunnel): ch.softappeal.yass2.contract.Calculator =
     object : ch.softappeal.yass2.contract.Calculator {
-        override suspend fun add(p1: kotlin.Int, p2: kotlin.Int) = tunnel(ch.softappeal.yass2.remote.Request(id, 0, listOf(p1, p2))).process() as kotlin.Int
+        override suspend fun add(p1: kotlin.Int, p2: kotlin.Int) =
+            tunnel(ch.softappeal.yass2.remote.Request(id, 0, listOf(p1, p2))).process() as kotlin.Int
 
-        override suspend fun divide(p1: kotlin.Int, p2: kotlin.Int) = tunnel(ch.softappeal.yass2.remote.Request(id, 1, listOf(p1, p2))).process() as kotlin.Int
+        override suspend fun divide(p1: kotlin.Int, p2: kotlin.Int) =
+            tunnel(ch.softappeal.yass2.remote.Request(id, 1, listOf(p1, p2))).process() as kotlin.Int
     }
 
 public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Calculator>.service(implementation: ch.softappeal.yass2.contract.Calculator): ch.softappeal.yass2.remote.Service =
@@ -83,17 +85,23 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Ech
             tunnel(ch.softappeal.yass2.remote.Request(id, 0, listOf(p1))).process()
         }
 
-        override suspend fun echo(p1: kotlin.Any?) = tunnel(ch.softappeal.yass2.remote.Request(id, 1, listOf(p1))).process() as kotlin.Any?
+        override suspend fun echo(p1: kotlin.Any?) =
+            tunnel(ch.softappeal.yass2.remote.Request(id, 1, listOf(p1))).process() as kotlin.Any?
 
-        override suspend fun echoGeneric(p1: kotlin.collections.Map<kotlin.String?, ch.softappeal.yass2.contract.Node>) = tunnel(ch.softappeal.yass2.remote.Request(id, 2, listOf(p1))).process() as kotlin.collections.Map<kotlin.Int, ch.softappeal.yass2.contract.Node>?
+        override suspend fun echoGeneric(p1: kotlin.collections.Map<kotlin.String?, ch.softappeal.yass2.contract.Node>) =
+            tunnel(ch.softappeal.yass2.remote.Request(id, 2, listOf(p1))).process() as kotlin.collections.Map<kotlin.Int, ch.softappeal.yass2.contract.Node>?
 
-        override suspend fun echoMonster(p1: kotlin.collections.List<*>, p2: kotlin.collections.List<kotlin.collections.List<kotlin.String?>?>, p3: kotlin.collections.Map<out kotlin.Int, kotlin.String>, p4: kotlin.Pair<*, *>) = tunnel(ch.softappeal.yass2.remote.Request(id, 3, listOf(p1, p2, p3, p4))).process() as kotlin.collections.Map<in kotlin.Int, kotlin.String>?
+        override suspend fun echoMonster(p1: kotlin.collections.List<*>, p2: kotlin.collections.List<kotlin.collections.List<kotlin.String?>?>, p3: kotlin.collections.Map<out kotlin.Int, kotlin.String>, p4: kotlin.Pair<*, *>) =
+            tunnel(ch.softappeal.yass2.remote.Request(id, 3, listOf(p1, p2, p3, p4))).process() as kotlin.collections.Map<in kotlin.Int, kotlin.String>?
 
-        override suspend fun echoNode(p1: ch.softappeal.yass2.contract.Node?) = tunnel(ch.softappeal.yass2.remote.Request(id, 4, listOf(p1))).process() as ch.softappeal.yass2.contract.Node?
+        override suspend fun echoNode(p1: ch.softappeal.yass2.contract.Node?) =
+            tunnel(ch.softappeal.yass2.remote.Request(id, 4, listOf(p1))).process() as ch.softappeal.yass2.contract.Node?
 
-        override suspend fun echoNodeRequired(p1: ch.softappeal.yass2.contract.Node) = tunnel(ch.softappeal.yass2.remote.Request(id, 5, listOf(p1))).process() as ch.softappeal.yass2.contract.Node
+        override suspend fun echoNodeRequired(p1: ch.softappeal.yass2.contract.Node) =
+            tunnel(ch.softappeal.yass2.remote.Request(id, 5, listOf(p1))).process() as ch.softappeal.yass2.contract.Node
 
-        override suspend fun echoRequired(p1: kotlin.Any) = tunnel(ch.softappeal.yass2.remote.Request(id, 6, listOf(p1))).process() as kotlin.Any
+        override suspend fun echoRequired(p1: kotlin.Any) =
+            tunnel(ch.softappeal.yass2.remote.Request(id, 6, listOf(p1))).process() as kotlin.Any
 
         override suspend fun noParametersNoResult() {
             tunnel(ch.softappeal.yass2.remote.Request(id, 7, listOf())).process()

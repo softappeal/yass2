@@ -5,7 +5,7 @@ import java.nio.file.*
 import kotlin.io.path.*
 import kotlin.test.*
 
-private fun Path.readAndFixLines(): String = readText().replace("\r\n", "\n")
+private fun Path.readAndFixLines() = readText().replace("\r\n", "\n")
 
 class GenerateTest {
     @Test
