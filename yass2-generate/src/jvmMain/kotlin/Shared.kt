@@ -98,17 +98,20 @@ public class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolProc
             val baseEncoderClasses = argument(0)
             val treeConcreteClasses = argument(1)
             val graphConcreteClasses = argument(2)
+            val concreteClasses = treeConcreteClasses + graphConcreteClasses
+            require(concreteClasses.size == concreteClasses.toSet().size) { "duplicated concrete class" }
+            val encoderTypes = baseEncoderClasses.map { (it.declaration as KSClassDeclaration).superTypes.first().element!!.typeArguments.first().type!!.resolve() } + concreteClasses
+            require(encoderTypes.size == encoderTypes.toSet().size) { "duplicated encoder type" }
             generate(packageName, GENERATED_BINARY_SERIALIZER) { generateBinarySerializer(baseEncoderClasses, treeConcreteClasses, graphConcreteClasses) }
             generate(packageName, GENERATED_DUMPER) { generateDumper(treeConcreteClasses, graphConcreteClasses) }
         }
 
-        val unitType = resolver.builtIns.unitType
         buildList {
             resolver.getSymbolsWithAnnotation(GenerateProxy::class.qualifiedName!!)
                 .forEach { add(Pair((it as KSClassDeclaration).packageName.asString(), it)) }
         }.groupBy({ it.first }, { it.second }).entries.forEach { (packageName, services) ->
             generate(packageName, GENERATED_PROXY) {
-                services.sortedBy { it.name() }.forEach { generateProxy(it, unitType) }
+                services.sortedBy { it.name() }.forEach { generateProxy(it) }
             }
         }
 

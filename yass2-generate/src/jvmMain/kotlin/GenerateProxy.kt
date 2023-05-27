@@ -7,7 +7,7 @@ private val AnyFunctions = setOf("toString", "equals", "hashCode")
 
 private fun KSFunctionDeclaration.isSuspend() = Modifier.SUSPEND in modifiers
 
-internal fun Appendable.generateProxy(service: KSClassDeclaration, unitType: KSType) {
+internal fun Appendable.generateProxy(service: KSClassDeclaration) {
     require(service.classKind == ClassKind.INTERFACE) { "'${service.name()}' must be an interface" }
 
     val functions = service.getAllFunctions()
@@ -18,7 +18,7 @@ internal fun Appendable.generateProxy(service: KSClassDeclaration, unitType: KST
             require(map { it.toString() }.toSet().size == size) { "'${service.name()}' has overloaded functions" }
         }
 
-    fun KSFunctionDeclaration.hasResult() = unitType != returnType!!.resolve()
+    fun KSFunctionDeclaration.hasResult() = "kotlin.Unit" != returnType!!.resolve().declaration.name()
 
     fun KSFunctionDeclaration.appendSignature(indent: String) {
         append("${indent}override ${if (isSuspend()) "suspend " else ""}fun $this(")

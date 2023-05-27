@@ -1,6 +1,7 @@
 package ch.softappeal.yass2.generate
 
 import ch.softappeal.yass2.serialize.binary.*
+import com.google.devtools.ksp.*
 import com.google.devtools.ksp.symbol.*
 
 private enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
@@ -29,32 +30,32 @@ internal fun Appendable.generateBinarySerializer(baseEncoderClasses: List<KSType
         init {
             parameterProperties = mutableListOf()
             bodyProperties = mutableListOf()
+            val propertyNames = properties.map { it.property.simpleName.asString() }
             parameterNames.forEach { parameterName ->
-                /* TODO
-                require(propertyNames.indexOf(parameterName) >= 0) {
-                    "primary constructor parameter '$parameterName' of '$klass' is not a property"
-                }
-                */
+                require(propertyNames.indexOf(parameterName) >= 0) { "primary constructor parameter '$parameterName' of 'TODO' is not a property" } // TODO
                 parameterProperties.add(properties.first { it.property.simpleName.asString() == parameterName })
             }
             properties.forEach { property ->
-                if (property.property.simpleName.asString() !in parameterNames) bodyProperties.add(property)
+                if (property.property.simpleName.asString() !in parameterNames) {
+                    require(property.property.isMutable) { "body property '${property.property}' of '${property.property.parentDeclaration!!.name()}' is not 'var'" }
+                    bodyProperties.add(property)
+                }
             }
             this.properties = parameterProperties + bodyProperties
         }
     }
 
     fun KSType.metaClass(): MetaClass {
-        // TODO: require(!java.isEnum) { "type '$this' is enum" }
-        // TODO: require(!isAbstract) { "type '$this' is abstract" }
         val klass = declaration as KSClassDeclaration
+        require(klass.classKind != ClassKind.ENUM_CLASS) { "type '${klass.name()}' is enum" }
+        require(!klass.isAbstract()) { "type '${klass.name()}' is abstract" }
         return MetaClass(
             klass.getAllProperties()
                 .filterNot { it.isPropertyOfThrowable() }
                 .toList()
                 .sortedBy { it.simpleName.asString() }
                 .map { it.metaProperty() },
-            (klass.primaryConstructor ?: error("'$this' has no primary constructor")).parameters.map { it.name!!.asString() }
+            (klass.primaryConstructor ?: error("'${klass.name()}' has no primary constructor")).parameters.map { it.name!!.asString() }
         )
     }
 
@@ -70,35 +71,35 @@ internal fun Appendable.generateBinarySerializer(baseEncoderClasses: List<KSType
     fun List<KSType>.add(graph: Boolean) = forEach { klass ->
         write("""
             ${ClassEncoder::class.qualifiedName}(${klass.name()}::class, $graph,
-        """, 2)
+        """, 1)
         val metaClass = klass.metaClass()
         if (metaClass.properties.isEmpty()) {
-            write("{ _, _ -> },", 3)
+            write("{ _, _ -> },", 2)
         } else {
             write("""
                 { w, i ->
-            """, 3)
-            metaClass.properties.forEach { write("w.write${it.kind}(${it.encoderId(", ")}i.${it.property.simpleName.asString()})", 4) }
+            """, 2)
+            metaClass.properties.forEach { write("w.write${it.kind}(${it.encoderId(", ")}i.${it.property.simpleName.asString()})", 3) }
             write("""
                 },
-            """, 3)
+            """, 2)
         }
         write("""
             {${if (graph || metaClass.properties.isNotEmpty()) " r ->" else ""}
-        """, 3)
+        """, 2)
         write("""
             val i = ${if (graph) "r.created(" else ""}${klass.name()}(
-        """, 4)
+        """, 3)
         metaClass.parameterProperties.forEach {
-            append("                    r.read${it.kind}(${it.encoderId()})")
+            append("                r.read${it.kind}(${it.encoderId()})")
             appendCast(it)
             appendLine(',')
         }
         write("""
             )${if (graph) ')' else ""}
-        """, 4)
+        """, 3)
         metaClass.bodyProperties.forEach {
-            append("                i.${it.property.simpleName.asString()} = r.read${it.kind}(${it.encoderId()})")
+            append("            i.${it.property.simpleName.asString()} = r.read${it.kind}(${it.encoderId()})")
             appendCast(it)
             appendLine()
         }
@@ -106,18 +107,17 @@ internal fun Appendable.generateBinarySerializer(baseEncoderClasses: List<KSType
                     i
                 }
             ),
-        """, 2)
+        """, 1)
     }
 
     write("""
 
-        public val ContractSerializer: ${BinarySerializer::class.qualifiedName} =
-            ${BinarySerializer::class.qualifiedName}(listOf(
+        public fun createSerializer(): ${BinarySerializer::class.qualifiedName} = ${BinarySerializer::class.qualifiedName}(listOf(
     """)
-    baseEncoderClasses.forEach { appendLine("        ${it.name()}(),") }
+    baseEncoderClasses.forEach { appendLine("    ${it.name()}(),") }
     treeConcreteClasses.add(false)
     graphConcreteClasses.add(true)
     write("""
         ))
-    """, 1)
+    """)
 }

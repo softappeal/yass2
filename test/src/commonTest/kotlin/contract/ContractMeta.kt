@@ -12,7 +12,7 @@
         ThrowableFake::class,
     ],
     graphConcreteClasses = [
-        Node::class
+        Node::class,
     ],
 )
 
@@ -27,6 +27,7 @@ import ch.softappeal.yass2.transport.session.*
 
 internal class GenderEncoder : EnumEncoder<Gender>(Gender::class, enumValues())
 
+val ContractSerializer = createSerializer()
 val MessageSerializer = binaryMessageSerializer(ContractSerializer)
 val PacketSerializer = binaryPacketSerializer(MessageSerializer)
 

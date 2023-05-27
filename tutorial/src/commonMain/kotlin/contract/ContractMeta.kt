@@ -58,6 +58,7 @@ public val Dump: Dumper = createDumper { value ->
     }
 }
 
+public val ContractSerializer: Serializer = createSerializer()
 public val MessageSerializer: Serializer = binaryMessageSerializer(ContractSerializer)
 public val PacketSerializer: Serializer = binaryPacketSerializer(MessageSerializer)
 
