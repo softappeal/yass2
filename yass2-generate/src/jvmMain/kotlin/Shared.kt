@@ -32,7 +32,7 @@ private fun Appendable.writeHeader(packageName: String) {
 
 public const val GENERATED_PROXY: String = "GeneratedProxy"
 public const val GENERATED_BINARY_SERIALIZER: String = "GeneratedBinarySerializer"
-public const val GENERATED_DUMPER_PROPERTIES: String = "GeneratedDumperProperties"
+public const val GENERATED_DUMPER: String = "GeneratedDumper"
 
 internal fun KSDeclaration.name() = qualifiedName!!.asString()
 
@@ -99,7 +99,7 @@ public class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolProc
             val treeConcreteClasses = argument(1)
             val graphConcreteClasses = argument(2)
             generate(packageName, GENERATED_BINARY_SERIALIZER) { generateBinarySerializer(baseEncoderClasses, treeConcreteClasses, graphConcreteClasses) }
-            generate(packageName, GENERATED_DUMPER_PROPERTIES) { generateDumperProperties(treeConcreteClasses + graphConcreteClasses) }
+            generate(packageName, GENERATED_DUMPER) { generateDumper(treeConcreteClasses, graphConcreteClasses) }
         }
 
         val unitType = resolver.builtIns.unitType

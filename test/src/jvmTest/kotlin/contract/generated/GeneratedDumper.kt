@@ -13,7 +13,7 @@
 
 package ch.softappeal.yass2.contract.generated
 
-public val GeneratedDumperProperties: ch.softappeal.yass2.DumperProperties = ch.softappeal.yass2.dumperProperties(
+private val DumperProperties = ch.softappeal.yass2.dumperProperties(
     ch.softappeal.yass2.contract.IntException::class to listOf(
         ch.softappeal.yass2.contract.IntException::i as kotlin.reflect.KProperty1<Any, Any?>,
     ),
@@ -64,4 +64,12 @@ public val GeneratedDumperProperties: ch.softappeal.yass2.DumperProperties = ch.
         ch.softappeal.yass2.contract.Node::id as kotlin.reflect.KProperty1<Any, Any?>,
         ch.softappeal.yass2.contract.Node::link as kotlin.reflect.KProperty1<Any, Any?>,
     ),
+)
+
+public fun createDumper(dumpValue: kotlin.text.Appendable.(value: kotlin.Any) -> kotlin.Unit): ch.softappeal.yass2.Dumper = ch.softappeal.yass2.createDumper(
+    DumperProperties,
+    setOf(
+        ch.softappeal.yass2.contract.Node::class,
+    ),
+    dumpValue,
 )

@@ -13,7 +13,7 @@
 
 package ch.softappeal.yass2.contract.generated
 
-public val GeneratedBinarySerializer: ch.softappeal.yass2.serialize.binary.BinarySerializer =
+public val ContractSerializer: ch.softappeal.yass2.serialize.binary.BinarySerializer =
     ch.softappeal.yass2.serialize.binary.BinarySerializer(listOf(
         ch.softappeal.yass2.serialize.binary.IntEncoder(),
         ch.softappeal.yass2.serialize.binary.StringEncoder(),

@@ -51,15 +51,14 @@ public val NewsListenerId: ServiceId<NewsListener> = ServiceId(2)
 @MustBeImplementedByAcceptor
 public val FlowServiceId: ServiceId<FlowService> = ServiceId(3)
 
-public val Dump: Dumper = createDumper(GeneratedDumperProperties, emptySet()) { value ->
+public val Dump: Dumper = createDumper { value ->
     // Writes value (without line breaks) if responsible else does nothing.
     when (value) {
         is MyDate -> append("MyDate(${value.currentTimeMillis})")
     }
-
 }
 
-public val MessageSerializer: Serializer = binaryMessageSerializer(GeneratedBinarySerializer)
+public val MessageSerializer: Serializer = binaryMessageSerializer(ContractSerializer)
 public val PacketSerializer: Serializer = binaryPacketSerializer(MessageSerializer)
 
 private const val INITIAL_WRITER_CAPACITY = 100

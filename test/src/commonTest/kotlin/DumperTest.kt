@@ -7,7 +7,7 @@ import kotlin.test.*
 enum class Color { Green }
 
 class DumperTest {
-    private val dump = createDumper(GeneratedDumperProperties, setOf(Node::class), Appendable::dumpValue)
+    private val dump = createDumper(Appendable::dumpValue)
 
     @Test
     fun missingClass() {

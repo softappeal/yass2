@@ -5,25 +5,14 @@ import kotlinx.coroutines.*
 import kotlin.reflect.full.*
 import kotlin.test.*
 
-@Suppress("unused")
-private interface Overloaded {
+// TODO: comment out the following line for testing overloads
+// @GenerateProxy
+@Suppress("unused") private interface Overloaded {
     suspend fun f()
     suspend fun f(i: Int)
 }
 
 class GenerateProxyTest {
-    /* TODO
-    @Test
-    fun overloadedFunction() = assertFailsMessage<IllegalArgumentException>("'class ch.softappeal.yass2.Overloaded' has overloaded functions") {
-        StringBuilder().generateProxy(listOf(Overloaded::class))
-    }
-
-    @Test
-    fun duplicatedService() = assertFailsMessage<IllegalArgumentException>("duplicated service") {
-        StringBuilder().generateProxy(listOf(Calculator::class, Calculator::class))
-    }
-     */
-
     @Test
     fun annotation() = runBlocking {
         var hasAnnotation = false

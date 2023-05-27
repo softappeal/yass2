@@ -2,7 +2,7 @@ package ch.softappeal.yass2
 
 import kotlin.reflect.*
 
-public typealias DumperProperties = (type: KClass<*>) -> List<KProperty1<Any, Any?>>
+private typealias DumperProperties = (type: KClass<*>) -> List<KProperty1<Any, Any?>>
 
 public typealias Dumper = Appendable.(value: Any?) -> Appendable
 
@@ -12,7 +12,6 @@ public typealias Dumper = Appendable.(value: Any?) -> Appendable
  * [dumpValue] writes value (without line breaks) if responsible else does nothing.
  */
 public fun createDumper(
-    // TODO: generate properties and graphConcreteClasses into this
     properties: DumperProperties,
     graphConcreteClasses: Set<KClass<*>>,
     dumpValue: Appendable.(value: Any) -> Unit,

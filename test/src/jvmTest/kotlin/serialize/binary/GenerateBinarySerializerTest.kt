@@ -10,8 +10,6 @@ private val NoBaseEncoderClasses = listOf<KClass<*>>()
 private val IntBaseEncoderClasses = listOf(IntEncoder::class)
 private val TwoIntBaseEncoderClasses = listOf(IntEncoder::class, IntEncoder::class)
 
-
-
     @Test
     fun enumClass() = assertFailsMessage<IllegalArgumentException>("type 'class ch.softappeal.yass2.Color' is enum") {
         StringBuilder().generateBinarySerializer(NoBaseEncoderClasses, listOf(Color::class))
@@ -74,60 +72,6 @@ private val TwoIntBaseEncoderClasses = listOf(IntEncoder::class, IntEncoder::cla
         assertFailsMessage<IllegalStateException>("'class ch.softappeal.yass2.serialize.binary.GenerateBinarySerializerTest\$noPrimaryConstructor\$X' has no primary constructor") {
             StringBuilder().generateBinarySerializer(IntBaseEncoderClasses, listOf(X::class))
         }
-    }
-
-    @Test
-    @Suppress("unused")
-    fun ignoreThrowableProperties() {
-        class X(val cause: Int, val message: Int)
-        class Y : Exception()
-        class Z(val z: Int) : Exception()
-
-        val builder = StringBuilder()
-        builder.generateBinarySerializer(IntBaseEncoderClasses, listOf(X::class, Y::class, Z::class))
-        assertEquals(
-            """
-
-                public val GeneratedBinarySerializer: ch.softappeal.yass2.serialize.binary.BinarySerializer =
-                    ch.softappeal.yass2.serialize.binary.BinarySerializer(listOf(
-                        ch.softappeal.yass2.serialize.binary.IntEncoder(),
-                        ch.softappeal.yass2.serialize.binary.ClassEncoder(null::class, false,
-                            { w, i ->
-                                w.writeNoIdRequired(3, i.cause)
-                                w.writeNoIdRequired(3, i.message)
-                            },
-                            { r ->
-                                val i = null(
-                                    r.readNoIdRequired(3) as kotlin.Int,
-                                    r.readNoIdRequired(3) as kotlin.Int,
-                                )
-                                i
-                            }
-                        ),
-                        ch.softappeal.yass2.serialize.binary.ClassEncoder(null::class, false,
-                            { _, _ -> },
-                            {
-                                val i = null(
-                                )
-                                i
-                            }
-                        ),
-                        ch.softappeal.yass2.serialize.binary.ClassEncoder(null::class, false,
-                            { w, i ->
-                                w.writeNoIdRequired(3, i.z)
-                            },
-                            { r ->
-                                val i = null(
-                                    r.readNoIdRequired(3) as kotlin.Int,
-                                )
-                                i
-                            }
-                        ),
-                    ))
-
-            """.trimIndent(),
-            builder.toString()
-        )
     }
 */
 

@@ -57,7 +57,7 @@ public suspend fun showUsage() {
         useCalculator(calculator)
     }
     useDumper(Dump)
-    useSerializer(GeneratedBinarySerializer)
+    useSerializer(ContractSerializer)
     useInterceptor()
 }
 

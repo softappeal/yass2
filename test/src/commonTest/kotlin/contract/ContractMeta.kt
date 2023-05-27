@@ -27,7 +27,6 @@ import ch.softappeal.yass2.transport.session.*
 
 internal class GenderEncoder : EnumEncoder<Gender>(Gender::class, enumValues())
 
-val ContractSerializer = GeneratedBinarySerializer
 val MessageSerializer = binaryMessageSerializer(ContractSerializer)
 val PacketSerializer = binaryPacketSerializer(MessageSerializer)
 

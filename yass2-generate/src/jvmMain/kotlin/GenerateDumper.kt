@@ -2,10 +2,11 @@ package ch.softappeal.yass2.generate
 
 import com.google.devtools.ksp.symbol.*
 
-internal fun Appendable.generateDumperProperties(concreteClasses: List<KSType>) {
+internal fun Appendable.generateDumper(treeConcreteClasses: List<KSType>, graphConcreteClasses: List<KSType>) {
+    val concreteClasses = treeConcreteClasses + graphConcreteClasses
     write("""
 
-        public val GeneratedDumperProperties: $CSY.DumperProperties = $CSY.dumperProperties(
+        private val DumperProperties = $CSY.dumperProperties(
     """)
     concreteClasses.forEach { klass ->
         write("""
@@ -21,6 +22,16 @@ internal fun Appendable.generateDumperProperties(concreteClasses: List<KSType>) 
         """, 1)
     }
     write("""
+        )
+
+        public fun createDumper(dumpValue: kotlin.text.Appendable.(value: kotlin.Any) -> kotlin.Unit): $CSY.Dumper = $CSY.createDumper(
+            DumperProperties,
+            setOf(
+    """)
+    graphConcreteClasses.forEach { appendLine("        ${it.declaration.name()}::class,") }
+    write("""
+            ),
+            dumpValue,
         )
     """)
 }

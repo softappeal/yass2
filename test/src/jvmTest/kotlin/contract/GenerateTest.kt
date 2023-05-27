@@ -20,6 +20,6 @@ class GenerateTest {
         }
         verify(GENERATED_PROXY)
         verify(GENERATED_BINARY_SERIALIZER)
-        verify(GENERATED_DUMPER_PROPERTIES)
+        verify(GENERATED_DUMPER)
     }
 }

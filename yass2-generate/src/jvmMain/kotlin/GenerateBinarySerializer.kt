@@ -111,7 +111,7 @@ internal fun Appendable.generateBinarySerializer(baseEncoderClasses: List<KSType
 
     write("""
 
-        public val GeneratedBinarySerializer: ${BinarySerializer::class.qualifiedName} =
+        public val ContractSerializer: ${BinarySerializer::class.qualifiedName} =
             ${BinarySerializer::class.qualifiedName}(listOf(
     """)
     baseEncoderClasses.forEach { appendLine("        ${it.name()}(),") }
