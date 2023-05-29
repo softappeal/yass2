@@ -21,8 +21,6 @@ val jsTarget = true
 val linuxTarget = true.disableNativeTargetIfPublish()
 val macTarget = true.disableNativeTargetIfPublish()
 
-// TODO: fun String.firstCharToUppercase() = this[0].toUpperCase() + this.substring(1)
-
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
     apply(plugin = "maven-publish")
@@ -60,22 +58,6 @@ allprojects {
 
         targets.all {
             compilations.all {
-                /*
-                kotlin.sourceSets {
-                    if (targetName == "metadata") {
-                        /* TODO
-                        getByName("commonMain") {
-                            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
-                        }
-                        */
-                    } else {
-                        val name = compilationName.firstCharToUppercase()
-                        getByName("$targetName$name") {
-                            kotlin.srcDir("build/generated/ksp/$targetName/$targetName$name/kotlin")
-                        }
-                    }
-                }
-                 */
                 explicitApi()
                 kotlinOptions {
                     allWarningsAsErrors = true
@@ -147,7 +129,7 @@ val coroutinesProject = project("yass2-coroutines") {
             }
         }
     }
-    dependencies { // TODO
+    dependencies {
         ksp(generateProject)
     }
 }
@@ -221,7 +203,7 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
             }
         }
     }
-    dependencies { // TODO
+    dependencies {
         ksp(generateProject)
     }
 }
@@ -254,19 +236,8 @@ project("tutorial") {
             }
         }
     }
-    dependencies { // TODO
+    dependencies {
         ksp(generateProject)
-        /*
-        add("kspCommonMainMetadata", generateProject)
-        add("kspJvm", generateProject)
-        add("kspJvmTest", generateProject)
-        add("kspJs", generateProject) // TODO: if (target)
-        add("kspJsTest", generateProject)
-        add("kspLinux", generateProject)
-        add("kspLinuxTest", generateProject)
-        add("kspMac", generateProject)
-        add("kspMacTest", generateProject)
-        */
     }
 }
 

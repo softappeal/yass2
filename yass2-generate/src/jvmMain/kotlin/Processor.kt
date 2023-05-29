@@ -66,7 +66,7 @@ private class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         fun generate(file: String, packageName: String, generate: Appendable.() -> Unit) {
-            codeGenerator.createNewFile(Dependencies(false), packageName, file).writer().use { appendable ->
+            codeGenerator.createNewFile(Dependencies(true, *resolver.getAllFiles().toList().toTypedArray()), packageName, file).writer().use { appendable ->
                 appendable.appendLine("""
                     @file:Suppress(
                         "UNCHECKED_CAST",
@@ -87,8 +87,20 @@ private class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
             }
         }
 
+        val invalidSymbols = mutableListOf<KSAnnotated>()
+
+        fun Sequence<KSAnnotated>.handleValidate() = filter {
+            if (it.validate()) {
+                true
+            } else {
+                invalidSymbols.add(it)
+                false
+            }
+        }
+
         buildList {
             resolver.getSymbolsWithAnnotation(GenerateProxy::class.qualifiedName!!)
+                .handleValidate()
                 .map { annotated -> annotated as KSClassDeclaration }
                 .forEach { classDeclaration -> add(Pair(classDeclaration.packageName.asString(), classDeclaration)) }
         }.groupBy({ it.first }, { it.second }).entries.forEach { (packageName, services) ->
@@ -99,6 +111,7 @@ private class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
 
         buildMap {
             resolver.getSymbolsWithAnnotation(GenerateBinarySerializerAndDumper::class.qualifiedName!!)
+                .handleValidate()
                 .map { annotated -> annotated as KSFile }
                 .forEach { file ->
                     file.annotations
@@ -113,7 +126,7 @@ private class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
         }.entries.forEach { (packageName, annotation) ->
             fun argument(index: Int): List<KSType> {
                 var value = annotation.arguments[index].value
-                if (value == null) value = emptyList<KSType>() // TODO: seems to be a bug in KSP for some platforms
+                if (value == null) value = emptyList<KSType>() // NOTE: seems to be a bug in KSP for some platforms
                 @Suppress("UNCHECKED_CAST") return value as List<KSType>
             }
 
@@ -126,7 +139,7 @@ private class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
             generate(GENERATED_DUMPER, packageName) { generateDumper(treeConcreteClasses, graphConcreteClasses) }
         }
 
-        return emptyList() // TODO: validate
+        return invalidSymbols
     }
 }
 

@@ -1,4 +1,4 @@
-// TODO: comment out the following line for testing duplicated annotation
+// NOTE: comment out the following line for testing duplicated annotation
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [])
 
 package ch.softappeal.yass2.serialize.binary

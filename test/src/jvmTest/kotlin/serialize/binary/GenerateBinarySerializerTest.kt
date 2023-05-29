@@ -1,15 +1,15 @@
-// TODO: comment out the following lines for testing
+// NOTE: comment out the following lines for testing
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [Simple::class], graphConcreteClasses = [Simple::class])
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [IntEncoder::class], treeConcreteClasses = [Int::class])
 
-// TODO: comment out the following lines for testing
+// NOTE: comment out the following lines for testing
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [Color::class])
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [AbstractClass::class])
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [NoPrimaryConstructor::class])
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [ConstructorParameterIsNotProperty::class])
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [IntEncoder::class], treeConcreteClasses = [BodyPropertyNotVar::class])
 
-// TODO: comment out the following line for testing duplicated annotation
+// NOTE: comment out the following line for testing duplicated annotation
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [])
 
 package ch.softappeal.yass2.serialize.binary
