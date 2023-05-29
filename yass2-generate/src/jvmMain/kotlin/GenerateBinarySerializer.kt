@@ -35,7 +35,7 @@ internal fun Appendable.generateBinarySerializer(baseEncoderClasses: List<KSType
         val all: List<Property>
 
         init {
-            require(klass.classKind == ClassKind.CLASS) { "'${klass.qualifiedName()}' must be a regular class @${klass.location}" } // TODO: allow enum classes (no need for hand written enum encoder)
+            require(klass.classKind == ClassKind.CLASS) { "'${klass.qualifiedName()}' must be a regular class @${klass.location}" }
             require(!klass.isAbstract()) { "class '${klass.qualifiedName()}' must not be abstract @${klass.location}" }
             parameter = mutableListOf()
             body = mutableListOf()

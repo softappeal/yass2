@@ -3,22 +3,8 @@ package ch.softappeal.yass2.transport
 import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.remote.*
-import ch.softappeal.yass2.serialize.*
+import ch.softappeal.yass2.serialize.binary.*
 import kotlin.test.*
-
-fun <T> Serializer.copy(value: T): T {
-    val writer = BytesWriter(1000)
-    var size: Int
-    with(writer) {
-        write(this, value)
-        size = current
-    }
-    return with(BytesReader(writer.buffer)) {
-        @Suppress("UNCHECKED_CAST") val result = read(this) as T
-        assertEquals(size, internalCurrent(this))
-        result
-    }
-}
 
 private fun <T : Message> copy(value: T): T = MessageSerializer.copy(value)
 
