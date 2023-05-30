@@ -3,7 +3,6 @@ package ch.softappeal.yass2.transport
 import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.remote.*
-import ch.softappeal.yass2.serialize.binary.*
 import kotlin.test.*
 
 private fun <T : Message> copy(value: T): T = MessageSerializer.copy(value)

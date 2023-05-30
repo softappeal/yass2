@@ -1,6 +1,22 @@
 package ch.softappeal.yass2.transport
 
+import ch.softappeal.yass2.serialize.*
 import kotlin.test.*
+
+fun <T> Serializer.copy(value: T, check: BytesWriter.() -> Unit = {}): T {
+    val writer = BytesWriter(1000)
+    var size: Int
+    with(writer) {
+        write(this, value)
+        size = current
+        check()
+    }
+    return with(BytesReader(writer.buffer)) {
+        @Suppress("UNCHECKED_CAST") val result = read(this) as T
+        assertEquals(size, internalCurrent(this))
+        result
+    }
+}
 
 fun BytesWriter.checkTail(vararg bytes: Int) {
     assertEquals(bytes.map { it.toByte() }, buffer.copyOfRange(current - bytes.size, current).toList())

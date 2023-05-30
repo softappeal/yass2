@@ -6,24 +6,7 @@ import ch.softappeal.yass2.serialize.*
 import ch.softappeal.yass2.transport.*
 import kotlin.test.*
 
-fun <T> Serializer.copy(value: T, check: BytesWriter.() -> Unit = {}): T {
-    val writer = BytesWriter(1000)
-    var size: Int
-    with(writer) {
-        write(this, value)
-        size = current
-        check()
-    }
-    return with(BytesReader(writer.buffer)) {
-        @Suppress("UNCHECKED_CAST") val result = read(this) as T
-        assertEquals(size, internalCurrent(this))
-        result
-    }
-}
-
-private fun <T> checkedCopy(value: T, vararg bytes: Int): T = ContractSerializer.copy(value) {
-    assertEquals(bytes.map { it.toByte() }, buffer.copyOfRange(0, current).toList())
-}
+private fun <T> checkedCopy(value: T, vararg bytes: Int): T = ContractSerializer.copy(value) { checkTail(*bytes) }
 
 val ManyPropertiesConst = ManyProperties(8, 4, 6, 7, 2).apply {
     a = 1

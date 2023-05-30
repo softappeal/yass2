@@ -30,6 +30,7 @@ private const val TEST_SUFFIX = "Test"
 
 private fun Path.forEachPath(action: (Path) -> Unit) = Files.newDirectoryStream(this).filter { ".DS_Store" != it.name }.sorted().forEach(action)
 
+@Suppress("SameParameterValue")
 private fun Path.createNodes(modules: Set<String>?): DirectoryNode {
     val node = DirectoryNode(".")
     forEachPath { moduleDir ->
