@@ -5,18 +5,7 @@ import kotlinx.coroutines.*
 import kotlin.reflect.full.*
 import kotlin.test.*
 
-// NOTE: comment out the following line for testing overloads
-//@GenerateProxy
-@Suppress("unused") private interface Overloaded {
-    suspend fun f()
-    suspend fun f(i: Int)
-}
-
-// NOTE: comment out the following line for testing interface
-//@GenerateProxy
-@Suppress("unused") private class NotAnInterface
-
-class GenerateProxyTest {
+class ReflectTest {
     @Test
     fun annotation() = runBlocking {
         var hasAnnotation = false
@@ -29,5 +18,20 @@ class GenerateProxyTest {
         assertTrue(hasAnnotation)
         echo.noParametersNoResult()
         assertFalse(hasAnnotation)
+    }
+
+    @Test
+    fun duplicatedProperty() {
+        open class X(private val y: Int) {
+            @Suppress("unused")
+            fun myPrivateY() = y
+        }
+
+        class Y(val y: Int) : X(y) {
+            @Suppress("unused")
+            fun myY() = y
+        }
+        assertEquals(1, X::class.memberProperties.size)
+        assertEquals(1, Y::class.memberProperties.size)
     }
 }
