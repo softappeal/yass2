@@ -30,7 +30,7 @@ class BaseEncodersTest {
                 } else {
                     assertEquals(value, read(this))
                 }
-                assertEquals(bytes.size, current)
+                assertEquals(bytes.size, internalCurrent(this))
             }
         }
         with(BooleanEncoder()) {
@@ -99,9 +99,9 @@ class BaseEncodersTest {
         }
         with(BytesReader(writer.buffer)) {
             assertNull(encoder.read(this).s)
-            assertEquals(1, current)
+            assertEquals(1, internalCurrent(this))
             assertEquals("hello", encoder.read(this).s)
-            assertEquals(8, current)
+            assertEquals(8, internalCurrent(this))
         }
     }
 }

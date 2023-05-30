@@ -92,18 +92,7 @@ allprojects {
     }
 }
 
-val coreProject = project("yass2-core") {
-    kotlin {
-        sourceSets {
-            val commonTest by getting {
-                dependencies {
-                    implementation(kotlin("test"))
-                    implementation(libraries.coroutines.test)
-                }
-            }
-        }
-    }
-}
+val coreProject = project("yass2-core")
 
 val generateProject = project("yass2-generate") {
     kotlin {

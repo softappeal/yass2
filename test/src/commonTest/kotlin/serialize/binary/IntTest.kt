@@ -33,7 +33,7 @@ class IntTest {
             assertEquals(Long.MIN_VALUE, readLong())
             assertEquals(Long.MAX_VALUE, readLong())
             assertEquals(0x12_34_56_78_9A_BC_DE_F0, readLong())
-            assertEquals(38, current)
+            assertEquals(38, internalCurrent(this))
         }
     }
 }

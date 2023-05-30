@@ -34,22 +34,22 @@ class BytesTest {
         }
         with(BytesReader(writer.buffer)) {
             assertFalse(isDrained)
-            assertEquals(0, current)
+            assertEquals(0, internalCurrent(this))
             assertEquals(-128, readByte())
-            assertEquals(1, current)
+            assertEquals(1, internalCurrent(this))
             assertEquals(127, readByte())
-            assertEquals(2, current)
+            assertEquals(2, internalCurrent(this))
             assertFails { readBytes(-1) }
-            assertEquals(2, current)
+            assertEquals(2, internalCurrent(this))
             assertEquals(0, readBytes(0).size)
-            assertEquals(2, current)
+            assertEquals(2, internalCurrent(this))
             assertFailsWith<IllegalArgumentException> { readBytes(3) }
-            assertEquals(2, current)
+            assertEquals(2, internalCurrent(this))
             assertEquals(byteArrayOf(1, 2).toList(), readBytes(2).toList())
-            assertEquals(4, current)
+            assertEquals(4, internalCurrent(this))
             assertTrue(isDrained)
             assertFailsWith<IllegalArgumentException> { readByte() }
-            assertEquals(4, current)
+            assertEquals(4, internalCurrent(this))
         }
         writer = BytesWriter(0)
         with(writer) {

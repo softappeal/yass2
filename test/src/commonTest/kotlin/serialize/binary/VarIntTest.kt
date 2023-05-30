@@ -29,7 +29,7 @@ class VarIntTest {
             assertEquals(0x3F_FF, readVarInt())
             assertEquals(0x40_00, readVarInt())
             assertEquals(-1, readVarInt())
-            assertEquals(14, current)
+            assertEquals(14, internalCurrent(this))
         }
     }
 
@@ -58,7 +58,7 @@ class VarIntTest {
             assertEquals(0x3F_FFL, readVarLong())
             assertEquals(0x40_00L, readVarLong())
             assertEquals(-1, readVarLong())
-            assertEquals(19, current)
+            assertEquals(19, internalCurrent(this))
         }
     }
 

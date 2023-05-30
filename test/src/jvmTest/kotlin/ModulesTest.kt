@@ -19,9 +19,6 @@ private fun assertModules(expected: String, directory: String, modules: Set<Stri
     assertEquals((expected + "\n").trimIndent(), bytes.toString(charset))
 }
 
-private inline fun <reified T : Throwable> assertFailsMessage(expectedMessage: String, block: () -> Unit) =
-    assertEquals(expectedMessage, assertFailsWith(T::class, block).message)
-
 class ModulesTest {
     @Test
     fun test() {
