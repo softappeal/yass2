@@ -8,6 +8,7 @@
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [NoPrimaryConstructor::class])
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [ConstructorParameterIsNotProperty::class])
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [IntEncoder::class], treeConcreteClasses = [BodyPropertyNotVar::class])
+//@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [IntEncoder::class], treeConcreteClasses = [ImplicitGenericsNotAllowed::class])
 
 // NOTE: uncomment following line for testing
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [])
@@ -56,4 +57,8 @@ class KspTest {
     fun neededForImport() {
         println(IntEncoder::class)
     }
+}
+
+class ImplicitGenericsNotAllowed {
+    var x = emptyList<Int>()
 }

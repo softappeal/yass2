@@ -36,7 +36,7 @@ internal fun KSClassDeclaration.getAllPropertiesNotThrowable() = getAllPropertie
 
 internal fun Appendable.appendType(typeReference: KSTypeReference): Appendable {
     fun Appendable.appendGenerics() {
-        val typeArguments = typeReference.element!!.typeArguments
+        val typeArguments = (typeReference.element ?: error("generic type '$typeReference' must not be implicit @${typeReference.parent?.location}")).typeArguments
         if (typeArguments.isEmpty()) return
         append('<')
         typeArguments.forEachIndexed { typeArgumentIndex, typeArgument ->
