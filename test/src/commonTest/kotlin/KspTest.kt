@@ -1,3 +1,6 @@
+// NOTE: uncomment following line for testing duplicated annotation
+//@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [])
+
 // NOTE: uncomment the following lines for testing
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [Simple::class], graphConcreteClasses = [Simple::class])
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [IntEncoder::class], treeConcreteClasses = [Int::class])
@@ -9,9 +12,6 @@
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [ConstructorParameterIsNotProperty::class])
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [IntEncoder::class], treeConcreteClasses = [BodyPropertyNotVar::class])
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [IntEncoder::class], treeConcreteClasses = [ImplicitGenericsNotAllowed::class])
-
-// NOTE: uncomment following line for testing
-//@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [])
 
 @file:Suppress("unused")
 
@@ -35,11 +35,7 @@ private enum class EnumClass
 
 private abstract class AbstractClass
 
-private class ConstructorParameterIsNotProperty(x: Int) {
-    init {
-        println(x)
-    }
-}
+private class ConstructorParameterIsNotProperty(@Suppress("UNUSED_PARAMETER") x: Int)
 
 @Suppress("ConvertSecondaryConstructorToPrimary")
 private class NoPrimaryConstructor {
@@ -52,13 +48,13 @@ private class BodyPropertyNotVar {
     val x: Int = 0
 }
 
+class ImplicitGenericsNotAllowed {
+    var x = emptyList<Int>()
+}
+
 class KspTest {
     @Test
     fun neededForImport() {
         println(IntEncoder::class)
     }
-}
-
-class ImplicitGenericsNotAllowed {
-    var x = emptyList<Int>()
 }

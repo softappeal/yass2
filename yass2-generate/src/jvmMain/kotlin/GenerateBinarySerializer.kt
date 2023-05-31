@@ -37,18 +37,19 @@ internal fun Appendable.generateBinarySerializer(baseEncoderClasses: List<KSType
         init {
             require(klass.classKind == ClassKind.CLASS) { "'${klass.qualifiedName()}' must be a regular class @${klass.location}" }
             require(!klass.isAbstract()) { "class '${klass.qualifiedName()}' must not be abstract @${klass.location}" }
-            parameter = mutableListOf()
-            body = mutableListOf()
+            val valueParameters = (klass.primaryConstructor ?: error("class '${klass.qualifiedName()}' must hava a primary constructor @${klass.location}")).parameters
+            valueParameters.firstOrNull { !it.isVal && !it.isVar }?.let { parameter -> error("primary constructor parameter '${parameter.name!!.asString()}' of class '${klass.qualifiedName()}' must be a property @${parameter.location}") }
             val properties = klass.getAllPropertiesNotThrowable().map { Property(it) }
-            val propertyNames = properties.map { it.declaration.simpleName() }
-            val parameterNames = (klass.primaryConstructor ?: error("class '${klass.qualifiedName()}' must hava a primary constructor @${klass.location}")).parameters.map { it.name!!.asString() }
-            parameterNames.forEach { parameterName ->
-                require(propertyNames.indexOf(parameterName) >= 0) { "primary constructor parameter '$parameterName' of class '${klass.qualifiedName()}' must be a property @${klass.location}" }
-                parameter.add(properties.first { it.declaration.simpleName() == parameterName })
+            parameter = buildList {
+                valueParameters.forEach { valueParameter ->
+                    add(properties.first { it.declaration.simpleName() == valueParameter.name!!.asString() })
+                }
             }
-            properties.filter { it.declaration.simpleName() !in parameterNames }.forEach { property ->
-                require(property.declaration.isMutable) { "body property '${property.declaration.simpleName()}' of class '${property.declaration.parentDeclaration!!.qualifiedName()}' must be 'var' @${klass.location}" }
-                body.add(property)
+            body = buildList {
+                properties.filter { it !in parameter }.forEach { property ->
+                    require(property.declaration.isMutable) { "body property '${property.declaration.simpleName()}' of '${property.declaration.parentDeclaration?.qualifiedName()}' must be 'var' @${property.declaration.location}" }
+                    add(property)
+                }
             }
             all = parameter + body
         }
