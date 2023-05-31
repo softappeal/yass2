@@ -6,8 +6,8 @@ import com.google.devtools.ksp.symbol.*
 
 private enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
 
-internal fun Appendable.generateBinarySerializer(baseEncoderClasses: List<KSType>, treeConcreteClasses: List<KSType>, graphConcreteClasses: List<KSType>) {
-    val baseEncoderTypes = baseEncoderClasses.getBaseEncoderTypes()
+internal fun Appendable.generateBinarySerializer(baseEncoderClasses: List<KSType>, treeConcreteClasses: List<KSType>, graphConcreteClasses: List<KSType>, enumClasses: List<KSType>) {
+    val baseEncoderTypes = baseEncoderClasses.getBaseEncoderTypes() + enumClasses
 
     class Property(val declaration: KSPropertyDeclaration) {
         var kind: PropertyKind
@@ -80,9 +80,15 @@ internal fun Appendable.generateBinarySerializer(baseEncoderClasses: List<KSType
         appendLine(1, "),")
     }
 
+    enumClasses.forEachIndexed { enumClassIndex, enumClass ->
+        if (enumClassIndex == 0) appendLine()
+        appendLine("private class EnumEncoder${enumClassIndex + 1} : ${EnumEncoder::class.qualifiedName}<${enumClass.qualifiedName()}>(${enumClass.qualifiedName()}::class, kotlin.enumValues())")
+    }
+
     appendLine()
     appendLine("public fun createSerializer(): ${BinarySerializer::class.qualifiedName} = ${BinarySerializer::class.qualifiedName}(listOf(")
     baseEncoderClasses.forEach { type -> appendLine(1, "${type.qualifiedName()}(),") }
+    for (enumEncoderIndex in 1..enumClasses.size) appendLine(1, "EnumEncoder$enumEncoderIndex(),")
     treeConcreteClasses.add(false)
     graphConcreteClasses.add(true)
     appendLine("))")

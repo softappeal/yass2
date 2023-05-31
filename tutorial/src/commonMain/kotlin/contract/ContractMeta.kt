@@ -1,15 +1,15 @@
 @file:GenerateBinarySerializerAndDumper(
     baseEncoderClasses = [
-        // Define all the base encoders needed by the contract (including enumerations and own base types).
+        // Define all the base encoders needed by the contract (including own base types).
         // [BooleanEncoder] is needed because [BooleanFlowId] returns a `Flow<Boolean>`.
         IntEncoder::class,
         BooleanEncoder::class,
         StringEncoder::class,
-        GenderEncoder::class,
         MyDateEncoder::class,
     ],
     treeConcreteClasses = [
-        //  Define all the concrete classes needed by the contract.
+        //  Define all the concrete classes (including enumerations) needed by the contract.
+        Gender::class,
         Address::class,
         Person::class,
         DivideByZeroException::class,
@@ -37,8 +37,6 @@ internal class MyDateEncoder : BaseEncoder<MyDate>(MyDate::class,
     { writer, value -> writer.writeLong(value.currentTimeMillis) },
     { reader -> MyDate(reader.readLong()) }
 )
-
-internal class GenderEncoder : EnumEncoder<Gender>(Gender::class, enumValues())
 
 /** Define the [ServiceId] for each contract interface. */
 @MustBeImplementedByAcceptor

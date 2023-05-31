@@ -3,9 +3,9 @@
         IntEncoder::class,
         StringEncoder::class,
         ByteArrayEncoder::class,
-        GenderEncoder::class,
     ],
     treeConcreteClasses = [
+        Gender::class,
         IntException::class, PlainId::class, ComplexId::class, Lists::class,
         Id2::class, Id3::class, IdWrapper::class, ManyProperties::class,
         DivideByZeroException::class,
@@ -24,8 +24,6 @@ import ch.softappeal.yass2.remote.coroutines.*
 import ch.softappeal.yass2.serialize.binary.*
 import ch.softappeal.yass2.transport.*
 import ch.softappeal.yass2.transport.session.*
-
-internal class GenderEncoder : EnumEncoder<Gender>(Gender::class, enumValues())
 
 val ContractSerializer = createSerializer()
 val MessageSerializer = binaryMessageSerializer(ContractSerializer)

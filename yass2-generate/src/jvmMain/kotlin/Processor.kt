@@ -61,6 +61,8 @@ internal fun Appendable.appendType(typeReference: KSTypeReference): Appendable {
 
 internal fun List<KSType>.getBaseEncoderTypes() = map { (it.declaration as KSClassDeclaration).superTypes.first().element!!.typeArguments.first().type!!.resolve() }
 
+private fun KSType.isEnum() = (declaration as KSClassDeclaration).classKind == ClassKind.ENUM_CLASS
+
 private class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
     private val codeGenerator = environment.codeGenerator
 
@@ -131,11 +133,17 @@ private class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
             }
 
             val baseEncoderClasses = argument(0)
-            val treeConcreteClasses = argument(1)
+            var treeConcreteClasses = argument(1)
             val graphConcreteClasses = argument(2)
+            val enumClasses = treeConcreteClasses.filter { it.isEnum() }
+            require(enumClasses.size == enumClasses.toSet().size) { "enum classes must not be duplicated @${annotation.location}" }
+            treeConcreteClasses = treeConcreteClasses - enumClasses.toSet()
             val encoderTypes = baseEncoderClasses.getBaseEncoderTypes() + treeConcreteClasses + graphConcreteClasses
             require(encoderTypes.size == encoderTypes.toSet().size) { "encoder type must not be duplicated @${annotation.location}" }
-            generate(GENERATED_BINARY_SERIALIZER, packageName) { generateBinarySerializer(baseEncoderClasses, treeConcreteClasses, graphConcreteClasses) }
+            encoderTypes.firstOrNull { it.isEnum() }?.let { enumType ->
+                error("enum class '${enumType.qualifiedName()}' belongs to 'treeConcreteClasses' and not to 'baseEncoderClasses' or 'graphConcreteClasses' @${annotation.location}")
+            }
+            generate(GENERATED_BINARY_SERIALIZER, packageName) { generateBinarySerializer(baseEncoderClasses, treeConcreteClasses, graphConcreteClasses, enumClasses) }
             generate(GENERATED_DUMPER, packageName) { generateDumper(treeConcreteClasses, graphConcreteClasses) }
         }
 

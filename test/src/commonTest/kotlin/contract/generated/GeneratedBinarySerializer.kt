@@ -13,11 +13,13 @@
 
 package ch.softappeal.yass2.contract.generated
 
+private class EnumEncoder1 : ch.softappeal.yass2.serialize.binary.EnumEncoder<ch.softappeal.yass2.contract.Gender>(ch.softappeal.yass2.contract.Gender::class, kotlin.enumValues())
+
 public fun createSerializer(): ch.softappeal.yass2.serialize.binary.BinarySerializer = ch.softappeal.yass2.serialize.binary.BinarySerializer(listOf(
     ch.softappeal.yass2.serialize.binary.IntEncoder(),
     ch.softappeal.yass2.serialize.binary.StringEncoder(),
     ch.softappeal.yass2.serialize.binary.ByteArrayEncoder(),
-    ch.softappeal.yass2.contract.GenderEncoder(),
+    EnumEncoder1(),
     ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.contract.IntException::class, false,
         { w, i ->
             w.writeNoIdOptional(3, i.i)

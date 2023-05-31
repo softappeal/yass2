@@ -4,9 +4,12 @@
 // NOTE: uncomment the following lines for testing
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [Simple::class], graphConcreteClasses = [Simple::class])
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [IntEncoder::class], treeConcreteClasses = [Int::class])
+//@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [Gender::class, Gender::class])
+//@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [], graphConcreteClasses = [Gender::class])
+//@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [GenderEncoder::class], treeConcreteClasses = [])
 
 // NOTE: uncomment the following lines for testing
-//@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [EnumClass::class])
+//@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [NotRegularClass::class])
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [AbstractClass::class])
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [NoPrimaryConstructor::class])
 //@file:GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [ConstructorParameterIsNotProperty::class])
@@ -17,8 +20,8 @@
 
 package ch.softappeal.yass2
 
+import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.serialize.binary.*
-import kotlin.test.*
 
 // NOTE: uncomment the following line for testing
 //@GenerateProxy
@@ -31,7 +34,9 @@ private interface Overloaded {
 //@GenerateProxy
 private class NotAnInterface
 
-private enum class EnumClass
+private interface NotRegularClass
+
+private class GenderEncoder : EnumEncoder<Gender>(Gender::class, enumValues())
 
 private abstract class AbstractClass
 
@@ -50,11 +55,4 @@ private class BodyPropertyNotVar {
 
 class ImplicitGenericsNotAllowed {
     var x = emptyList<Int>()
-}
-
-class KspTest {
-    @Test
-    fun neededForImport() {
-        println(IntEncoder::class)
-    }
 }
