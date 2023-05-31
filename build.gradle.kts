@@ -192,6 +192,9 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
             }
         }
     }
+    ksp {
+        arg("enableLogging", "true")
+    }
     dependencies {
         ksp(generateProject)
     }
@@ -226,7 +229,7 @@ project("tutorial") {
         }
     }
     dependencies {
-        ksp(generateProject)
+        ksp(generateProject) // TODO: fix red code of generated artifacts in IntelliJ; it runs and compiles correctly
     }
 }
 

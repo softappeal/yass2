@@ -4,6 +4,7 @@ import ch.softappeal.yass2.*
 import com.google.devtools.ksp.*
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
+import kotlin.reflect.*
 
 public const val GENERATED_PROXY: String = "GeneratedProxy"
 public const val GENERATED_BINARY_SERIALIZER: String = "GeneratedBinarySerializer"
@@ -65,10 +66,29 @@ private fun KSType.isEnum() = (declaration as KSClassDeclaration).classKind == C
 
 private class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
     private val codeGenerator = environment.codeGenerator
+    private val logger = environment.logger
+    private val enableLogging = (environment.options["enableLogging"] ?: "false").toBooleanStrict()
+
+    fun log(message: String, symbol: KSNode? = null) {
+        if (enableLogging) logger.warn(message, symbol)
+    }
+
+    init {
+        log("processor '${YassProcessor::class.qualifiedName}' created")
+    }
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
+        log("process() called")
+
+        fun Resolver.getSymbolsWithAnnotation(annotation: KClass<*>): Sequence<KSAnnotated> {
+            log("getSymbolsWithAnnotation('${annotation.qualifiedName}') called")
+            return getSymbolsWithAnnotation(annotation.qualifiedName!!).onEach {
+                log("symbol '$it' returned", it)
+            }
+        }
+
         fun generate(file: String, packageName: String, generate: Appendable.() -> Unit) {
-            codeGenerator.createNewFile(Dependencies(true, *resolver.getAllFiles().toList().toTypedArray()), packageName, file).writer().use { appendable ->
+            codeGenerator.createNewFile(Dependencies(false), packageName, file).writer().use { appendable ->
                 appendable.appendLine("""
                     @file:Suppress(
                         "UNCHECKED_CAST",
@@ -89,20 +109,8 @@ private class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
             }
         }
 
-        val invalidSymbols = mutableListOf<KSAnnotated>()
-
-        fun Sequence<KSAnnotated>.handleValidate() = filter {
-            if (it.validate()) {
-                true
-            } else {
-                invalidSymbols.add(it)
-                false
-            }
-        }
-
         buildList {
-            resolver.getSymbolsWithAnnotation(GenerateProxy::class.qualifiedName!!)
-                .handleValidate()
+            resolver.getSymbolsWithAnnotation(GenerateProxy::class)
                 .map { annotated -> annotated as KSClassDeclaration }
                 .forEach { classDeclaration -> add(Pair(classDeclaration.packageName.asString(), classDeclaration)) }
         }.groupBy({ it.first }, { it.second }).entries.forEach { (packageName, services) ->
@@ -112,8 +120,7 @@ private class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
         }
 
         buildMap {
-            resolver.getSymbolsWithAnnotation(GenerateBinarySerializerAndDumper::class.qualifiedName!!)
-                .handleValidate()
+            resolver.getSymbolsWithAnnotation(GenerateBinarySerializerAndDumper::class)
                 .map { annotated -> annotated as KSFile }
                 .forEach { file ->
                     file.annotations
@@ -147,7 +154,7 @@ private class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
             generate(GENERATED_DUMPER, packageName) { generateDumper(treeConcreteClasses, graphConcreteClasses) }
         }
 
-        return invalidSymbols
+        return emptyList()
     }
 }
 
