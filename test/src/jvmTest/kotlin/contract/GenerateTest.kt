@@ -1,11 +1,9 @@
 package ch.softappeal.yass2.contract
 
+import ch.softappeal.yass2.*
 import ch.softappeal.yass2.generate.*
-import java.nio.file.*
 import kotlin.io.path.*
 import kotlin.test.*
-
-private fun Path.readAndFixLines() = readText().replace("\r\n", "\n")
 
 class GenerateTest {
     @Test

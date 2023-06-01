@@ -1,8 +1,11 @@
 package ch.softappeal.yass2
 
 import java.io.*
+import java.nio.file.*
 import kotlin.io.path.*
 import kotlin.test.*
+
+fun Path.readAndFixLines() = readText().replace("\r\n", "\n")
 
 private val Modules = setOf("yass2-core", "yass2-coroutines", "yass2-ktor")
 
@@ -22,7 +25,7 @@ private fun assertModules(expected: String, directory: String, modules: Set<Stri
 class ModulesTest {
     @Test
     fun test() {
-        assertModules(Path("src/commonTest/resources/modules.md").readText().replace("\r\n", "\n"), "..", Modules)
+        assertModules(Path("src/commonTest/resources/modules.md").readAndFixLines(), "..", Modules)
     }
 
     @Test
