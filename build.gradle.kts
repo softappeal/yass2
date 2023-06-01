@@ -113,7 +113,7 @@ val coroutinesProject = project("yass2-coroutines") {
             val commonMain by getting {
                 dependencies {
                     api(coreProject)
-                    api(libraries.coroutines.core)
+                    api(libraries.kotlinx.coroutines.core)
                 }
             }
         }
@@ -163,7 +163,7 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
                 dependencies {
                     implementation(coroutinesProject)
                     implementation(kotlin("test"))
-                    implementation(libraries.coroutines.test)
+                    implementation(libraries.kotlinx.coroutines.test)
                 }
             }
             val jvmAndNixTest by creating {
@@ -178,6 +178,7 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
                 dependencies {
                     implementation(generateProject)
                     implementation(kotlin("reflect"))
+                    implementation(libraries.kotlin.compile.testing.ksp)
                 }
             }
             if (linuxTarget) {
@@ -222,7 +223,7 @@ project("tutorial") {
             if (jsTarget) {
                 val jsTest by getting {
                     dependencies {
-                        implementation(libraries.coroutines.test)
+                        implementation(libraries.kotlinx.coroutines.test)
                     }
                 }
             }

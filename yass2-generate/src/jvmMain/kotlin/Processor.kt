@@ -70,7 +70,7 @@ private class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
     private val enableLogging = (environment.options["enableLogging"] ?: "false").toBooleanStrict()
 
     fun log(message: String, symbol: KSNode? = null) {
-        if (enableLogging) logger.warn(message, symbol)
+        if (enableLogging) logger.warn(message, symbol) // is 'warn' instead of 'info' because 'info' is not printed by default
     }
 
     init {
@@ -88,7 +88,11 @@ private class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
         }
 
         fun generate(file: String, packageName: String, generate: Appendable.() -> Unit) {
-            codeGenerator.createNewFile(Dependencies(false), packageName, file).writer().use { appendable ->
+            codeGenerator.createNewFile(
+                Dependencies.ALL_FILES, // we want to be on the safe side
+                packageName,
+                file,
+            ).writer().use { appendable ->
                 appendable.appendLine("""
                     @file:Suppress(
                         "UNCHECKED_CAST",

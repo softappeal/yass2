@@ -1,11 +1,10 @@
-package ch.softappeal.yass2.contract
+package ch.softappeal.yass2.generate
 
 import ch.softappeal.yass2.*
-import ch.softappeal.yass2.generate.*
 import kotlin.io.path.*
 import kotlin.test.*
 
-class GenerateTest {
+class VerifyGeneratedTest {
     @Test
     fun test() {
         fun verify(fileName: String) {
