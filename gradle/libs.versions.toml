@@ -1,10 +1,10 @@
 [versions]
 
-kotlin                 = "1.8.21"
-ksp                    = "1.8.21-1.0.11" # kotlin must be prefix of ksp
-kotlinx-coroutines     = "1.7.1"
-ktor                   = "2.3.0"
-kotlin-compile-testing = "1.5.0"
+kotlin                 = "1.8.21"        # https://github.com/JetBrains/kotlin
+ksp                    = "1.8.21-1.0.11" # https://github.com/google/ksp
+kotlinx-coroutines     = "1.7.1"         # https://github.com/Kotlin/kotlinx.coroutines
+ktor                   = "2.3.1"         # https://github.com/ktorio/ktor
+kotlin-compile-testing = "1.5.0"         # https://github.com/tschuchortdev/kotlin-compile-testing
 
 [libraries]
 

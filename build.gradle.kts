@@ -4,6 +4,10 @@
 
 import java.util.regex.*
 
+require(libs.versions.ksp.get().startsWith("${libs.versions.kotlin.asProvider().get()}-")) {
+    "kotlin version '${libs.versions.kotlin.asProvider().get()}' must be a prefix of ksp version '${libs.versions.ksp.get()}'"
+}
+
 @Suppress("DSL_SCOPE_VIOLATION") // https://github.com/gradle/gradle/issues/22797
 plugins {
     alias(libs.plugins.multiplatform)
