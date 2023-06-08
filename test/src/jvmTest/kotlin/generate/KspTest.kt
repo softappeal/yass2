@@ -28,7 +28,7 @@ class KspTest {
             """
                 @file:ch.softappeal.yass2.GenerateBinarySerializerAndDumper(baseEncoderClasses = [], treeConcreteClasses = [])
                 package test
-            """
+            """,
         )
     }
 
