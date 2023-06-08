@@ -2,6 +2,7 @@
 
 kotlin                 = "1.8.22"        # https://github.com/JetBrains/kotlin
 ksp                    = "1.8.22-1.0.11" # https://github.com/google/ksp
+dokka                  = "1.8.20"        # https://github.com/Kotlin/dokka
 kotlinx-coroutines     = "1.7.1"         # https://github.com/Kotlin/kotlinx.coroutines
 ktor                   = "2.3.1"         # https://github.com/ktorio/ktor
 kotlin-compile-testing = "1.5.0"         # https://github.com/tschuchortdev/kotlin-compile-testing
@@ -34,3 +35,4 @@ ktor-cio = [
 
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }

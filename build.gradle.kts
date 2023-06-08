@@ -12,6 +12,7 @@ require(libs.versions.ksp.get().startsWith("${libs.versions.kotlin.asProvider().
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.dokka)
     id("maven-publish")
     signing
 }
@@ -30,6 +31,7 @@ allprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "signing")
     apply(plugin = "com.google.devtools.ksp")
+    apply(plugin = "org.jetbrains.dokka")
 
     group = "ch.softappeal.yass2"
 
