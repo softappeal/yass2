@@ -104,7 +104,7 @@ val generateProject = project("yass2-generate") {
             val jvmMain by getting {
                 dependencies {
                     api(coreProject)
-                    api(libraries.ksp)
+                    api(libraries.symbol.processing.api)
                 }
             }
         }
