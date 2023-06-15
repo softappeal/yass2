@@ -2,7 +2,7 @@ package ch.softappeal.yass2.serialize.binary
 
 import ch.softappeal.yass2.serialize.*
 
-// see https://developers.google.com/protocol-buffers/docs/encoding#varints
+// see https://protobuf.dev/programming-guides/encoding/#varints
 
 private const val INT_INV_7F: Int = 0x7F.inv()
 
@@ -54,7 +54,7 @@ public fun Reader.readVarLong(): Long {
     }
 }
 
-// see https://developers.google.com/protocol-buffers/docs/encoding#signed_integers
+// see https://protobuf.dev/programming-guides/encoding/#signed_integers
 
 public fun Int.toZigZag(): Int = (this shl 1) xor (this shr 31)
 

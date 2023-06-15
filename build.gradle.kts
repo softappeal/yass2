@@ -1,4 +1,4 @@
-// https://kotlinlang.org/docs/mpp-intro.html
+// https://kotlinlang.org/docs/multiplatform-get-started.html
 
 @file:Suppress("SpellCheckingInspection")
 

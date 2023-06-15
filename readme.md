@@ -1,10 +1,8 @@
 ### yass2 (Yet Another Service Solution)
 
 * yass2 is
-    * a small [Kotlin](https://kotlinlang.org/)
-      [Multiplatform](https://kotlinlang.org/docs/mpp-intro.html) library
-    * for efficient asynchronous/non-blocking
-      [Coroutines](https://kotlinlang.org/docs/coroutines-guide.html) based peer-to-peer communication
+    * a small [Kotlin](https://kotlinlang.org/) [Multiplatform](https://kotlinlang.org/docs/multiplatform-get-started.html) library
+    * for efficient asynchronous/non-blocking [Coroutines](https://kotlinlang.org/docs/coroutines-guide.html) based peer-to-peer communication
     * enforcing type-safe contracts with interfaces and data transfer objects
 
 ```
@@ -55,7 +53,7 @@ yass2-coroutines --> kotlinx-coroutines-core
 yass2-ktor --> Ktor
 ```
 
-* artifacts on [Maven Central](https://search.maven.org/search?q=g:ch.softappeal.yass2) (GroupId: ch.softappeal.yass2)
+* artifacts on [Maven Central](https://central.sonatype.com/search?q=g:ch.softappeal.yass2) (GroupId: ch.softappeal.yass2)
 
 * uses [Semantic Versioning](https://semver.org)
 
