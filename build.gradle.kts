@@ -144,7 +144,7 @@ val ktorProject = project("yass2-ktor") {
     }
 }
 
-val generateProject = project("yass2-generate") {
+val kspProject = project("yass2-ksp") {
     kotlin {
         sourceSets {
             val jvmMain by getting {
@@ -177,7 +177,7 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
             val jvmTest by getting {
                 dependsOn(jvmAndNixTest)
                 dependencies {
-                    implementation(generateProject)
+                    implementation(kspProject)
                     implementation(kotlin("reflect"))
                     implementation(libraries.kotlin.compile.testing.ksp)
                 }
@@ -198,7 +198,7 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
         arg("enableLogging", "true")
     }
     dependencies {
-        ksp(generateProject)
+        ksp(kspProject)
     }
 }
 
@@ -231,12 +231,12 @@ project("tutorial") {
         }
     }
     dependencies {
-        ksp(generateProject) // TODO: fix red code of generated artifacts in IntelliJ; it runs and compiles correctly
+        ksp(kspProject) // TODO: fix red code of generated artifacts in IntelliJ; it runs and compiles correctly
     }
 }
 
 tasks.register(publishYass2) {
-    listOf(coreProject, coroutinesProject, ktorProject, generateProject).forEach {
+    listOf(coreProject, coroutinesProject, ktorProject, kspProject).forEach {
         dependsOn("${it.name}:publishAllPublicationsToOssrhRepository")
     }
 }

@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.generate
+package ch.softappeal.yass2.ksp
 
 import com.tschuchort.compiletesting.*
 import java.io.*

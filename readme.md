@@ -44,7 +44,7 @@
 * yass2 has multiple modules with the following dependencies
 
 ```
-yass2-core <-- yass2-generate --> symbol-processing-api
+yass2-core <-- yass2-ksp --> symbol-processing-api
      ^
      |
 yass2-coroutines --> kotlinx-coroutines-core

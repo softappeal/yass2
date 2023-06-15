@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.generate
+package ch.softappeal.yass2.ksp
 
 import ch.softappeal.yass2.serialize.binary.*
 import com.google.devtools.ksp.*
