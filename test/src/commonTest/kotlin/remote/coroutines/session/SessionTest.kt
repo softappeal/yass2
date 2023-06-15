@@ -15,14 +15,12 @@ fun tunnel(context: suspend () -> Any): Tunnel = tunnel(
         println("context<${context()}>")
         invoke()
     }),
-    FlowServiceId.service(FlowServiceImpl),
 )
 
 suspend fun Tunnel.test(iterations: Int) {
     val calculator = CalculatorId.proxy(this)
     test(calculator, EchoId.proxy(this))
     performance(iterations) { assertEquals(5, calculator.add(2, 3)) }
-    FlowServiceId.proxy(this).test()
 }
 
 fun <C : Connection> CoroutineScope.acceptorSessionFactory(context: suspend Session<C>.() -> Any): SessionFactory<C> = {

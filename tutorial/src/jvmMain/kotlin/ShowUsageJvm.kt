@@ -28,7 +28,6 @@ private fun Application.theModule() {
         // shows server-side unidirectional remoting with Http
         route(MessageTransport, PATH, tunnel(
             CalculatorId.service(CalculatorImpl),
-            flowService(),
         ))
 
         // shows server-side session based bidirectional remoting with WebSocket

@@ -31,7 +31,6 @@ val PacketSerializer = binaryPacketSerializer(MessageSerializer)
 
 val CalculatorId: ServiceId<Calculator> = ServiceId(1)
 val EchoId: ServiceId<Echo> = ServiceId(2)
-val FlowServiceId: ServiceId<FlowService> = ServiceId(3)
 
 fun Appendable.dumpValue(value: Any) {
     when (value) {

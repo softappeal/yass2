@@ -1,9 +1,7 @@
 @file:GenerateBinarySerializerAndDumper(
     baseEncoderClasses = [
         // Define all the base encoders needed by the contract (including own base types).
-        // [BooleanEncoder] is needed because [BooleanFlowId] returns a `Flow<Boolean>`.
         IntEncoder::class,
-        BooleanEncoder::class,
         StringEncoder::class,
         MyDateEncoder::class,
     ],
@@ -14,8 +12,6 @@
         Person::class,
         DivideByZeroException::class,
         SubClass::class,
-        BooleanFlowId::class,
-        IntFlowId::class,
     ],
 )
 
@@ -44,10 +40,6 @@ public val CalculatorId: ServiceId<Calculator> = ServiceId(1)
 
 @MustBeImplementedByInitiator
 public val NewsListenerId: ServiceId<NewsListener> = ServiceId(2)
-
-/** Needed for [kotlinx.coroutines.flow.Flow] example. */
-@MustBeImplementedByAcceptor
-public val FlowServiceId: ServiceId<FlowService> = ServiceId(3)
 
 public val Dump: Dumper = createDumper { value ->
     // Writes value (without line breaks) if responsible else does nothing.

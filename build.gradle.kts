@@ -98,19 +98,6 @@ allprojects {
 
 val coreProject = project("yass2-core")
 
-val generateProject = project("yass2-generate") {
-    kotlin {
-        sourceSets {
-            val jvmMain by getting {
-                dependencies {
-                    api(coreProject)
-                    api(libraries.symbol.processing.api)
-                }
-            }
-        }
-    }
-}
-
 val coroutinesProject = project("yass2-coroutines") {
     kotlin {
         sourceSets {
@@ -121,9 +108,6 @@ val coroutinesProject = project("yass2-coroutines") {
                 }
             }
         }
-    }
-    dependencies {
-        ksp(generateProject)
     }
 }
 
@@ -154,6 +138,19 @@ val ktorProject = project("yass2-ktor") {
             if (macTarget) {
                 val macMain by getting {
                     dependsOn(jvmAndNixMain)
+                }
+            }
+        }
+    }
+}
+
+val generateProject = project("yass2-generate") {
+    kotlin {
+        sourceSets {
+            val jvmMain by getting {
+                dependencies {
+                    api(coreProject)
+                    api(libraries.symbol.processing.api)
                 }
             }
         }

@@ -17,7 +17,7 @@ class RemoteTest {
     @Test
     fun noService() = runTest {
         assertFailsMessage<IllegalStateException>("no service with id 123") {
-            FlowServiceId.proxy(TestTunnel)
+            CalculatorId.proxy(TestTunnel)
             TestTunnel(Request(123, 0, listOf()))
         }
     }

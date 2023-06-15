@@ -8,7 +8,6 @@ import ch.softappeal.yass2.serialize.*
 import ch.softappeal.yass2.transport.*
 import ch.softappeal.yass2.tutorial.contract.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
 
 public val CalculatorImpl: Calculator = object : Calculator {
     override suspend fun add(a: Int, b: Int) = a + b
@@ -64,21 +63,6 @@ public suspend fun showUsage() {
 public suspend fun useServices(tunnel: Tunnel) {
     val calculator = CalculatorId.proxy(tunnel)
     useCalculator(calculator)
-    val flowService = FlowServiceId.proxy(tunnel)
-    val booleanFlow = flowService.createFlow<Boolean>(BooleanFlowId())
-    println(booleanFlow.toList())
-    val intFlow = flowService.createFlow<Int>(IntFlowId(10))
-    println(intFlow.toList())
-}
-
-public fun flowService(): Service {
-    val flowFactory = { flowId: FlowId ->
-        when (flowId) {
-            is IntFlowId -> (1..flowId.max).asFlow()
-            is BooleanFlowId -> flowOf(false, true)
-        }
-    }
-    @Suppress("UNCHECKED_CAST") return FlowServiceId.service(flowService(flowFactory as FlowFactory))
 }
 
 // The following code is only needed if you use session based bidirectional remoting.
@@ -105,7 +89,6 @@ public fun <C : Connection> CoroutineScope.acceptorSessionFactory(): SessionFact
     object : Session<C>() {
         override val serverTunnel = tunnel(
             CalculatorId.service(CalculatorImpl),
-            flowService(),
         )
 
         override fun opened() {
