@@ -114,7 +114,7 @@ private class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
         }
 
         buildList {
-            resolver.getSymbolsWithAnnotation(GenerateProxy::class)
+            resolver.getSymbolsWithAnnotation(Proxy::class)
                 .map { annotated -> annotated as KSClassDeclaration }
                 .forEach { classDeclaration -> add(Pair(classDeclaration.packageName.asString(), classDeclaration)) }
         }.groupBy({ it.first }, { it.second }).entries.forEach { (packageName, services) ->
@@ -124,15 +124,15 @@ private class YassProcessor(environment: SymbolProcessorEnvironment) : SymbolPro
         }
 
         buildMap {
-            resolver.getSymbolsWithAnnotation(GenerateBinarySerializerAndDumper::class)
+            resolver.getSymbolsWithAnnotation(BinarySerializerAndDumper::class)
                 .map { annotated -> annotated as KSFile }
                 .forEach { file ->
                     file.annotations
-                        .filter { annotation -> annotation.shortName.asString() == GenerateBinarySerializerAndDumper::class.simpleName }
+                        .filter { annotation -> annotation.shortName.asString() == BinarySerializerAndDumper::class.simpleName }
                         .forEach { annotation ->
                             val packageName = file.packageName.asString()
                             require(put(packageName, annotation) == null) {
-                                "annotation '${GenerateBinarySerializerAndDumper::class.qualifiedName}' must not be duplicated in package '$packageName' @${annotation.location}"
+                                "annotation '${BinarySerializerAndDumper::class.qualifiedName}' must not be duplicated in package '$packageName' @${annotation.location}"
                             }
                         }
                 }

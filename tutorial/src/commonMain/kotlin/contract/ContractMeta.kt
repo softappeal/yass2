@@ -1,4 +1,4 @@
-@file:GenerateBinarySerializerAndDumper(
+@file:BinarySerializerAndDumper(
     baseEncoderClasses = [
         // Define all the base encoders needed by the contract (including own base types).
         IntEncoder::class,

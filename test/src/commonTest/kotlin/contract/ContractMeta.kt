@@ -1,4 +1,4 @@
-@file:GenerateBinarySerializerAndDumper(
+@file:BinarySerializerAndDumper(
     baseEncoderClasses = [
         IntEncoder::class,
         StringEncoder::class,
