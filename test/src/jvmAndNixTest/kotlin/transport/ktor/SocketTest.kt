@@ -7,6 +7,7 @@ import io.ktor.network.sockets.*
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import kotlin.test.*
+import kotlin.time.Duration.Companion.milliseconds
 
 private fun runServer(block: suspend CoroutineScope.(tcp: TcpSocketBuilder, serverSocket: ServerSocket) -> Unit) {
     SelectorManager().use { selector ->
@@ -51,6 +52,7 @@ class SocketTest {
                 val clientTunnel = MessageTransport.socketTunnel { tcp.connect(serverSocket.localAddress) }
                 clientTunnel.test(100)
             } finally {
+                delay(100.milliseconds) // give some time to shut down
                 listenerJob.cancel()
             }
         }
@@ -74,7 +76,7 @@ class SocketTest {
                 tcp.connect(serverSocket.localAddress)
                     .receiveLoop(PacketTransport, initiatorSessionFactory(1000))
             } finally {
-                delay(100) // give some time for closing of socket
+                delay(100.milliseconds) // give some time to shut down
                 acceptorJob.cancel()
             }
         }

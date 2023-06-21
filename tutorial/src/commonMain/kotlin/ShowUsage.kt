@@ -8,6 +8,7 @@ import ch.softappeal.yass2.serialize.*
 import ch.softappeal.yass2.transport.*
 import ch.softappeal.yass2.tutorial.contract.*
 import kotlinx.coroutines.*
+import kotlin.time.Duration.Companion.milliseconds
 
 public val CalculatorImpl: Calculator = object : Calculator {
     override suspend fun add(a: Int, b: Int) = a + b
@@ -74,7 +75,7 @@ public fun <C : Connection> CoroutineScope.initiatorSessionFactory(): SessionFac
         override fun opened() {
             launch {
                 useServices(clientTunnel)
-                delay(100) // give the server some time to send news
+                delay(100.milliseconds) // give the server some time to send news
                 close()
             }
         }

@@ -1,4 +1,4 @@
-@file:BinarySerializerAndDumper(
+@file:GenerateBinarySerializer(
     baseEncoderClasses = [
         // Define all the base encoders needed by the contract (including own base types).
         IntEncoder::class,
@@ -13,6 +13,8 @@
         DivideByZeroException::class,
         SubClass::class,
     ],
+    graphConcreteClasses = [],
+    withDumper = true,
 )
 
 package ch.softappeal.yass2.tutorial.contract

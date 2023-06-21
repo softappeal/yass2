@@ -110,3 +110,9 @@ public fun dumperProperties(vararg mappings: Pair<KClass<*>, List<KProperty1<Any
     val map = mapOf(*mappings)
     return { type -> map[type] ?: error("missing mapping for '$type'") }
 }
+
+@Target(AnnotationTarget.FILE)
+public annotation class GenerateDumper(
+    val treeConcreteClasses: Array<KClass<*>>,
+    val graphConcreteClasses: Array<KClass<*>>,
+)

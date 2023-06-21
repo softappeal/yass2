@@ -1,4 +1,4 @@
-@file:BinarySerializerAndDumper(
+@file:GenerateBinarySerializer(
     baseEncoderClasses = [
         IntEncoder::class,
         StringEncoder::class,
@@ -14,6 +14,7 @@
     graphConcreteClasses = [
         Node::class,
     ],
+    withDumper = true,
 )
 
 package ch.softappeal.yass2.contract

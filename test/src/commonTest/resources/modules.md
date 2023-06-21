@@ -2,7 +2,6 @@
     - Cleanup.kt `[common]`
     - Dumper.kt `[common]`
     - Interceptor.kt `[common]`
-    - Ksp.kt `[common]`
     - remote `yass2-core`
         - Message.kt `[common]`
         - Remote.kt `[common]`

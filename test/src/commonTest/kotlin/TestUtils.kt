@@ -20,10 +20,10 @@ suspend fun assertSuspendFailsWith(exceptionClass: KClass<*>, block: suspend () 
 inline fun performance(iterations: Int, action: () -> Unit) {
     println("iterations: $iterations")
     repeat(2) {
-        val timeMs = @OptIn(ExperimentalTime::class) measureTime {
+        val timeMillis = @OptIn(ExperimentalTime::class) measureTime {
             repeat(iterations) { action() }
         }.inWholeMilliseconds
-        println("  one sample: ${1_000_000 * timeMs / iterations}ns total time: ${timeMs}ms")
+        println("  one sample: ${1_000_000 * timeMillis / iterations}ns total time: ${timeMillis}ms")
     }
 }
 

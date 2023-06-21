@@ -3,6 +3,7 @@ package ch.softappeal.yass2
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.serialize.binary.*
 import kotlin.test.*
+import ch.softappeal.yass2.contract.child.createDumper as createChildDumper
 
 enum class Color { Green }
 
@@ -24,7 +25,6 @@ class DumperTest {
         fun dump(value: Any?) {
             s.dump(value).appendLine()
         }
-
         dump(null)
         dump(true)
         dump(false)
@@ -43,9 +43,21 @@ class DumperTest {
         dump(Lists(list = listOf(PlainId(), PlainId()), mutableList = mutableListOf(PlainId(61))))
         dump(DivideByZeroException())
         dump(createGraph())
-
         println(">$s<")
         assertEquals(Output, s.toString())
+    }
+
+    @Test
+    fun childTest() {
+        val s = StringBuilder()
+        val childDump = createChildDumper {}
+        fun dump(value: Any?) {
+            s.childDump(value).appendLine()
+        }
+        dump(ManyPropertiesConst)
+        dump(createGraph())
+        println(">$s<")
+        assertEquals(ChildOutput, s.toString())
     }
 }
 
@@ -115,6 +127,32 @@ private val Output = """
         ]
     )
     DivideByZeroException(
+    )
+    Node( #0
+        id = 1
+        link = Node( #1
+            id = 2
+            link = Node( #2
+                id = 3
+                link = #1
+            )
+        )
+    )
+
+""".trimIndent()
+
+private val ChildOutput = """
+    ManyProperties(
+        a = 1
+        b = 2
+        c = 3
+        d = 4
+        e = 5
+        f = 6
+        g = 7
+        h = 8
+        i = 9
+        j = 10
     )
     Node( #0
         id = 1

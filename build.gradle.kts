@@ -195,7 +195,7 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
         }
     }
     ksp {
-        arg("enableLogging", "true")
+        arg("yass2.enableLogging", "true")
     }
     dependencies {
         ksp(kspProject)

@@ -5,6 +5,7 @@ import ch.softappeal.yass2.contract.child.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
 import kotlin.test.*
+import kotlin.time.Duration.Companion.milliseconds
 
 val CalculatorImpl = object : Calculator {
     override suspend fun add(a: Int, b: Int) = a + b
@@ -68,9 +69,9 @@ suspend fun test(calculatorImpl: Calculator, echoImpl: Echo) {
     echo.noParametersNoResult()
     assertEquals("hello", echo.echo("hello"))
     assertEquals(3, (echo.echo(ByteArray(3)) as ByteArray).size)
-    withTimeout(200) { echo.delay(100) }
+    withTimeout(200.milliseconds) { echo.delay(100) }
     println(assertSuspendFailsWith<TimeoutCancellationException> {
-        withTimeout(100) { echo.delay(200) }
+        withTimeout(100.milliseconds) { echo.delay(200) }
     })
     assertEquals(123, echo.echoNodeRequired(Node(123)).id)
     assertEquals(123, echo.echoNode(Node(123))!!.id)

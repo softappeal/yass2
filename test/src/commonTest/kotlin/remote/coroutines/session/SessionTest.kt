@@ -8,6 +8,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
 import kotlin.coroutines.*
 import kotlin.test.*
+import kotlin.time.Duration.Companion.milliseconds
 
 fun tunnel(context: suspend () -> Any): Tunnel = tunnel(
     CalculatorId.service(CalculatorImpl),
@@ -91,10 +92,10 @@ class SessionTest {
         suspend fun getString(): String = suspendCancellableCoroutine { c: Continuation<String> ->
             continuation = c
             println(continuation)
-            CoroutineScope(continuation.context).launch { delay(200) }
+            CoroutineScope(continuation.context).launch { delay(200.milliseconds) }
         }
         launch {
-            delay(100)
+            delay(100.milliseconds)
             continuation.resume("hello")
         }
         assertEquals("hello", getString())
@@ -113,11 +114,11 @@ class SessionTest {
                 val session = this
                 launch {
                     val echo = EchoId.proxy(clientTunnel)
-                    var timeout = 20
+                    var timeoutMillis = 20
                     val job = watch(session, 200, 40) {
                         println("check")
-                        echo.delay(timeout)
-                        timeout += 4
+                        echo.delay(timeoutMillis)
+                        timeoutMillis += 4
                     }
                     println(echo.echo("hello"))
                     println(job)
@@ -158,7 +159,7 @@ class SessionTest {
             }
         }
         val job = connect(initiatorSessionFactory, 200) { connect(it(), acceptorSessionFactory()) }
-        delay(600)
+        delay(600.milliseconds)
         job.cancel()
     }
 }
