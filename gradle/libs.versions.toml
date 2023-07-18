@@ -1,9 +1,9 @@
 [versions]
 
-kotlin                 = "1.8.22"        # https://github.com/JetBrains/kotlin
-ksp                    = "1.8.22-1.0.11" # https://github.com/google/ksp
-kotlinx-coroutines     = "1.7.1"         # https://github.com/Kotlin/kotlinx.coroutines
-ktor                   = "2.3.1"         # https://github.com/ktorio/ktor
+kotlin                 = "1.9.0"         # https://github.com/JetBrains/kotlin
+ksp                    = "1.9.0-1.0.11"  # https://github.com/google/ksp
+kotlinx-coroutines     = "1.7.2"         # https://github.com/Kotlin/kotlinx.coroutines
+ktor                   = "2.3.2"         # https://github.com/ktorio/ktor
 kotlin-compile-testing = "1.5.0"         # https://github.com/tschuchortdev/kotlin-compile-testing
 
 [libraries]
