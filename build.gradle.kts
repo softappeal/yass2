@@ -230,7 +230,7 @@ project("tutorial") {
         }
     }
     dependencies {
-        ksp(kspProject) // TODO: fix red code of generated artifacts in IntelliJ; it runs and compiles correctly
+        ksp(kspProject) // NOTE: references to generated artifacts are yet wrongly red in IntelliJ; it compiles and runs correctly
     }
 }
 

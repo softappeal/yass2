@@ -65,7 +65,8 @@ internal fun List<KSType>.getBaseEncoderTypes() = map { (it.declaration as KSCla
 
 private fun KSType.isEnum() = (declaration as KSClassDeclaration).classKind == ClassKind.ENUM_CLASS
 
-private fun KSAnnotation.argument(name: String) = arguments.first { it.name!!.asString() == name }.value!! // NOTE: default values seem to work only for JVM platform
+// NOTE: default values in annotations don't yet work for multiplatform libraries; see https://youtrack.jetbrains.com/issue/KT-59566/Annotation-default-value-is-not-populated-in-metadata-for-libraries
+private fun KSAnnotation.argument(name: String) = arguments.first { it.name!!.asString() == name }.value!!
 
 private fun KSAnnotation.checkClasses(classes: List<KSType>, message: String) {
     require(classes.size == classes.toSet().size) { "class must not be duplicated @$location" }
