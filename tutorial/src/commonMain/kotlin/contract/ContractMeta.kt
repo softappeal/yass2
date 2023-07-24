@@ -13,9 +13,7 @@
         DivideByZeroException::class,
         SubClass::class,
     ],
-    graphConcreteClasses = [],
-    withDumper = true,
-)
+  )
 
 package ch.softappeal.yass2.tutorial.contract
 

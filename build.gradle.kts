@@ -20,9 +20,9 @@ val libraries = libs
 val publishYass2 = "publishYass2"
 fun Boolean.disableNativeTargetIfPublish() = this && (publishYass2 !in project.gradle.startParameter.taskNames)
 
-val jsTarget = true
-val linuxTarget = true.disableNativeTargetIfPublish()
-val macTarget = true.disableNativeTargetIfPublish()
+val jsTarget = false
+val linuxTarget = false.disableNativeTargetIfPublish()
+val macTarget = false.disableNativeTargetIfPublish()
 
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")

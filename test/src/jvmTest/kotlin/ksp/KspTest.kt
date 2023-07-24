@@ -22,37 +22,37 @@ class KspTest {
         executeTest(
             1, "annotation 'ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer' must not be duplicated in package 'test'",
             """
-                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], false)
+                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [])
                 package test
             """,
             """
-                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], false)
+                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [])
                 package test
             """,
         )
         executeTest(
             1, "class must not be duplicated",
             """
-                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [Int::class], [Int::class], false)
+                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [Int::class], [Int::class])
             """,
         )
         executeTest(
             1, "class must not be duplicated",
             """
-                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([ch.softappeal.yass2.serialize.binary.IntEncoder::class], [], [Int::class], false)
+                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([ch.softappeal.yass2.serialize.binary.IntEncoder::class], [], [Int::class])
             """,
         )
         executeTest(
             1, "enum classes must not be duplicated",
             """
-                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [MyEnum::class, MyEnum::class], [], false)
+                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [MyEnum::class, MyEnum::class])
                 enum class MyEnum
             """,
         )
         executeTest(
             1, "enum class 'test.MyEnum' belongs to 'treeConcreteClasses' and not to 'baseEncoderClasses' or 'graphConcreteClasses'",
             """
-                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [MyEnum::class], false)
+                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [MyEnum::class])
                 package test
                 enum class MyEnum
             """,
@@ -60,7 +60,7 @@ class KspTest {
         executeTest(
             1, "enum class 'test.MyEnum' belongs to 'treeConcreteClasses' and not to 'baseEncoderClasses' or 'graphConcreteClasses'",
             """
-                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([MyEnumEncoder::class], [], [], false)
+                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([MyEnumEncoder::class], [])
                 package test
                 enum class MyEnum
                 class MyEnumEncoder : ch.softappeal.yass2.serialize.binary.EnumEncoder<MyEnum>(MyEnum::class, enumValues())
@@ -69,7 +69,7 @@ class KspTest {
         executeTest(
             3, "'test.NotRegularClass' must be a regular class",
             """
-                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [NotRegularClass::class], [], false)
+                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [NotRegularClass::class])
                 package test
                 interface NotRegularClass
             """,
@@ -77,7 +77,7 @@ class KspTest {
         executeTest(
             3, "class 'test.AbstractClass' must not be abstract",
             """
-                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [AbstractClass::class], [], false)
+                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [AbstractClass::class])
                 package test
                 abstract class AbstractClass
             """,
@@ -85,7 +85,7 @@ class KspTest {
         executeTest(
             3, "class 'test.NoPrimaryConstructor' must hava a primary constructor",
             """
-                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [NoPrimaryConstructor::class], [], false)
+                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [NoPrimaryConstructor::class])
                 package test
                 class NoPrimaryConstructor {
                     constructor()
@@ -95,7 +95,7 @@ class KspTest {
         executeTest(
             3, "primary constructor parameter 'x' of class 'test.ConstructorParameterIsNotProperty' must be a property",
             """
-                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [ConstructorParameterIsNotProperty::class], [], false)
+                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [ConstructorParameterIsNotProperty::class])
                 package test
                 class ConstructorParameterIsNotProperty(x: Int)
             """,
@@ -103,7 +103,7 @@ class KspTest {
         executeTest(
             4, "body property 'x' of 'test.BodyPropertyNotVar' must be 'var'",
             """
-                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [BodyPropertyNotVar::class], [], false)
+                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [BodyPropertyNotVar::class])
                 package test
                 class BodyPropertyNotVar {
                     val x: Int = 0
@@ -113,7 +113,7 @@ class KspTest {
         executeTest(
             4, "generic type 'List<Int>' must not be implicit",
             """
-                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [ImplicitGenericsNotAllowed::class], [], false)
+                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [ImplicitGenericsNotAllowed::class])
                 package test
                 class ImplicitGenericsNotAllowed {
                     var x = emptyList<Int>()
@@ -127,11 +127,11 @@ class KspTest {
         executeTest(
             1, "annotation 'ch.softappeal.yass2.GenerateDumper' must not be duplicated in package 'test'",
             """
-                @file:ch.softappeal.yass2.GenerateDumper([], [])
+                @file:ch.softappeal.yass2.GenerateDumper([])
                 package test
             """,
             """
-                @file:ch.softappeal.yass2.GenerateDumper([], [])
+                @file:ch.softappeal.yass2.GenerateDumper([])
                 package test
             """,
         )
@@ -144,7 +144,7 @@ class KspTest {
         executeTest(
             1, "enum class 'test.MyEnum' must not be specified",
             """
-                @file:ch.softappeal.yass2.GenerateDumper([MyEnum::class], [])
+                @file:ch.softappeal.yass2.GenerateDumper([MyEnum::class])
                 package test
                 enum class MyEnum
             """,
@@ -156,11 +156,11 @@ class KspTest {
         executeTest(
             1, "annotation 'ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer' and 'ch.softappeal.yass2.GenerateDumper' must not be duplicated in package 'test'",
             """
-                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], false)
+                @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [])
                 package test
             """,
             """
-                @file:ch.softappeal.yass2.GenerateDumper([], [])
+                @file:ch.softappeal.yass2.GenerateDumper([])
                 package test
             """,
         )

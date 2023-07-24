@@ -14,7 +14,6 @@
     graphConcreteClasses = [
         Node::class,
     ],
-    withDumper = true,
 )
 
 package ch.softappeal.yass2.contract

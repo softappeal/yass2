@@ -114,5 +114,5 @@ public fun dumperProperties(vararg mappings: Pair<KClass<*>, List<KProperty1<Any
 @Target(AnnotationTarget.FILE)
 public annotation class GenerateDumper(
     val treeConcreteClasses: Array<KClass<*>>,
-    val graphConcreteClasses: Array<KClass<*>>,
+    val graphConcreteClasses: Array<KClass<*>> = [],
 )
