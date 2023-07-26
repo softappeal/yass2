@@ -6,7 +6,6 @@ import ch.softappeal.yass2.remote.coroutines.*
 import ch.softappeal.yass2.remote.coroutines.session.*
 import ch.softappeal.yass2.serialize.*
 import ch.softappeal.yass2.transport.*
-import ch.softappeal.yass2.tutorial.contract.*
 import kotlinx.coroutines.*
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -31,6 +30,7 @@ public suspend fun showUsage() {
         val person = Person(
             "Guru",
             Gender.Female,
+            MyDate(0),
             listOf(
                 Address("Infinity Drive").apply { number = 1 },
                 Address("Hollywood Boulevard")

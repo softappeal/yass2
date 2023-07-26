@@ -1,7 +1,6 @@
 package ch.softappeal.yass2.tutorial
 
 import ch.softappeal.yass2.transport.js.*
-import ch.softappeal.yass2.tutorial.contract.*
 import kotlinx.coroutines.*
 
 @OptIn(ExperimentalJsExport::class) @JsExport
