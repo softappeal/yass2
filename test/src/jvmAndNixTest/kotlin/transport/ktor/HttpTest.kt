@@ -82,7 +82,6 @@ class HttpTest {
         }
     }
 
-    @Suppress("ExtractKtorModule")
     @Test
     fun context() {
         var context: String? = null
