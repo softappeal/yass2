@@ -6,7 +6,7 @@ import ch.softappeal.yass2.serialize.*
 import ch.softappeal.yass2.serialize.binary.*
 
 /**
- * Returns a binary [Serializer] for [Packet].
+ * Returns a binary [Serializer] for [Packet]?.
  * [messageSerializer] must be able to serialize [Message].
  */
 public fun binaryPacketSerializer(messageSerializer: Serializer): Serializer = object : Serializer {
