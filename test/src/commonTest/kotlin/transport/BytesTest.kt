@@ -78,7 +78,7 @@ class BytesTest {
         writer = BytesWriter(0)
         with(writer) {
             writeBytes(ByteArray(1000))
-            assertEquals(1000, writer.buffer.size)
+            assertEquals(2000, writer.buffer.size)
             assertEquals(1000, current)
             writeByte(0)
             assertEquals(2000, writer.buffer.size)
@@ -87,14 +87,17 @@ class BytesTest {
         writer = BytesWriter(1000)
         with(writer) {
             writeBytes(ByteArray(1001))
-            assertEquals(2000, writer.buffer.size)
+            assertEquals(2001, writer.buffer.size)
             assertEquals(1001, current)
         }
         writer = BytesWriter(1000)
         with(writer) {
             writeBytes(ByteArray(10_000))
-            assertEquals(10_000, writer.buffer.size)
+            assertEquals(11_000, writer.buffer.size)
             assertEquals(10_000, current)
+            writeBytes(ByteArray(2_000))
+            assertEquals(22_000, writer.buffer.size)
+            assertEquals(12_000, current)
         }
     }
 }

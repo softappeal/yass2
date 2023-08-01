@@ -16,7 +16,7 @@ public class BytesWriter(initialCapacity: Int) : Writer {
 
     override fun writeBytes(bytes: ByteArray) {
         val newCurrent = current + bytes.size
-        if (newCurrent > buffer.size) buffer = buffer.copyOf(maxOf(newCurrent, 2 * buffer.size))
+        if (newCurrent > buffer.size) buffer = buffer.copyOf(maxOf(newCurrent + 1000, 2 * buffer.size))
         bytes.copyInto(buffer, current)
         current = newCurrent
     }
