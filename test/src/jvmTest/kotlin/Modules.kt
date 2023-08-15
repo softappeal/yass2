@@ -28,7 +28,8 @@ private fun Node.print(indent: Int = 0) {
 private const val MAIN_SUFFIX = "Main"
 private const val TEST_SUFFIX = "Test"
 
-private fun Path.forEachPath(action: (Path) -> Unit) = Files.newDirectoryStream(this).filter { ".DS_Store" != it.name }.sorted().forEach(action)
+private fun Path.forEachPath(action: (Path) -> Unit) =
+    Files.newDirectoryStream(this).filter { ".DS_Store" != it.name }.sorted().forEach(action)
 
 @Suppress("SameParameterValue")
 private fun Path.createNodes(modules: Set<String>?): DirectoryNode {
@@ -45,7 +46,8 @@ private fun Path.createNodes(modules: Set<String>?): DirectoryNode {
                 directory.forEachPath { file ->
                     fun checkSplitPackage() {
                         check(module == moduleName) {
-                            "modules '$module' and '$moduleName' have split package '${targetDir.relativize(file).toString().replace('\\', '/')}'"
+                            "modules '$module' and '$moduleName' have split package " +
+                                "'${targetDir.relativize(file).toString().replace('\\', '/')}'"
                         }
                     }
 

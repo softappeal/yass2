@@ -80,7 +80,8 @@ public const val FIRST_ENCODER_ID: Int = 3
 
 /** Supports the following types (including optional variants): `null`, [List], [BaseEncoder] and [ClassEncoder]. */
 public class BinarySerializer(encoders: List<Encoder>) : Serializer {
-    internal val encoders = (listOf(NullEncoderId.encoder, ListEncoderId.encoder, ReferenceEncoderId.encoder) + encoders).toTypedArray()
+    internal val encoders = (listOf(NullEncoderId.encoder, ListEncoderId.encoder, ReferenceEncoderId.encoder) + encoders)
+        .toTypedArray()
     internal val type2encoderId = HashMap<KClass<*>, EncoderId>(this.encoders.size)
 
     init {

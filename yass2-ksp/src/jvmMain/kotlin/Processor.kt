@@ -28,7 +28,8 @@ internal fun KSType.qualifiedName() = declaration.qualifiedName()
 
 private fun KSPropertyDeclaration.isPropertyOfThrowable(): Boolean {
     val name = simpleName()
-    return (name == "cause" || name == "message") && "kotlin.Throwable" in (parentDeclaration as KSClassDeclaration).getAllSuperTypes().map { it.qualifiedName() }
+    return (name == "cause" || name == "message") &&
+        "kotlin.Throwable" in (parentDeclaration as KSClassDeclaration).getAllSuperTypes().map { it.qualifiedName() }
 }
 
 internal fun KSClassDeclaration.getAllPropertiesNotThrowable() = getAllProperties()
@@ -38,7 +39,9 @@ internal fun KSClassDeclaration.getAllPropertiesNotThrowable() = getAllPropertie
 
 internal fun Appendable.appendType(typeReference: KSTypeReference): Appendable {
     fun Appendable.appendGenerics() {
-        val typeArguments = (typeReference.element ?: error("generic type '$typeReference' must not be implicit @${typeReference.parent?.location}")).typeArguments
+        val element =
+            typeReference.element ?: error("generic type '$typeReference' must not be implicit @${typeReference.parent?.location}")
+        val typeArguments = element.typeArguments
         if (typeArguments.isEmpty()) return
         append('<')
         typeArguments.forEachIndexed { typeArgumentIndex, typeArgument ->
@@ -61,11 +64,13 @@ internal fun Appendable.appendType(typeReference: KSTypeReference): Appendable {
     return this
 }
 
-internal fun List<KSType>.getBaseEncoderTypes() = map { (it.declaration as KSClassDeclaration).superTypes.first().element!!.typeArguments.first().type!!.resolve() }
+internal fun List<KSType>.getBaseEncoderTypes() =
+    map { (it.declaration as KSClassDeclaration).superTypes.first().element!!.typeArguments.first().type!!.resolve() }
 
 private fun KSType.isEnum() = (declaration as KSClassDeclaration).classKind == ClassKind.ENUM_CLASS
 
-// NOTE: default values in annotations don't yet work for multiplatform libraries; see https://youtrack.jetbrains.com/issue/KT-59566/Annotation-default-value-is-not-populated-in-metadata-for-libraries
+// NOTE: default values in annotations don't yet work for multiplatform libraries;
+//       see https://youtrack.jetbrains.com/issue/KT-59566/Annotation-default-value-is-not-populated-in-metadata-for-libraries
 private fun KSAnnotation.argument(name: String) = arguments.first { it.name!!.asString() == name }.value!!
 
 private fun KSAnnotation.checkClasses(classes: List<KSType>, message: String) {
@@ -145,10 +150,12 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
                             .forEach { annotation ->
                                 val packageName = file.packageName.asString()
                                 require(put(packageName, annotation) == null) {
-                                    "annotation '${generateAnnotation.qualifiedName}' must not be duplicated in package '$packageName' @${annotation.location}"
+                                    "annotation '${generateAnnotation.qualifiedName}' must not be duplicated in " +
+                                        "package '$packageName' @${annotation.location}"
                                 }
                                 require(usedPackages.add(packageName)) {
-                                    "annotation '${GenerateBinarySerializer::class.qualifiedName}' and '${GenerateDumper::class.qualifiedName}' must not be duplicated in package '$packageName' @${annotation.location}"
+                                    "annotation '${GenerateBinarySerializer::class.qualifiedName}' and '${GenerateDumper::class.qualifiedName}' " +
+                                        "must not be duplicated in package '$packageName' @${annotation.location}"
                                 }
                             }
                     }
@@ -164,8 +171,13 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
             val enumClasses = treeConcreteClasses.filter { it.isEnum() }
             require(enumClasses.size == enumClasses.toSet().size) { "enum classes must not be duplicated @${annotation.location}" }
             treeConcreteClasses = treeConcreteClasses - enumClasses.toSet()
-            annotation.checkClasses(baseEncoderClasses.getBaseEncoderTypes() + treeConcreteClasses + graphConcreteClasses, "belongs to 'treeConcreteClasses' and not to 'baseEncoderClasses' or 'graphConcreteClasses'")
-            generate(GENERATED_BINARY_SERIALIZER, packageName) { generateBinarySerializer(baseEncoderClasses, treeConcreteClasses, graphConcreteClasses, enumClasses) }
+            annotation.checkClasses(
+                baseEncoderClasses.getBaseEncoderTypes() + treeConcreteClasses + graphConcreteClasses,
+                "belongs to 'treeConcreteClasses' and not to 'baseEncoderClasses' or 'graphConcreteClasses'"
+            )
+            generate(GENERATED_BINARY_SERIALIZER, packageName) {
+                generateBinarySerializer(baseEncoderClasses, treeConcreteClasses, graphConcreteClasses, enumClasses)
+            }
             if (withDumper) generate(GENERATED_DUMPER, packageName) { generateDumper(treeConcreteClasses, graphConcreteClasses) }
         }
 

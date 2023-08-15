@@ -53,7 +53,10 @@ class HttpTest {
             runBlocking {
                 val randomPort = engine.resolvedConnectors().first().port
                 HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
-                    client.tunnel(MessageTransport, "http://$LOCAL_HOST:$randomPort$PATH") { headersOf(DEMO_HEADER_KEY, DEMO_HEADER_VALUE) }
+                    client
+                        .tunnel(MessageTransport, "http://$LOCAL_HOST:$randomPort$PATH") {
+                            headersOf(DEMO_HEADER_KEY, DEMO_HEADER_VALUE)
+                        }
                         .test(100)
                 }
             }

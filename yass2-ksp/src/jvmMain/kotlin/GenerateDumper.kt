@@ -4,19 +4,22 @@ import com.google.devtools.ksp.symbol.*
 
 internal fun Appendable.generateDumper(treeConcreteClasses: List<KSType>, graphConcreteClasses: List<KSType>) {
     appendLine()
-    appendLine("public fun createDumper(dumpValue: kotlin.text.Appendable.(value: kotlin.Any) -> kotlin.Unit): $CSY.Dumper = $CSY.createDumper(")
-    appendLine("    $CSY.dumperProperties(")
+    appendLine("public fun createDumper(dumpValue: kotlin.text.Appendable.(value: kotlin.Any) -> kotlin.Unit): $CSY.Dumper =")
+    appendLine(1, "$CSY.createDumper(")
+    appendLine(2, "$CSY.dumperProperties(")
     (treeConcreteClasses + graphConcreteClasses).forEach { type ->
-        appendLine(2, "${type.qualifiedName()}::class to listOf(")
+        appendLine(3, "${type.qualifiedName()}::class to listOf(")
         (type.declaration as KSClassDeclaration).getAllPropertiesNotThrowable().forEach { property ->
-            appendLine(3, "${type.qualifiedName()}::${property.simpleName()} as kotlin.reflect.KProperty1<Any, Any?>,")
+            appendLine(4, "${type.qualifiedName()}::${property.simpleName()} as kotlin.reflect.KProperty1<Any, Any?>,")
         }
-        appendLine(2, "),")
+        appendLine(3, "),")
     }
-    appendLine("    ),")
-    appendLine("    setOf(")
-    graphConcreteClasses.forEach { type -> appendLine(2, "${type.qualifiedName()}::class,") }
-    appendLine("    ),")
-    appendLine("    dumpValue,")
-    appendLine(")")
+    appendLine(2, "),")
+    appendLine(2, "setOf(")
+    graphConcreteClasses.forEach { type ->
+        appendLine(3, "${type.qualifiedName()}::class,")
+    }
+    appendLine(2, "),")
+    appendLine(2, "dumpValue,")
+    appendLine(1, ")")
 }

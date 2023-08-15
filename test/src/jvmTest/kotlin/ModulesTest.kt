@@ -34,14 +34,16 @@ class ModulesTest {
     }
 
     @Test
-    fun split1() = assertFailsMessage<IllegalStateException>("modules 'module1' and 'module2' have split package 'kotlin/Test.kt'") {
-        Path("src/commonTest/resources/split1").printModules()
-    }
+    fun split1() =
+        assertFailsMessage<IllegalStateException>("modules 'module1' and 'module2' have split package 'kotlin/Test.kt'") {
+            Path("src/commonTest/resources/split1").printModules()
+        }
 
     @Test
-    fun split2() = assertFailsMessage<IllegalStateException>("modules 'module1' and 'module2' have split package 'kotlin/Test2.kt'") {
-        Path("src/commonTest/resources/split2").printModules()
-    }
+    fun split2() =
+        assertFailsMessage<IllegalStateException>("modules 'module1' and 'module2' have split package 'kotlin/Test2.kt'") {
+            Path("src/commonTest/resources/split2").printModules()
+        }
 
     @Test
     fun targets() {

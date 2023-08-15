@@ -6,7 +6,12 @@ import com.google.devtools.ksp.symbol.*
 
 private enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
 
-internal fun Appendable.generateBinarySerializer(baseEncoderClasses: List<KSType>, treeConcreteClasses: List<KSType>, graphConcreteClasses: List<KSType>, enumClasses: List<KSType>) {
+internal fun Appendable.generateBinarySerializer(
+    baseEncoderClasses: List<KSType>,
+    treeConcreteClasses: List<KSType>,
+    graphConcreteClasses: List<KSType>,
+    enumClasses: List<KSType>,
+) {
     val baseEncoderTypes = baseEncoderClasses.getBaseEncoderTypes() + enumClasses
 
     class Property(val declaration: KSPropertyDeclaration) {
@@ -37,8 +42,18 @@ internal fun Appendable.generateBinarySerializer(baseEncoderClasses: List<KSType
         init {
             require(klass.classKind == ClassKind.CLASS) { "'${klass.qualifiedName()}' must be a regular class @${klass.location}" }
             require(!klass.isAbstract()) { "class '${klass.qualifiedName()}' must not be abstract @${klass.location}" }
-            val valueParameters = (klass.primaryConstructor ?: error("class '${klass.qualifiedName()}' must hava a primary constructor @${klass.location}")).parameters
-            valueParameters.firstOrNull { !it.isVal && !it.isVar }?.let { parameter -> error("primary constructor parameter '${parameter.name!!.asString()}' of class '${klass.qualifiedName()}' must be a property @${parameter.location}") }
+            val primaryConstructor = klass.primaryConstructor ?: error(
+                "class '${klass.qualifiedName()}' must hava a primary constructor @${klass.location}"
+            )
+            val valueParameters = primaryConstructor.parameters
+            valueParameters
+                .firstOrNull { !it.isVal && !it.isVar }
+                ?.let { parameter ->
+                    error(
+                        "primary constructor parameter '${parameter.name!!.asString()}' of class " +
+                            "'${klass.qualifiedName()}' must be a property @${parameter.location}"
+                    )
+                }
             val properties = klass.getAllPropertiesNotThrowable().map { Property(it) }
             parameter = buildList {
                 valueParameters.forEach { valueParameter ->
@@ -46,50 +61,63 @@ internal fun Appendable.generateBinarySerializer(baseEncoderClasses: List<KSType
                 }
             }
             body = buildList {
-                properties.filter { it !in parameter }.forEach { property ->
-                    require(property.declaration.isMutable) { "body property '${property.declaration.simpleName()}' of '${property.declaration.parentDeclaration?.qualifiedName()}' must be 'var' @${property.declaration.location}" }
-                    add(property)
-                }
+                properties
+                    .filter { it !in parameter }
+                    .forEach { property ->
+                        require(property.declaration.isMutable) {
+                            "body property '${property.declaration.simpleName()}' of " +
+                                "'${property.declaration.parentDeclaration?.qualifiedName()}' must be 'var' @${property.declaration.location}"
+                        }
+                        add(property)
+                    }
             }
             all = parameter + body
         }
     }
 
-    fun List<KSType>.add(graph: Boolean) = forEach { type ->
-        fun Property.encoderId(tail: String = "") = if (kind != PropertyKind.WithId) "$encoderId$tail" else ""
-        appendLine(1, "${ClassEncoder::class.qualifiedName}(${type.qualifiedName()}::class, $graph,")
-        val properties = Properties(type.declaration as KSClassDeclaration)
-        if (properties.all.isEmpty()) {
-            appendLine(2, "{ _, _ -> },")
-        } else {
-            appendLine(2, "{ w, i ->")
-            properties.all.forEach { property -> appendLine(3, "w.write${property.kind}(${property.encoderId(", ")}i.${property.declaration.simpleName()})") }
-            appendLine(2, "},")
-        }
-        append(2, "{").appendLine(if (graph || properties.all.isNotEmpty()) " r ->" else "")
-        appendLine(3, "val i = ${if (graph) "r.created(" else ""}${type.qualifiedName()}(")
-        properties.parameter.forEach { property ->
-            append(4, "r.read${property.kind}(${property.encoderId()}) as ").appendType(property.declaration.type).appendLine(',')
-        }
-        append(3, ")").appendLine(if (graph) ")" else "")
-        properties.body.forEach { property ->
-            append(3, "i.${property.declaration.simpleName()} = r.read${property.kind}(${property.encoderId()}) as ").appendType(property.declaration.type).appendLine()
-        }
-        appendLine(2, "    i")
-        appendLine(2, "}")
-        appendLine(1, "),")
-    }
-
     enumClasses.forEachIndexed { enumClassIndex, enumClass ->
         if (enumClassIndex == 0) appendLine()
-        appendLine("private class EnumEncoder${enumClassIndex + 1} : ${EnumEncoder::class.qualifiedName}<${enumClass.qualifiedName()}>(${enumClass.qualifiedName()}::class, kotlin.enumValues())")
+        appendLine("private class EnumEncoder${enumClassIndex + 1} : ${EnumEncoder::class.qualifiedName}<${enumClass.qualifiedName()}>(")
+        appendLine(1, "${enumClass.qualifiedName()}::class, kotlin.enumValues()")
+        appendLine(")")
     }
-
     appendLine()
-    appendLine("public fun createSerializer(): ${BinarySerializer::class.qualifiedName} = ${BinarySerializer::class.qualifiedName}(listOf(")
-    baseEncoderClasses.forEach { type -> appendLine(1, "${type.qualifiedName()}(),") }
-    for (enumEncoderIndex in 1..enumClasses.size) appendLine(1, "EnumEncoder$enumEncoderIndex(),")
+    appendLine("public fun createSerializer(): ${BinarySerializer::class.qualifiedName} =")
+    appendLine(1, "${BinarySerializer::class.qualifiedName}(listOf(")
+    baseEncoderClasses.forEach { type ->
+        appendLine(2, "${type.qualifiedName()}(),")
+    }
+    for (enumEncoderIndex in 1..enumClasses.size) appendLine(2, "EnumEncoder$enumEncoderIndex(),")
+
+    fun List<KSType>.add(graph: Boolean) = forEach { type ->
+        fun Property.encoderId(tail: String = "") = if (kind != PropertyKind.WithId) "$encoderId$tail" else ""
+        appendLine(2, "${ClassEncoder::class.qualifiedName}(${type.qualifiedName()}::class, $graph,")
+        val properties = Properties(type.declaration as KSClassDeclaration)
+        if (properties.all.isEmpty()) {
+            appendLine(3, "{ _, _ -> },")
+        } else {
+            appendLine(3, "{ w, i ->")
+            properties.all.forEach { property ->
+                appendLine(4, "w.write${property.kind}(${property.encoderId(", ")}i.${property.declaration.simpleName()})")
+            }
+            appendLine(3, "},")
+        }
+        appendLine(3, "{${if (graph || properties.all.isNotEmpty()) " r ->" else ""}")
+        appendLine(4, "val i = ${if (graph) "r.created(" else ""}${type.qualifiedName()}(")
+        properties.parameter.forEach { property ->
+            append(5, "r.read${property.kind}(${property.encoderId()}) as ").appendType(property.declaration.type).appendLine(',')
+        }
+        appendLine(4, ")${if (graph) ")" else ""}")
+        properties.body.forEach { property ->
+            append(4, "i.${property.declaration.simpleName()} = r.read${property.kind}(${property.encoderId()}) as ")
+                .appendType(property.declaration.type).appendLine()
+        }
+        appendLine(4, "i")
+        appendLine(3, "}")
+        appendLine(2, "),")
+    }
     treeConcreteClasses.add(false)
     graphConcreteClasses.add(true)
-    appendLine("))")
+
+    appendLine(1, "))")
 }

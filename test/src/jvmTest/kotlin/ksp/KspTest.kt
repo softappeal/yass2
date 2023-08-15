@@ -13,14 +13,17 @@ private fun executeTest(lineNumber: Int, message: String, source1: String, sourc
         kspArgs["yass2.enableLogging"] = "true"
     }.compile()
     assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-    assertTrue(result.messages.contains(Regex("Exception: $message @FileLocation\\(filePath=.*/${if (source2 == null) "Source1" else "Source2"}.kt, lineNumber=$lineNumber\\)")))
+    assertTrue(result.messages.contains(
+        Regex("Exception: $message @FileLocation\\(filePath=.*/${if (source2 == null) "Source1" else "Source2"}.kt, lineNumber=$lineNumber\\)")
+    ))
 }
 
 class KspTest {
     @Test
     fun binarySerializer() {
         executeTest(
-            1, "annotation 'ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer' must not be duplicated in package 'test'",
+            1,
+            "annotation 'ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer' must not be duplicated in package 'test'",
             """
                 @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], false)
                 package test
@@ -50,7 +53,8 @@ class KspTest {
             """,
         )
         executeTest(
-            1, "enum class 'test.MyEnum' belongs to 'treeConcreteClasses' and not to 'baseEncoderClasses' or 'graphConcreteClasses'",
+            1,
+            "enum class 'test.MyEnum' belongs to 'treeConcreteClasses' and not to 'baseEncoderClasses' or 'graphConcreteClasses'",
             """
                 @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [MyEnum::class], false)
                 package test
@@ -58,7 +62,8 @@ class KspTest {
             """,
         )
         executeTest(
-            1, "enum class 'test.MyEnum' belongs to 'treeConcreteClasses' and not to 'baseEncoderClasses' or 'graphConcreteClasses'",
+            1,
+            "enum class 'test.MyEnum' belongs to 'treeConcreteClasses' and not to 'baseEncoderClasses' or 'graphConcreteClasses'",
             """
                 @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([MyEnumEncoder::class], [], [], false)
                 package test
@@ -154,7 +159,9 @@ class KspTest {
     @Test
     fun mixed() {
         executeTest(
-            1, "annotation 'ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer' and 'ch.softappeal.yass2.GenerateDumper' must not be duplicated in package 'test'",
+            1,
+            "annotation 'ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer' and " +
+                "'ch.softappeal.yass2.GenerateDumper' must not be duplicated in package 'test'",
             """
                 @file:ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], false)
                 package test

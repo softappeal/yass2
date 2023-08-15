@@ -15,16 +15,17 @@ internal fun Appendable.generateProxy(service: KSClassDeclaration) {
         .filter { it.simpleName() !in AnyFunctions }
         .sortedBy { it.simpleName() } // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
         .apply {
-            require(map { it.simpleName() }.toSet().size == size) { "interface '${service.qualifiedName()}' must not overload functions @${service.location}" }
+            require(map { it.simpleName() }.toSet().size == size) {
+                "interface '${service.qualifiedName()}' must not overload functions @${service.location}"
+            }
         }
 
     fun appendSignature(level: Int, function: KSFunctionDeclaration) {
-        append(level, "override ${if (function.isSuspend()) "suspend " else ""}fun ${function.simpleName()}(")
+        appendLine(level, "override ${if (function.isSuspend()) "suspend " else ""}fun ${function.simpleName()}(")
         function.parameters.forEachIndexed { parameterIndex, parameter ->
-            if (parameterIndex != 0) append(", ")
-            append("p${parameterIndex + 1}: ").appendType(parameter.type)
+            append(level + 1, "p${parameterIndex + 1}: ").appendType(parameter.type).appendLine(',')
         }
-        append(')')
+        append(level, ")")
     }
 
     fun Appendable.appendParameters(function: KSFunctionDeclaration): Appendable {
@@ -46,8 +47,13 @@ internal fun Appendable.generateProxy(service: KSClassDeclaration) {
         appendSignature(1, function)
         if (hasResult) append(": ").appendType(function.returnType!!)
         appendLine(" {")
-        append(2, "${if (hasResult) "return " else ""}${if (function.isSuspend()) "suspendIntercept" else "intercept"}(${service.qualifiedName()}::${function.simpleName()}, ")
-        append("listOf(").appendParameters(function).append(")) { this@proxy.${function.simpleName()}(").appendParameters(function).append(") }")
+        append(
+            2,
+            "${if (hasResult) "return " else ""}${if (function.isSuspend()) "suspendIntercept" else "intercept"}" +
+                "(${service.qualifiedName()}::${function.simpleName()}, listOf("
+        ).appendParameters(function).appendLine(")) {")
+        append(3, "this@proxy.${function.simpleName()}(").appendParameters(function).append(')').appendLine()
+        append(2, "}")
         if (hasResult) append(" as ").appendType(function.returnType!!)
         appendLine()
         appendLine(1, "}")
@@ -57,33 +63,38 @@ internal fun Appendable.generateProxy(service: KSClassDeclaration) {
     if (functions.any { !it.isSuspend() }) return
 
     appendLine()
-    appendLine("public fun ${ServiceId::class.qualifiedName}<${service.qualifiedName()}>.proxy(tunnel: $CSY.remote.Tunnel): ${service.qualifiedName()} =")
-    appendLine("    object : ${service.qualifiedName()} {")
+    appendLine("public fun ${ServiceId::class.qualifiedName}<${service.qualifiedName()}>.proxy(")
+    appendLine(1, "tunnel: $CSY.remote.Tunnel,")
+    appendLine("): ${service.qualifiedName()} =")
+    appendLine(1, "object : ${service.qualifiedName()} {")
     functions.forEachIndexed { functionIndex, function ->
         if (functionIndex != 0) appendLine()
         val hasResult = function.hasResult()
         appendSignature(2, function)
         if (hasResult) append(" =") else append(" {")
         appendLine()
-        append(3, "tunnel(${Request::class.qualifiedName}(id, $functionIndex, listOf(").appendParameters(function).append("))).process()")
+        append(3, "tunnel(${Request::class.qualifiedName}(id, $functionIndex, listOf(")
+            .appendParameters(function).append(")))").appendLine()
+        append(4, ".process()")
         if (hasResult) append(" as ").appendType(function.returnType!!) else appendLine().append(2, "}")
         appendLine()
     }
-    appendLine("    }")
+    appendLine(1, "}")
 
     appendLine()
-    appendLine("public fun ${ServiceId::class.qualifiedName}<${service.qualifiedName()}>.service(implementation: ${service.qualifiedName()}): ${Service::class.qualifiedName} =")
-    appendLine("    ${Service::class.qualifiedName}(id) { functionId, parameters ->")
-    appendLine("        when (functionId) {")
+    appendLine("public fun ${ServiceId::class.qualifiedName}<${service.qualifiedName()}>.service(")
+    appendLine(1, "implementation: ${service.qualifiedName()},")
+    appendLine("): ${Service::class.qualifiedName} =")
+    appendLine(1, "${Service::class.qualifiedName}(id) { functionId, parameters ->")
+    appendLine(2, "when (functionId) {")
     functions.forEachIndexed { functionIndex, function ->
-        append(3, "$functionIndex -> implementation.${function.simpleName()}(")
+        appendLine(3, "$functionIndex -> implementation.${function.simpleName()}(")
         function.parameters.forEachIndexed { parameterIndex, parameter ->
-            if (parameterIndex != 0) append(", ")
-            append("parameters[$parameterIndex] as ").appendType(parameter.type)
+            append(4, "parameters[$parameterIndex] as ").appendType(parameter.type).appendLine(',')
         }
-        appendLine(')')
+        appendLine(3, ")")
     }
-    appendLine("            else -> error(\"service with id ${'$'}id has no function with id ${'$'}functionId\")")
-    appendLine("        }")
-    appendLine("    }")
+    appendLine(3, "else -> error(\"service with id ${'$'}id has no function with id ${'$'}functionId\")")
+    appendLine(2, "}")
+    appendLine(1, "}")
 }
