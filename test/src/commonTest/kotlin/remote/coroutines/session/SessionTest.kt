@@ -3,7 +3,6 @@ package ch.softappeal.yass2.remote.coroutines.session
 import ch.softappeal.yass2.*
 import ch.softappeal.yass2.contract.*
 import ch.softappeal.yass2.remote.*
-import ch.softappeal.yass2.remote.coroutines.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
 import kotlin.coroutines.*
