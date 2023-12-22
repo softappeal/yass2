@@ -4,10 +4,6 @@
 
 import java.util.regex.*
 
-require(libs.versions.ksp.get().startsWith("${libs.versions.kotlin.asProvider().get()}-")) {
-    "kotlin version '${libs.versions.kotlin.asProvider().get()}' must be a prefix of ksp version '${libs.versions.ksp.get()}'"
-}
-
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.ksp)
@@ -17,12 +13,10 @@ plugins {
 
 val libraries = libs
 
-val publishYass2 = "publishYass2"
-fun Boolean.disableNativeTargetIfPublish() = this && (publishYass2 !in project.gradle.startParameter.taskNames)
-
 val jsTarget = true
-val linuxTarget = true.disableNativeTargetIfPublish()
-val macTarget = true.disableNativeTargetIfPublish()
+val linuxX64Target = true
+val linuxArm64Target = true
+val macosArm64Target = true
 
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
@@ -55,9 +49,9 @@ allprojects {
             }
         }
 
-        if (linuxTarget) linuxX64("linux")
-
-        if (macTarget) macosArm64("mac")
+        if (linuxX64Target) linuxX64()
+        if (linuxArm64Target) linuxArm64()
+        if (macosArm64Target) macosArm64()
 
         targets.all {
             compilations.all {
@@ -129,13 +123,18 @@ val ktorProject = project("yass2-ktor") {
             val jvmMain by getting {
                 dependsOn(jvmAndNixMain)
             }
-            if (linuxTarget) {
-                val linuxMain by getting {
+            if (linuxX64Target) {
+                val linuxX64Main by getting {
                     dependsOn(jvmAndNixMain)
                 }
             }
-            if (macTarget) {
-                val macMain by getting {
+            if (linuxArm64Target) {
+                val linuxArm64Main by getting {
+                    dependsOn(jvmAndNixMain)
+                }
+            }
+            if (macosArm64Target) {
+                val macosArm64Main by getting {
                     dependsOn(jvmAndNixMain)
                 }
             }
@@ -181,13 +180,18 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
                     implementation(libraries.kotlin.compile.testing.ksp)
                 }
             }
-            if (linuxTarget) {
-                val linuxTest by getting {
+            if (linuxX64Target) {
+                val linuxX64Test by getting {
                     dependsOn(jvmAndNixTest)
                 }
             }
-            if (macTarget) {
-                val macTest by getting {
+            if (linuxArm64Target) {
+                val linuxArm64Test by getting {
+                    dependsOn(jvmAndNixTest)
+                }
+            }
+            if (macosArm64Target) {
+                val macosArm64Test by getting {
                     dependsOn(jvmAndNixTest)
                 }
             }
@@ -234,10 +238,10 @@ project("tutorial") {
     }
 }
 
-tasks.register(publishYass2) {
-    listOf(coreProject, coroutinesProject, ktorProject, kspProject).forEach {
-        dependsOn("${it.name}:publishAllPublicationsToOssrhRepository")
-    }
+tasks.register("publishYass2") {
+    listOf(coreProject, coroutinesProject, ktorProject).forEach { dependsOn("${it.name}:publishAllPublicationsToOssrhRepository") }
+    dependsOn("${kspProject.name}:publishKotlinMultiplatformPublicationToOssrhRepository")
+    dependsOn("${kspProject.name}:publishJvmPublicationToOssrhRepository")
 }
 
 tasks.register("markers") {

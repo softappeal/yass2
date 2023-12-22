@@ -70,7 +70,7 @@ internal fun List<KSType>.getBaseEncoderTypes() =
 private fun KSType.isEnum() = (declaration as KSClassDeclaration).classKind == ClassKind.ENUM_CLASS
 
 // NOTE: default values in annotations don't yet work for multiplatform libraries;
-//       see https://youtrack.jetbrains.com/issue/KT-59566/Annotation-default-value-is-not-populated-in-metadata-for-libraries
+//       see https://youtrack.jetbrains.com/issue/KT-59526/Store-annotation-default-values-in-metadata-on-JVM
 private fun KSAnnotation.argument(name: String) = arguments.first { it.name!!.asString() == name }.value!!
 
 private fun KSAnnotation.checkClasses(classes: List<KSType>, message: String) {
