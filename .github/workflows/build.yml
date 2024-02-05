@@ -3,7 +3,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: gradle/wrapper-validation-action@v1
+      - uses: actions/checkout@v4
+      - uses: gradle/wrapper-validation-action@v2
       - run: docker image     build --tag project-image .
       - run: docker container run         project-image ./gradlew markers build

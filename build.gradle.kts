@@ -31,7 +31,7 @@ allprojects {
     }
 
     tasks.register<Jar>("javadocJar") {
-        archiveClassifier.set("javadoc")
+        archiveClassifier = "javadoc"
     }
 
     kotlin {
@@ -65,13 +65,13 @@ allprojects {
         publishing {
             publications.withType<MavenPublication>().onEach { publication ->
                 publication.pom {
-                    name.set(project.name)
-                    description.set("Yet Another Service Solution")
-                    url.set("https://github.com/softappeal/yass2")
-                    licenses { license { name.set("BSD-3-Clause") } }
-                    scm { url.set("https://github.com/softappeal/yass2") }
-                    organization { name.set("softappeal GmbH Switzerland") }
-                    developers { developer { name.set("Angelo Salvade") } }
+                    name = project.name
+                    description = "Yet Another Service Solution"
+                    url = "https://github.com/softappeal/yass2"
+                    licenses { license { name = "BSD-3-Clause" } }
+                    scm { url = "https://github.com/softappeal/yass2" }
+                    organization { name = "softappeal GmbH Switzerland" }
+                    developers { developer { name = "Angelo Salvade" } }
                 }
             }
             repositories {
