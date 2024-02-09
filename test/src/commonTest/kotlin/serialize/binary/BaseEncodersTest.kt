@@ -1,7 +1,12 @@
 package ch.softappeal.yass2.serialize.binary
 
-import ch.softappeal.yass2.transport.*
-import kotlin.test.*
+import ch.softappeal.yass2.transport.BytesReader
+import ch.softappeal.yass2.transport.BytesWriter
+import ch.softappeal.yass2.transport.checkTail
+import ch.softappeal.yass2.transport.internalCurrent
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 private enum class Color { Red, Green }
 

@@ -1,6 +1,7 @@
 package ch.softappeal.yass2.transport
 
-import ch.softappeal.yass2.serialize.*
+import ch.softappeal.yass2.serialize.Reader
+import ch.softappeal.yass2.serialize.Writer
 
 public class BytesWriter(initialCapacity: Int) : Writer {
     public var buffer: ByteArray = ByteArray(initialCapacity)

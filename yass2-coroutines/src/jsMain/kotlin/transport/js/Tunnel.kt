@@ -1,11 +1,13 @@
 package ch.softappeal.yass2.transport.js
 
-import ch.softappeal.yass2.remote.*
-import ch.softappeal.yass2.transport.*
-import kotlinx.browser.*
-import kotlinx.coroutines.*
-import org.khronos.webgl.*
-import org.w3c.fetch.*
+import ch.softappeal.yass2.remote.Reply
+import ch.softappeal.yass2.remote.Tunnel
+import ch.softappeal.yass2.transport.BytesReader
+import ch.softappeal.yass2.transport.Transport
+import kotlinx.browser.window
+import kotlinx.coroutines.await
+import org.khronos.webgl.Int8Array
+import org.w3c.fetch.RequestInit
 
 public fun Transport.tunnel(url: String): Tunnel = { request ->
     val writer = createWriter()

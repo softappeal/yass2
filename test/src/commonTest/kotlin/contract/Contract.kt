@@ -1,6 +1,6 @@
 package ch.softappeal.yass2.contract
 
-import ch.softappeal.yass2.*
+import ch.softappeal.yass2.GenerateProxy
 
 enum class Gender { Female, Male }
 

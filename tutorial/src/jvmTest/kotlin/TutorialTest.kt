@@ -1,6 +1,6 @@
 package ch.softappeal.yass2.tutorial
 
-import kotlin.test.*
+import kotlin.test.Test
 
 class TutorialTest {
     @Test

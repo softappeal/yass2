@@ -2,7 +2,7 @@
 
 @file:Suppress("SpellCheckingInspection")
 
-import java.util.regex.*
+import java.util.regex.Pattern
 
 plugins {
     alias(libs.plugins.multiplatform)

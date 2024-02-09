@@ -1,7 +1,9 @@
 package ch.softappeal.yass2
 
-import java.nio.file.*
-import kotlin.io.path.*
+import java.nio.file.Files
+import java.nio.file.Path
+import kotlin.io.path.isRegularFile
+import kotlin.io.path.name
 
 private sealed class Node(val name: String)
 

@@ -1,9 +1,19 @@
 package ch.softappeal.yass2.remote
 
-import ch.softappeal.yass2.*
-import ch.softappeal.yass2.contract.*
-import kotlinx.coroutines.test.*
-import kotlin.test.*
+import ch.softappeal.yass2.CalculatorImpl
+import ch.softappeal.yass2.EchoImpl
+import ch.softappeal.yass2.assertFailsMessage
+import ch.softappeal.yass2.contract.CalculatorId
+import ch.softappeal.yass2.contract.Echo
+import ch.softappeal.yass2.contract.EchoId
+import ch.softappeal.yass2.contract.proxy
+import ch.softappeal.yass2.contract.service
+import ch.softappeal.yass2.performance
+import ch.softappeal.yass2.test
+import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertSame
 
 private val TestTunnel = tunnel(CalculatorId.service(CalculatorImpl), EchoId.service(EchoImpl))
 

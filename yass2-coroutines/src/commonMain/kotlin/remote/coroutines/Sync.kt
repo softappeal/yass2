@@ -1,6 +1,7 @@
 package ch.softappeal.yass2.remote.coroutines
 
-import kotlinx.coroutines.sync.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 internal class AtomicBoolean(private var value: Boolean) {
     private val mutex = Mutex()

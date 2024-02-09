@@ -1,6 +1,6 @@
 package ch.softappeal.yass2.transport
 
-import ch.softappeal.yass2.serialize.*
+import ch.softappeal.yass2.serialize.Serializer
 
 public class Transport(
     serializer: Serializer,

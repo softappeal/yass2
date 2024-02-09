@@ -1,6 +1,6 @@
 package ch.softappeal.yass2
 
-import kotlin.reflect.*
+import kotlin.reflect.KFunction
 
 public typealias Invocation = () -> Any?
 public typealias Interceptor = (function: KFunction<*>, parameters: List<Any?>, invoke: Invocation) -> Any?

@@ -1,9 +1,12 @@
 package ch.softappeal.yass2
 
-import java.io.*
-import java.nio.file.*
-import kotlin.io.path.*
-import kotlin.test.*
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
+import java.nio.file.Path
+import kotlin.io.path.Path
+import kotlin.io.path.readText
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 fun Path.readAndFixLines() = readText().replace("\r\n", "\n")
 

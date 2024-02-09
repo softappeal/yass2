@@ -1,6 +1,11 @@
 package ch.softappeal.yass2.remote.coroutines.session
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 
 /** Launches a new coroutine that closes [session] if [check] throws an exception or doesn't return within [timeoutMillis]. */
 public fun <C : Connection> CoroutineScope.watch(

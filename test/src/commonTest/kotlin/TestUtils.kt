@@ -1,8 +1,10 @@
 package ch.softappeal.yass2
 
-import kotlin.reflect.*
-import kotlin.test.*
-import kotlin.time.*
+import kotlin.reflect.KClass
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.fail
+import kotlin.time.measureTime
 
 /** Needed because [assertFailsWith] doesn't work with js. */
 suspend inline fun <reified T : Throwable> assertSuspendFailsWith(noinline block: suspend () -> Unit): T =

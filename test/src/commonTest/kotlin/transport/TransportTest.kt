@@ -1,8 +1,9 @@
 package ch.softappeal.yass2.transport
 
-import ch.softappeal.yass2.contract.*
-import kotlinx.coroutines.test.*
-import kotlin.test.*
+import ch.softappeal.yass2.contract.ContractSerializer
+import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class TransportTest {
     @Test

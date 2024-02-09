@@ -1,11 +1,14 @@
 package ch.softappeal.yass2.transport.session
 
-import ch.softappeal.yass2.*
-import ch.softappeal.yass2.contract.*
-import ch.softappeal.yass2.remote.*
-import ch.softappeal.yass2.remote.coroutines.session.*
-import ch.softappeal.yass2.transport.*
-import kotlin.test.*
+import ch.softappeal.yass2.assertFailsMessage
+import ch.softappeal.yass2.contract.PacketSerializer
+import ch.softappeal.yass2.remote.ValueReply
+import ch.softappeal.yass2.remote.coroutines.session.Packet
+import ch.softappeal.yass2.transport.BytesWriter
+import ch.softappeal.yass2.transport.copy
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 private fun <T : Packet?> copy(value: T): T = PacketSerializer.copy(value)
 

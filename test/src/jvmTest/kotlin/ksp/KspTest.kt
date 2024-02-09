@@ -1,8 +1,13 @@
 package ch.softappeal.yass2.ksp
 
-import com.tschuchort.compiletesting.*
-import java.io.*
-import kotlin.test.*
+import com.tschuchort.compiletesting.KotlinCompilation
+import com.tschuchort.compiletesting.SourceFile
+import com.tschuchort.compiletesting.kspArgs
+import com.tschuchort.compiletesting.symbolProcessorProviders
+import java.io.File
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 private fun executeTest(lineNumber: Int, message: String, source1: String, source2: String? = null) {
     val file1 = SourceFile.kotlin("Source1.kt", source1)

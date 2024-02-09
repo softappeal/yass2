@@ -1,14 +1,22 @@
 package ch.softappeal.yass2.transport.ktor
 
-import ch.softappeal.yass2.remote.*
-import ch.softappeal.yass2.remote.coroutines.session.*
+import ch.softappeal.yass2.remote.Reply
+import ch.softappeal.yass2.remote.Request
+import ch.softappeal.yass2.remote.Tunnel
 import ch.softappeal.yass2.remote.coroutines.session.Connection
-import ch.softappeal.yass2.transport.*
-import io.ktor.network.sockets.*
-import io.ktor.utils.io.*
-import io.ktor.utils.io.core.*
-import kotlinx.coroutines.*
-import kotlin.coroutines.*
+import ch.softappeal.yass2.remote.coroutines.session.Packet
+import ch.softappeal.yass2.remote.coroutines.session.SessionFactory
+import ch.softappeal.yass2.remote.coroutines.session.receiveLoop
+import ch.softappeal.yass2.transport.Transport
+import io.ktor.network.sockets.Socket
+import io.ktor.network.sockets.openReadChannel
+import io.ktor.network.sockets.openWriteChannel
+import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.core.use
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.CoroutineContext
 
 private suspend fun ByteReadChannel.read(transport: Transport): Any? = read(transport, readInt())
 

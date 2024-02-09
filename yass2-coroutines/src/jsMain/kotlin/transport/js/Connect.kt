@@ -1,10 +1,20 @@
 package ch.softappeal.yass2.transport.js
 
-import ch.softappeal.yass2.remote.coroutines.session.*
-import ch.softappeal.yass2.transport.*
-import kotlinx.coroutines.*
-import org.khronos.webgl.*
-import org.w3c.dom.*
+import ch.softappeal.yass2.remote.coroutines.session.Connection
+import ch.softappeal.yass2.remote.coroutines.session.Packet
+import ch.softappeal.yass2.remote.coroutines.session.SessionFactory
+import ch.softappeal.yass2.remote.coroutines.session.createSession
+import ch.softappeal.yass2.transport.BytesReader
+import ch.softappeal.yass2.transport.Transport
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import org.khronos.webgl.ArrayBuffer
+import org.khronos.webgl.ArrayBufferView
+import org.khronos.webgl.Int8Array
+import org.w3c.dom.ARRAYBUFFER
+import org.w3c.dom.BinaryType
+import org.w3c.dom.WebSocket
 
 public fun Transport.connect(url: String, sessionFactory: SessionFactory<Connection>) {
     WebSocket(url).apply {

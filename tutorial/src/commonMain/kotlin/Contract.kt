@@ -19,13 +19,22 @@
 
 package ch.softappeal.yass2.tutorial
 
-import ch.softappeal.yass2.*
-import ch.softappeal.yass2.remote.*
-import ch.softappeal.yass2.remote.coroutines.session.*
-import ch.softappeal.yass2.serialize.*
-import ch.softappeal.yass2.serialize.binary.*
-import ch.softappeal.yass2.transport.*
-import ch.softappeal.yass2.transport.session.*
+import ch.softappeal.yass2.Dumper
+import ch.softappeal.yass2.GenerateProxy
+import ch.softappeal.yass2.createDumper
+import ch.softappeal.yass2.remote.ServiceId
+import ch.softappeal.yass2.remote.coroutines.session.MustBeImplementedByAcceptor
+import ch.softappeal.yass2.remote.coroutines.session.MustBeImplementedByInitiator
+import ch.softappeal.yass2.serialize.Serializer
+import ch.softappeal.yass2.serialize.binary.BaseEncoder
+import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
+import ch.softappeal.yass2.serialize.binary.IntEncoder
+import ch.softappeal.yass2.serialize.binary.StringEncoder
+import ch.softappeal.yass2.serialize.binary.readLong
+import ch.softappeal.yass2.serialize.binary.writeLong
+import ch.softappeal.yass2.transport.Transport
+import ch.softappeal.yass2.transport.binaryMessageSerializer
+import ch.softappeal.yass2.transport.session.binaryPacketSerializer
 
 // This file describes the contract (data transfer objects and interfaces) between client and server.
 

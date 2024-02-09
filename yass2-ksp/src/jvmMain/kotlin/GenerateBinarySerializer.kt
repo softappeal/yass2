@@ -1,8 +1,15 @@
 package ch.softappeal.yass2.ksp
 
-import ch.softappeal.yass2.serialize.binary.*
-import com.google.devtools.ksp.*
-import com.google.devtools.ksp.symbol.*
+import ch.softappeal.yass2.serialize.binary.BinarySerializer
+import ch.softappeal.yass2.serialize.binary.ClassEncoder
+import ch.softappeal.yass2.serialize.binary.EnumEncoder
+import ch.softappeal.yass2.serialize.binary.FIRST_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.ListEncoderId
+import com.google.devtools.ksp.isAbstract
+import com.google.devtools.ksp.symbol.ClassKind
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSPropertyDeclaration
+import com.google.devtools.ksp.symbol.KSType
 
 private enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
 

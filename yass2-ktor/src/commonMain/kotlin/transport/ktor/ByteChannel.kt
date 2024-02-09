@@ -1,7 +1,9 @@
 package ch.softappeal.yass2.transport.ktor
 
-import ch.softappeal.yass2.transport.*
-import io.ktor.utils.io.*
+import ch.softappeal.yass2.transport.BytesReader
+import ch.softappeal.yass2.transport.Transport
+import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.ByteWriteChannel
 
 internal suspend fun ByteWriteChannel.write(transport: Transport, value: Any?) {
     val writer = transport.createWriter()

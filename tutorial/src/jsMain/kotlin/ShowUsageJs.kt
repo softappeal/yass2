@@ -1,7 +1,12 @@
 package ch.softappeal.yass2.tutorial
 
-import ch.softappeal.yass2.transport.js.*
-import kotlinx.coroutines.*
+import ch.softappeal.yass2.transport.js.connect
+import ch.softappeal.yass2.transport.js.tunnel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalJsExport::class) @JsExport
 public fun showJsUsage() {

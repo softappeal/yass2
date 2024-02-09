@@ -1,7 +1,13 @@
 package ch.softappeal.yass2.transport
 
-import ch.softappeal.yass2.serialize.*
-import kotlin.test.*
+import ch.softappeal.yass2.serialize.Serializer
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFails
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 fun <T> Serializer.copy(value: T, check: BytesWriter.() -> Unit = {}): T {
     val writer = BytesWriter(1000)

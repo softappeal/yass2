@@ -1,11 +1,26 @@
 package ch.softappeal.yass2.ksp
 
-import ch.softappeal.yass2.*
-import ch.softappeal.yass2.serialize.binary.*
-import com.google.devtools.ksp.*
-import com.google.devtools.ksp.processing.*
-import com.google.devtools.ksp.symbol.*
-import kotlin.reflect.*
+import ch.softappeal.yass2.GenerateDumper
+import ch.softappeal.yass2.GenerateProxy
+import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
+import com.google.devtools.ksp.getAllSuperTypes
+import com.google.devtools.ksp.processing.Dependencies
+import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.processing.SymbolProcessor
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
+import com.google.devtools.ksp.processing.SymbolProcessorProvider
+import com.google.devtools.ksp.symbol.ClassKind
+import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSAnnotation
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSDeclaration
+import com.google.devtools.ksp.symbol.KSFile
+import com.google.devtools.ksp.symbol.KSNode
+import com.google.devtools.ksp.symbol.KSPropertyDeclaration
+import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.KSTypeReference
+import com.google.devtools.ksp.symbol.Variance
+import kotlin.reflect.KClass
 
 public const val GENERATED_PROXY: String = "GeneratedProxy"
 public const val GENERATED_BINARY_SERIALIZER: String = "GeneratedBinarySerializer"

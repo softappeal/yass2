@@ -1,8 +1,14 @@
 package ch.softappeal.yass2.transport.js
 
-import ch.softappeal.yass2.contract.*
-import ch.softappeal.yass2.remote.coroutines.session.*
-import kotlinx.coroutines.*
+import ch.softappeal.yass2.contract.MessageTransport
+import ch.softappeal.yass2.contract.PacketTransport
+import ch.softappeal.yass2.remote.coroutines.session.initiatorSessionFactory
+import ch.softappeal.yass2.remote.coroutines.session.test
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalJsExport::class) @JsExport
 fun remoteTest() {

@@ -1,7 +1,8 @@
 package ch.softappeal.yass2
 
-import kotlinx.coroutines.test.*
-import kotlin.test.*
+import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class TestUtilsTest {
     @Test

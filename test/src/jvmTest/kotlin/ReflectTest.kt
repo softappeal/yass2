@@ -1,9 +1,15 @@
 package ch.softappeal.yass2
 
-import ch.softappeal.yass2.contract.*
-import kotlinx.coroutines.*
-import kotlin.reflect.full.*
-import kotlin.test.*
+import ch.softappeal.yass2.contract.Echo
+import ch.softappeal.yass2.contract.TestAnnotation
+import ch.softappeal.yass2.contract.proxy
+import kotlinx.coroutines.runBlocking
+import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.full.memberProperties
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class ReflectTest {
     @Test

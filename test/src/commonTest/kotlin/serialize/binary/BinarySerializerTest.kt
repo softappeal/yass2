@@ -1,10 +1,29 @@
 package ch.softappeal.yass2.serialize.binary
 
-import ch.softappeal.yass2.*
-import ch.softappeal.yass2.contract.*
-import ch.softappeal.yass2.serialize.*
-import ch.softappeal.yass2.transport.*
-import kotlin.test.*
+import ch.softappeal.yass2.assertFailsMessage
+import ch.softappeal.yass2.contract.ComplexId
+import ch.softappeal.yass2.contract.ContractSerializer
+import ch.softappeal.yass2.contract.Gender
+import ch.softappeal.yass2.contract.Id2
+import ch.softappeal.yass2.contract.Id3
+import ch.softappeal.yass2.contract.IdWrapper
+import ch.softappeal.yass2.contract.IntException
+import ch.softappeal.yass2.contract.Lists
+import ch.softappeal.yass2.contract.ManyProperties
+import ch.softappeal.yass2.contract.Node
+import ch.softappeal.yass2.contract.PlainId
+import ch.softappeal.yass2.contract.ThrowableFake
+import ch.softappeal.yass2.performance
+import ch.softappeal.yass2.serialize.Reader
+import ch.softappeal.yass2.serialize.Writer
+import ch.softappeal.yass2.transport.BytesWriter
+import ch.softappeal.yass2.transport.checkTail
+import ch.softappeal.yass2.transport.copy
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 private fun <T> checkedCopy(value: T, vararg bytes: Int): T = ContractSerializer.copy(value) { checkTail(*bytes) }
 

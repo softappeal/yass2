@@ -1,11 +1,25 @@
 package ch.softappeal.yass2
 
-import ch.softappeal.yass2.contract.*
-import ch.softappeal.yass2.contract.child.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.test.*
-import kotlin.test.*
+import ch.softappeal.yass2.contract.Calculator
+import ch.softappeal.yass2.contract.DivideByZeroException
+import ch.softappeal.yass2.contract.Echo
+import ch.softappeal.yass2.contract.Mixed
+import ch.softappeal.yass2.contract.Node
+import ch.softappeal.yass2.contract.child.NoSuspend
+import ch.softappeal.yass2.contract.proxy
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withTimeout
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlin.time.Duration.Companion.milliseconds
+import ch.softappeal.yass2.contract.child.proxy as childProxy
 
 val CalculatorImpl = object : Calculator {
     override suspend fun add(a: Int, b: Int) = a + b
@@ -159,7 +173,7 @@ class InterceptorTest {
         println(mixed.hashCode())
         assertNotEquals(mixed, Any())
         assertEquals(3, counter)
-        val noSuspend = NoSuspendImpl.proxy(testInterceptor + printer)
+        val noSuspend = NoSuspendImpl.childProxy(testInterceptor + printer)
         noSuspend.x()
         assertEquals(4, counter)
     }

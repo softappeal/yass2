@@ -1,7 +1,11 @@
 package ch.softappeal.yass2
 
-import kotlinx.coroutines.test.*
-import kotlin.test.*
+import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFails
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 class CleanupTest {
     @Test

@@ -1,7 +1,12 @@
 package ch.softappeal.yass2.ksp
 
-import ch.softappeal.yass2.remote.*
-import com.google.devtools.ksp.symbol.*
+import ch.softappeal.yass2.remote.Request
+import ch.softappeal.yass2.remote.Service
+import ch.softappeal.yass2.remote.ServiceId
+import com.google.devtools.ksp.symbol.ClassKind
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSFunctionDeclaration
+import com.google.devtools.ksp.symbol.Modifier
 
 private val AnyFunctions = setOf("toString", "equals", "hashCode")
 private fun KSFunctionDeclaration.isSuspend() = Modifier.SUSPEND in modifiers

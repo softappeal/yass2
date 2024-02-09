@@ -1,7 +1,8 @@
 package ch.softappeal.yass2.serialize.binary
 
-import ch.softappeal.yass2.serialize.*
-import kotlin.reflect.*
+import ch.softappeal.yass2.serialize.Reader
+import ch.softappeal.yass2.serialize.Writer
+import kotlin.reflect.KClass
 
 public fun Writer.writeZigZagVarInt(value: Int) {
     writeVarInt(value.toZigZag())

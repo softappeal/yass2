@@ -1,6 +1,6 @@
 package ch.softappeal.yass2.serialize.binary
 
-import kotlin.test.*
+import kotlin.test.Test
 
 class BinarySerializerTest2 {
     @Test

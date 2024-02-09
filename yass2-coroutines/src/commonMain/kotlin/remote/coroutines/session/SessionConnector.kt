@@ -1,6 +1,10 @@
 package ch.softappeal.yass2.remote.coroutines.session
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 public typealias SessionConnector<C> = suspend (sessionFactory: SessionFactory<C>) -> Unit
 

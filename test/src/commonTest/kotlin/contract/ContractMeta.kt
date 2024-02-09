@@ -19,11 +19,14 @@
 
 package ch.softappeal.yass2.contract
 
-import ch.softappeal.yass2.*
-import ch.softappeal.yass2.remote.*
-import ch.softappeal.yass2.serialize.binary.*
-import ch.softappeal.yass2.transport.*
-import ch.softappeal.yass2.transport.session.*
+import ch.softappeal.yass2.remote.ServiceId
+import ch.softappeal.yass2.serialize.binary.ByteArrayEncoder
+import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
+import ch.softappeal.yass2.serialize.binary.IntEncoder
+import ch.softappeal.yass2.serialize.binary.StringEncoder
+import ch.softappeal.yass2.transport.Transport
+import ch.softappeal.yass2.transport.binaryMessageSerializer
+import ch.softappeal.yass2.transport.session.binaryPacketSerializer
 
 val ContractSerializer = createSerializer()
 val MessageSerializer = binaryMessageSerializer(ContractSerializer)

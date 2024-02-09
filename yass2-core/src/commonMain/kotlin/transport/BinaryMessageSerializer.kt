@@ -1,8 +1,14 @@
 package ch.softappeal.yass2.transport
 
-import ch.softappeal.yass2.remote.*
-import ch.softappeal.yass2.serialize.*
-import ch.softappeal.yass2.serialize.binary.*
+import ch.softappeal.yass2.remote.ExceptionReply
+import ch.softappeal.yass2.remote.Message
+import ch.softappeal.yass2.remote.Request
+import ch.softappeal.yass2.remote.ValueReply
+import ch.softappeal.yass2.serialize.Reader
+import ch.softappeal.yass2.serialize.Serializer
+import ch.softappeal.yass2.serialize.Writer
+import ch.softappeal.yass2.serialize.binary.readVarInt
+import ch.softappeal.yass2.serialize.binary.writeVarInt
 
 private const val REQUEST_TYPE = 0.toByte()
 private const val VALUE_REPLY_TYPE = 1.toByte()

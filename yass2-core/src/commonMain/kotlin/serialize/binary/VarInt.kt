@@ -1,6 +1,7 @@
 package ch.softappeal.yass2.serialize.binary
 
-import ch.softappeal.yass2.serialize.*
+import ch.softappeal.yass2.serialize.Reader
+import ch.softappeal.yass2.serialize.Writer
 
 // see https://protobuf.dev/programming-guides/encoding/#varints
 

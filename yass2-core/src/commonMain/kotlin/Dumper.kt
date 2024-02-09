@@ -1,6 +1,7 @@
 package ch.softappeal.yass2
 
-import kotlin.reflect.*
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty1
 
 private typealias DumperProperties = (type: KClass<*>) -> List<KProperty1<Any, Any?>>
 

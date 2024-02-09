@@ -1,7 +1,9 @@
 package ch.softappeal.yass2.serialize.binary
 
-import ch.softappeal.yass2.serialize.*
-import kotlin.reflect.*
+import ch.softappeal.yass2.serialize.Reader
+import ch.softappeal.yass2.serialize.Serializer
+import ch.softappeal.yass2.serialize.Writer
+import kotlin.reflect.KClass
 
 public abstract class Encoder internal constructor(public val type: KClass<*>) {
     internal abstract fun write(writer: EncoderWriter, value: Any?)

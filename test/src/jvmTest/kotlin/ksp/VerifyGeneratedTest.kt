@@ -1,8 +1,8 @@
 package ch.softappeal.yass2.ksp
 
-import ch.softappeal.yass2.*
-import kotlin.io.path.*
-import kotlin.test.*
+import ch.softappeal.yass2.readAndFixLines
+import kotlin.io.path.Path
+import kotlin.test.Test
 
 class VerifyGeneratedTest {
     @Test
