@@ -9,60 +9,24 @@ import kotlin.test.assertTrue
 
 class CleanupTest {
     @Test
-    fun addSuppressedWithoutException() {
-        val e = Exception()
-        var called = false
-        val e2 = e.addSuppressed { called = true }
-        assertTrue(called)
-        assertSame(e, e2)
-    }
-
-    @Test
-    fun addSuppressedWithException() {
-        val e = Exception()
-        var called = false
-        val blockException = Exception()
-        val e2 = e.addSuppressed {
-            called = true
-            throw blockException
-        }
-        assertTrue(called)
-        assertSame(e, e2)
-        assertEquals(listOf(blockException), e.suppressedExceptions)
-    }
-
-    @Test
-    fun addSuppressedWithSuspend() = runTest {
-        val e = Exception()
-        var called = false
-
-        @Suppress("RedundantSuspendModifier")
-        suspend fun block() {
-            called = true
-        }
-
-        val e2 = e.addSuppressed { block() }
-        assertTrue(called)
-        assertSame(e, e2)
-    }
-
-    @Test
-    fun tryFinallyNoTryExceptionNoFinallyException() {
+    fun noTryExceptionNoFinallyException() {
         var tryCalled = false
         var finallyCalled = false
-        val r = tryFinally({
-            tryCalled = true
-            123
-        }) {
-            finallyCalled = true
-        }
-        assertEquals(123, r)
+        assertEquals(
+            123,
+            tryFinally({
+                tryCalled = true
+                123
+            }) {
+                finallyCalled = true
+            }
+        )
         assertTrue(tryCalled)
         assertTrue(finallyCalled)
     }
 
     @Test
-    fun tryFinallyWithTryExceptionNoFinallyException() {
+    fun withTryExceptionNoFinallyException() {
         var tryCalled = false
         val tryException = Exception()
         var finallyCalled = false
@@ -82,7 +46,7 @@ class CleanupTest {
     }
 
     @Test
-    fun tryFinallyNoTryExceptionWithFinallyException() {
+    fun noTryExceptionWithFinallyException() {
         var tryCalled = false
         var finallyCalled = false
         val finallyException = Exception()
@@ -102,7 +66,7 @@ class CleanupTest {
     }
 
     @Test
-    fun tryFinallyWithTryExceptionWithFinallyException() {
+    fun withTryExceptionWithFinallyException() {
         var tryCalled = false
         val tryException = Exception()
         var finallyCalled = false
@@ -125,7 +89,7 @@ class CleanupTest {
     }
 
     @Test
-    fun tryFinallyWithSuspend() = runTest {
+    fun withSuspend() = runTest {
         var tryCalled = false
         var finallyCalled = false
 
@@ -141,12 +105,14 @@ class CleanupTest {
             return 321
         }
 
-        val r = tryFinally({
-            tryBlock()
-        }) {
-            finallyBlock()
-        }
-        assertEquals(123, r)
+        assertEquals(
+            123,
+            tryFinally({
+                tryBlock()
+            }) {
+                finallyBlock()
+            }
+        )
         assertTrue(tryCalled)
         assertTrue(finallyCalled)
     }

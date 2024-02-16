@@ -2,7 +2,7 @@
 
 kotlin                 = "1.9.22"        # https://github.com/JetBrains/kotlin
 ksp                    = "1.9.22-1.0.17" # https://github.com/google/ksp
-kotlinx-coroutines     = "1.8.0-RC2"     # https://github.com/Kotlin/kotlinx.coroutines
+kotlinx-coroutines     = "1.8.0"         # https://github.com/Kotlin/kotlinx.coroutines
 ktor                   = "2.3.8"         # https://github.com/ktorio/ktor
 kotlin-compile-testing = "1.5.0"         # https://github.com/tschuchortdev/kotlin-compile-testing
 
