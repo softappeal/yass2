@@ -2,6 +2,7 @@
 
 @file:Suppress("SpellCheckingInspection")
 
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import java.util.regex.Pattern
 
 plugins {
@@ -12,11 +13,6 @@ plugins {
 }
 
 val libraries = libs
-
-val jsTarget = true
-val linuxX64Target = true
-val linuxArm64Target = true
-val macosArm64Target = true
 
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
@@ -40,28 +36,19 @@ allprojects {
                 artifact(tasks["javadocJar"])
             }
         }
-
-        if (jsTarget) {
-            js {
-                moduleName = project.name
-                nodejs()
-                binaries.executable()
-            }
+        js {
+            moduleName = project.name
+            nodejs()
+            binaries.executable()
         }
-
-        if (linuxX64Target) linuxX64()
-        if (linuxArm64Target) linuxArm64()
-        if (macosArm64Target) macosArm64()
-
-        targets.all {
-            compilations.all {
-                explicitApi()
-                kotlinOptions {
-                    allWarningsAsErrors = true
-                }
-            }
+        linuxX64()
+        linuxArm64()
+        macosArm64()
+        explicitApi()
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        compilerOptions {
+            allWarningsAsErrors = true
         }
-
         publishing {
             publications.withType<MavenPublication>().onEach { publication ->
                 publication.pom {
@@ -82,19 +69,18 @@ allprojects {
                 }
             }
         }
-
         signing {
             sign(publishing.publications)
         }
     }
 }
 
-val coreProject = project("yass2-core")
+val coreProject = project(":yass2-core")
 
-val coroutinesProject = project("yass2-coroutines") {
+val coroutinesProject = project(":yass2-coroutines") {
     kotlin {
         sourceSets {
-            val commonMain by getting {
+            commonMain {
                 dependencies {
                     api(coreProject)
                     api(libraries.kotlinx.coroutines.core)
@@ -104,7 +90,7 @@ val coroutinesProject = project("yass2-coroutines") {
     }
 }
 
-val ktorProject = project("yass2-ktor") {
+val ktorProject = project(":yass2-ktor") {
     kotlin {
         sourceSets {
             val commonMain by getting {
@@ -120,32 +106,26 @@ val ktorProject = project("yass2-ktor") {
                     api(libraries.ktor.network)
                 }
             }
-            val jvmMain by getting {
+            jvmMain {
                 dependsOn(jvmAndNixMain)
             }
-            if (linuxX64Target) {
-                val linuxX64Main by getting {
-                    dependsOn(jvmAndNixMain)
-                }
+            val linuxX64Main by getting {
+                dependsOn(jvmAndNixMain)
             }
-            if (linuxArm64Target) {
-                val linuxArm64Main by getting {
-                    dependsOn(jvmAndNixMain)
-                }
+            val linuxArm64Main by getting {
+                dependsOn(jvmAndNixMain)
             }
-            if (macosArm64Target) {
-                val macosArm64Main by getting {
-                    dependsOn(jvmAndNixMain)
-                }
+            val macosArm64Main by getting {
+                dependsOn(jvmAndNixMain)
             }
         }
     }
 }
 
-val kspProject = project("yass2-ksp") {
+val kspProject = project(":yass2-ksp") {
     kotlin {
         sourceSets {
-            val jvmMain by getting {
+            jvmMain {
                 dependencies {
                     api(coreProject)
                     api(libraries.symbol.processing.api)
@@ -155,7 +135,7 @@ val kspProject = project("yass2-ksp") {
     }
 }
 
-project("test") { // this project is needed due to https://youtrack.jetbrains.com/issue/KT-35073
+project(":test") { // this project is needed due to https://youtrack.jetbrains.com/issue/KT-35073
     kotlin {
         sourceSets {
             val commonTest by getting {
@@ -172,7 +152,7 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
                     implementation(libraries.bundles.ktor.cio)
                 }
             }
-            val jvmTest by getting {
+            jvmTest {
                 dependsOn(jvmAndNixTest)
                 dependencies {
                     implementation(kspProject)
@@ -180,20 +160,14 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
                     implementation(libraries.kotlin.compile.testing.ksp)
                 }
             }
-            if (linuxX64Target) {
-                val linuxX64Test by getting {
-                    dependsOn(jvmAndNixTest)
-                }
+            val linuxX64Test by getting {
+                dependsOn(jvmAndNixTest)
             }
-            if (linuxArm64Target) {
-                val linuxArm64Test by getting {
-                    dependsOn(jvmAndNixTest)
-                }
+            val linuxArm64Test by getting {
+                dependsOn(jvmAndNixTest)
             }
-            if (macosArm64Target) {
-                val macosArm64Test by getting {
-                    dependsOn(jvmAndNixTest)
-                }
+            val macosArm64Test by getting {
+                dependsOn(jvmAndNixTest)
             }
         }
     }
@@ -201,40 +175,38 @@ project("test") { // this project is needed due to https://youtrack.jetbrains.co
         arg("yass2.enableLogging", "false")
     }
     dependencies {
-        ksp(kspProject)
+        ksp(kspProject) // NOTE: references to generated artifacts are yet wrongly red in IntelliJ; it compiles and runs correctly
     }
 }
 
-project("tutorial") {
+project(":tutorial") {
     kotlin {
         sourceSets {
-            val commonMain by getting {
+            commonMain {
                 dependencies {
                     implementation(coroutinesProject)
                 }
             }
-            val commonTest by getting {
+            commonTest {
                 dependencies {
                     implementation(kotlin("test"))
                 }
             }
-            val jvmMain by getting {
+            jvmMain {
                 dependencies {
                     implementation(ktorProject)
                     implementation(libraries.bundles.ktor.cio)
                 }
             }
-            if (jsTarget) {
-                val jsTest by getting {
-                    dependencies {
-                        implementation(libraries.kotlinx.coroutines.test)
-                    }
+            jsTest {
+                dependencies {
+                    implementation(libraries.kotlinx.coroutines.test)
                 }
             }
         }
     }
     dependencies {
-        ksp(kspProject) // NOTE: references to generated artifacts are yet wrongly red in IntelliJ; it compiles and runs correctly
+        ksp(kspProject)
     }
 }
 

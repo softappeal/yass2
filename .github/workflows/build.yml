@@ -4,6 +4,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: gradle/wrapper-validation-action@v2
       - run: docker image     build --tag project-image .
-      - run: docker container run         project-image ./gradlew markers build
+      - run: docker container run         project-image ./gradlew build
