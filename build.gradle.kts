@@ -122,13 +122,14 @@ val ktorProject = project(":yass2-ktor") {
     }
 }
 
-val kspProject = project(":yass2-ksp") {
+val generateProject = project(":yass2-generate") {
     kotlin {
         sourceSets {
             jvmMain {
                 dependencies {
                     api(coreProject)
                     api(libraries.symbol.processing.api)
+                    api(kotlin("reflect"))
                 }
             }
         }
@@ -155,8 +156,7 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
             jvmTest {
                 dependsOn(jvmAndNixTest)
                 dependencies {
-                    implementation(kspProject)
-                    implementation(kotlin("reflect"))
+                    implementation(generateProject)
                     implementation(libraries.kotlin.compile.testing.ksp)
                 }
             }
@@ -175,7 +175,7 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
         arg("yass2.enableLogging", "false")
     }
     dependencies {
-        ksp(kspProject) // NOTE: references to generated artifacts are yet wrongly red in IntelliJ; it compiles and runs correctly
+        ksp(generateProject) // NOTE: references to generated artifacts are yet wrongly red in IntelliJ; it compiles and runs correctly
     }
 }
 
@@ -206,14 +206,14 @@ project(":tutorial") {
         }
     }
     dependencies {
-        ksp(kspProject)
+        ksp(generateProject)
     }
 }
 
 tasks.register("publishYass2") {
     listOf(coreProject, coroutinesProject, ktorProject).forEach { dependsOn("${it.name}:publishAllPublicationsToOssrhRepository") }
-    dependsOn("${kspProject.name}:publishKotlinMultiplatformPublicationToOssrhRepository")
-    dependsOn("${kspProject.name}:publishJvmPublicationToOssrhRepository")
+    dependsOn("${generateProject.name}:publishKotlinMultiplatformPublicationToOssrhRepository")
+    dependsOn("${generateProject.name}:publishJvmPublicationToOssrhRepository")
 }
 
 tasks.register("markers") {

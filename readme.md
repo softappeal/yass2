@@ -35,7 +35,7 @@
 
 * Javascript transport uses the Fetch and the WebSocket API instead of Ktor
 
-* provided by [Kotlin Symbol Processing (KSP)](https://kotlinlang.org/docs/ksp-overview.html) generated code (works on any platform and is fast)
+* generates code (works on any platform and is fast) either with [Kotlin Symbol Processing (KSP)](https://kotlinlang.org/docs/ksp-overview.html) or with reflection
     * fast, compact and extendable binary serializer for high throughput and low latency
     * dumper (prints contract objects)
     * interceptor (around advice, aspect-oriented programming)
@@ -44,7 +44,7 @@
 * yass2 has multiple modules with the following dependencies
 
 ```
-yass2-core <-- yass2-ksp --> symbol-processing-api
+yass2-core <-- yass2-generate
      ^
      |
 yass2-coroutines --> kotlinx-coroutines-core

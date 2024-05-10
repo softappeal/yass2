@@ -136,6 +136,7 @@ public class ClassEncoder<T : Any>(
 @Target(AnnotationTarget.PROPERTY)
 public annotation class GenerateBinarySerializer(
     val baseEncoderClasses: Array<KClass<out BaseEncoder<*>>>,
+    val enumClasses: Array<KClass<*>>,
     val treeConcreteClasses: Array<KClass<*>>,
     val graphConcreteClasses: Array<KClass<*>>,
     val withDumper: Boolean,

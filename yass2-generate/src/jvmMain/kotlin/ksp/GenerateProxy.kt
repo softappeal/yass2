@@ -1,5 +1,8 @@
-package ch.softappeal.yass2.ksp
+package ch.softappeal.yass2.generate.ksp
 
+import ch.softappeal.yass2.generate.CSY
+import ch.softappeal.yass2.generate.append
+import ch.softappeal.yass2.generate.appendLine
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.Service
 import ch.softappeal.yass2.remote.ServiceId
@@ -9,24 +12,24 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.Modifier
 
 private val AnyFunctions = setOf("toString", "equals", "hashCode")
-private fun KSFunctionDeclaration.isSuspend() = Modifier.SUSPEND in modifiers
-private fun KSFunctionDeclaration.hasResult() = "kotlin.Unit" != returnType!!.resolve().qualifiedName()
+private val KSFunctionDeclaration.isSuspend get() = Modifier.SUSPEND in modifiers
+private fun KSFunctionDeclaration.hasResult() = "kotlin.Unit" != returnType!!.resolve().qualifiedName
 
 internal fun Appendable.generateProxy(service: KSClassDeclaration) {
     require(service.classKind == ClassKind.INTERFACE) { "'${service.qualifiedName()}' must be an interface @${service.location}" }
 
     val functions = service.getAllFunctions()
         .toList()
-        .filter { it.simpleName() !in AnyFunctions }
-        .sortedBy { it.simpleName() } // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
+        .filter { it.name !in AnyFunctions }
+        .sortedBy { it.name } // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
         .apply {
-            require(map { it.simpleName() }.toSet().size == size) {
+            require(map { it.name }.toSet().size == size) {
                 "interface '${service.qualifiedName()}' must not overload functions @${service.location}"
             }
         }
 
     fun appendSignature(level: Int, function: KSFunctionDeclaration) {
-        appendLine(level, "override ${if (function.isSuspend()) "suspend " else ""}fun ${function.simpleName()}(")
+        appendLine(level, "override ${if (function.isSuspend) "suspend " else ""}fun ${function.name}(")
         function.parameters.forEachIndexed { parameterIndex, parameter ->
             append(level + 1, "p${parameterIndex + 1}: ").appendType(parameter.type).appendLine(',')
         }
@@ -43,8 +46,8 @@ internal fun Appendable.generateProxy(service: KSClassDeclaration) {
 
     appendLine()
     appendLine("public fun ${service.qualifiedName()}.proxy(")
-    if (functions.any { !it.isSuspend() }) appendLine(1, "intercept: $CSY.Interceptor,")
-    if (functions.any { it.isSuspend() }) appendLine(1, "suspendIntercept: $CSY.SuspendInterceptor,")
+    if (functions.any { !it.isSuspend }) appendLine(1, "intercept: $CSY.Interceptor,")
+    if (functions.any { it.isSuspend }) appendLine(1, "suspendIntercept: $CSY.SuspendInterceptor,")
     appendLine("): ${service.qualifiedName()} = object : ${service.qualifiedName()} {")
     functions.forEachIndexed { functionIndex, function ->
         if (functionIndex != 0) appendLine()
@@ -54,10 +57,10 @@ internal fun Appendable.generateProxy(service: KSClassDeclaration) {
         appendLine(" {")
         append(
             2,
-            "${if (hasResult) "return " else ""}${if (function.isSuspend()) "suspendIntercept" else "intercept"}" +
-                "(${service.qualifiedName()}::${function.simpleName()}, listOf("
+            "${if (hasResult) "return " else ""}${if (function.isSuspend) "suspendIntercept" else "intercept"}" +
+                "(${service.qualifiedName()}::${function.name}, listOf("
         ).appendParameters(function).appendLine(")) {")
-        append(3, "this@proxy.${function.simpleName()}(").appendParameters(function).append(')').appendLine()
+        append(3, "this@proxy.${function.name}(").appendParameters(function).append(')').appendLine()
         append(2, "}")
         if (hasResult) append(" as ").appendType(function.returnType!!)
         appendLine()
@@ -65,7 +68,7 @@ internal fun Appendable.generateProxy(service: KSClassDeclaration) {
     }
     appendLine("}")
 
-    if (functions.any { !it.isSuspend() }) return
+    if (functions.any { !it.isSuspend }) return
 
     appendLine()
     appendLine("public fun ${ServiceId::class.qualifiedName}<${service.qualifiedName()}>.proxy(")
@@ -93,7 +96,7 @@ internal fun Appendable.generateProxy(service: KSClassDeclaration) {
     appendLine(1, "${Service::class.qualifiedName}(id) { functionId, parameters ->")
     appendLine(2, "when (functionId) {")
     functions.forEachIndexed { functionIndex, function ->
-        appendLine(3, "$functionIndex -> implementation.${function.simpleName()}(")
+        appendLine(3, "$functionIndex -> implementation.${function.name}(")
         function.parameters.forEachIndexed { parameterIndex, parameter ->
             append(4, "parameters[$parameterIndex] as ").appendType(parameter.type).appendLine(',')
         }

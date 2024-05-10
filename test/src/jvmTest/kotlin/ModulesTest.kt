@@ -1,14 +1,11 @@
 package ch.softappeal.yass2
 
+import ch.softappeal.yass2.generate.reflect.readAndFixLines
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
-import java.nio.file.Path
 import kotlin.io.path.Path
-import kotlin.io.path.readText
 import kotlin.test.Test
 import kotlin.test.assertEquals
-
-fun Path.readAndFixLines() = readText().replace("\r\n", "\n")
 
 private val Modules = setOf("yass2-core", "yass2-coroutines", "yass2-ktor")
 

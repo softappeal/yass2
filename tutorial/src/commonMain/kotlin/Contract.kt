@@ -116,9 +116,10 @@ public val Dumper: Dumper = createDumper { value ->
         StringEncoder::class,
         MyDateEncoder::class,
     ],
-    treeConcreteClasses = [
-        // Define all the concrete classes (including enumerations) needed by the contract.
+    enumClasses = [
         Gender::class,
+    ],
+    treeConcreteClasses = [
         Address::class,
         Person::class,
         DivideByZeroException::class,

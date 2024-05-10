@@ -1,7 +1,11 @@
-package ch.softappeal.yass2.ksp
+package ch.softappeal.yass2.generate.ksp
 
 import ch.softappeal.yass2.GenerateDumper
 import ch.softappeal.yass2.GenerateProxy
+import ch.softappeal.yass2.generate.GENERATED_BINARY_SERIALIZER
+import ch.softappeal.yass2.generate.GENERATED_DUMPER
+import ch.softappeal.yass2.generate.GENERATED_PROXY
+import ch.softappeal.yass2.generate.appendPackage
 import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
 import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.processing.Dependencies
@@ -21,35 +25,20 @@ import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.Variance
 import kotlin.reflect.KClass
 
-public const val GENERATED_PROXY: String = "GeneratedProxy"
-public const val GENERATED_BINARY_SERIALIZER: String = "GeneratedBinarySerializer"
-public const val GENERATED_DUMPER: String = "GeneratedDumper"
-
-internal const val CSY = "ch.softappeal.yass2"
-
-internal fun Appendable.append(level: Int, s: String): Appendable {
-    append("    ".repeat(level)).append(s)
-    return this
-}
-
-internal fun Appendable.appendLine(level: Int, s: String) {
-    append(level, s).appendLine()
-}
-
 internal fun KSDeclaration.qualifiedName() = qualifiedName!!.asString()
-internal fun KSDeclaration.simpleName() = simpleName.asString()
-internal fun KSType.qualifiedName() = declaration.qualifiedName()
+internal val KSDeclaration.name get() = simpleName.asString()
+internal val KSType.qualifiedName get() = declaration.qualifiedName()
 
-private fun KSPropertyDeclaration.isPropertyOfThrowable(): Boolean {
-    val name = simpleName()
-    return (name == "cause" || name == "message") &&
-        "kotlin.Throwable" in (parentDeclaration as KSClassDeclaration).getAllSuperTypes().map { it.qualifiedName() }
+internal fun KSClassDeclaration.getAllPropertiesNotThrowable(): List<KSPropertyDeclaration> {
+    fun KSPropertyDeclaration.isPropertyOfThrowable(): Boolean {
+        return (name == "cause" || name == "message") &&
+            "kotlin.Throwable" in (parentDeclaration as KSClassDeclaration).getAllSuperTypes().map { it.qualifiedName }
+    }
+    return getAllProperties()
+        .toList()
+        .filterNot { it.isPropertyOfThrowable() }
+        .sortedBy { it.name }
 }
-
-internal fun KSClassDeclaration.getAllPropertiesNotThrowable() = getAllProperties()
-    .toList()
-    .filterNot { it.isPropertyOfThrowable() }
-    .sortedBy { it.simpleName() }
 
 internal fun Appendable.appendType(typeReference: KSTypeReference): Appendable {
     fun Appendable.appendGenerics() {
@@ -73,7 +62,7 @@ internal fun Appendable.appendType(typeReference: KSTypeReference): Appendable {
     }
 
     val type = typeReference.resolve()
-    append(type.qualifiedName()).appendGenerics()
+    append(type.qualifiedName).appendGenerics()
     if (type.isMarkedNullable) append('?')
     return this
 }
@@ -81,17 +70,14 @@ internal fun Appendable.appendType(typeReference: KSTypeReference): Appendable {
 internal fun List<KSType>.getBaseEncoderTypes() =
     map { (it.declaration as KSClassDeclaration).superTypes.first().element!!.typeArguments.first().type!!.resolve() }
 
-private fun KSType.isEnum() = (declaration as KSClassDeclaration).classKind == ClassKind.ENUM_CLASS
-
 // NOTE: default values in annotations don't yet work for multiplatform libraries;
 //       see https://youtrack.jetbrains.com/issue/KT-59526/Store-annotation-default-values-in-metadata-on-JVM
 private fun KSAnnotation.argument(name: String) = arguments.first { it.name!!.asString() == name }.value!!
 
-private fun KSAnnotation.checkClasses(classes: List<KSType>, message: String) {
+private fun KSAnnotation.checkClasses(classes: List<KSType>, enumMessage: String) {
+    fun KSType.isEnum() = (declaration as KSClassDeclaration).classKind == ClassKind.ENUM_CLASS
     require(classes.size == classes.toSet().size) { "class must not be duplicated @$location" }
-    classes.firstOrNull { it.isEnum() }?.let { klass ->
-        error("enum class '${klass.qualifiedName()}' $message @$location")
-    }
+    classes.firstOrNull { it.isEnum() }?.let { klass -> error("enum class '${klass.qualifiedName}' $enumMessage @$location") }
 }
 
 private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
@@ -123,22 +109,7 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
                 packageName,
                 file,
             ).writer().use { appendable ->
-                appendable.appendLine("""
-                    @file:Suppress(
-                        "UNCHECKED_CAST",
-                        "USELESS_CAST",
-                        "PARAMETER_NAME_CHANGED_ON_OVERRIDE",
-                        "unused",
-                        "RemoveRedundantQualifierName",
-                        "SpellCheckingInspection",
-                        "RedundantVisibilityModifier",
-                        "RedundantNullableReturnType",
-                        "KotlinRedundantDiagnosticSuppress",
-                        "RedundantSuppression",
-                    )
-
-                    package $packageName
-                """.trimIndent())
+                appendable.appendPackage(packageName)
                 appendable.generate()
             }
         }
@@ -149,7 +120,7 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
                 .forEach { classDeclaration -> add(Pair(classDeclaration.packageName.asString(), classDeclaration)) }
         }.groupBy({ it.first }, { it.second }).entries.forEach { (packageName, services) ->
             generate(GENERATED_PROXY, packageName) {
-                services.sortedBy { it.qualifiedName() }.forEach { generateProxy(it) }
+                services.sortedBy { it.name }.forEach { generateProxy(it) }
             }
         }
 
@@ -179,18 +150,17 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
         @Suppress("UNCHECKED_CAST")
         forEachAnnotation(GenerateBinarySerializer::class) { packageName, annotation ->
             val baseEncoderClasses = annotation.argument("baseEncoderClasses") as List<KSType>
-            var treeConcreteClasses = annotation.argument("treeConcreteClasses") as List<KSType>
+            val enumClasses = annotation.argument("enumClasses") as List<KSType>
+            val treeConcreteClasses = annotation.argument("treeConcreteClasses") as List<KSType>
             val graphConcreteClasses = annotation.argument("graphConcreteClasses") as List<KSType>
             val withDumper = annotation.argument("withDumper") as Boolean
-            val enumClasses = treeConcreteClasses.filter { it.isEnum() }
             require(enumClasses.size == enumClasses.toSet().size) { "enum classes must not be duplicated @${annotation.location}" }
-            treeConcreteClasses = treeConcreteClasses - enumClasses.toSet()
             annotation.checkClasses(
                 baseEncoderClasses.getBaseEncoderTypes() + treeConcreteClasses + graphConcreteClasses,
-                "belongs to 'treeConcreteClasses' and not to 'baseEncoderClasses' or 'graphConcreteClasses'"
+                "belongs to 'enumClasses'"
             )
             generate(GENERATED_BINARY_SERIALIZER, packageName) {
-                generateBinarySerializer(baseEncoderClasses, treeConcreteClasses, graphConcreteClasses, enumClasses)
+                generateBinarySerializer(baseEncoderClasses, enumClasses, treeConcreteClasses, graphConcreteClasses)
             }
             if (withDumper) generate(GENERATED_DUMPER, packageName) { generateDumper(treeConcreteClasses, graphConcreteClasses) }
         }

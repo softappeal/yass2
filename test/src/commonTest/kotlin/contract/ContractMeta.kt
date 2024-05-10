@@ -15,8 +15,10 @@ import ch.softappeal.yass2.transport.session.binaryPacketSerializer
         StringEncoder::class,
         ByteArrayEncoder::class,
     ],
-    treeConcreteClasses = [
+    enumClasses = [
         Gender::class,
+    ],
+    treeConcreteClasses = [
         IntException::class, PlainId::class, ComplexId::class, Lists::class,
         Id2::class, Id3::class, IdWrapper::class, ManyProperties::class,
         DivideByZeroException::class,
