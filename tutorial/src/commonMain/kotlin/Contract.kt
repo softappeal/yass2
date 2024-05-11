@@ -21,7 +21,6 @@ package ch.softappeal.yass2.tutorial
 
 import ch.softappeal.yass2.Dumper
 import ch.softappeal.yass2.GenerateProxy
-import ch.softappeal.yass2.createDumper
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.coroutines.session.MustBeImplementedByAcceptor
 import ch.softappeal.yass2.remote.coroutines.session.MustBeImplementedByInitiator
