@@ -14,7 +14,6 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
-import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
@@ -155,10 +154,10 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
         }
 
         val usedPackages = mutableSetOf<String>()
-        fun forEachFileAnnotation(generateAnnotation: KClass<*>, block: (packageName: String, annotation: KSAnnotation) -> Unit) {
+        fun forEachAnnotation(generateAnnotation: KClass<*>, block: (packageName: String, annotation: KSAnnotation) -> Unit) {
             buildMap {
                 resolver.getSymbolsWithAnnotation(generateAnnotation)
-                    .map { annotated -> annotated as KSFile }
+                    .map { annotated -> annotated as KSPropertyDeclaration }
                     .forEach { file ->
                         file.annotations
                             .filter { annotation -> annotation.shortName.asString() == generateAnnotation.simpleName }
@@ -178,7 +177,7 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
         }
 
         @Suppress("UNCHECKED_CAST")
-        forEachFileAnnotation(GenerateBinarySerializer::class) { packageName, annotation ->
+        forEachAnnotation(GenerateBinarySerializer::class) { packageName, annotation ->
             val baseEncoderClasses = annotation.argument("baseEncoderClasses") as List<KSType>
             var treeConcreteClasses = annotation.argument("treeConcreteClasses") as List<KSType>
             val graphConcreteClasses = annotation.argument("graphConcreteClasses") as List<KSType>
@@ -197,7 +196,7 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
         }
 
         @Suppress("UNCHECKED_CAST")
-        forEachFileAnnotation(GenerateDumper::class) { packageName, annotation ->
+        forEachAnnotation(GenerateDumper::class) { packageName, annotation ->
             val treeConcreteClasses = annotation.argument("treeConcreteClasses") as List<KSType>
             val graphConcreteClasses = annotation.argument("graphConcreteClasses") as List<KSType>
             annotation.checkClasses(treeConcreteClasses + graphConcreteClasses, "must not be specified")

@@ -2,25 +2,22 @@ package ch.softappeal.yass2
 
 import ch.softappeal.yass2.contract.ComplexId
 import ch.softappeal.yass2.contract.DivideByZeroException
+import ch.softappeal.yass2.contract.Dumper
 import ch.softappeal.yass2.contract.Lists
 import ch.softappeal.yass2.contract.PlainId
-import ch.softappeal.yass2.contract.dumpValue
+import ch.softappeal.yass2.contract.child.ChildDumper
 import ch.softappeal.yass2.serialize.binary.ManyPropertiesConst
 import ch.softappeal.yass2.serialize.binary.createGraph
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import ch.softappeal.yass2.contract.child.createDumper as createDumper2
-import ch.softappeal.yass2.contract.createDumper as createDumper1
 
 enum class Color { Green }
 
 class DumperTest {
-    private val dump = createDumper1(Appendable::dumpValue)
-
     @Test
     fun missingClass() {
         try {
-            StringBuilder().dump(Any())
+            StringBuilder().Dumper(Any())
         } catch (e: IllegalStateException) {
             println(e)
         }
@@ -30,7 +27,7 @@ class DumperTest {
     fun test() {
         val s = StringBuilder()
         fun dump(value: Any?) {
-            s.dump(value).appendLine()
+            s.Dumper(value).appendLine()
         }
         dump(null)
         dump(true)
@@ -57,9 +54,8 @@ class DumperTest {
     @Test
     fun childTest() {
         val s = StringBuilder()
-        val childDump = createDumper2 {}
         fun dump(value: Any?) {
-            s.childDump(value).appendLine()
+            s.ChildDumper(value).appendLine()
         }
         dump(ManyPropertiesConst)
         dump(createGraph())

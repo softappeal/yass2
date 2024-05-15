@@ -1,22 +1,3 @@
-@file:GenerateBinarySerializer(
-    baseEncoderClasses = [
-        // Define all the base encoders needed by the contract (including own base types).
-        IntEncoder::class,
-        StringEncoder::class,
-        MyDateEncoder::class,
-    ],
-    treeConcreteClasses = [
-        //  Define all the concrete classes (including enumerations) needed by the contract.
-        Gender::class,
-        Address::class,
-        Person::class,
-        DivideByZeroException::class,
-        SubClass::class,
-    ],
-    graphConcreteClasses = [],
-    withDumper = true,
-)
-
 package ch.softappeal.yass2.tutorial
 
 import ch.softappeal.yass2.Dumper
@@ -121,13 +102,31 @@ public val CalculatorId: ServiceId<Calculator> = ServiceId(1)
 @MustBeImplementedByInitiator
 public val NewsListenerId: ServiceId<NewsListener> = ServiceId(2)
 
-public val Dump: Dumper = createDumper { value ->
+public val Dumper: Dumper = createDumper { value ->
     // Writes value (without line breaks) if responsible else does nothing.
     when (value) {
         is MyDate -> append(value)
     }
 }
 
+@GenerateBinarySerializer(
+    baseEncoderClasses = [
+        // Define all the base encoders needed by the contract (including own base types).
+        IntEncoder::class,
+        StringEncoder::class,
+        MyDateEncoder::class,
+    ],
+    treeConcreteClasses = [
+        // Define all the concrete classes (including enumerations) needed by the contract.
+        Gender::class,
+        Address::class,
+        Person::class,
+        DivideByZeroException::class,
+        SubClass::class,
+    ],
+    graphConcreteClasses = [],
+    withDumper = true,
+)
 public val ContractSerializer: Serializer = createSerializer()
 public val MessageSerializer: Serializer = binaryMessageSerializer(ContractSerializer)
 public val PacketSerializer: Serializer = binaryPacketSerializer(MessageSerializer)

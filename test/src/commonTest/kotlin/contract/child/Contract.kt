@@ -1,12 +1,3 @@
-@file:GenerateDumper(
-    treeConcreteClasses = [
-        ManyProperties::class,
-    ],
-    graphConcreteClasses = [
-        Node::class,
-    ],
-)
-
 package ch.softappeal.yass2.contract.child
 
 import ch.softappeal.yass2.GenerateDumper
@@ -18,3 +9,13 @@ import ch.softappeal.yass2.contract.Node
 interface NoSuspend {
     fun x()
 }
+
+@GenerateDumper(
+    treeConcreteClasses = [
+        ManyProperties::class,
+    ],
+    graphConcreteClasses = [
+        Node::class,
+    ],
+)
+val ChildDumper = createDumper {}
