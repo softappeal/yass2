@@ -55,6 +55,15 @@ class KspTest {
             """,
         )
         executeTest(
+            3, "class 'test.Test' in enumClasses must be enum",
+            """
+                package test
+                class Test
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [Test::class], [], [], false)
+                val x = 0
+            """,
+        )
+        executeTest(
             2, "enum classes must not be duplicated",
             """
                 enum class MyEnum
@@ -73,6 +82,16 @@ class KspTest {
             """,
         )
         executeTest(
+            3,
+            "enum class 'test.MyEnum' belongs to 'enumClasses'",
+            """
+                package test
+                enum class MyEnum
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [MyEnum::class], [], false)
+                val x = 0
+            """,
+        )
+        executeTest(
             4,
             "enum class 'test.MyEnum' belongs to 'enumClasses'",
             """
@@ -84,7 +103,7 @@ class KspTest {
             """,
         )
         executeTest(
-            2, "'test.NotRegularClass' must be a regular class",
+            2, "class 'test.NotRegularClass' must be concrete",
             """
                 package test
                 interface NotRegularClass
@@ -93,7 +112,7 @@ class KspTest {
             """,
         )
         executeTest(
-            2, "class 'test.AbstractClass' must not be abstract",
+            2, "class 'test.AbstractClass' must be concrete",
             """
                 package test
                 abstract class AbstractClass
@@ -173,6 +192,15 @@ class KspTest {
                 package test
                 enum class MyEnum
                 @ch.softappeal.yass2.GenerateDumper([MyEnum::class], [])
+                val x = 0
+            """,
+        )
+        executeTest(
+            3, "enum class 'test.MyEnum' must not be specified",
+            """
+                package test
+                enum class MyEnum
+                @ch.softappeal.yass2.GenerateDumper([], [MyEnum::class])
                 val x = 0
             """,
         )

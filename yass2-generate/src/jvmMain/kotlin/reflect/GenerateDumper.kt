@@ -4,7 +4,7 @@ import ch.softappeal.yass2.generate.CSY
 import ch.softappeal.yass2.generate.appendLine
 import kotlin.reflect.KClass
 
-internal fun Appendable.generateDumper(treeConcreteClasses: List<KClass<*>>, graphConcreteClasses: List<KClass<*>>) {
+public fun Appendable.generateDumper(treeConcreteClasses: List<KClass<*>>, graphConcreteClasses: List<KClass<*>>) {
     appendLine()
     appendLine("public fun createDumper(dumpValue: kotlin.text.Appendable.(value: kotlin.Any) -> kotlin.Unit): $CSY.Dumper =")
     appendLine(1, "$CSY.createDumper(")

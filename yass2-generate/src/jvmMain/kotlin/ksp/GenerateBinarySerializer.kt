@@ -9,7 +9,6 @@ import ch.softappeal.yass2.serialize.binary.EnumEncoder
 import ch.softappeal.yass2.serialize.binary.FIRST_ENCODER_ID
 import ch.softappeal.yass2.serialize.binary.ListEncoderId
 import com.google.devtools.ksp.isAbstract
-import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
@@ -46,24 +45,20 @@ internal fun Appendable.generateBinarySerializer(
         val all: List<Property>
 
         init {
-            require(klass.classKind == ClassKind.CLASS) { "'${klass.qualifiedName()}' must be a regular class @${klass.location}" }
-            require(!klass.isAbstract()) { "class '${klass.qualifiedName()}' must not be abstract @${klass.location}" }
-            val primaryConstructor = klass.primaryConstructor ?: error(
-                "class '${klass.qualifiedName()}' must hava a primary constructor @${klass.location}"
-            )
-            val valueParameters = primaryConstructor.parameters
-            valueParameters
-                .firstOrNull { !it.isVal && !it.isVar }
-                ?.let { parameter ->
-                    error(
-                        "primary constructor parameter '${parameter.name!!.asString()}' of class " +
-                            "'${klass.qualifiedName()}' must be a property @${parameter.location}"
-                    )
-                }
+            require(!klass.isAbstract()) { "class '${klass.qualifiedName()}' must be concrete @${klass.location}" }
             val properties = klass.getAllPropertiesNotThrowable().map { Property(it) }
             parameter = buildList {
-                valueParameters.forEach { valueParameter ->
-                    add(properties.first { it.property.name == valueParameter.name!!.asString() })
+                val primaryConstructor = klass.primaryConstructor ?: error(
+                    "class '${klass.qualifiedName()}' must hava a primary constructor @${klass.location}"
+                )
+                val parameters = primaryConstructor.parameters
+                parameters
+                    .firstOrNull { !it.isVal && !it.isVar }
+                    ?.let { parameter ->
+                        error("primary constructor parameter '${parameter.name!!.asString()}' of class '${klass.qualifiedName()}' must be a property @${parameter.location}")
+                    }
+                parameters.forEach { parameter ->
+                    add(properties.first { it.property.name == parameter.name!!.asString() })
                 }
             }
             body = buildList {
@@ -71,8 +66,7 @@ internal fun Appendable.generateBinarySerializer(
                     .filter { it !in parameter }
                     .forEach { property ->
                         require(property.property.isMutable) {
-                            "body property '${property.property.name}' of " +
-                                "'${property.property.parentDeclaration?.qualifiedName()}' must be 'var' @${property.property.location}"
+                            "body property '${property.property.name}' of '${property.property.parentDeclaration?.qualifiedName()}' must be 'var' @${property.property.location}"
                         }
                         add(property)
                     }

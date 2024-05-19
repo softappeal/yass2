@@ -13,7 +13,7 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
 
-internal fun Appendable.generateBinarySerializer(
+public fun Appendable.generateBinarySerializer(
     baseEncoderClasses: List<KClass<*>>,
     enumClasses: List<KClass<*>>,
     treeConcreteClasses: List<KClass<*>>,
@@ -21,14 +21,16 @@ internal fun Appendable.generateBinarySerializer(
 ) {
     val baseEncoderTypes = baseEncoderClasses.getBaseEncoderTypes() + enumClasses
 
-    class Property(val property: KProperty1<Any, Any?>) {
+    class Property(val property: KProperty1<out Any, *>) {
         var kind: PropertyKind
         var encoderId: Int = -1
 
         init {
             val type = property.returnType.classifier as KClass<*>
             kind = if (property.returnType.isMarkedNullable) PropertyKind.NoIdOptional else PropertyKind.NoIdRequired
-            if (type == List::class) encoderId = ListEncoderId.id else {
+            if (type == List::class) {
+                encoderId = ListEncoderId.id
+            } else {
                 val index = baseEncoderTypes.indexOfFirst { it == type }
                 if (index >= 0) encoderId = index + FIRST_ENCODER_ID else kind = PropertyKind.WithId
             }
@@ -41,34 +43,30 @@ internal fun Appendable.generateBinarySerializer(
         val all: List<Property>
 
         init {
-            require(!klass.java.isEnum) { "type '$this' is enum" }
-            require(!klass.isAbstract) { "type '$this' is abstract" }
-            val properties = klass.getAllPropertiesNotThrowable()
-                .map { property ->
-                    Property(
-                        @Suppress("UNCHECKED_CAST") (property as KProperty1<Any, Any?>)
-                    )
-                }
-            val parameterNames =
-                (klass.primaryConstructor ?: error("'$this' has no primary constructor")).valueParameters.map { it.name!! }
-            parameter = mutableListOf()
-            body = mutableListOf()
-            val propertyNames = properties.map { it.property.name }
-            parameterNames.forEach { parameterName ->
-                require(propertyNames.indexOf(parameterName) >= 0) {
-                    "primary constructor parameter '$parameterName' of '$klass' is not a property"
-                }
-                parameter.add(properties.first { it.property.name == parameterName })
-            }
-            properties.forEach { property ->
-                if (property.property.name !in parameterNames) {
-                    try {
-                        property.property as KMutableProperty1<Any, Any?>
-                    } catch (e: Exception) {
-                        throw IllegalArgumentException("body property '${property.property.name}' of '$klass' is not 'var'")
+            require(!klass.isAbstract) { "class '${klass.qualifiedName}' must be concrete" }
+            val properties = klass.getAllPropertiesNotThrowable().map { Property(it) }
+            parameter = buildList {
+                val primaryConstructor = klass.primaryConstructor ?: error(
+                    "class '${klass.qualifiedName}' must hava a primary constructor"
+                )
+                val propertyNames = properties.map { it.property.name }
+                val parameterNames = primaryConstructor.valueParameters.map { it.name }
+                parameterNames.forEach { parameterName ->
+                    require(propertyNames.contains(parameterName)) {
+                        "primary constructor parameter '$parameterName' of class '${klass.qualifiedName}' must be a property"
                     }
-                    body.add(property)
+                    add(properties.first { it.property.name == parameterName })
                 }
+            }
+            body = buildList {
+                properties
+                    .filter { it !in parameter }
+                    .forEach { property ->
+                        require(property.property is KMutableProperty1<out Any, *>) {
+                            "body property '${property.property.name}' of '${klass.qualifiedName}' must be 'var'"
+                        }
+                        add(property)
+                    }
             }
             all = parameter + body
         }

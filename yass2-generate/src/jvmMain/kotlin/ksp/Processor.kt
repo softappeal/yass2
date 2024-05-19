@@ -74,8 +74,9 @@ internal fun List<KSType>.getBaseEncoderTypes() =
 //       see https://youtrack.jetbrains.com/issue/KT-59526/Store-annotation-default-values-in-metadata-on-JVM
 private fun KSAnnotation.argument(name: String) = arguments.first { it.name!!.asString() == name }.value!!
 
+private fun KSType.isEnum() = (declaration as KSClassDeclaration).classKind == ClassKind.ENUM_CLASS
+
 private fun KSAnnotation.checkClasses(classes: List<KSType>, enumMessage: String) {
-    fun KSType.isEnum() = (declaration as KSClassDeclaration).classKind == ClassKind.ENUM_CLASS
     require(classes.size == classes.toSet().size) { "class must not be duplicated @$location" }
     classes.firstOrNull { it.isEnum() }?.let { klass -> error("enum class '${klass.qualifiedName}' $enumMessage @$location") }
 }
@@ -155,6 +156,9 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
             val graphConcreteClasses = annotation.argument("graphConcreteClasses") as List<KSType>
             val withDumper = annotation.argument("withDumper") as Boolean
             require(enumClasses.size == enumClasses.toSet().size) { "enum classes must not be duplicated @${annotation.location}" }
+            enumClasses.forEach {
+                require(it.isEnum()) { "class '${it.qualifiedName}' in enumClasses must be enum @${annotation.location}" }
+            }
             annotation.checkClasses(
                 baseEncoderClasses.getBaseEncoderTypes() + treeConcreteClasses + graphConcreteClasses,
                 "belongs to 'enumClasses'"

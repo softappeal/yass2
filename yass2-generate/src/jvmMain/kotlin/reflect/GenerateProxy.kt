@@ -14,15 +14,15 @@ import kotlin.reflect.jvm.javaMethod
 
 private fun KFunction<*>.hasResult() = returnType.classifier != Unit::class
 
-internal fun Appendable.generateProxy(service: KClass<*>) {
-    // TODO require(service.classKind == ClassKind.INTERFACE) { "'${service.qualifiedName()}' must be an interface @${service.location}" }
+public fun Appendable.generateProxy(service: KClass<*>) {
+    require(service.java.isInterface) { "'${service.qualifiedName}' must be an interface" }
 
     val functions = service.memberFunctions
         .filter { it.javaMethod!!.declaringClass != Object::class.java }
-        .sortedBy(KFunction<*>::name) // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
+        .sortedBy { it.name } // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
         .apply {
-            require(map(KFunction<*>::name).toSet().size == size) {
-                "'$service' has overloaded functions"
+            require(map { it.name }.toSet().size == size) {
+                "interface '${service.qualifiedName}' must not overload functions"
             }
         }
 

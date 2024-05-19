@@ -14,9 +14,7 @@ class ReflectGeneratedTest {
     fun generateBinarySerializer() {
         generateBinarySerializer(
             ::ContractSerializer,
-            Path("src/commonTest/kotlin/contract/generated"),
-            Mode.Verify,
-            ".generated",
+            Path("src/commonTest/kotlin/contract/generated"), Mode.Verify, ".generated",
         )
     }
 
@@ -24,15 +22,11 @@ class ReflectGeneratedTest {
     fun generateProxy() {
         generateProxy(
             setOf(Mixed::class, Calculator::class, Echo::class),
-            Path("src/commonTest/kotlin/contract/generated"),
-            Mode.Verify,
-            ".generated",
+            Path("src/commonTest/kotlin/contract/generated"), Mode.Verify, ".generated",
         )
         generateProxy(
             setOf(NoSuspend::class),
-            Path("src/commonTest/kotlin/contract/child/generated"),
-            Mode.Verify,
-            ".generated",
+            Path("src/commonTest/kotlin/contract/child/generated"), Mode.Verify, ".generated",
         )
     }
 
@@ -40,9 +34,7 @@ class ReflectGeneratedTest {
     fun generateDumper() {
         generateDumper(
             ::ChildDumper,
-            Path("src/commonTest/kotlin/contract/child/generated"),
-            Mode.Verify,
-            ".generated",
+            Path("src/commonTest/kotlin/contract/child/generated"), Mode.Verify, ".generated",
         )
     }
 }
