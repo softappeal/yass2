@@ -35,3 +35,42 @@ internal fun Appendable.appendLine(level: Int, s: String) {
 }
 
 internal enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
+
+public class CodeWriter(private val appendable: Appendable, private val depth: Int = 0) {
+    public fun writeLine() {
+        appendable.appendLine()
+    }
+
+    public fun write(s: String) {
+        appendable.append(s)
+    }
+
+    public fun writeLine(s: String) {
+        write(s)
+        writeLine()
+    }
+
+    private fun nested(write: CodeWriter.() -> Unit) {
+        CodeWriter(appendable, depth + 1).write()
+    }
+
+    public fun writeLine(s: String, write: CodeWriter.() -> Unit) {
+        writeLine(s)
+        nested(write)
+    }
+
+    public fun writeNested(s: String) {
+        appendable.append("    ".repeat(depth))
+        write(s)
+    }
+
+    public fun writeNestedLine(s: String) {
+        writeNested(s)
+        writeLine()
+    }
+
+    public fun writeNestedLine(s: String, write: CodeWriter.() -> Unit) {
+        writeNestedLine(s)
+        nested(write)
+    }
+}

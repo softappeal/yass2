@@ -22,8 +22,9 @@ class KspGeneratedTest {
                         "package ch.softappeal.yass2.contract${if (child) ".child" else ""}",
                     )
             check(newGenerated == oldGenerated) {
-                "$fileName is\n${">".repeat(120)}\n$newGenerated${"<".repeat(120)}\nbut should be\n" +
-                    "${">".repeat(120)}\n$oldGenerated${"<".repeat(120)}"
+                "'$fileName' is\n${">".repeat(120)}\n$newGenerated${"<".repeat(120)}\nbut should be\n${
+                    ">".repeat(120)
+                }\n$oldGenerated${"<".repeat(120)}"
             }
         }
         verify(GENERATED_BINARY_SERIALIZER)

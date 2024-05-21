@@ -1,7 +1,7 @@
 package ch.softappeal.yass2.generate.reflect
 
+import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.PropertyKind
-import ch.softappeal.yass2.generate.appendLine
 import ch.softappeal.yass2.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.serialize.binary.ClassEncoder
 import ch.softappeal.yass2.serialize.binary.EnumEncoder
@@ -13,7 +13,7 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
 
-public fun Appendable.generateBinarySerializer(
+public fun CodeWriter.generateBinarySerializer(
     baseEncoderClasses: List<KClass<*>>,
     enumClasses: List<KClass<*>>,
     treeConcreteClasses: List<KClass<*>>,
@@ -73,48 +73,52 @@ public fun Appendable.generateBinarySerializer(
     }
 
     enumClasses.forEachIndexed { enumClassIndex, enumClass ->
-        if (enumClassIndex == 0) appendLine()
-        appendLine("private class EnumEncoder${enumClassIndex + 1} : ${EnumEncoder::class.qualifiedName}<${enumClass.qualifiedName}>(")
-        appendLine(1, "${enumClass.qualifiedName}::class, kotlin.enumValues()")
-        appendLine(")")
+        if (enumClassIndex == 0) writeLine()
+        writeNestedLine("private class EnumEncoder${enumClassIndex + 1} : ${EnumEncoder::class.qualifiedName}<${enumClass.qualifiedName}>(") {
+            writeNestedLine("${enumClass.qualifiedName}::class, kotlin.enumValues()")
+        }
+        writeNestedLine(")")
     }
-    appendLine()
-    appendLine("public fun createSerializer(): ${BinarySerializer::class.qualifiedName} =")
-    appendLine(1, "${BinarySerializer::class.qualifiedName}(listOf(")
-    baseEncoderClasses.forEach { type -> appendLine(2, "${type.qualifiedName}(),") }
-    for (enumEncoderIndex in 1..enumClasses.size) appendLine(2, "EnumEncoder$enumEncoderIndex(),")
+    writeLine()
+    writeNestedLine("public fun createSerializer(): ${BinarySerializer::class.qualifiedName} =") {
+        writeNestedLine("${BinarySerializer::class.qualifiedName}(listOf(") {
+            baseEncoderClasses.forEach { type -> writeNestedLine("${type.qualifiedName}(),") }
+            for (enumEncoderIndex in 1..enumClasses.size) writeNestedLine("EnumEncoder$enumEncoderIndex(),")
 
-    fun List<KClass<*>>.add(graph: Boolean) = forEach { type ->
-        fun Property.encoderId(tail: String = "") = if (kind != PropertyKind.WithId) "$encoderId$tail" else ""
-        appendLine(2, "${ClassEncoder::class.qualifiedName}(${type.qualifiedName}::class, $graph,")
-        val properties = Properties(type)
-        if (properties.all.isEmpty()) {
-            appendLine(3, "{ _, _ -> },")
-        } else {
-            appendLine(3, "{ w, i ->")
-            properties.all.forEach { property ->
-                appendLine(4, "w.write${property.kind}(${property.encoderId(", ")}i.${property.property.name})")
+            fun List<KClass<*>>.add(graph: Boolean) = forEach { type ->
+                fun Property.encoderId(tail: String = "") = if (kind != PropertyKind.WithId) "$encoderId$tail" else ""
+                writeNestedLine("${ClassEncoder::class.qualifiedName}(${type.qualifiedName}::class, $graph,") {
+                    val properties = Properties(type)
+                    if (properties.all.isEmpty()) {
+                        writeNestedLine("{ _, _ -> },")
+                    } else {
+                        writeNestedLine("{ w, i ->") {
+                            properties.all.forEach { property ->
+                                writeNestedLine("w.write${property.kind}(${property.encoderId(", ")}i.${property.property.name})")
+                            }
+                        }
+                        writeNestedLine("},")
+                    }
+                    writeNestedLine("{${if (graph || properties.all.isNotEmpty()) " r ->" else ""}") {
+                        writeNestedLine("val i = ${if (graph) "r.created(" else ""}${type.qualifiedName}(") {
+                            properties.parameter.forEach { property ->
+                                writeNestedLine("r.read${property.kind}(${property.encoderId()}) as ${property.property.returnType},")
+                            }
+                        }
+                        writeNestedLine(")${if (graph) ")" else ""}")
+                        properties.body.forEach { property ->
+                            writeNestedLine("i.${property.property.name} = r.read${property.kind}(${property.encoderId()}) as ${property.property.returnType}")
+                        }
+                        writeNestedLine("i")
+                    }
+                    writeNestedLine("}")
+                }
+                writeNestedLine("),")
             }
-            appendLine(3, "},")
-        }
-        appendLine(3, "{${if (graph || properties.all.isNotEmpty()) " r ->" else ""}")
-        appendLine(4, "val i = ${if (graph) "r.created(" else ""}${type.qualifiedName}(")
-        properties.parameter.forEach { property ->
-            appendLine(5, "r.read${property.kind}(${property.encoderId()}) as ${property.property.returnType},")
-        }
-        appendLine(4, ")${if (graph) ")" else ""}")
-        properties.body.forEach { property ->
-            appendLine(
-                4,
-                "i.${property.property.name} = r.read${property.kind}(${property.encoderId()}) as ${property.property.returnType}"
-            )
-        }
-        appendLine(4, "i")
-        appendLine(3, "}")
-        appendLine(2, "),")
-    }
-    treeConcreteClasses.add(false)
-    graphConcreteClasses.add(true)
 
-    appendLine(1, "))")
+            treeConcreteClasses.add(false)
+            graphConcreteClasses.add(true)
+        }
+        writeNestedLine("))")
+    }
 }

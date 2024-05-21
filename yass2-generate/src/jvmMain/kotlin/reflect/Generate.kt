@@ -3,6 +3,7 @@ package ch.softappeal.yass2.generate.reflect
 import ch.softappeal.yass2.Dumper
 import ch.softappeal.yass2.GenerateDumper
 import ch.softappeal.yass2.GenerateProxy
+import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.GENERATED_BINARY_SERIALIZER
 import ch.softappeal.yass2.generate.GENERATED_DUMPER
 import ch.softappeal.yass2.generate.GENERATED_PROXY
@@ -32,19 +33,19 @@ public fun Path.readAndFixLines(): String = readText().replace("\r\n", "\n")
 
 public enum class Mode { Verify, Write }
 
-private fun generate(sourceDir: Path, mode: Mode, packageName: String, fileName: String, code: Appendable.() -> Unit) {
+private fun generate(sourceDir: Path, mode: Mode, packageName: String, fileName: String, write: CodeWriter.() -> Unit) {
     fun Path.verify(code: String) {
         val existingCode = readAndFixLines()
         check(code == existingCode) {
-            "file '$this' is\n${">".repeat(120)}\n$existingCode${"<".repeat(120)}\nbut should be\n${">".repeat(120)}\n$code${
-                "<".repeat(120)
-            }"
+            "'$this' is\n${">".repeat(120)}\n$existingCode${"<".repeat(120)}\nbut should be\n${
+                ">".repeat(120)
+            }\n$code${"<".repeat(120)}"
         }
     }
 
     val builder = StringBuilder()
     builder.appendPackage(packageName)
-    builder.code()
+    CodeWriter(builder).write()
     val program = builder.toString()
     val file = sourceDir.resolve("$fileName.kt")
     when (mode) {

@@ -3,6 +3,7 @@ package ch.softappeal.yass2.generate.reflect
 import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.contract.Calculator
 import ch.softappeal.yass2.contract.child.NoSuspend
+import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.serialize.binary.EnumEncoder
 import ch.softappeal.yass2.serialize.binary.IntEncoder
 import kotlin.io.path.Path
@@ -41,11 +42,13 @@ class MyEnumEncoder : EnumEncoder<Enum>(Enum::class, enumValues())
 
 private class NotEnum
 
+private fun codeWriter() = CodeWriter(StringBuilder())
+
 class ReflectTest {
     @Test
     fun binarySerializer() {
         fun generateBinarySerializer(klass: KClass<*>) {
-            StringBuilder().generateBinarySerializer(listOf(), listOf(), listOf(klass), listOf())
+            codeWriter().generateBinarySerializer(listOf(), listOf(), listOf(klass), listOf())
         }
         assertFailsMessage<IllegalArgumentException>(
             "body property 'x' of 'ch.softappeal.yass2.generate.reflect.BodyPropertyNotVar' must be 'var'"
@@ -112,10 +115,10 @@ class ReflectTest {
     fun proxy() {
         assertFailsMessage<IllegalArgumentException>(
             "'ch.softappeal.yass2.generate.reflect.NotAnInterface' must be an interface"
-        ) { StringBuilder().generateProxy(NotAnInterface::class) }
+        ) { codeWriter().generateProxy(NotAnInterface::class) }
         assertFailsMessage<IllegalArgumentException>(
             "interface 'ch.softappeal.yass2.generate.reflect.Overloaded' must not overload functions"
-        ) { StringBuilder().generateProxy(Overloaded::class) }
+        ) { codeWriter().generateProxy(Overloaded::class) }
         assertFailsMessage<IllegalArgumentException>(
             "services [class ch.softappeal.yass2.contract.Calculator, class ch.softappeal.yass2.contract.child.NoSuspend] must be in same package"
         ) { generateProxy(setOf(Calculator::class, NoSuspend::class), Path("."), Mode.Verify) }

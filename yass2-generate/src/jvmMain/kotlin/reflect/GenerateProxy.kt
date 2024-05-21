@@ -1,8 +1,7 @@
 package ch.softappeal.yass2.generate.reflect
 
 import ch.softappeal.yass2.generate.CSY
-import ch.softappeal.yass2.generate.append
-import ch.softappeal.yass2.generate.appendLine
+import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.Service
 import ch.softappeal.yass2.remote.ServiceId
@@ -14,7 +13,18 @@ import kotlin.reflect.jvm.javaMethod
 
 private fun KFunction<*>.hasResult() = returnType.classifier != Unit::class
 
-public fun Appendable.generateProxy(service: KClass<*>) {
+private fun CodeWriter.writeSignature(function: KFunction<*>) {
+    writeNestedLine("override ${if (function.isSuspend) "suspend " else ""}fun ${function.name}(") {
+        function.valueParameters.forEachIndexed { parameterIndex, parameter ->
+            writeNestedLine("p${parameterIndex + 1}: ${parameter.type},")
+        }
+    }
+    writeNested(")")
+}
+
+private fun KFunction<*>.parameters() = (1..valueParameters.size).joinToString(", ") { "p$it" }
+
+public fun CodeWriter.generateProxy(service: KClass<*>) {
     require(service.java.isInterface) { "'${service.qualifiedName}' must be an interface" }
 
     val functions = service.memberFunctions
@@ -26,81 +36,74 @@ public fun Appendable.generateProxy(service: KClass<*>) {
             }
         }
 
-    fun appendSignature(level: Int, function: KFunction<*>) {
-        appendLine(level, "override ${if (function.isSuspend) "suspend " else ""}fun ${function.name}(")
-        function.valueParameters.forEachIndexed { parameterIndex, parameter ->
-            appendLine(level + 1, "p${parameterIndex + 1}: ${parameter.type},")
+    writeLine()
+    writeNestedLine("public fun ${service.qualifiedName}.proxy(") {
+        if (functions.any { !it.isSuspend }) writeNestedLine("intercept: $CSY.Interceptor,")
+        if (functions.any { it.isSuspend }) writeNestedLine("suspendIntercept: $CSY.SuspendInterceptor,")
+    }
+    writeNestedLine("): ${service.qualifiedName} = object : ${service.qualifiedName} {") {
+        functions.forEachIndexed { functionIndex, function ->
+            if (functionIndex != 0) writeLine()
+            val hasResult = function.hasResult()
+            writeSignature(function)
+            if (hasResult) write(": ${function.returnType}")
+            writeLine(" {") {
+                writeNestedLine("${if (hasResult) "return " else ""}${if (function.isSuspend) "suspendIntercept" else "intercept"}(${service.qualifiedName}::${function.name}, listOf(${function.parameters()})) {") {
+                    writeNestedLine("this@proxy.${function.name}(${function.parameters()})")
+                }
+                writeNested("}")
+            }
+            if (hasResult) write(" as ${function.returnType}")
+            writeLine()
+            writeNestedLine("}")
         }
-        append(level, ")")
     }
-
-    fun Appendable.appendParameters(function: KFunction<*>): Appendable {
-        for (parameterIndex in 1..function.valueParameters.size) {
-            if (parameterIndex != 1) append(", ")
-            append("p$parameterIndex")
-        }
-        return this
-    }
-
-    appendLine()
-    appendLine("public fun ${service.qualifiedName}.proxy(")
-    if (functions.any { !it.isSuspend }) appendLine(1, "intercept: $CSY.Interceptor,")
-    if (functions.any { it.isSuspend }) appendLine(1, "suspendIntercept: $CSY.SuspendInterceptor,")
-    appendLine("): ${service.qualifiedName} = object : ${service.qualifiedName} {")
-    functions.forEachIndexed { functionIndex, function ->
-        if (functionIndex != 0) appendLine()
-        val hasResult = function.hasResult()
-        appendSignature(1, function)
-        if (hasResult) append(": ${function.returnType}")
-        appendLine(" {")
-        append(
-            2,
-            "${if (hasResult) "return " else ""}${if (function.isSuspend) "suspendIntercept" else "intercept"}" +
-                "(${service.qualifiedName}::${function.name}, listOf("
-        ).appendParameters(function).appendLine(")) {")
-        append(3, "this@proxy.${function.name}(").appendParameters(function).append(')').appendLine()
-        append(2, "}")
-        if (hasResult) append(" as ${function.returnType}")
-        appendLine()
-        appendLine(1, "}")
-    }
-    appendLine("}")
+    writeNestedLine("}")
 
     if (functions.any { !it.isSuspend }) return
 
-    appendLine()
-    appendLine("public fun ${ServiceId::class.qualifiedName}<${service.qualifiedName}>.proxy(")
-    appendLine(1, "tunnel: $CSY.remote.Tunnel,")
-    appendLine("): ${service.qualifiedName} =")
-    appendLine(1, "object : ${service.qualifiedName} {")
-    functions.forEachIndexed { functionIndex, function ->
-        if (functionIndex != 0) appendLine()
-        val hasResult = function.hasResult()
-        appendSignature(2, function)
-        if (hasResult) append(" =") else append(" {")
-        appendLine()
-        append(3, "tunnel(${Request::class.qualifiedName}(id, $functionIndex, listOf(")
-            .appendParameters(function).append(")))").appendLine()
-        append(4, ".process()")
-        if (hasResult) append(" as ${function.returnType}") else appendLine().append(2, "}")
-        appendLine()
+    writeLine()
+    writeNestedLine("public fun ${ServiceId::class.qualifiedName}<${service.qualifiedName}>.proxy(") {
+        writeNestedLine("tunnel: $CSY.remote.Tunnel,")
     }
-    appendLine(1, "}")
-
-    appendLine()
-    appendLine("public fun ${ServiceId::class.qualifiedName}<${service.qualifiedName}>.service(")
-    appendLine(1, "implementation: ${service.qualifiedName},")
-    appendLine("): ${Service::class.qualifiedName} =")
-    appendLine(1, "${Service::class.qualifiedName}(id) { functionId, parameters ->")
-    appendLine(2, "when (functionId) {")
-    functions.forEachIndexed { functionIndex, function ->
-        appendLine(3, "$functionIndex -> implementation.${function.name}(")
-        function.valueParameters.forEachIndexed { parameterIndex, parameter ->
-            appendLine(4, "parameters[$parameterIndex] as ${parameter.type},")
+    writeNestedLine("): ${service.qualifiedName} =") {
+        writeNestedLine("object : ${service.qualifiedName} {") {
+            functions.forEachIndexed { functionIndex, function ->
+                if (functionIndex != 0) writeLine()
+                val hasResult = function.hasResult()
+                writeSignature(function)
+                writeLine(" ${if (hasResult) "=" else "{"}") {
+                    writeNestedLine("tunnel(${Request::class.qualifiedName}(id, $functionIndex, listOf(${function.parameters()})))") {
+                        writeNested(".process()")
+                        if (hasResult) write(" as ${function.returnType}") else writeLine()
+                    }
+                }
+                if (!hasResult) writeNested("}")
+                writeLine()
+            }
         }
-        appendLine(3, ")")
+        writeNestedLine("}")
     }
-    appendLine(3, "else -> error(\"service with id ${'$'}id has no function with id ${'$'}functionId\")")
-    appendLine(2, "}")
-    appendLine(1, "}")
+
+    writeLine()
+    writeNestedLine("public fun ${ServiceId::class.qualifiedName}<${service.qualifiedName}>.service(") {
+        writeNestedLine("implementation: ${service.qualifiedName},")
+    }
+    writeNestedLine("): ${Service::class.qualifiedName} =") {
+        writeNestedLine("${Service::class.qualifiedName}(id) { functionId, parameters ->") {
+            writeNestedLine("when (functionId) {") {
+                functions.forEachIndexed { functionIndex, function ->
+                    writeNestedLine("$functionIndex -> implementation.${function.name}(") {
+                        function.valueParameters.forEachIndexed { parameterIndex, parameter ->
+                            writeNestedLine("parameters[$parameterIndex] as ${parameter.type},")
+                        }
+                    }
+                    writeNestedLine(")")
+                }
+                writeNestedLine("else -> error(\"service with id ${'$'}id has no function with id ${'$'}functionId\")")
+            }
+            writeNestedLine("}")
+        }
+        writeNestedLine("}")
+    }
 }
