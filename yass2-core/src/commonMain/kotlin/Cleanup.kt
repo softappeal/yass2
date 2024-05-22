@@ -2,8 +2,8 @@ package ch.softappeal.yass2
 
 public inline fun <R> tryFinally(tryBlock: () -> R, finallyBlock: () -> Unit): R {
     var tryException: Exception? = null
-    try {
-        return tryBlock()
+    return try {
+        tryBlock()
     } catch (e: Exception) {
         tryException = e
         throw tryException
@@ -15,4 +15,15 @@ public inline fun <R> tryFinally(tryBlock: () -> R, finallyBlock: () -> Unit): R
             tryException.addSuppressed(finallyException)
         }
     }
+}
+
+public inline fun <R> tryCatch(tryBlock: () -> R, catchBlock: () -> Unit): R = try {
+    tryBlock()
+} catch (tryException: Exception) {
+    try {
+        catchBlock()
+    } catch (catchException: Exception) {
+        tryException.addSuppressed(catchException)
+    }
+    throw tryException
 }
