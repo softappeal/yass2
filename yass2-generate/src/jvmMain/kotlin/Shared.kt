@@ -25,15 +25,6 @@ internal fun Appendable.appendPackage(packageName: String) {
     """.trimIndent())
 }
 
-internal fun Appendable.append(level: Int, s: String): Appendable {
-    append("    ".repeat(level)).append(s)
-    return this
-}
-
-internal fun Appendable.appendLine(level: Int, s: String) {
-    append(level, s).appendLine()
-}
-
 internal enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
 
 public class CodeWriter(private val appendable: Appendable, private val depth: Int = 0) {

@@ -2,6 +2,7 @@ package ch.softappeal.yass2.generate.ksp
 
 import ch.softappeal.yass2.GenerateDumper
 import ch.softappeal.yass2.GenerateProxy
+import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.GENERATED_BINARY_SERIALIZER
 import ch.softappeal.yass2.generate.GENERATED_DUMPER
 import ch.softappeal.yass2.generate.GENERATED_PROXY
@@ -40,10 +41,9 @@ internal fun KSClassDeclaration.getAllPropertiesNotThrowable(): List<KSPropertyD
         .sortedBy { it.name }
 }
 
-internal fun Appendable.appendType(typeReference: KSTypeReference): Appendable {
+internal fun KSTypeReference.type(): String {
     fun Appendable.appendGenerics() {
-        val element =
-            typeReference.element ?: error("generic type '$typeReference' must not be implicit @${typeReference.parent?.location}")
+        val element = element ?: error("generic type '${this@type}' must not be implicit @${parent?.location}")
         val typeArguments = element.typeArguments
         if (typeArguments.isEmpty()) return
         append('<')
@@ -56,15 +56,16 @@ internal fun Appendable.appendType(typeReference: KSTypeReference): Appendable {
                 Variance.INVARIANT -> {}
                 Variance.COVARIANT, Variance.CONTRAVARIANT -> append(' ')
             }
-            appendType(typeArgument.type!!)
+            append(typeArgument.type!!.type())
         }
         append('>')
     }
 
-    val type = typeReference.resolve()
-    append(type.qualifiedName).appendGenerics()
-    if (type.isMarkedNullable) append('?')
-    return this
+    val type = resolve()
+    val appendable = StringBuilder()
+    appendable.append(type.qualifiedName).appendGenerics()
+    if (type.isMarkedNullable) appendable.append('?')
+    return appendable.toString()
 }
 
 internal fun List<KSType>.getBaseEncoderTypes() =
@@ -104,14 +105,14 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
             }
         }
 
-        fun generate(file: String, packageName: String, generate: Appendable.() -> Unit) {
+        fun generate(file: String, packageName: String, write: CodeWriter.() -> Unit) {
             codeGenerator.createNewFile(
                 Dependencies.ALL_FILES, // we want to be on the safe side
                 packageName,
                 file,
             ).writer().use { appendable ->
                 appendable.appendPackage(packageName)
-                appendable.generate()
+                CodeWriter(appendable).write()
             }
         }
 
