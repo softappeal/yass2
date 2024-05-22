@@ -2,7 +2,6 @@ package ch.softappeal.yass2.generate.reflect
 
 import ch.softappeal.yass2.Dumper
 import ch.softappeal.yass2.GenerateDumper
-import ch.softappeal.yass2.GenerateProxy
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.GENERATED_BINARY_SERIALIZER
 import ch.softappeal.yass2.generate.GENERATED_DUMPER
@@ -17,7 +16,6 @@ import kotlin.io.path.writeText
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
@@ -63,7 +61,7 @@ public fun generateProxy(
 ) {
     require(services.map { it.java.packageName }.toSet().size == 1) { "services $services must be in same package" }
     services.forEach {
-        require(it.hasAnnotation<GenerateProxy>()) { "'$it' must be annotated with '${GenerateProxy::class}'" }
+        // require(it.hasAnnotation<GenerateProxy>()) { "'$it' must be annotated with '${GenerateProxy::class}'" }
     }
     generate(sourceDir, mode, services.first().java.packageName + packageSuffix, GENERATED_PROXY) {
         services

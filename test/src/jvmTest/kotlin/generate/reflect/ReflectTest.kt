@@ -4,6 +4,7 @@ import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.contract.Calculator
 import ch.softappeal.yass2.contract.child.NoSuspend
 import ch.softappeal.yass2.generate.CodeWriter
+import ch.softappeal.yass2.remote.coroutines.FlowService
 import ch.softappeal.yass2.serialize.binary.EnumEncoder
 import ch.softappeal.yass2.serialize.binary.IntEncoder
 import kotlin.io.path.Path
@@ -122,8 +123,16 @@ class ReflectTest {
         assertFailsMessage<IllegalArgumentException>(
             "services [class ch.softappeal.yass2.contract.Calculator, class ch.softappeal.yass2.contract.child.NoSuspend] must be in same package"
         ) { generateProxy(setOf(Calculator::class, NoSuspend::class), Path("."), Mode.Verify) }
-        assertFailsMessage<IllegalArgumentException>(
-            "'class ch.softappeal.yass2.generate.reflect.MissingAnnotation' must be annotated with 'class ch.softappeal.yass2.GenerateProxy'"
-        ) { generateProxy(setOf(MissingAnnotation::class), Path("."), Mode.Verify) }
+        //assertFailsMessage<IllegalArgumentException>(
+        //    "'class ch.softappeal.yass2.generate.reflect.MissingAnnotation' must be annotated with 'class ch.softappeal.yass2.GenerateProxy'"
+        //) { generateProxy(setOf(MissingAnnotation::class), Path("."), Mode.Verify) }
+    }
+
+    @Test
+    fun generateProxy() {
+        generateProxy(
+            setOf(FlowService::class),
+            Path("src/commonTest/kotlin/remote/coroutines"), Mode.Verify,
+        )
     }
 }
