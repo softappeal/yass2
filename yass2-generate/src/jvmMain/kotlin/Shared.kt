@@ -36,17 +36,13 @@ public class CodeWriter(private val appendable: Appendable, private val depth: I
         appendable.append(s)
     }
 
-    public fun writeLine(s: String) {
-        write(s)
-        writeLine()
-    }
-
     private fun nested(write: CodeWriter.() -> Unit) {
         CodeWriter(appendable, depth + 1).write()
     }
 
     public fun writeLine(s: String, write: CodeWriter.() -> Unit) {
-        writeLine(s)
+        write(s)
+        writeLine()
         nested(write)
     }
 

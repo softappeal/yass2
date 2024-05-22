@@ -25,6 +25,10 @@ private fun CodeWriter.writeSignature(function: KSFunctionDeclaration) {
 
 private fun KSFunctionDeclaration.parameters() = (1..parameters.size).joinToString(", ") { "p$it" }
 
+private val KSClassDeclaration.withTypeParameters get() = "<${typeParameters.joinToString { it.simpleName.asString() }}>"
+private val KSClassDeclaration.withTypes get() = "${qualifiedName()}${if (typeParameters.isEmpty()) "" else withTypeParameters}"
+private val KSClassDeclaration.types get() = if (typeParameters.isEmpty()) "" else " $withTypeParameters"
+
 internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
     require(service.classKind == ClassKind.INTERFACE) { "'${service.qualifiedName()}' must be an interface @${service.location}" }
 
@@ -39,18 +43,18 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
         }
 
     writeLine()
-    writeNestedLine("public fun ${service.qualifiedName()}.proxy(") {
+    writeNestedLine("public fun${service.types} ${service.withTypes}.proxy(") {
         if (functions.any { !it.isSuspend }) writeNestedLine("intercept: $CSY.Interceptor,")
         if (functions.any { it.isSuspend }) writeNestedLine("suspendIntercept: $CSY.SuspendInterceptor,")
     }
-    writeNestedLine("): ${service.qualifiedName()} = object : ${service.qualifiedName()} {") {
+    writeNestedLine("): ${service.withTypes} = object : ${service.withTypes} {") {
         functions.forEachIndexed { functionIndex, function ->
             if (functionIndex != 0) writeLine()
             val hasResult = function.hasResult()
             writeSignature(function)
             if (hasResult) write(": ${function.returnType!!.type()}")
             writeLine(" {") {
-                writeNestedLine("${if (hasResult) "return " else ""}${if (function.isSuspend) "suspendIntercept" else "intercept"}(${service.qualifiedName()}::${function.name}, listOf(${function.parameters()})) {") {
+                writeNestedLine("${if (hasResult) "return " else ""}${if (function.isSuspend) "suspendIntercept" else "intercept"}(${service.withTypes}::${function.name}, listOf(${function.parameters()})) {") {
                     writeNestedLine("this@proxy.${function.name}(${function.parameters()})")
                 }
                 writeNested("}")
@@ -65,11 +69,11 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
     if (functions.any { !it.isSuspend }) return
 
     writeLine()
-    writeNestedLine("public fun ${ServiceId::class.qualifiedName}<${service.qualifiedName()}>.proxy(") {
+    writeNestedLine("public fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.proxy(") {
         writeNestedLine("tunnel: $CSY.remote.Tunnel,")
     }
-    writeNestedLine("): ${service.qualifiedName()} =") {
-        writeNestedLine("object : ${service.qualifiedName()} {") {
+    writeNestedLine("): ${service.withTypes} =") {
+        writeNestedLine("object : ${service.withTypes} {") {
             functions.forEachIndexed { functionIndex, function ->
                 if (functionIndex != 0) writeLine()
                 val hasResult = function.hasResult()
@@ -88,8 +92,8 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
     }
 
     writeLine()
-    writeNestedLine("public fun ${ServiceId::class.qualifiedName}<${service.qualifiedName()}>.service(") {
-        writeNestedLine("implementation: ${service.qualifiedName()},")
+    writeNestedLine("public fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.service(") {
+        writeNestedLine("implementation: ${service.withTypes},")
     }
     writeNestedLine("): ${Service::class.qualifiedName} =") {
         writeNestedLine("${Service::class.qualifiedName}(id) { functionId, parameters ->") {

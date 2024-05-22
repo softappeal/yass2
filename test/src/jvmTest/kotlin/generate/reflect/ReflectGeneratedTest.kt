@@ -6,6 +6,7 @@ import ch.softappeal.yass2.contract.Echo
 import ch.softappeal.yass2.contract.Mixed
 import ch.softappeal.yass2.contract.child.ChildDumper
 import ch.softappeal.yass2.contract.child.NoSuspend
+import ch.softappeal.yass2.remote.coroutines.FlowService
 import kotlin.io.path.Path
 import kotlin.test.Test
 
@@ -27,6 +28,10 @@ class ReflectGeneratedTest {
         generateProxy(
             setOf(NoSuspend::class),
             Path("src/commonTest/kotlin/contract/child/generated"), Mode.Verify, ".generated",
+        )
+        generateProxy(
+            setOf(FlowService::class),
+            Path("src/commonTest/kotlin/remote/coroutines/generated"), Mode.Verify, ".generated",
         )
     }
 

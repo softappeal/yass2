@@ -22,6 +22,7 @@ import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.KSTypeParameter
 import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.Variance
 import kotlin.reflect.KClass
@@ -63,7 +64,11 @@ internal fun KSTypeReference.type(): String {
 
     val type = resolve()
     val appendable = StringBuilder()
-    appendable.append(type.qualifiedName).appendGenerics()
+    if (type.declaration is KSTypeParameter) {
+        appendable.append(type.declaration.name)
+    } else {
+        appendable.append(type.qualifiedName).appendGenerics()
+    }
     if (type.isMarkedNullable) appendable.append('?')
     return appendable.toString()
 }
