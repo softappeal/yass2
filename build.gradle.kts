@@ -103,7 +103,12 @@ val coroutinesProject = project(":yass2-coroutines") {
         }
     }
     dependencies {
-        ksp(generateProject)
+        add("kspCommonMainMetadata", generateProject)
+        add("kspJvm", generateProject)
+        add("kspJs", generateProject)
+        add("kspLinuxX64", generateProject)
+        add("kspLinuxArm64", generateProject)
+        add("kspMacosArm64", generateProject)
     }
 }
 
@@ -178,7 +183,11 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
         arg("yass2.enableLogging", "false")
     }
     dependencies {
-        ksp(generateProject) // NOTE: references to generated artifacts are yet wrongly red in IntelliJ; it compiles and runs correctly
+        add("kspJvmTest", generateProject)
+        add("kspJsTest", generateProject)
+        add("kspLinuxX64Test", generateProject)
+        add("kspLinuxArm64Test", generateProject)
+        add("kspMacosArm64Test", generateProject)
     }
 }
 
@@ -209,7 +218,12 @@ project(":tutorial") {
         }
     }
     dependencies {
-        ksp(generateProject)
+        add("kspCommonMainMetadata", generateProject)
+        add("kspJvm", generateProject)
+        add("kspJs", generateProject)
+        add("kspLinuxX64", generateProject)
+        add("kspLinuxArm64", generateProject)
+        add("kspMacosArm64", generateProject)
     }
 }
 

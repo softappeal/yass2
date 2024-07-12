@@ -3,8 +3,8 @@
 kotlin                 = "1.9.24"        # https://github.com/JetBrains/kotlin
 ksp                    = "1.9.24-1.0.20" # https://github.com/google/ksp
 kotlinx-coroutines     = "1.8.1"         # https://github.com/Kotlin/kotlinx.coroutines
-ktor                   = "2.3.11"        # https://github.com/ktorio/ktor
-kotlin-compile-testing = "1.5.0"         # https://github.com/tschuchortdev/kotlin-compile-testing
+ktor                   = "2.3.12"        # https://github.com/ktorio/ktor
+kotlin-compile-testing = "1.6.0"         # https://github.com/tschuchortdev/kotlin-compile-testing
 
 [libraries]
 

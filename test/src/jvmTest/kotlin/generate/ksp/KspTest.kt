@@ -4,11 +4,13 @@ import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.kspArgs
 import com.tschuchort.compiletesting.symbolProcessorProviders
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCompilerApi::class)
 private fun executeTest(lineNumber: Int, message: String, source1: String, source2: String? = null) {
     val file1 = SourceFile.kotlin("Source1.kt", source1)
     val result = KotlinCompilation().apply {
