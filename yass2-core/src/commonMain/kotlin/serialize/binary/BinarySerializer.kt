@@ -98,7 +98,7 @@ public class BinarySerializer(encoders: List<Encoder>) : Serializer {
     override fun read(reader: Reader): Any? = EncoderReader(reader, encoders).readWithId()
 }
 
-public abstract class BaseEncoder<T : Any>(
+public class BaseEncoder<T : Any>(
     type: KClass<T>,
     public val write: (writer: Writer, value: T) -> Unit,
     public val read: (reader: Reader) -> T,
@@ -132,12 +132,3 @@ public class ClassEncoder<T : Any>(
         super.writeWithId(writer, id, value)
     }
 }
-
-@Target(AnnotationTarget.PROPERTY)
-public annotation class GenerateBinarySerializer(
-    val baseEncoderClasses: Array<KClass<out BaseEncoder<*>>>,
-    val enumClasses: Array<KClass<*>>,
-    val treeConcreteClasses: Array<KClass<*>>,
-    val graphConcreteClasses: Array<KClass<*>>,
-    val withDumper: Boolean,
-)

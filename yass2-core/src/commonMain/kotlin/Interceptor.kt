@@ -15,6 +15,3 @@ public operator fun Interceptor.plus(intercept: Interceptor): Interceptor = { fu
 public operator fun SuspendInterceptor.plus(intercept: SuspendInterceptor): SuspendInterceptor = { function, parameters, invoke ->
     this(function, parameters) { intercept(function, parameters, invoke) }
 }
-
-@Target(AnnotationTarget.CLASS)
-public annotation class GenerateProxy

@@ -1,6 +1,6 @@
 package ch.softappeal.yass2
 
-import ch.softappeal.yass2.generate.reflect.readAndFixLines
+import ch.softappeal.yass2.generate.readAndFixLines
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import kotlin.io.path.Path

@@ -11,7 +11,18 @@
     "RedundantSuppression",
 )
 
-package ch.softappeal.yass2.contract.child.generated
+package ch.softappeal.yass2.contract.child
+
+public fun ch.softappeal.yass2.contract.child.NoSuspend.proxy(
+    intercept: ch.softappeal.yass2.Interceptor,
+): ch.softappeal.yass2.contract.child.NoSuspend = object : ch.softappeal.yass2.contract.child.NoSuspend {
+    override fun x(
+    ) {
+        intercept(ch.softappeal.yass2.contract.child.NoSuspend::x, listOf()) {
+            this@proxy.x()
+        }
+    }
+}
 
 public fun createDumper(dumpValue: kotlin.text.Appendable.(value: kotlin.Any) -> kotlin.Unit): ch.softappeal.yass2.Dumper =
     ch.softappeal.yass2.createDumper(

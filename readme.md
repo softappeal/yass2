@@ -35,7 +35,7 @@
 
 * Javascript transport uses the Fetch and the WebSocket API instead of Ktor
 
-* generates code (works on any platform and is fast) either with [Kotlin Symbol Processing (KSP)](https://kotlinlang.org/docs/ksp-overview.html) or with reflection
+* generates code (works on any platform and is fast)
     * fast, compact and extendable binary serializer for high throughput and low latency
     * dumper (prints contract objects)
     * interceptor (around advice, aspect-oriented programming)

@@ -7,7 +7,6 @@ import java.util.regex.Pattern
 
 plugins {
     alias(libs.plugins.multiplatform)
-    alias(libs.plugins.ksp)
     id("maven-publish")
     signing
 }
@@ -18,7 +17,6 @@ allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
     apply(plugin = "maven-publish")
     apply(plugin = "signing")
-    apply(plugin = "com.google.devtools.ksp")
 
     group = "ch.softappeal.yass2"
 
@@ -83,8 +81,8 @@ val generateProject = project(":yass2-generate") {
             jvmMain {
                 dependencies {
                     api(coreProject)
-                    api(libraries.symbol.processing.api)
-                    api(kotlin("reflect"))
+                    implementation(kotlin("reflect"))
+                    implementation(kotlin("test"))
                 }
             }
         }
@@ -100,15 +98,13 @@ val coroutinesProject = project(":yass2-coroutines") {
                     api(libraries.kotlinx.coroutines.core)
                 }
             }
+            jvmTest {
+                dependencies {
+                    implementation(generateProject)
+                    implementation(kotlin("test"))
+                }
+            }
         }
-    }
-    dependencies {
-        add("kspCommonMainMetadata", generateProject)
-        add("kspJvm", generateProject)
-        add("kspJs", generateProject)
-        add("kspLinuxX64", generateProject)
-        add("kspLinuxArm64", generateProject)
-        add("kspMacosArm64", generateProject)
     }
 }
 
@@ -165,7 +161,6 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
                 dependsOn(jvmAndNixTest)
                 dependencies {
                     implementation(generateProject)
-                    implementation(libraries.kotlin.compile.testing.ksp)
                 }
             }
             val linuxX64Test by getting {
@@ -178,16 +173,6 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
                 dependsOn(jvmAndNixTest)
             }
         }
-    }
-    ksp {
-        arg("yass2.enableLogging", "false")
-    }
-    dependencies {
-        add("kspJvmTest", generateProject)
-        add("kspJsTest", generateProject)
-        add("kspLinuxX64Test", generateProject)
-        add("kspLinuxArm64Test", generateProject)
-        add("kspMacosArm64Test", generateProject)
     }
 }
 
@@ -210,20 +195,17 @@ project(":tutorial") {
                     implementation(libraries.bundles.ktor.cio)
                 }
             }
+            jvmTest {
+                dependencies {
+                    implementation(generateProject)
+                }
+            }
             jsTest {
                 dependencies {
                     implementation(libraries.kotlinx.coroutines.test)
                 }
             }
         }
-    }
-    dependencies {
-        add("kspCommonMainMetadata", generateProject)
-        add("kspJvm", generateProject)
-        add("kspJs", generateProject)
-        add("kspLinuxX64", generateProject)
-        add("kspLinuxArm64", generateProject)
-        add("kspMacosArm64", generateProject)
     }
 }
 

@@ -1,18 +1,22 @@
-package ch.softappeal.yass2.generate.ksp
+package ch.softappeal.yass2.generate
 
-import ch.softappeal.yass2.generate.CSY
-import ch.softappeal.yass2.generate.CodeWriter
-import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSType
+import kotlin.reflect.KClass
 
-internal fun CodeWriter.generateDumper(treeConcreteClasses: List<KSType>, graphConcreteClasses: List<KSType>) {
+public fun CodeWriter.generateDumper(
+    treeConcreteClasses: List<KClass<*>>,
+    graphConcreteClasses: List<KClass<*>> = emptyList(),
+) {
+    val classes = treeConcreteClasses + graphConcreteClasses
+    require(classes.size == classes.toSet().size) { "class must not be duplicated" }
+    checkNotEnum(classes, "must not be specified")
+
     writeLine()
     writeNestedLine("public fun createDumper(dumpValue: kotlin.text.Appendable.(value: kotlin.Any) -> kotlin.Unit): $CSY.Dumper =") {
         writeNestedLine("$CSY.createDumper(") {
             writeNestedLine("$CSY.dumperProperties(") {
                 (treeConcreteClasses + graphConcreteClasses).forEach { type ->
                     writeNestedLine("${type.qualifiedName}::class to listOf(") {
-                        (type.declaration as KSClassDeclaration).getAllPropertiesNotThrowable().forEach { property ->
+                        type.getAllPropertiesNotThrowable().forEach { property ->
                             writeNestedLine("${type.qualifiedName}::${property.name} as kotlin.reflect.KProperty1<Any, Any?>,")
                         }
                     }

@@ -1,10 +1,8 @@
 [versions]
 
-kotlin                 = "1.9.24"        # https://github.com/JetBrains/kotlin
-ksp                    = "1.9.24-1.0.20" # https://github.com/google/ksp
-kotlinx-coroutines     = "1.8.1"         # https://github.com/Kotlin/kotlinx.coroutines
-ktor                   = "2.3.12"        # https://github.com/ktorio/ktor
-kotlin-compile-testing = "1.6.0"         # https://github.com/tschuchortdev/kotlin-compile-testing
+kotlin             = "1.9.24" # https://github.com/JetBrains/kotlin
+kotlinx-coroutines = "1.8.1"  # https://github.com/Kotlin/kotlinx.coroutines
+ktor               = "2.3.12" # https://github.com/ktorio/ktor
 
 [libraries]
 
@@ -18,10 +16,6 @@ ktor-client-cio        = { module = "io.ktor:ktor-client-cio"       , version.re
 ktor-server-cio        = { module = "io.ktor:ktor-server-cio"       , version.ref = "ktor" }
 ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
 
-symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
-
-kotlin-compile-testing-ksp = { module = "com.github.tschuchortdev:kotlin-compile-testing-ksp", version.ref = "kotlin-compile-testing" }
-
 [bundles]
 
 ktor-cio = [
@@ -33,4 +27,3 @@ ktor-cio = [
 [plugins]
 
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

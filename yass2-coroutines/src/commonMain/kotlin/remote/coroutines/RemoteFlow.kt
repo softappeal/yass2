@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.remote.coroutines
 
-import ch.softappeal.yass2.GenerateProxy
 import ch.softappeal.yass2.remote.ExceptionReply
 import ch.softappeal.yass2.remote.Reply
 import ch.softappeal.yass2.remote.ValueReply
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
 
-@GenerateProxy
 public interface FlowService<out F, I> {
     public suspend fun create(flowId: I): Int
     public suspend fun next(collectId: Int): F?

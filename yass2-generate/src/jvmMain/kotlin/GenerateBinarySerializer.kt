@@ -1,10 +1,8 @@
-package ch.softappeal.yass2.generate.reflect
+package ch.softappeal.yass2.generate
 
-import ch.softappeal.yass2.generate.CodeWriter
-import ch.softappeal.yass2.generate.PropertyKind
+import ch.softappeal.yass2.serialize.binary.BaseEncoder
 import ch.softappeal.yass2.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.serialize.binary.ClassEncoder
-import ch.softappeal.yass2.serialize.binary.EnumEncoder
 import ch.softappeal.yass2.serialize.binary.FIRST_ENCODER_ID
 import ch.softappeal.yass2.serialize.binary.ListEncoderId
 import kotlin.reflect.KClass
@@ -13,13 +11,20 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
 
+private enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
+
 public fun CodeWriter.generateBinarySerializer(
-    baseEncoderClasses: List<KClass<*>>,
-    enumClasses: List<KClass<*>>,
+    baseEncoders: List<BaseEncoder<out Any>>,
     treeConcreteClasses: List<KClass<*>>,
-    graphConcreteClasses: List<KClass<*>>,
+    graphConcreteClasses: List<KClass<*>> = emptyList(),
 ) {
-    val baseEncoderTypes = baseEncoderClasses.getBaseEncoderTypes() + enumClasses
+    val baseEncoderTypes = baseEncoders.map { it.type }
+
+    require(
+        (baseEncoderTypes + treeConcreteClasses + graphConcreteClasses).toSet().size ==
+            (baseEncoders.size + treeConcreteClasses.size + graphConcreteClasses.size)
+    ) { "class must not be duplicated" }
+    checkNotEnum(treeConcreteClasses + graphConcreteClasses, "belongs to 'baseEncoders'")
 
     class Property(val property: KProperty1<out Any, *>) {
         var kind: PropertyKind
@@ -72,18 +77,12 @@ public fun CodeWriter.generateBinarySerializer(
         }
     }
 
-    enumClasses.forEachIndexed { enumClassIndex, enumClass ->
-        if (enumClassIndex == 0) writeLine()
-        writeNestedLine("private class EnumEncoder${enumClassIndex + 1} : ${EnumEncoder::class.qualifiedName}<${enumClass.qualifiedName}>(") {
-            writeNestedLine("${enumClass.qualifiedName}::class, kotlin.enumValues()")
-        }
-        writeNestedLine(")")
-    }
     writeLine()
-    writeNestedLine("public fun createSerializer(): ${BinarySerializer::class.qualifiedName} =") {
-        writeNestedLine("${BinarySerializer::class.qualifiedName}(listOf(") {
-            baseEncoderClasses.forEach { type -> writeNestedLine("${type.qualifiedName}(),") }
-            for (enumEncoderIndex in 1..enumClasses.size) writeNestedLine("EnumEncoder$enumEncoderIndex(),")
+    writeNestedLine("public fun createSerializer(") {
+        writeNestedLine("baseEncoders: kotlin.collections.List<${BaseEncoder::class.qualifiedName}<out kotlin.Any>>,")
+    }
+    writeNestedLine("): ${BinarySerializer::class.qualifiedName} =") {
+        writeNestedLine("${BinarySerializer::class.qualifiedName}(baseEncoders + listOf(") {
 
             fun List<KClass<*>>.add(graph: Boolean) = forEach { type ->
                 fun Property.encoderId(tail: String = "") = if (kind != PropertyKind.WithId) "$encoderId$tail" else ""

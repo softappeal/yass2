@@ -11,7 +11,7 @@
     "RedundantSuppression",
 )
 
-package ch.softappeal.yass2.remote.coroutines.generated
+package ch.softappeal.yass2.remote.coroutines
 
 public fun <F, I> ch.softappeal.yass2.remote.coroutines.FlowService<F, I>.proxy(
     suspendIntercept: ch.softappeal.yass2.SuspendInterceptor,

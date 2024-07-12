@@ -1,44 +1,40 @@
-package ch.softappeal.yass2.generate.ksp
+package ch.softappeal.yass2.generate
 
-import ch.softappeal.yass2.generate.CSY
-import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.Service
 import ch.softappeal.yass2.remote.ServiceId
-import com.google.devtools.ksp.symbol.ClassKind
-import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSFunctionDeclaration
-import com.google.devtools.ksp.symbol.Modifier
+import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
+import kotlin.reflect.full.memberFunctions
+import kotlin.reflect.full.valueParameters
+import kotlin.reflect.jvm.javaMethod
 
-private val AnyFunctions = setOf("toString", "equals", "hashCode")
-private val KSFunctionDeclaration.isSuspend get() = Modifier.SUSPEND in modifiers
-private fun KSFunctionDeclaration.hasResult() = "kotlin.Unit" != returnType!!.resolve().qualifiedName
+private fun KFunction<*>.hasResult() = returnType.classifier != Unit::class
 
-private fun CodeWriter.writeSignature(function: KSFunctionDeclaration) {
+private fun CodeWriter.writeSignature(function: KFunction<*>) {
     writeNestedLine("override ${if (function.isSuspend) "suspend " else ""}fun ${function.name}(") {
-        function.parameters.forEachIndexed { parameterIndex, parameter ->
-            writeNestedLine("p${parameterIndex + 1}: ${parameter.type.type()},")
+        function.valueParameters.forEachIndexed { parameterIndex, parameter ->
+            writeNestedLine("p${parameterIndex + 1}: ${parameter.type},")
         }
     }
     writeNested(")")
 }
 
-private fun KSFunctionDeclaration.parameters() = (1..parameters.size).joinToString(", ") { "p$it" }
+private fun KFunction<*>.parameters() = (1..valueParameters.size).joinToString(", ") { "p$it" }
 
-private val KSClassDeclaration.withTypeParameters get() = "<${typeParameters.joinToString { it.simpleName.asString() }}>"
-private val KSClassDeclaration.withTypes get() = "${qualifiedName()}${if (typeParameters.isEmpty()) "" else withTypeParameters}"
-private val KSClassDeclaration.types get() = if (typeParameters.isEmpty()) "" else " $withTypeParameters"
+private val KClass<*>.withTypeParameters get() = "<${typeParameters.joinToString { it.name }}>"
+private val KClass<*>.withTypes get() = "$qualifiedName${if (typeParameters.isEmpty()) "" else withTypeParameters}"
+private val KClass<*>.types get() = if (typeParameters.isEmpty()) "" else " $withTypeParameters"
 
-internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
-    require(service.classKind == ClassKind.INTERFACE) { "'${service.qualifiedName()}' must be an interface @${service.location}" }
+public fun CodeWriter.generateProxy(service: KClass<*>) {
+    require(service.java.isInterface) { "'${service.qualifiedName}' must be an interface" }
 
-    val functions = service.getAllFunctions()
-        .toList()
-        .filter { it.name !in AnyFunctions }
+    val functions = service.memberFunctions
+        .filter { it.javaMethod!!.declaringClass != Object::class.java }
         .sortedBy { it.name } // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
         .apply {
             require(map { it.name }.toSet().size == size) {
-                "interface '${service.qualifiedName()}' must not overload functions @${service.location}"
+                "interface '${service.qualifiedName}' must not overload functions"
             }
         }
 
@@ -52,14 +48,14 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
             if (functionIndex != 0) writeLine()
             val hasResult = function.hasResult()
             writeSignature(function)
-            if (hasResult) write(": ${function.returnType!!.type()}")
+            if (hasResult) write(": ${function.returnType}")
             writeLine(" {") {
                 writeNestedLine("${if (hasResult) "return " else ""}${if (function.isSuspend) "suspendIntercept" else "intercept"}(${service.withTypes}::${function.name}, listOf(${function.parameters()})) {") {
                     writeNestedLine("this@proxy.${function.name}(${function.parameters()})")
                 }
                 writeNested("}")
             }
-            if (hasResult) write(" as ${function.returnType!!.type()}")
+            if (hasResult) write(" as ${function.returnType}")
             writeLine()
             writeNestedLine("}")
         }
@@ -81,7 +77,7 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
                 writeLine(" ${if (hasResult) "=" else "{"}") {
                     writeNestedLine("tunnel(${Request::class.qualifiedName}(id, $functionIndex, listOf(${function.parameters()})))") {
                         writeNested(".process()")
-                        if (hasResult) write(" as ${function.returnType!!.type()}") else writeLine()
+                        if (hasResult) write(" as ${function.returnType}") else writeLine()
                     }
                 }
                 if (!hasResult) writeNested("}")
@@ -100,8 +96,8 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
             writeNestedLine("when (functionId) {") {
                 functions.forEachIndexed { functionIndex, function ->
                     writeNestedLine("$functionIndex -> implementation.${function.name}(") {
-                        function.parameters.forEachIndexed { parameterIndex, parameter ->
-                            writeNestedLine("parameters[$parameterIndex] as ${parameter.type.type()},")
+                        function.valueParameters.forEachIndexed { parameterIndex, parameter ->
+                            writeNestedLine("parameters[$parameterIndex] as ${parameter.type},")
                         }
                     }
                     writeNestedLine(")")
@@ -112,4 +108,8 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
         }
         writeNestedLine("}")
     }
+}
+
+public fun CodeWriter.generateProxy(services: List<KClass<out Any>>) {
+    services.forEach(::generateProxy)
 }
