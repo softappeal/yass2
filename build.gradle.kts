@@ -224,6 +224,9 @@ tasks.register("markers") {
             .exclude("/.gradle/")
             .exclude("/.idea/")
             .exclude("**/build/")
+            .exclude("/.kotlin/")
+            .exclude("/kotlin-js-store/")
+            .exclude(".DS_Store")
         fun search(marker: String, help: String, abort: Boolean = false) {
             divider('=')
             println("= $marker - $help")
