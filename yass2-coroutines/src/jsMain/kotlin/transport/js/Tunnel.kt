@@ -14,7 +14,7 @@ public fun Transport.tunnel(url: String): Tunnel = { request ->
     write(writer, request)
     val response = window.fetch(url, object : RequestInit {
         override var method: String? = "POST"
-        override var body = (writer.buffer.asDynamic()).subarray(0, writer.current)
+        override var body = writer.buffer.asDynamic().subarray(0, writer.current)
     }).await()
     val buffer = response.arrayBuffer().await()
     val reader = BytesReader(Int8Array(buffer).asDynamic() as ByteArray)
