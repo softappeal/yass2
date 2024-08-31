@@ -32,7 +32,7 @@ public class CodeWriter(private val appendable: Appendable, private val depth: I
     }
 
     public fun writeNested(s: String) {
-        appendable.append("    ".repeat(depth))
+        write("    ".repeat(depth))
         write(s)
     }
 
