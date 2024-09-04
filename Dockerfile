@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21.0.3_9-jdk-jammy
+FROM eclipse-temurin:21.0.4_7-jdk-noble
 
 COPY  . /project
 WORKDIR /project

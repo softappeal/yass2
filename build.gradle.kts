@@ -127,13 +127,13 @@ val ktorProject = project(":yass2-ktor") {
             jvmMain {
                 dependsOn(jvmAndNixMain)
             }
-            val linuxX64Main by getting {
+            linuxX64Main {
                 dependsOn(jvmAndNixMain)
             }
-            val linuxArm64Main by getting {
+            linuxArm64Main {
                 dependsOn(jvmAndNixMain)
             }
-            val macosArm64Main by getting {
+            macosArm64Main {
                 dependsOn(jvmAndNixMain)
             }
         }
@@ -163,13 +163,18 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
                     implementation(generateProject)
                 }
             }
-            val linuxX64Test by getting {
+            jsTest {
+                dependencies {
+                    implementation(ktorProject)
+                }
+            }
+            linuxX64Test {
                 dependsOn(jvmAndNixTest)
             }
-            val linuxArm64Test by getting {
+            linuxArm64Test {
                 dependsOn(jvmAndNixTest)
             }
-            val macosArm64Test by getting {
+            macosArm64Test {
                 dependsOn(jvmAndNixTest)
             }
         }

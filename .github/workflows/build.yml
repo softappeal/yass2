@@ -7,5 +7,6 @@ jobs:
         with:
           fetch-depth: 0
       - uses: gradle/actions/wrapper-validation@v4
-      - run: docker image     build --tag project-image .
-      - run: docker container run         project-image ./gradlew build
+      - run: |
+          docker image     build --tag project-image .
+          docker container run         project-image ./gradlew build
