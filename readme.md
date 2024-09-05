@@ -33,7 +33,7 @@
 
 * provides [Ktor](https://ktor.io) transport adaptors for Http, WebSocket and plain Socket
 
-* Javascript transport uses the Fetch and the WebSocket API instead of Ktor
+* Javascript transport uses the Fetch and the WebSocket API in addition to Ktor
 
 * generates code (works on any platform and is fast)
     * fast, compact and extendable binary serializer for high throughput and low latency
