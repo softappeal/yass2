@@ -64,11 +64,11 @@ private fun Application.webSocketModule() {
 class HttpTest {
     @Test
     fun http() {
-        val engine = embeddedServer(io.ktor.server.cio.CIO, 0, module = Application::httpModule)
-        engine.start()
+        val server = embeddedServer(io.ktor.server.cio.CIO, 0, module = Application::httpModule)
+        server.start()
         try {
             runBlocking {
-                val randomPort = engine.resolvedConnectors().first().port
+                val randomPort = server.engine.resolvedConnectors().first().port
                 HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
                     client
                         .tunnel(MessageTransport, "http://$LOCAL_HOST:$randomPort$PATH") {
@@ -78,17 +78,17 @@ class HttpTest {
                 }
             }
         } finally {
-            engine.stop()
+            server.stop()
         }
     }
 
     @Test
     fun webSocket() {
-        val engine = embeddedServer(io.ktor.server.cio.CIO, 0, module = Application::webSocketModule)
-        engine.start()
+        val server = embeddedServer(io.ktor.server.cio.CIO, 0, module = Application::webSocketModule)
+        server.start()
         try {
             runBlocking {
-                val randomPort = engine.resolvedConnectors().first().port
+                val randomPort = server.engine.resolvedConnectors().first().port
                 HttpClient(io.ktor.client.engine.cio.CIO) {
                     install(io.ktor.client.plugins.websocket.WebSockets)
                 }.use { client ->
@@ -98,7 +98,7 @@ class HttpTest {
                 }
             }
         } finally {
-            engine.stop()
+            server.stop()
         }
     }
 
@@ -112,7 +112,7 @@ class HttpTest {
             ),
             100, 100,
         )
-        val engine = embeddedServer(io.ktor.server.cio.CIO, 0) {
+        val server = embeddedServer(io.ktor.server.cio.CIO, 0) {
             routing {
                 val calculator = object : Calculator {
                     override suspend fun add(a: Int, b: Int): Int {
@@ -126,10 +126,10 @@ class HttpTest {
                 route(transport, PATH, tunnel(CalculatorId.service(calculator)))
             }
         }
-        engine.start()
+        server.start()
         try {
             runBlocking {
-                val randomPort = engine.resolvedConnectors().first().port
+                val randomPort = server.engine.resolvedConnectors().first().port
                 HttpClient(io.ktor.client.engine.cio.CIO).use { client ->
                     val clientTunnel = client.tunnel(transport, "http://$LOCAL_HOST:$randomPort$PATH")
                     val calculator = CalculatorId.proxy(clientTunnel)
@@ -139,7 +139,7 @@ class HttpTest {
                 }
             }
         } finally {
-            engine.stop()
+            server.stop()
         }
     }
 }

@@ -13,6 +13,7 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.content.OutgoingContent
 import io.ktor.http.contentLength
 import io.ktor.utils.io.ByteWriteChannel
+import io.ktor.utils.io.writeFully
 
 internal fun Transport.write(message: Message): OutgoingContent.WriteChannelContent {
     val writer = createWriter()
