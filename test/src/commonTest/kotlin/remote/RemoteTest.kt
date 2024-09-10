@@ -47,7 +47,7 @@ class RemoteTest {
     @Test
     fun valueReply() {
         val value = 123
-        assertSame(value, ValueReply(value).value)
+        assertEquals(value, ValueReply(value).value)
     }
 
     @Test

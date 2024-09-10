@@ -10,7 +10,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.ws
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
-import io.ktor.server.engine.ApplicationEngine
+import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.http.content.staticFiles
 import io.ktor.server.routing.routing
@@ -38,12 +38,12 @@ private fun Application.theModule() {
     }
 }
 
-public fun createKtorEngine(): ApplicationEngine = embeddedServer(io.ktor.server.cio.CIO, PORT, module = Application::theModule)
+public fun createKtorServer(): EmbeddedServer<*, *> = embeddedServer(io.ktor.server.cio.CIO, PORT, module = Application::theModule)
 
 private suspend fun useKtorRemoting() {
     println("*** useKtorRemoting ***")
-    val engine = createKtorEngine()
-    engine.start()
+    val server = createKtorServer()
+    server.start()
     try {
         HttpClient(io.ktor.client.engine.cio.CIO) {
             install(io.ktor.client.plugins.websocket.WebSockets)
@@ -55,7 +55,7 @@ private suspend fun useKtorRemoting() {
             client.ws("ws://$LOCAL_HOST:$PORT$PATH") { receiveLoop(PacketTransport, initiatorSessionFactory()) }
         }
     } finally {
-        engine.stop()
+        server.stop()
     }
 }
 

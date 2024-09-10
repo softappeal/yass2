@@ -3,6 +3,7 @@
 @file:Suppress("SpellCheckingInspection")
 
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import java.util.regex.Pattern
 
 plugins {
@@ -36,6 +37,11 @@ allprojects {
         }
         js {
             moduleName = project.name
+            nodejs()
+            binaries.executable()
+        }
+        @OptIn(ExperimentalWasmDsl::class)
+        wasmJs {
             nodejs()
             binaries.executable()
         }
@@ -145,7 +151,7 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
         sourceSets {
             val commonTest by getting {
                 dependencies {
-                    implementation(coroutinesProject)
+                    implementation(ktorProject)
                     implementation(kotlin("test"))
                     implementation(libraries.kotlinx.coroutines.test)
                 }
@@ -153,7 +159,6 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
             val jvmAndNixTest by creating {
                 dependsOn(commonTest)
                 dependencies {
-                    implementation(ktorProject)
                     implementation(libraries.bundles.ktor.cio)
                 }
             }
@@ -161,11 +166,6 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
                 dependsOn(jvmAndNixTest)
                 dependencies {
                     implementation(generateProject)
-                }
-            }
-            jsTest {
-                dependencies {
-                    implementation(ktorProject)
                 }
             }
             linuxX64Test {
