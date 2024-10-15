@@ -47,7 +47,6 @@ allprojects {
         }
         linuxX64()
         linuxArm64()
-        macosArm64()
         explicitApi()
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
@@ -139,9 +138,6 @@ val ktorProject = project(":yass2-ktor") {
             linuxArm64Main {
                 dependsOn(jvmAndNixMain)
             }
-            macosArm64Main {
-                dependsOn(jvmAndNixMain)
-            }
         }
     }
 }
@@ -172,9 +168,6 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
                 dependsOn(jvmAndNixTest)
             }
             linuxArm64Test {
-                dependsOn(jvmAndNixTest)
-            }
-            macosArm64Test {
                 dependsOn(jvmAndNixTest)
             }
         }
