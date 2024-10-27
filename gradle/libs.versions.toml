@@ -1,19 +1,19 @@
 [versions]
 
-kotlin             = "2.0.21" # https://github.com/JetBrains/kotlin
-kotlinx-coroutines = "1.9.0"  # https://github.com/Kotlin/kotlinx.coroutines
-ktor               = "3.0.0"  # https://github.com/ktorio/ktor
+kotlin = "2.0.21" # https://github.com/JetBrains/kotlin
+kotlinx-coroutines = "1.9.0" # https://github.com/Kotlin/kotlinx.coroutines
+ktor = "3.0.0" # https://github.com/ktorio/ktor
 
 [libraries]
 
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 
-ktor-client-core       = { module = "io.ktor:ktor-client-core"      , version.ref = "ktor" }
-ktor-server-core       = { module = "io.ktor:ktor-server-core"      , version.ref = "ktor" }
-ktor-network           = { module = "io.ktor:ktor-network"          , version.ref = "ktor" }
-ktor-client-cio        = { module = "io.ktor:ktor-client-cio"       , version.ref = "ktor" }
-ktor-server-cio        = { module = "io.ktor:ktor-server-cio"       , version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
+ktor-network = { module = "io.ktor:ktor-network", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-server-cio = { module = "io.ktor:ktor-server-cio", version.ref = "ktor" }
 ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
 
 [bundles]

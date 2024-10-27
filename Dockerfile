@@ -1,4 +1,5 @@
-FROM eclipse-temurin:21.0.4_7-jdk-noble
+# https://hub.docker.com/_/eclipse-temurin/tags
+FROM eclipse-temurin:21.0.5_11-jdk-noble
 
 COPY  . /project
 WORKDIR /project
