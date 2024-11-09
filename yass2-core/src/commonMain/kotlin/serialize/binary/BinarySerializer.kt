@@ -132,3 +132,12 @@ public class ClassEncoder<T : Any>(
         super.writeWithId(writer, id, value)
     }
 }
+
+@Target(AnnotationTarget.FILE)
+public annotation class GenerateBinarySerializer(
+    val baseEncoderClasses: Array<KClass<out BaseEncoder<*>>>,
+    val enumClasses: Array<KClass<*>>,
+    val treeConcreteClasses: Array<KClass<*>>,
+    val graphConcreteClasses: Array<KClass<*>>,
+    val withDumper: Boolean,
+)
