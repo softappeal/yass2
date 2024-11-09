@@ -28,6 +28,8 @@ internal fun Appendable.appendPackage(packageName: String) {
     """.trimIndent())
 }
 
+internal enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
+
 public class CodeWriter(private val appendable: Appendable, private val depth: Int = 0) {
     public fun writeLine() {
         appendable.appendLine()

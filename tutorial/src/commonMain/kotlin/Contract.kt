@@ -1,37 +1,19 @@
-@file:GenerateBinarySerializer(
-    baseEncoderClasses = [
-        // Define all the base encoders needed by the contract (including own base types).
-        IntEncoder::class,
-        StringEncoder::class,
-        MyDateEncoder::class,
-    ],
-    enumClasses = [
-        Gender::class,
-    ],
-    treeConcreteClasses = [
-        Address::class,
-        Person::class,
-        DivideByZeroException::class,
-        SubClass::class,
-    ],
-    graphConcreteClasses = [],
-    withDumper = true,
-)
-
 package ch.softappeal.yass2.tutorial
 
+import ch.softappeal.yass2.Dumper
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.coroutines.session.MustBeImplementedByAcceptor
 import ch.softappeal.yass2.remote.coroutines.session.MustBeImplementedByInitiator
+import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.binary.BaseEncoder
-import ch.softappeal.yass2.serialize.binary.EnumEncoder
 import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
 import ch.softappeal.yass2.serialize.binary.IntEncoder
 import ch.softappeal.yass2.serialize.binary.StringEncoder
 import ch.softappeal.yass2.serialize.binary.readLong
 import ch.softappeal.yass2.serialize.binary.writeLong
-
-// This file describes the contract (data transfer objects and interfaces) between client and server.
+import ch.softappeal.yass2.transport.Transport
+import ch.softappeal.yass2.transport.binaryMessageSerializer
+import ch.softappeal.yass2.transport.session.binaryPacketSerializer
 
 /**
  * The base types Boolean, Byte, Int, Long, Double, String and ByteArray are supported.
@@ -41,7 +23,7 @@ import ch.softappeal.yass2.serialize.binary.writeLong
 public class MyDate(public val currentTimeMillis: Long)
 
 // Shows how to implement an own base type encoder.
-private class MyDateEncoder : BaseEncoder<MyDate>(MyDate::class,
+internal class MyDateEncoder : BaseEncoder<MyDate>(MyDate::class,
     { writer, value -> writer.writeLong(value.currentTimeMillis) },
     { reader -> MyDate(reader.readLong()) }
 )
@@ -66,8 +48,6 @@ public enum class Gender {
     Female,
     Male,
 }
-
-private class GenderEncoder : EnumEncoder<Gender>(Gender::class, enumValues()) // TODO: remove
 
 /** Lists are supported. */
 public class Person(
@@ -115,29 +95,39 @@ public val CalculatorId: ServiceId<Calculator> = ServiceId(1)
 @MustBeImplementedByInitiator
 public val NewsListenerId: ServiceId<NewsListener> = ServiceId(2)
 
-/** Define all the base encoders needed by the contract (including enumerations and own base types). */
-internal val BaseEncoders = listOf(
-    IntEncoder(),
-    StringEncoder(),
-    MyDateEncoder(),
-    GenderEncoder(),
-)
-
-internal val TreeConcreteClasses = listOf(
-    Address::class,
-    Person::class,
-    DivideByZeroException::class,
-    SubClass::class,
-)
-
-internal val Services = listOf(
-    Calculator::class,
-    NewsListener::class,
-)
-
-internal fun Appendable.dumpValue(value: Any) {
+private fun Appendable.dumpValue(value: Any) {
     // Writes value (without line breaks) if responsible else does nothing.
     when (value) {
         is MyDate -> append(value)
     }
 }
+
+@GenerateBinarySerializer(
+    baseEncoderClasses = [
+        // Define all the base encoders needed by the contract (including own base types).
+        IntEncoder::class,
+        StringEncoder::class,
+        MyDateEncoder::class,
+    ],
+    enumClasses = [
+        Gender::class,
+    ],
+    treeConcreteClasses = [
+        Address::class,
+        Person::class,
+        DivideByZeroException::class,
+        SubClass::class,
+    ],
+    graphConcreteClasses = [],
+    withDumper = true,
+)
+public val ContractSerializer: Serializer = createSerializer()
+
+public val MessageSerializer: Serializer = binaryMessageSerializer(ContractSerializer)
+public val PacketSerializer: Serializer = binaryPacketSerializer(MessageSerializer)
+
+private const val INITIAL_WRITER_CAPACITY = 100
+public val MessageTransport: Transport = Transport(MessageSerializer, INITIAL_WRITER_CAPACITY)
+public val PacketTransport: Transport = Transport(PacketSerializer, INITIAL_WRITER_CAPACITY)
+
+public val Dumper: Dumper = createDumper(Appendable::dumpValue)

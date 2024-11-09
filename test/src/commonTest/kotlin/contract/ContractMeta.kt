@@ -4,23 +4,35 @@ import ch.softappeal.yass2.contract.reflect.createDumper
 import ch.softappeal.yass2.contract.reflect.createSerializer
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.serialize.binary.ByteArrayEncoder
-import ch.softappeal.yass2.serialize.binary.EnumEncoder
+import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
 import ch.softappeal.yass2.serialize.binary.IntEncoder
 import ch.softappeal.yass2.serialize.binary.StringEncoder
 import ch.softappeal.yass2.transport.Transport
 import ch.softappeal.yass2.transport.binaryMessageSerializer
 import ch.softappeal.yass2.transport.session.binaryPacketSerializer
 
-private class GenderEncoder : EnumEncoder<Gender>(Gender::class, enumValues()) // TODO: remove
-
-internal val BaseEncoders = listOf(
-    IntEncoder(),
-    StringEncoder(),
-    ByteArrayEncoder(),
-    GenderEncoder(),
+@GenerateBinarySerializer(
+    baseEncoderClasses = [
+        IntEncoder::class,
+        StringEncoder::class,
+        ByteArrayEncoder::class,
+    ],
+    enumClasses = [
+        Gender::class,
+    ],
+    treeConcreteClasses = [
+        IntException::class, PlainId::class, ComplexId::class, Lists::class,
+        Id2::class, Id3::class, IdWrapper::class, ManyProperties::class,
+        DivideByZeroException::class,
+        ThrowableFake::class,
+    ],
+    graphConcreteClasses = [
+        Node::class,
+    ],
+    withDumper = true,
 )
+val ContractSerializer = createSerializer()
 
-val ContractSerializer = createSerializer(BaseEncoders)
 val MessageSerializer = binaryMessageSerializer(ContractSerializer)
 val PacketSerializer = binaryPacketSerializer(MessageSerializer)
 

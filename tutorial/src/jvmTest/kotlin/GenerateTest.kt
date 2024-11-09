@@ -2,7 +2,7 @@ package ch.softappeal.yass2.tutorial
 
 import ch.softappeal.yass2.generate.reflect.Mode
 import ch.softappeal.yass2.generate.reflect.generate
-import ch.softappeal.yass2.generate.reflect.generateBinarySerializerAndDumper
+import ch.softappeal.yass2.generate.reflect.generateBinarySerializer
 import ch.softappeal.yass2.generate.reflect.generateProxy
 import kotlin.test.Test
 
@@ -14,8 +14,9 @@ class GenerateTest {
             "ch.softappeal.yass2.tutorial",
             Mode.Verify,
         ) {
-            generateProxy(Services)
-            generateBinarySerializerAndDumper(BaseEncoders, TreeConcreteClasses)
+            generateProxy(Calculator::class)
+            generateProxy(NewsListener::class)
+            generateBinarySerializer(::ContractSerializer)
         }
     }
 }

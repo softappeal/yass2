@@ -1,30 +1,6 @@
-@file:GenerateBinarySerializer(
-    baseEncoderClasses = [
-        IntEncoder::class,
-        StringEncoder::class,
-        ByteArrayEncoder::class,
-    ],
-    enumClasses = [
-        Gender::class,
-    ],
-    treeConcreteClasses = [
-        IntException::class, PlainId::class, ComplexId::class, Lists::class,
-        Id2::class, Id3::class, IdWrapper::class, ManyProperties::class,
-        DivideByZeroException::class,
-        ThrowableFake::class,
-    ],
-    graphConcreteClasses = [
-        Node::class,
-    ],
-    withDumper = true,
-)
-
 package ch.softappeal.yass2.contract
 
-import ch.softappeal.yass2.serialize.binary.ByteArrayEncoder
-import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
-import ch.softappeal.yass2.serialize.binary.IntEncoder
-import ch.softappeal.yass2.serialize.binary.StringEncoder
+import ch.softappeal.yass2.GenerateProxy
 
 enum class Gender { Female, Male }
 
@@ -99,10 +75,12 @@ interface AddCalculator {
     suspend fun add(a: Int, b: Int): Int
 }
 
+@GenerateProxy
 interface Calculator : AddCalculator {
     suspend fun divide(a: Int, b: Int): Int
 }
 
+@GenerateProxy
 interface Echo {
     @TestAnnotation
     suspend fun echo(value: Any?): Any?
@@ -122,6 +100,7 @@ interface Echo {
     suspend fun echoMonster(a: List<*>, b: List<List<String?>?>, c: Map<out Int, String>, d: Pair<*, *>): Map<in Int, String>?
 }
 
+@GenerateProxy
 interface Mixed {
     fun divide(a: Int, b: Int): Int
     suspend fun suspendDivide(a: Int, b: Int): Int

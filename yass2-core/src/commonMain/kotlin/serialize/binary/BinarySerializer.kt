@@ -133,7 +133,7 @@ public class ClassEncoder<T : Any>(
     }
 }
 
-@Target(AnnotationTarget.FILE)
+@Target(AnnotationTarget.PROPERTY)
 public annotation class GenerateBinarySerializer(
     val baseEncoderClasses: Array<KClass<out BaseEncoder<*>>>,
     val enumClasses: Array<KClass<*>>,

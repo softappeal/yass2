@@ -2,7 +2,7 @@ package ch.softappeal.yass2.generate.reflect
 
 import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.generate.CodeWriter
-import ch.softappeal.yass2.serialize.binary.BaseEncoder
+import ch.softappeal.yass2.serialize.binary.EnumEncoder
 import ch.softappeal.yass2.serialize.binary.IntEncoder
 import kotlin.reflect.KClass
 import kotlin.test.Test
@@ -31,7 +31,11 @@ private abstract class AbstractClass
 
 private class ConstructorParameterIsNotProperty(@Suppress("UNUSED_PARAMETER") x: Int)
 
-enum class Enum
+private enum class Enum
+
+private class MyEnumEncoder : EnumEncoder<Enum>(Enum::class, enumValues())
+
+private class NotEnum
 
 private fun codeWriter() = CodeWriter(StringBuilder())
 
@@ -39,7 +43,7 @@ class GeneratorTest {
     @Test
     fun binarySerializer() {
         fun generateBinarySerializer(klass: KClass<*>) {
-            codeWriter().generateBinarySerializer(emptyList(), listOf(klass), listOf())
+            codeWriter().generateBinarySerializer(listOf(), listOf(), listOf(klass))
         }
         assertFailsMessage<IllegalArgumentException>(
             "body property 'x' of 'ch.softappeal.yass2.generate.reflect.BodyPropertyNotVar' must be 'var'"
@@ -56,28 +60,27 @@ class GeneratorTest {
         assertFailsMessage<IllegalArgumentException>(
             "class 'ch.softappeal.yass2.generate.reflect.AbstractClass' must be concrete"
         ) { generateBinarySerializer(AbstractClass::class) }
-        fun generateBinarySerializer(
-            baseEncoders: List<BaseEncoder<out Any>>,
-            treeConcreteClasses: List<KClass<*>>,
-            graphConcreteClasses: List<KClass<*>>,
-        ) {
-            codeWriter().generateBinarySerializer(baseEncoders, treeConcreteClasses, graphConcreteClasses)
-        }
-        assertFailsMessage<IllegalArgumentException>(
-            "class must not be duplicated"
-        ) { generateBinarySerializer(emptyList(), listOf(Int::class), listOf(Int::class)) }
-        assertFailsMessage<IllegalArgumentException>(
-            "class must not be duplicated"
-        ) { generateBinarySerializer(listOf(IntEncoder()), listOf(Int::class), listOf()) }
-        assertFailsMessage<IllegalArgumentException>(
-            "class must not be duplicated"
-        ) { generateBinarySerializer(listOf(IntEncoder()), listOf(), listOf(Int::class)) }
         assertFailsMessage<IllegalStateException>(
-            "enum class 'ch.softappeal.yass2.generate.reflect.Enum' belongs to 'baseEncoders'"
-        ) { generateBinarySerializer(listOf(), listOf(Enum::class), listOf()) }
+            "enum class 'ch.softappeal.yass2.generate.reflect.Enum' belongs to 'enumClasses'"
+        ) { generateBinarySerializer(Enum::class) }
         assertFailsMessage<IllegalStateException>(
-            "enum class 'ch.softappeal.yass2.generate.reflect.Enum' belongs to 'baseEncoders'"
-        ) { generateBinarySerializer(listOf(), listOf(), listOf(Enum::class)) }
+            "enum class 'ch.softappeal.yass2.generate.reflect.Enum' belongs to 'enumClasses'"
+        ) { codeWriter().generateBinarySerializer(listOf(), listOf(), listOf(), listOf(Enum::class)) }
+        assertFailsMessage<IllegalStateException>(
+            "enum class 'ch.softappeal.yass2.generate.reflect.Enum' belongs to 'enumClasses'"
+        ) { codeWriter().generateBinarySerializer(listOf(MyEnumEncoder::class), listOf(), listOf()) }
+        assertFailsMessage<IllegalArgumentException>(
+            "class must not be duplicated"
+        ) { codeWriter().generateBinarySerializer(listOf(), listOf(), listOf(Int::class), listOf(Int::class)) }
+        assertFailsMessage<IllegalArgumentException>(
+            "class must not be duplicated"
+        ) { codeWriter().generateBinarySerializer(listOf(IntEncoder::class), listOf(), listOf(Int::class)) }
+        assertFailsMessage<IllegalArgumentException>(
+            "class must not be duplicated"
+        ) { codeWriter().generateBinarySerializer(listOf(), listOf(Enum::class, Enum::class), listOf()) }
+        assertFailsMessage<IllegalArgumentException>(
+            "class 'ch.softappeal.yass2.generate.reflect.NotEnum' in 'enumClasses' must be enum"
+        ) { codeWriter().generateBinarySerializer(listOf(), listOf(NotEnum::class), listOf()) }
     }
 
     @Test

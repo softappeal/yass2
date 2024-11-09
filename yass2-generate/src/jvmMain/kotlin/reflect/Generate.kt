@@ -1,13 +1,18 @@
 package ch.softappeal.yass2.generate.reflect
 
+import ch.softappeal.yass2.Dumper
+import ch.softappeal.yass2.GenerateDumper
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import ch.softappeal.yass2.generate.appendPackage
 import ch.softappeal.yass2.generate.readAndFixLines
-import ch.softappeal.yass2.serialize.binary.BaseEncoder
+import ch.softappeal.yass2.serialize.Serializer
+import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
 import java.nio.file.Files
 import kotlin.io.path.writeText
 import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
+import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
 import kotlin.test.assertEquals
@@ -33,19 +38,26 @@ public fun generate(sourceDir: String, packageName: String, mode: Mode, write: C
     }
 }
 
-internal fun KClass<*>.getAllPropertiesNotThrowable() = memberProperties
-    .filter { !isSubclassOf(Throwable::class) || (it.name != "cause" && it.name != "message") }
-    .sortedBy { it.name }
-
 internal fun checkNotEnum(classes: List<KClass<*>>, message: String) {
     classes.firstOrNull { it.java.isEnum }?.let { klass -> error("enum class '${klass.qualifiedName}' $message") }
 }
 
-public fun CodeWriter.generateBinarySerializerAndDumper(
-    baseEncoders: List<BaseEncoder<out Any>>,
-    treeConcreteClasses: List<KClass<*>>,
-    graphConcreteClasses: List<KClass<*>> = emptyList(),
-) {
-    generateBinarySerializer(baseEncoders, treeConcreteClasses, graphConcreteClasses)
-    generateDumper(treeConcreteClasses, graphConcreteClasses)
+internal fun KClass<*>.getAllPropertiesNotThrowable() = memberProperties
+    .filter { !isSubclassOf(Throwable::class) || (it.name != "cause" && it.name != "message") }
+    .sortedBy { it.name }
+
+public fun CodeWriter.generateBinarySerializer(property: KProperty<Serializer>) {
+    val annotation = property.findAnnotation<GenerateBinarySerializer>()!!
+    generateBinarySerializer(
+        annotation.baseEncoderClasses.asList(),
+        annotation.enumClasses.asList(),
+        annotation.treeConcreteClasses.asList(),
+        annotation.graphConcreteClasses.asList(),
+    )
+    if (annotation.withDumper) generateDumper(annotation.treeConcreteClasses.asList(), annotation.graphConcreteClasses.asList())
+}
+
+public fun CodeWriter.generateDumper(property: KProperty<Dumper>) {
+    val annotation = property.findAnnotation<GenerateDumper>()!!
+    generateDumper(annotation.treeConcreteClasses.asList(), annotation.graphConcreteClasses.asList())
 }

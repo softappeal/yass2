@@ -1,10 +1,14 @@
 [versions]
 
 kotlin = "2.1.0-RC" # https://github.com/JetBrains/kotlin
+ksp = "2.1.0-RC-1.0.27" # https://github.com/google/ksp
 kotlinx-coroutines = "1.9.0" # https://github.com/Kotlin/kotlinx.coroutines
 ktor = "3.0.1" # https://github.com/ktorio/ktor
+kotlin-compile-testing = "1.6.0" # https://github.com/tschuchortdev/kotlin-compile-testing
 
 [libraries]
+
+symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
@@ -15,6 +19,8 @@ ktor-network = { module = "io.ktor:ktor-network", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-server-cio = { module = "io.ktor:ktor-server-cio", version.ref = "ktor" }
 ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
+
+kotlin-compile-testing-ksp = { module = "com.github.tschuchortdev:kotlin-compile-testing-ksp", version.ref = "kotlin-compile-testing" }
 
 [bundles]
 
@@ -27,3 +33,4 @@ ktor-cio = [
 [plugins]
 
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

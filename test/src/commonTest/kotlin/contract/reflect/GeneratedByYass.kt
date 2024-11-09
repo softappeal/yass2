@@ -13,36 +13,6 @@
 
 package ch.softappeal.yass2.contract.reflect
 
-public fun ch.softappeal.yass2.contract.Mixed.proxy(
-    intercept: ch.softappeal.yass2.Interceptor,
-    suspendIntercept: ch.softappeal.yass2.SuspendInterceptor,
-): ch.softappeal.yass2.contract.Mixed = object : ch.softappeal.yass2.contract.Mixed {
-    override fun divide(
-        p1: kotlin.Int,
-        p2: kotlin.Int,
-    ): kotlin.Int {
-        return intercept(ch.softappeal.yass2.contract.Mixed::divide, listOf(p1, p2)) {
-            this@proxy.divide(p1, p2)
-        } as kotlin.Int
-    }
-
-    override fun noParametersNoResult(
-    ) {
-        intercept(ch.softappeal.yass2.contract.Mixed::noParametersNoResult, listOf()) {
-            this@proxy.noParametersNoResult()
-        }
-    }
-
-    override suspend fun suspendDivide(
-        p1: kotlin.Int,
-        p2: kotlin.Int,
-    ): kotlin.Int {
-        return suspendIntercept(ch.softappeal.yass2.contract.Mixed::suspendDivide, listOf(p1, p2)) {
-            this@proxy.suspendDivide(p1, p2)
-        } as kotlin.Int
-    }
-}
-
 public fun ch.softappeal.yass2.contract.Calculator.proxy(
     suspendIntercept: ch.softappeal.yass2.SuspendInterceptor,
 ): ch.softappeal.yass2.contract.Calculator = object : ch.softappeal.yass2.contract.Calculator {
@@ -263,10 +233,46 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Ech
         }
     }
 
-public fun createSerializer(
-    baseEncoders: kotlin.collections.List<ch.softappeal.yass2.serialize.binary.BaseEncoder<out kotlin.Any>>,
-): ch.softappeal.yass2.serialize.binary.BinarySerializer =
-    ch.softappeal.yass2.serialize.binary.BinarySerializer(baseEncoders + listOf(
+public fun ch.softappeal.yass2.contract.Mixed.proxy(
+    intercept: ch.softappeal.yass2.Interceptor,
+    suspendIntercept: ch.softappeal.yass2.SuspendInterceptor,
+): ch.softappeal.yass2.contract.Mixed = object : ch.softappeal.yass2.contract.Mixed {
+    override fun divide(
+        p1: kotlin.Int,
+        p2: kotlin.Int,
+    ): kotlin.Int {
+        return intercept(ch.softappeal.yass2.contract.Mixed::divide, listOf(p1, p2)) {
+            this@proxy.divide(p1, p2)
+        } as kotlin.Int
+    }
+
+    override fun noParametersNoResult(
+    ) {
+        intercept(ch.softappeal.yass2.contract.Mixed::noParametersNoResult, listOf()) {
+            this@proxy.noParametersNoResult()
+        }
+    }
+
+    override suspend fun suspendDivide(
+        p1: kotlin.Int,
+        p2: kotlin.Int,
+    ): kotlin.Int {
+        return suspendIntercept(ch.softappeal.yass2.contract.Mixed::suspendDivide, listOf(p1, p2)) {
+            this@proxy.suspendDivide(p1, p2)
+        } as kotlin.Int
+    }
+}
+
+private class EnumEncoder1 : ch.softappeal.yass2.serialize.binary.EnumEncoder<ch.softappeal.yass2.contract.Gender>(
+    ch.softappeal.yass2.contract.Gender::class, kotlin.enumValues()
+)
+
+public fun createSerializer(): ch.softappeal.yass2.serialize.binary.BinarySerializer =
+    ch.softappeal.yass2.serialize.binary.BinarySerializer(listOf(
+        ch.softappeal.yass2.serialize.binary.IntEncoder(),
+        ch.softappeal.yass2.serialize.binary.StringEncoder(),
+        ch.softappeal.yass2.serialize.binary.ByteArrayEncoder(),
+        EnumEncoder1(),
         ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.contract.IntException::class, false,
             { w, i ->
                 w.writeNoIdOptional(3, i.i)
