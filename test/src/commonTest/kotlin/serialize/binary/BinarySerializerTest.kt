@@ -70,7 +70,7 @@ private fun checkGraph(n1: Node) {
 }
 
 fun duplicatedType(thePackage: String) = assertFailsMessage<IllegalArgumentException>("duplicated type 'class ${thePackage}Int'") {
-    BinarySerializer(listOf(IntEncoder, IntEncoder))
+    BinarySerializer(listOf(IntEncoder(), IntEncoder()))
 }
 
 fun missingType(thePackage: String) = assertFailsMessage<IllegalStateException>("missing type 'class ${thePackage}Boolean'") {

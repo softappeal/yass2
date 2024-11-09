@@ -4,18 +4,20 @@ import ch.softappeal.yass2.contract.reflect.createDumper
 import ch.softappeal.yass2.contract.reflect.createSerializer
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.serialize.binary.ByteArrayEncoder
+import ch.softappeal.yass2.serialize.binary.EnumEncoder
 import ch.softappeal.yass2.serialize.binary.IntEncoder
 import ch.softappeal.yass2.serialize.binary.StringEncoder
-import ch.softappeal.yass2.serialize.binary.enumEncoder
 import ch.softappeal.yass2.transport.Transport
 import ch.softappeal.yass2.transport.binaryMessageSerializer
 import ch.softappeal.yass2.transport.session.binaryPacketSerializer
 
+private class GenderEncoder : EnumEncoder<Gender>(Gender::class, enumValues()) // TODO: remove
+
 internal val BaseEncoders = listOf(
-    IntEncoder,
-    StringEncoder,
-    ByteArrayEncoder,
-    enumEncoder<Gender>(),
+    IntEncoder(),
+    StringEncoder(),
+    ByteArrayEncoder(),
+    GenderEncoder(),
 )
 
 val ContractSerializer = createSerializer(BaseEncoders)

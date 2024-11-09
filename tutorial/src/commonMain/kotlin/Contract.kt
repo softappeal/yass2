@@ -4,9 +4,9 @@ import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.coroutines.session.MustBeImplementedByAcceptor
 import ch.softappeal.yass2.remote.coroutines.session.MustBeImplementedByInitiator
 import ch.softappeal.yass2.serialize.binary.BaseEncoder
+import ch.softappeal.yass2.serialize.binary.EnumEncoder
 import ch.softappeal.yass2.serialize.binary.IntEncoder
 import ch.softappeal.yass2.serialize.binary.StringEncoder
-import ch.softappeal.yass2.serialize.binary.enumEncoder
 import ch.softappeal.yass2.serialize.binary.readLong
 import ch.softappeal.yass2.serialize.binary.writeLong
 
@@ -20,7 +20,7 @@ import ch.softappeal.yass2.serialize.binary.writeLong
 public class MyDate(public val currentTimeMillis: Long)
 
 // Shows how to implement an own base type encoder.
-private val MyDateEncoder = BaseEncoder(MyDate::class,
+private class MyDateEncoder : BaseEncoder<MyDate>(MyDate::class,
     { writer, value -> writer.writeLong(value.currentTimeMillis) },
     { reader -> MyDate(reader.readLong()) }
 )
@@ -45,6 +45,8 @@ public enum class Gender {
     Female,
     Male,
 }
+
+private class GenderEncoder : EnumEncoder<Gender>(Gender::class, enumValues()) // TODO: remove
 
 /** Lists are supported. */
 public class Person(
@@ -94,10 +96,10 @@ public val NewsListenerId: ServiceId<NewsListener> = ServiceId(2)
 
 /** Define all the base encoders needed by the contract (including enumerations and own base types). */
 internal val BaseEncoders = listOf(
-    IntEncoder,
-    StringEncoder,
-    MyDateEncoder,
-    enumEncoder<Gender>(),
+    IntEncoder(),
+    StringEncoder(),
+    MyDateEncoder(),
+    GenderEncoder(),
 )
 
 internal val TreeConcreteClasses = listOf(

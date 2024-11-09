@@ -68,10 +68,10 @@ class GeneratorTest {
         ) { generateBinarySerializer(emptyList(), listOf(Int::class), listOf(Int::class)) }
         assertFailsMessage<IllegalArgumentException>(
             "class must not be duplicated"
-        ) { generateBinarySerializer(listOf(IntEncoder), listOf(Int::class), listOf()) }
+        ) { generateBinarySerializer(listOf(IntEncoder()), listOf(Int::class), listOf()) }
         assertFailsMessage<IllegalArgumentException>(
             "class must not be duplicated"
-        ) { generateBinarySerializer(listOf(IntEncoder), listOf(), listOf(Int::class)) }
+        ) { generateBinarySerializer(listOf(IntEncoder()), listOf(), listOf(Int::class)) }
         assertFailsMessage<IllegalStateException>(
             "enum class 'ch.softappeal.yass2.generate.reflect.Enum' belongs to 'baseEncoders'"
         ) { generateBinarySerializer(listOf(), listOf(Enum::class), listOf()) }

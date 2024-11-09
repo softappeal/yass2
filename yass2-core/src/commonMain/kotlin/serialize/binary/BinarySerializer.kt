@@ -98,7 +98,7 @@ public class BinarySerializer(encoders: List<Encoder>) : Serializer {
     override fun read(reader: Reader): Any? = EncoderReader(reader, encoders).readWithId()
 }
 
-public class BaseEncoder<T : Any>(
+public abstract class BaseEncoder<T : Any>(
     type: KClass<T>,
     public val write: (writer: Writer, value: T) -> Unit,
     public val read: (reader: Reader) -> T,
