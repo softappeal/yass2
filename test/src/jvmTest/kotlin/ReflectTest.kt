@@ -2,7 +2,7 @@ package ch.softappeal.yass2
 
 import ch.softappeal.yass2.contract.Echo
 import ch.softappeal.yass2.contract.TestAnnotation
-import ch.softappeal.yass2.contract.proxy
+import ch.softappeal.yass2.contract.reflect.proxy
 import kotlinx.coroutines.runBlocking
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.memberProperties

@@ -1,5 +1,7 @@
 package ch.softappeal.yass2.contract
 
+import ch.softappeal.yass2.contract.reflect.createDumper
+import ch.softappeal.yass2.contract.reflect.createSerializer
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.serialize.binary.ByteArrayEncoder
 import ch.softappeal.yass2.serialize.binary.IntEncoder

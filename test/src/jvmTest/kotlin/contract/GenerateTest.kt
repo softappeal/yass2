@@ -1,27 +1,27 @@
 package ch.softappeal.yass2.contract
 
 import ch.softappeal.yass2.contract.child.NoSuspend
-import ch.softappeal.yass2.generate.Mode
-import ch.softappeal.yass2.generate.generate
-import ch.softappeal.yass2.generate.generateBinarySerializerAndDumper
-import ch.softappeal.yass2.generate.generateDumper
-import ch.softappeal.yass2.generate.generateProxy
+import ch.softappeal.yass2.generate.reflect.Mode
+import ch.softappeal.yass2.generate.reflect.generate
+import ch.softappeal.yass2.generate.reflect.generateBinarySerializerAndDumper
+import ch.softappeal.yass2.generate.reflect.generateDumper
+import ch.softappeal.yass2.generate.reflect.generateProxy
 import kotlin.test.Test
 
 class GenerateTest {
     @Test
     fun test() {
         generate(
-            "src/commonTest/kotlin/contract/child",
-            "ch.softappeal.yass2.contract.child",
+            "src/commonTest/kotlin/contract/child/reflect",
+            "ch.softappeal.yass2.contract.child.reflect",
             Mode.Verify,
         ) {
             generateProxy(NoSuspend::class)
             generateDumper(listOf(ManyProperties::class), listOf(Node::class))
         }
         generate(
-            "src/commonTest/kotlin/contract",
-            "ch.softappeal.yass2.contract",
+            "src/commonTest/kotlin/contract/reflect",
+            "ch.softappeal.yass2.contract.reflect",
             Mode.Verify,
         ) {
             generateProxy(Mixed::class)

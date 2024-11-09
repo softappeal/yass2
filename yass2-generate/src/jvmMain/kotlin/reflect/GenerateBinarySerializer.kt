@@ -1,5 +1,6 @@
-package ch.softappeal.yass2.generate
+package ch.softappeal.yass2.generate.reflect
 
+import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.serialize.binary.BaseEncoder
 import ch.softappeal.yass2.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.serialize.binary.ClassEncoder

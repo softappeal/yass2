@@ -6,7 +6,7 @@ import ch.softappeal.yass2.contract.Echo
 import ch.softappeal.yass2.contract.Mixed
 import ch.softappeal.yass2.contract.Node
 import ch.softappeal.yass2.contract.child.NoSuspend
-import ch.softappeal.yass2.contract.proxy
+import ch.softappeal.yass2.contract.reflect.proxy
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
@@ -19,7 +19,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.time.Duration.Companion.milliseconds
-import ch.softappeal.yass2.contract.child.proxy as childProxy
+import ch.softappeal.yass2.contract.child.reflect.proxy as childProxy
 
 val CalculatorImpl = object : Calculator {
     override suspend fun add(a: Int, b: Int) = a + b

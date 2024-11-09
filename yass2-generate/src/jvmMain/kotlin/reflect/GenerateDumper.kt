@@ -1,5 +1,7 @@
-package ch.softappeal.yass2.generate
+package ch.softappeal.yass2.generate.reflect
 
+import ch.softappeal.yass2.generate.CSY
+import ch.softappeal.yass2.generate.CodeWriter
 import kotlin.reflect.KClass
 
 public fun CodeWriter.generateDumper(

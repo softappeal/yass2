@@ -11,7 +11,7 @@
     "RedundantSuppression",
 )
 
-package ch.softappeal.yass2.contract
+package ch.softappeal.yass2.contract.reflect
 
 public fun ch.softappeal.yass2.contract.Mixed.proxy(
     intercept: ch.softappeal.yass2.Interceptor,

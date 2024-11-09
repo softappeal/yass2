@@ -1,6 +1,7 @@
-package ch.softappeal.yass2.generate
+package ch.softappeal.yass2.generate.reflect
 
 import ch.softappeal.yass2.assertFailsMessage
+import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.serialize.binary.BaseEncoder
 import ch.softappeal.yass2.serialize.binary.IntEncoder
 import kotlin.reflect.KClass
@@ -41,19 +42,19 @@ class GeneratorTest {
             codeWriter().generateBinarySerializer(emptyList(), listOf(klass), listOf())
         }
         assertFailsMessage<IllegalArgumentException>(
-            "body property 'x' of 'ch.softappeal.yass2.generate.BodyPropertyNotVar' must be 'var'"
+            "body property 'x' of 'ch.softappeal.yass2.generate.reflect.BodyPropertyNotVar' must be 'var'"
         ) { generateBinarySerializer(BodyPropertyNotVar::class) }
         assertFailsMessage<IllegalStateException>(
-            "class 'ch.softappeal.yass2.generate.NoPrimaryConstructor' must hava a primary constructor"
+            "class 'ch.softappeal.yass2.generate.reflect.NoPrimaryConstructor' must hava a primary constructor"
         ) { generateBinarySerializer(NoPrimaryConstructor::class) }
         assertFailsMessage<IllegalArgumentException>(
-            "primary constructor parameter 'x' of class 'ch.softappeal.yass2.generate.ConstructorParameterIsNotProperty' must be a property"
+            "primary constructor parameter 'x' of class 'ch.softappeal.yass2.generate.reflect.ConstructorParameterIsNotProperty' must be a property"
         ) { generateBinarySerializer(ConstructorParameterIsNotProperty::class) }
         assertFailsMessage<IllegalArgumentException>(
-            "class 'ch.softappeal.yass2.generate.NotRegularClass' must be concrete"
+            "class 'ch.softappeal.yass2.generate.reflect.NotRegularClass' must be concrete"
         ) { generateBinarySerializer(NotRegularClass::class) }
         assertFailsMessage<IllegalArgumentException>(
-            "class 'ch.softappeal.yass2.generate.AbstractClass' must be concrete"
+            "class 'ch.softappeal.yass2.generate.reflect.AbstractClass' must be concrete"
         ) { generateBinarySerializer(AbstractClass::class) }
         fun generateBinarySerializer(
             baseEncoders: List<BaseEncoder<out Any>>,
@@ -72,10 +73,10 @@ class GeneratorTest {
             "class must not be duplicated"
         ) { generateBinarySerializer(listOf(IntEncoder), listOf(), listOf(Int::class)) }
         assertFailsMessage<IllegalStateException>(
-            "enum class 'ch.softappeal.yass2.generate.Enum' belongs to 'baseEncoders'"
+            "enum class 'ch.softappeal.yass2.generate.reflect.Enum' belongs to 'baseEncoders'"
         ) { generateBinarySerializer(listOf(), listOf(Enum::class), listOf()) }
         assertFailsMessage<IllegalStateException>(
-            "enum class 'ch.softappeal.yass2.generate.Enum' belongs to 'baseEncoders'"
+            "enum class 'ch.softappeal.yass2.generate.reflect.Enum' belongs to 'baseEncoders'"
         ) { generateBinarySerializer(listOf(), listOf(), listOf(Enum::class)) }
     }
 
@@ -85,20 +86,20 @@ class GeneratorTest {
             "class must not be duplicated"
         ) { codeWriter().generateDumper(listOf(Int::class), listOf(Int::class)) }
         assertFailsMessage<IllegalStateException>(
-            "enum class 'ch.softappeal.yass2.generate.Enum' must not be specified"
+            "enum class 'ch.softappeal.yass2.generate.reflect.Enum' must not be specified"
         ) { codeWriter().generateDumper(listOf(Enum::class)) }
         assertFailsMessage<IllegalStateException>(
-            "enum class 'ch.softappeal.yass2.generate.Enum' must not be specified"
+            "enum class 'ch.softappeal.yass2.generate.reflect.Enum' must not be specified"
         ) { codeWriter().generateDumper(listOf(), listOf(Enum::class)) }
     }
 
     @Test
     fun proxy() {
         assertFailsMessage<IllegalArgumentException>(
-            "'ch.softappeal.yass2.generate.NotAnInterface' must be an interface"
+            "'ch.softappeal.yass2.generate.reflect.NotAnInterface' must be an interface"
         ) { codeWriter().generateProxy(NotAnInterface::class) }
         assertFailsMessage<IllegalArgumentException>(
-            "interface 'ch.softappeal.yass2.generate.Overloaded' must not overload functions"
+            "interface 'ch.softappeal.yass2.generate.reflect.Overloaded' must not overload functions"
         ) { codeWriter().generateProxy(Overloaded::class) }
     }
 }

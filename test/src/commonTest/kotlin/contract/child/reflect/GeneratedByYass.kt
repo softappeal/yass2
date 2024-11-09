@@ -11,7 +11,7 @@
     "RedundantSuppression",
 )
 
-package ch.softappeal.yass2.contract.child
+package ch.softappeal.yass2.contract.child.reflect
 
 public fun ch.softappeal.yass2.contract.child.NoSuspend.proxy(
     intercept: ch.softappeal.yass2.Interceptor,

@@ -9,8 +9,8 @@ import ch.softappeal.yass2.contract.DEMO_HEADER_VALUE
 import ch.softappeal.yass2.contract.MessageSerializer
 import ch.softappeal.yass2.contract.MessageTransport
 import ch.softappeal.yass2.contract.PacketTransport
-import ch.softappeal.yass2.contract.proxy
-import ch.softappeal.yass2.contract.service
+import ch.softappeal.yass2.contract.reflect.proxy
+import ch.softappeal.yass2.contract.reflect.service
 import ch.softappeal.yass2.remote.coroutines.session.acceptorSessionFactory
 import ch.softappeal.yass2.remote.coroutines.session.initiatorSessionFactory
 import ch.softappeal.yass2.remote.coroutines.session.test
