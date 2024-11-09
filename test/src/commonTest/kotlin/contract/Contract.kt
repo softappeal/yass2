@@ -1,4 +1,30 @@
+@file:GenerateBinarySerializer(
+    baseEncoderClasses = [
+        IntEncoder::class,
+        StringEncoder::class,
+        ByteArrayEncoder::class,
+    ],
+    enumClasses = [
+        Gender::class,
+    ],
+    treeConcreteClasses = [
+        IntException::class, PlainId::class, ComplexId::class, Lists::class,
+        Id2::class, Id3::class, IdWrapper::class, ManyProperties::class,
+        DivideByZeroException::class,
+        ThrowableFake::class,
+    ],
+    graphConcreteClasses = [
+        Node::class,
+    ],
+    withDumper = true,
+)
+
 package ch.softappeal.yass2.contract
+
+import ch.softappeal.yass2.serialize.binary.ByteArrayEncoder
+import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
+import ch.softappeal.yass2.serialize.binary.IntEncoder
+import ch.softappeal.yass2.serialize.binary.StringEncoder
 
 enum class Gender { Female, Male }
 

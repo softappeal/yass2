@@ -1,3 +1,23 @@
+@file:GenerateBinarySerializer(
+    baseEncoderClasses = [
+        // Define all the base encoders needed by the contract (including own base types).
+        IntEncoder::class,
+        StringEncoder::class,
+        MyDateEncoder::class,
+    ],
+    enumClasses = [
+        Gender::class,
+    ],
+    treeConcreteClasses = [
+        Address::class,
+        Person::class,
+        DivideByZeroException::class,
+        SubClass::class,
+    ],
+    graphConcreteClasses = [],
+    withDumper = true,
+)
+
 package ch.softappeal.yass2.tutorial
 
 import ch.softappeal.yass2.remote.ServiceId
@@ -5,6 +25,7 @@ import ch.softappeal.yass2.remote.coroutines.session.MustBeImplementedByAcceptor
 import ch.softappeal.yass2.remote.coroutines.session.MustBeImplementedByInitiator
 import ch.softappeal.yass2.serialize.binary.BaseEncoder
 import ch.softappeal.yass2.serialize.binary.EnumEncoder
+import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
 import ch.softappeal.yass2.serialize.binary.IntEncoder
 import ch.softappeal.yass2.serialize.binary.StringEncoder
 import ch.softappeal.yass2.serialize.binary.readLong
