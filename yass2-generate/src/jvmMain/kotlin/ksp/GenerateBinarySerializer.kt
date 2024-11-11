@@ -76,12 +76,13 @@ internal fun CodeWriter.generateBinarySerializer(
     }
 
     enumClasses.forEachIndexed { enumClassIndex, enumClass ->
-        if (enumClassIndex == 0) writeLine()
+        writeLine()
         writeNestedLine("private class EnumEncoder${enumClassIndex + 1} : ${EnumEncoder::class.qualifiedName}<${enumClass.qualifiedName}>(") {
             writeNestedLine("${enumClass.qualifiedName}::class, kotlin.enumValues()")
         }
         writeNestedLine(")")
     }
+
     writeLine()
     writeNestedLine("public fun createSerializer(): ${BinarySerializer::class.qualifiedName} =") {
         writeNestedLine("${BinarySerializer::class.qualifiedName}(listOf(") {

@@ -25,7 +25,7 @@ public fun generate(sourceDir: String, packageName: String, mode: Mode, write: C
     CodeWriter(builder).write()
     val program = builder.toString()
     val sourcePath = kotlin.io.path.Path(sourceDir)
-    val file = sourcePath.resolve(GENERATED_BY_YASS)
+    val file = sourcePath.resolve("$GENERATED_BY_YASS.kt")
     when (mode) {
         Mode.Verify -> {
             val existingCode = file.readAndFixLines()

@@ -2,7 +2,6 @@ package ch.softappeal.yass2.generate.ksp
 
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
-import com.tschuchort.compiletesting.kspArgs
 import com.tschuchort.compiletesting.symbolProcessorProviders
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import java.io.File
@@ -12,22 +11,21 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCompilerApi::class)
-private fun executeTest(lineNumber: Int, message: String, source1: String, source2: String? = null) {
-    val file1 = SourceFile.kotlin("Source1.kt", source1)
+private fun executeTest(lineNumber: Int, message: String, source1: String) {
+    val file = SourceFile.kotlin("Source.kt", source1)
     val result = KotlinCompilation().apply {
         classpaths = listOf(File("../yass2-core/build/classes/kotlin/jvm/main"))
-        sources = if (source2 == null) listOf(file1) else listOf(file1, SourceFile.kotlin("Source2.kt", source2))
+        sources = listOf(file)
         symbolProcessorProviders = listOf(Yass2Provider())
-        kspArgs["yass2.enableLogging"] = "true"
     }.compile()
     assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
     assertTrue(result.messages.contains(
-        Regex("Exception: $message @FileLocation\\(filePath=.*/${if (source2 == null) "Source1" else "Source2"}.kt, lineNumber=$lineNumber\\)")
+        Regex("Exception: $message @FileLocation\\(filePath.*/Source.kt, lineNumber=$lineNumber\\)")
     ))
 }
 
-@Ignore
 class GeneratorTest { // TODO: review
+    @Ignore
     @Test
     fun binarySerializer() {
         executeTest(
@@ -37,9 +35,7 @@ class GeneratorTest { // TODO: review
                 package test
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], [], false)
                 val x1 = 0
-            """,
-            """
-                package test
+
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], [], false)
                 val x2 = 0
             """,
@@ -168,6 +164,7 @@ class GeneratorTest { // TODO: review
         )
     }
 
+    @Ignore
     @Test
     fun dumper() {
         executeTest(
@@ -176,9 +173,6 @@ class GeneratorTest { // TODO: review
                 package test
                 @ch.softappeal.yass2.GenerateDumper([], [])
                 val x1 = 0
-            """,
-            """
-                package test
                 @ch.softappeal.yass2.GenerateDumper([], [])
                 val x2 = 0
             """,
@@ -210,6 +204,7 @@ class GeneratorTest { // TODO: review
         )
     }
 
+    @Ignore
     @Test
     fun mixed() {
         executeTest(
@@ -220,9 +215,7 @@ class GeneratorTest { // TODO: review
                 package test
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], [], false)
                 val x1 = 0
-            """,
-            """
-                package test
+
                 @ch.softappeal.yass2.GenerateDumper([], [])
                 val x2 = 0
             """,

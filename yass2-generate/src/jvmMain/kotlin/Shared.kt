@@ -5,7 +5,7 @@ import kotlin.io.path.readText
 
 public fun Path.readAndFixLines(): String = readText().replace("\r\n", "\n")
 
-public const val GENERATED_BY_YASS: String = "GeneratedByYass.kt"
+public const val GENERATED_BY_YASS: String = "GeneratedByYass"
 
 internal const val CSY = "ch.softappeal.yass2"
 

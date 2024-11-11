@@ -1,8 +1,11 @@
 package ch.softappeal.yass2.generate.ksp
 
+import ch.softappeal.yass2.GenerateDumper
+import ch.softappeal.yass2.GenerateProxy
 import ch.softappeal.yass2.generate.CodeWriter
+import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import ch.softappeal.yass2.generate.appendPackage
-import com.google.devtools.ksp.getAllSuperTypes
+import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
@@ -13,7 +16,6 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
-import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSTypeParameter
@@ -26,10 +28,8 @@ internal val KSDeclaration.name get() = simpleName.asString()
 internal val KSType.qualifiedName get() = declaration.qualifiedName()
 
 internal fun KSClassDeclaration.getAllPropertiesNotThrowable(): List<KSPropertyDeclaration> {
-    fun KSPropertyDeclaration.isPropertyOfThrowable(): Boolean {
-        return (name == "cause" || name == "message") &&
-            "kotlin.Throwable" in (parentDeclaration as KSClassDeclaration).getAllSuperTypes().map { it.qualifiedName }
-    }
+    fun KSPropertyDeclaration.isPropertyOfThrowable() =
+        (name == "cause" || name == "message") && ("kotlin.Throwable" == parentDeclaration!!.qualifiedName())
     return getAllProperties()
         .toList()
         .filterNot { it.isPropertyOfThrowable() }
@@ -81,102 +81,81 @@ private fun KSAnnotation.checkClasses(classes: List<KSType>, enumMessage: String
     classes.firstOrNull { it.isEnum() }?.let { klass -> error("enum class '${klass.qualifiedName}' $enumMessage @$location") }
 }
 
+private fun KSDeclaration.firstOrNull(annotation: KClass<*>) =
+    annotations.firstOrNull { it.shortName.asString() == annotation.simpleName }
+
 private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor { // TODO: review
     private val codeGenerator = environment.codeGenerator
-    private val logger = environment.logger
-    private val enableLogging = (environment.options["yass2.enableLogging"] ?: "false").toBooleanStrict()
-
-    fun log(message: String, symbol: KSNode? = null) {
-        if (enableLogging) logger.warn(message, symbol) // is 'warn' instead of 'info' because 'info' is not printed by default
-    }
-
-    init {
-        log("processor '${Yass2Processor::class.qualifiedName}' created")
-    }
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        log("process() called")
-
-        fun Resolver.getSymbolsWithAnnotation(annotation: KClass<*>): Sequence<KSAnnotated> {
-            log("getSymbolsWithAnnotation('${annotation.qualifiedName}') called")
-            return getSymbolsWithAnnotation(annotation.qualifiedName!!).onEach {
-                log("symbol '$it' returned", it)
+        val packageName2declarations = buildList {
+            listOf(GenerateProxy::class, GenerateBinarySerializer::class, GenerateDumper::class).forEach { annotation ->
+                resolver.getSymbolsWithAnnotation(annotation.qualifiedName!!)
+                    .map { it as KSDeclaration }
+                    .forEach { declaration -> add(Pair(declaration.packageName.asString(), declaration)) }
             }
-        }
-
-        fun generate(file: String, packageName: String, write: CodeWriter.() -> Unit) {
+        }.groupBy({ it.first }, { it.second })
+        packageName2declarations.forEach { (packageName, declarations) ->
             codeGenerator.createNewFile(
                 Dependencies.ALL_FILES, // we want to be on the safe side
                 packageName,
-                file,
-            ).writer().use { appendable ->
-                appendable.appendPackage(packageName)
-                CodeWriter(appendable).write()
-            }
-        }
-        /* TODO
+                GENERATED_BY_YASS,
+            ).writer().use { writer ->
+                writer.appendPackage(packageName)
+                val codeWriter = CodeWriter(writer)
+
                 buildList {
-                    resolver.getSymbolsWithAnnotation(GenerateProxy::class)
-                        .map { annotated -> annotated as KSClassDeclaration }
-                        .forEach { classDeclaration -> add(Pair(classDeclaration.packageName.asString(), classDeclaration)) }
-                }.groupBy({ it.first }, { it.second }).entries.forEach { (packageName, services) ->
-                    generate(GENERATED_PROXY, packageName) {
-                        services.sortedBy { it.name }.forEach { generateProxy(it) }
+                    declarations.forEach { declaration ->
+                        declaration.firstOrNull(GenerateProxy::class)?.let { add(declaration) }
                     }
+                }.sortedBy { it.name }.forEach { codeWriter.generateProxy(it as KSClassDeclaration) }
+
+                fun List<KSDeclaration>.annotations(annotation: KClass<*>): KSAnnotation? {
+                    val annotations = buildList {
+                        this@annotations.forEach { declaration ->
+                            declaration.firstOrNull(annotation)?.let { add(it) }
+                        }
+                    }
+                    require(annotations.size <= 1) {
+                        "there can be at most one annotation '${annotation.simpleName}' in package '$packageName'"
+                    }
+                    return annotations.firstOrNull()
                 }
 
-                val usedPackages = mutableSetOf<String>()
-                fun forEachAnnotation(generateAnnotation: KClass<*>, block: (packageName: String, annotation: KSAnnotation) -> Unit) {
-                    buildMap {
-                        resolver.getSymbolsWithAnnotation(generateAnnotation)
-                            .map { annotated -> annotated as KSPropertyDeclaration }
-                            .forEach { file ->
-                                file.annotations
-                                    .filter { annotation -> annotation.shortName.asString() == generateAnnotation.simpleName }
-                                    .forEach { annotation ->
-                                        val packageName = file.packageName.asString()
-                                        require(put(packageName, annotation) == null) {
-                                            "annotation '${generateAnnotation.qualifiedName}' must not be duplicated in " +
-                                                "package '$packageName' @${annotation.location}"
-                                        }
-                                        require(usedPackages.add(packageName)) {
-                                            "annotation '${GenerateBinarySerializer::class.qualifiedName}' and '${GenerateDumper::class.qualifiedName}' " +
-                                                "must not be duplicated in package '$packageName' @${annotation.location}"
-                                        }
-                                    }
-                            }
-                    }.entries.forEach { (packageName, annotation) -> block(packageName, annotation) }
+                val serializer = declarations.annotations(GenerateBinarySerializer::class)
+                val dumper = declarations.annotations(GenerateDumper::class)
+                require((dumper == null) || (serializer == null) || !(serializer.argument("withDumper") as Boolean)) {
+                    "illegal use of annotations '${GenerateBinarySerializer::class.simpleName}' '${GenerateDumper::class.simpleName}' in package '$packageName'"
                 }
 
                 @Suppress("UNCHECKED_CAST")
-                forEachAnnotation(GenerateBinarySerializer::class) { packageName, annotation ->
-                    val baseEncoderClasses = annotation.argument("baseEncoderClasses") as List<KSType>
-                    val enumClasses = annotation.argument("enumClasses") as List<KSType>
-                    val treeConcreteClasses = annotation.argument("treeConcreteClasses") as List<KSType>
-                    val graphConcreteClasses = annotation.argument("graphConcreteClasses") as List<KSType>
-                    val withDumper = annotation.argument("withDumper") as Boolean
-                    require(enumClasses.size == enumClasses.toSet().size) { "enum classes must not be duplicated @${annotation.location}" }
+                if (serializer != null) {
+                    val baseEncoderClasses = serializer.argument("baseEncoderClasses") as List<KSType>
+                    val enumClasses = serializer.argument("enumClasses") as List<KSType>
+                    val treeConcreteClasses = serializer.argument("treeConcreteClasses") as List<KSType>
+                    val graphConcreteClasses = serializer.argument("graphConcreteClasses") as List<KSType>
+                    val withDumper = serializer.argument("withDumper") as Boolean
+                    require(enumClasses.size == enumClasses.toSet().size) { "enum classes must not be duplicated @${serializer.location}" }
                     enumClasses.forEach {
-                        require(it.isEnum()) { "class '${it.qualifiedName}' in enumClasses must be enum @${annotation.location}" }
+                        require(it.isEnum()) { "class '${it.qualifiedName}' in enumClasses must be enum @${serializer.location}" }
                     }
-                    annotation.checkClasses(
+                    serializer.checkClasses(
                         baseEncoderClasses.getBaseEncoderTypes() + treeConcreteClasses + graphConcreteClasses,
                         "belongs to 'enumClasses'"
                     )
-                    generate(GENERATED_BINARY_SERIALIZER, packageName) {
-                        generateBinarySerializer(baseEncoderClasses, enumClasses, treeConcreteClasses, graphConcreteClasses)
-                    }
-                    if (withDumper) generate(GENERATED_DUMPER, packageName) { generateDumper(treeConcreteClasses, graphConcreteClasses) }
+                    codeWriter.generateBinarySerializer(baseEncoderClasses, enumClasses, treeConcreteClasses, graphConcreteClasses)
+                    if (withDumper) codeWriter.generateDumper(treeConcreteClasses, graphConcreteClasses)
                 }
 
                 @Suppress("UNCHECKED_CAST")
-                forEachAnnotation(GenerateDumper::class) { packageName, annotation ->
-                    val treeConcreteClasses = annotation.argument("treeConcreteClasses") as List<KSType>
-                    val graphConcreteClasses = annotation.argument("graphConcreteClasses") as List<KSType>
-                    annotation.checkClasses(treeConcreteClasses + graphConcreteClasses, "must not be specified")
-                    generate(GENERATED_DUMPER, packageName) { generateDumper(treeConcreteClasses, graphConcreteClasses) }
+                if (dumper != null) {
+                    val treeConcreteClasses = dumper.argument("treeConcreteClasses") as List<KSType>
+                    val graphConcreteClasses = dumper.argument("graphConcreteClasses") as List<KSType>
+                    dumper.checkClasses(treeConcreteClasses + graphConcreteClasses, "must not be specified")
+                    codeWriter.generateDumper(treeConcreteClasses, graphConcreteClasses)
                 }
-        */
+            }
+        }
         return emptyList()
     }
 }
