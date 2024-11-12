@@ -17,6 +17,32 @@ import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
 import kotlin.test.assertEquals
 
+internal fun KClass<*>.isEnum() = java.isEnum
+
+internal fun checkNotEnum(classes: List<KClass<*>>, message: String) {
+    classes.firstOrNull { it.isEnum() }?.let { klass -> error("enum class '${klass.qualifiedName}' $message") }
+}
+
+internal fun KClass<*>.getAllPropertiesNotThrowable() = memberProperties
+    .filterNot { (it.name == "cause" || it.name == "message") && isSubclassOf(Throwable::class) }
+    .sortedBy { it.name }
+
+public fun CodeWriter.generateBinarySerializer(property: KProperty<Serializer>) {
+    val annotation = property.findAnnotation<GenerateBinarySerializer>()!!
+    generateBinarySerializer(
+        annotation.baseEncoderClasses.asList(),
+        annotation.enumClasses.asList(),
+        annotation.treeConcreteClasses.asList(),
+        annotation.graphConcreteClasses.asList(),
+    )
+    if (annotation.withDumper) generateDumper(annotation.treeConcreteClasses.asList(), annotation.graphConcreteClasses.asList())
+}
+
+public fun CodeWriter.generateDumper(property: KProperty<Dumper>) {
+    val annotation = property.findAnnotation<GenerateDumper>()!!
+    generateDumper(annotation.treeConcreteClasses.asList(), annotation.graphConcreteClasses.asList())
+}
+
 public enum class Mode { Verify, Write }
 
 public fun generate(sourceDir: String, packageName: String, mode: Mode, write: CodeWriter.() -> Unit) {
@@ -36,28 +62,4 @@ public fun generate(sourceDir: String, packageName: String, mode: Mode, write: C
             file.writeText(program)
         }
     }
-}
-
-internal fun checkNotEnum(classes: List<KClass<*>>, message: String) {
-    classes.firstOrNull { it.java.isEnum }?.let { klass -> error("enum class '${klass.qualifiedName}' $message") }
-}
-
-internal fun KClass<*>.getAllPropertiesNotThrowable() = memberProperties
-    .filter { !isSubclassOf(Throwable::class) || (it.name != "cause" && it.name != "message") }
-    .sortedBy { it.name }
-
-public fun CodeWriter.generateBinarySerializer(property: KProperty<Serializer>) {
-    val annotation = property.findAnnotation<GenerateBinarySerializer>()!!
-    generateBinarySerializer(
-        annotation.baseEncoderClasses.asList(),
-        annotation.enumClasses.asList(),
-        annotation.treeConcreteClasses.asList(),
-        annotation.graphConcreteClasses.asList(),
-    )
-    if (annotation.withDumper) generateDumper(annotation.treeConcreteClasses.asList(), annotation.graphConcreteClasses.asList())
-}
-
-public fun CodeWriter.generateDumper(property: KProperty<Dumper>) {
-    val annotation = property.findAnnotation<GenerateDumper>()!!
-    generateDumper(annotation.treeConcreteClasses.asList(), annotation.graphConcreteClasses.asList())
 }

@@ -29,8 +29,8 @@ private val KSClassDeclaration.withTypeParameters get() = "<${typeParameters.joi
 private val KSClassDeclaration.withTypes get() = "${qualifiedName()}${if (typeParameters.isEmpty()) "" else withTypeParameters}"
 private val KSClassDeclaration.types get() = if (typeParameters.isEmpty()) "" else " $withTypeParameters"
 
-internal fun CodeWriter.generateProxy(service: KSClassDeclaration) { // TODO: review
-    require(service.classKind == ClassKind.INTERFACE) { "'${service.qualifiedName()}' must be an interface @${service.location}" }
+internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
+    require(service.classKind == ClassKind.INTERFACE) { "'${service.qualifiedName()}' must be an interface" }
 
     val functions = service.getAllFunctions()
         .toList()
@@ -38,7 +38,7 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) { // TODO: re
         .sortedBy { it.name } // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
         .apply {
             require(map { it.name }.toSet().size == size) {
-                "interface '${service.qualifiedName()}' must not overload functions @${service.location}"
+                "interface '${service.qualifiedName()}' must not overload functions"
             }
         }
 

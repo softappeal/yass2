@@ -5,13 +5,12 @@ import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.symbolProcessorProviders
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import java.io.File
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCompilerApi::class)
-private fun executeTest(lineNumber: Int, message: String, source1: String) {
+private fun executeTest(message: String, source1: String) {
     val file = SourceFile.kotlin("Source.kt", source1)
     val result = KotlinCompilation().apply {
         classpaths = listOf(File("../yass2-core/build/classes/kotlin/jvm/main"))
@@ -20,17 +19,15 @@ private fun executeTest(lineNumber: Int, message: String, source1: String) {
     }.compile()
     assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
     assertTrue(result.messages.contains(
-        Regex("Exception: $message @FileLocation\\(filePath.*/Source.kt, lineNumber=$lineNumber\\)")
+        Regex("Exception: $message")
     ))
 }
 
 class GeneratorTest { // TODO: review
-    @Ignore
     @Test
     fun binarySerializer() {
         executeTest(
-            2,
-            "annotation 'ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer' must not be duplicated in package 'test'",
+            "there can be at most one annotation 'GenerateBinarySerializer' in package 'test'",
             """
                 package test
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], [], false)
@@ -41,21 +38,21 @@ class GeneratorTest { // TODO: review
             """,
         )
         executeTest(
-            1, "class must not be duplicated",
+            "class must not be duplicated",
             """
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [Int::class], [Int::class], false)
                 val x = 0
             """,
         )
         executeTest(
-            1, "class must not be duplicated",
+            "class must not be duplicated",
             """
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([ch.softappeal.yass2.serialize.binary.IntEncoder::class], [], [], [Int::class], false)
                 val x = 0
             """,
         )
         executeTest(
-            3, "class 'test.Test' in enumClasses must be enum",
+            "class 'test.Test' in enumClasses must be enum",
             """
                 package test
                 class Test
@@ -64,7 +61,7 @@ class GeneratorTest { // TODO: review
             """,
         )
         executeTest(
-            2, "enum classes must not be duplicated",
+            "enum classes must not be duplicated",
             """
                 enum class MyEnum
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [MyEnum::class, MyEnum::class], [], [], false)
@@ -72,7 +69,6 @@ class GeneratorTest { // TODO: review
             """,
         )
         executeTest(
-            3,
             "enum class 'test.MyEnum' belongs to 'enumClasses'",
             """
                 package test
@@ -82,7 +78,6 @@ class GeneratorTest { // TODO: review
             """,
         )
         executeTest(
-            3,
             "enum class 'test.MyEnum' belongs to 'enumClasses'",
             """
                 package test
@@ -92,7 +87,6 @@ class GeneratorTest { // TODO: review
             """,
         )
         executeTest(
-            4,
             "enum class 'test.MyEnum' belongs to 'enumClasses'",
             """
                 package test
@@ -103,7 +97,7 @@ class GeneratorTest { // TODO: review
             """,
         )
         executeTest(
-            2, "class 'test.NotRegularClass' must be concrete",
+            "class 'test.NotRegularClass' must be concrete",
             """
                 package test
                 interface NotRegularClass
@@ -112,7 +106,7 @@ class GeneratorTest { // TODO: review
             """,
         )
         executeTest(
-            2, "class 'test.AbstractClass' must be concrete",
+            "class 'test.AbstractClass' must be concrete",
             """
                 package test
                 abstract class AbstractClass
@@ -121,7 +115,7 @@ class GeneratorTest { // TODO: review
             """,
         )
         executeTest(
-            2, "class 'test.NoPrimaryConstructor' must hava a primary constructor",
+            "class 'test.NoPrimaryConstructor' must hava a primary constructor",
             """
                 package test
                 class NoPrimaryConstructor {
@@ -132,7 +126,7 @@ class GeneratorTest { // TODO: review
             """,
         )
         executeTest(
-            2, "primary constructor parameter 'x' of class 'test.ConstructorParameterIsNotProperty' must be a property",
+            "primary constructor parameter 'x' of class 'test.ConstructorParameterIsNotProperty' must be a property",
             """
                 package test
                 class ConstructorParameterIsNotProperty(x: Int)
@@ -141,7 +135,7 @@ class GeneratorTest { // TODO: review
             """,
         )
         executeTest(
-            3, "body property 'x' of 'test.BodyPropertyNotVar' must be 'var'",
+            "body property 'x' of 'test.BodyPropertyNotVar' must be 'var'",
             """
                 package test
                 class BodyPropertyNotVar {
@@ -152,7 +146,7 @@ class GeneratorTest { // TODO: review
             """,
         )
         executeTest(
-            3, "generic type 'List<Int>' must not be implicit",
+            "generic type 'List<Int>' must not be implicit",
             """
                 package test
                 class ImplicitGenericsNotAllowed {
@@ -164,11 +158,10 @@ class GeneratorTest { // TODO: review
         )
     }
 
-    @Ignore
     @Test
     fun dumper() {
         executeTest(
-            2, "annotation 'ch.softappeal.yass2.GenerateDumper' must not be duplicated in package 'test'",
+            "there can be at most one annotation 'GenerateDumper' in package 'test'",
             """
                 package test
                 @ch.softappeal.yass2.GenerateDumper([], [])
@@ -178,14 +171,14 @@ class GeneratorTest { // TODO: review
             """,
         )
         executeTest(
-            1, "class must not be duplicated",
+            "class must not be duplicated",
             """
                 @ch.softappeal.yass2.GenerateDumper([Int::class], [Int::class])
                 val x = 0
             """,
         )
         executeTest(
-            3, "enum class 'test.MyEnum' must not be specified",
+            "enum class 'test.MyEnum' must not be specified",
             """
                 package test
                 enum class MyEnum
@@ -194,7 +187,7 @@ class GeneratorTest { // TODO: review
             """,
         )
         executeTest(
-            3, "enum class 'test.MyEnum' must not be specified",
+            "enum class 'test.MyEnum' must not be specified",
             """
                 package test
                 enum class MyEnum
@@ -204,16 +197,13 @@ class GeneratorTest { // TODO: review
         )
     }
 
-    @Ignore
     @Test
     fun mixed() {
         executeTest(
-            2,
-            "annotation 'ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer' and " +
-                "'ch.softappeal.yass2.GenerateDumper' must not be duplicated in package 'test'",
+            "illegal use of annotations 'GenerateBinarySerializer' and 'GenerateDumper' in package 'test'",
             """
                 package test
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], [], false)
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], [], true)
                 val x1 = 0
 
                 @ch.softappeal.yass2.GenerateDumper([], [])
@@ -225,7 +215,7 @@ class GeneratorTest { // TODO: review
     @Test
     fun proxy() {
         executeTest(
-            3, "interface 'test.Overloaded' must not overload functions",
+            "interface 'test.Overloaded' must not overload functions",
             """
                 package test
                 @ch.softappeal.yass2.GenerateProxy
@@ -236,7 +226,7 @@ class GeneratorTest { // TODO: review
             """,
         )
         executeTest(
-            3, "'test.NotAnInterface' must be an interface",
+            "'test.NotAnInterface' must be an interface",
             """
                 package test
                 @ch.softappeal.yass2.GenerateProxy

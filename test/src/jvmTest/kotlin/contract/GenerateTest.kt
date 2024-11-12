@@ -24,9 +24,7 @@ class GenerateTest {
             "ch.softappeal.yass2.contract.reflect",
             Mode.Verify,
         ) {
-            generateProxy(Calculator::class)
-            generateProxy(Echo::class)
-            generateProxy(Mixed::class)
+            listOf(Calculator::class, Echo::class, Mixed::class).forEach(::generateProxy)
             generateBinarySerializer(::ContractSerializer)
         }
     }

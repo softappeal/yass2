@@ -5,7 +5,14 @@ import ch.softappeal.yass2.generate.CodeWriter
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
 
-internal fun CodeWriter.generateDumper(treeConcreteClasses: List<KSType>, graphConcreteClasses: List<KSType>) { // TODO: review
+internal fun CodeWriter.generateDumper(
+    treeConcreteClasses: List<KSType>,
+    graphConcreteClasses: List<KSType>,
+) {
+    val classes = treeConcreteClasses + graphConcreteClasses
+    require(classes.size == classes.toSet().size) { "class must not be duplicated" }
+    checkNotEnum(classes, "must not be specified")
+
     writeLine()
     writeNestedLine("public fun createDumper(dumpValue: kotlin.text.Appendable.(value: kotlin.Any) -> kotlin.Unit): $CSY.Dumper =") {
         writeNestedLine("$CSY.createDumper(") {

@@ -32,7 +32,7 @@ public fun CodeWriter.generateBinarySerializer(
     ) { "class must not be duplicated" }
     checkNotEnum(encoderTypes + treeConcreteClasses + graphConcreteClasses, "belongs to 'enumClasses'")
     enumClasses.forEach {
-        require(it.java.isEnum) { "class '${it.qualifiedName}' in 'enumClasses' must be enum" }
+        require(it.isEnum()) { "class '${it.qualifiedName}' in 'enumClasses' must be enum" }
     }
 
     class Property(val property: KProperty1<out Any, *>) {
