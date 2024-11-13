@@ -21,15 +21,15 @@ internal fun CodeWriter.generateBinarySerializer(
     treeConcreteClasses: List<KSType>,
     graphConcreteClasses: List<KSType>,
 ) {
-    require(enumClasses.size == enumClasses.toSet().size) { "enum classes must not be duplicated" }
-    val classes = baseEncoderClasses.getBaseEncoderTypes() + treeConcreteClasses + graphConcreteClasses
-    require(classes.size == classes.toSet().size) { "class must not be duplicated" }
-    checkNotEnum(classes, "belongs to 'enumClasses'")
-    enumClasses.forEach {
-        require(it.isEnum()) { "class '${it.qualifiedName}' in enumClasses must be enum" }
-    }
+    val baseTypes = baseEncoderClasses.getBaseEncoderTypes()
+    val baseClasses = baseTypes + enumClasses
 
-    val baseEncoderTypes = baseEncoderClasses.getBaseEncoderTypes() + enumClasses
+    val classes = baseClasses + treeConcreteClasses + graphConcreteClasses
+    require(classes.size == classes.toSet().size) { "class must not be duplicated" }
+    checkNotEnum(baseTypes + treeConcreteClasses + graphConcreteClasses, "belongs to 'enumClasses'")
+    enumClasses.forEach {
+        require(it.isEnum()) { "class '${it.qualifiedName}' in 'enumClasses' must be enum" }
+    }
 
     class Property(val property: KSPropertyDeclaration) {
         var kind: PropertyKind
@@ -43,7 +43,7 @@ internal fun CodeWriter.generateBinarySerializer(
             if (typeNotNullableName == List::class.qualifiedName || typeNotNullableName == "kotlin.collections.MutableList") {
                 encoderId = ListEncoderId.id
             } else {
-                val index = baseEncoderTypes.indexOfFirst { it == typeNotNullable }
+                val index = baseClasses.indexOfFirst { it == typeNotNullable }
                 if (index >= 0) encoderId = index + FIRST_ENCODER_ID else kind = PropertyKind.WithId
             }
         }
@@ -62,12 +62,10 @@ internal fun CodeWriter.generateBinarySerializer(
                     "class '${klass.qualifiedName()}' must hava a primary constructor"
                 )
                 val parameters = primaryConstructor.parameters
-                parameters
-                    .firstOrNull { !it.isVal && !it.isVar }
-                    ?.let { parameter ->
-                        error("primary constructor parameter '${parameter.name!!.asString()}' of class '${klass.qualifiedName()}' must be a property")
-                    }
                 parameters.forEach { parameter ->
+                    require(parameter.isVal || parameter.isVar) {
+                        "primary constructor parameter '${parameter.name!!.asString()}' of class '${klass.qualifiedName()}' must be a property"
+                    }
                     add(properties.first { it.property.name == parameter.name!!.asString() })
                 }
             }

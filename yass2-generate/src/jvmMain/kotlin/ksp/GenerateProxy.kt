@@ -32,8 +32,7 @@ private val KSClassDeclaration.types get() = if (typeParameters.isEmpty()) "" el
 internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
     require(service.classKind == ClassKind.INTERFACE) { "'${service.qualifiedName()}' must be an interface" }
 
-    val functions = service.getAllFunctions()
-        .toList()
+    val functions = service.getAllFunctions().toList()
         .filter { it.name !in AnyFunctions }
         .sortedBy { it.name } // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
         .apply {

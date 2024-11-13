@@ -14,7 +14,7 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
 
-private fun List<KClass<out BaseEncoder<*>>>.getTypes() =
+private fun List<KClass<out BaseEncoder<*>>>.getBaseEncoderTypes() =
     map { it.supertypes.first().arguments.first().type!!.classifier as KClass<*> }
 
 public fun CodeWriter.generateBinarySerializer(
@@ -23,14 +23,12 @@ public fun CodeWriter.generateBinarySerializer(
     treeConcreteClasses: List<KClass<*>>,
     graphConcreteClasses: List<KClass<*>> = emptyList(),
 ) {
-    val encoderTypes = baseEncoderClasses.getTypes()
-    val baseEncoderTypes = encoderTypes + enumClasses
+    val baseTypes = baseEncoderClasses.getBaseEncoderTypes()
+    val baseClasses = baseTypes + enumClasses
 
-    require(
-        (baseEncoderTypes + treeConcreteClasses + graphConcreteClasses).toSet().size ==
-            (baseEncoderTypes.size + treeConcreteClasses.size + graphConcreteClasses.size)
-    ) { "class must not be duplicated" }
-    checkNotEnum(encoderTypes + treeConcreteClasses + graphConcreteClasses, "belongs to 'enumClasses'")
+    val classes = baseClasses + treeConcreteClasses + graphConcreteClasses
+    require(classes.size == classes.toSet().size) { "class must not be duplicated" }
+    checkNotEnum(baseTypes + treeConcreteClasses + graphConcreteClasses, "belongs to 'enumClasses'")
     enumClasses.forEach {
         require(it.isEnum()) { "class '${it.qualifiedName}' in 'enumClasses' must be enum" }
     }
@@ -45,7 +43,7 @@ public fun CodeWriter.generateBinarySerializer(
             if (type == List::class) {
                 encoderId = ListEncoderId.id
             } else {
-                val index = baseEncoderTypes.indexOfFirst { it == type }
+                val index = baseClasses.indexOfFirst { it == type }
                 if (index >= 0) encoderId = index + FIRST_ENCODER_ID else kind = PropertyKind.WithId
             }
         }
@@ -63,8 +61,8 @@ public fun CodeWriter.generateBinarySerializer(
                 val primaryConstructor = klass.primaryConstructor ?: error(
                     "class '${klass.qualifiedName}' must hava a primary constructor"
                 )
-                val propertyNames = properties.map { it.property.name }
                 val parameterNames = primaryConstructor.valueParameters.map { it.name }
+                val propertyNames = properties.map { it.property.name }
                 parameterNames.forEach { parameterName ->
                     require(propertyNames.contains(parameterName)) {
                         "primary constructor parameter '$parameterName' of class '${klass.qualifiedName}' must be a property"

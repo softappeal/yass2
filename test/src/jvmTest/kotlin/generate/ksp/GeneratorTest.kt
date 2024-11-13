@@ -10,11 +10,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCompilerApi::class)
-private fun executeTest(message: String, source1: String) {
-    val file = SourceFile.kotlin("Source.kt", source1)
+private fun executeTest(message: String, source: String) {
     val result = KotlinCompilation().apply {
         classpaths = listOf(File("../yass2-core/build/classes/kotlin/jvm/main"))
-        sources = listOf(file)
+        sources = listOf(SourceFile.kotlin("Source.kt", source))
         symbolProcessorProviders = listOf(Yass2Provider())
     }.compile()
     assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
@@ -23,48 +22,55 @@ private fun executeTest(message: String, source1: String) {
     ))
 }
 
-class GeneratorTest { // TODO: review
+class GeneratorTest {
     @Test
     fun binarySerializer() {
         executeTest(
-            "there can be at most one annotation 'GenerateBinarySerializer' in package 'test'",
+            "body property 'x' of 'test.BodyPropertyNotVar' must be 'var'",
             """
                 package test
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], [], false)
-                val x1 = 0
-
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], [], false)
-                val x2 = 0
-            """,
-        )
-        executeTest(
-            "class must not be duplicated",
-            """
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [Int::class], [Int::class], false)
+                class BodyPropertyNotVar {
+                    val x: Int = 0
+                }
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [BodyPropertyNotVar::class], [], false)
                 val x = 0
             """,
         )
         executeTest(
-            "class must not be duplicated",
-            """
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([ch.softappeal.yass2.serialize.binary.IntEncoder::class], [], [], [Int::class], false)
-                val x = 0
-            """,
-        )
-        executeTest(
-            "class 'test.Test' in enumClasses must be enum",
+            "class 'test.NoPrimaryConstructor' must hava a primary constructor",
             """
                 package test
-                class Test
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [Test::class], [], [], false)
+                class NoPrimaryConstructor {
+                    constructor()
+                }
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [NoPrimaryConstructor::class], [], false)
                 val x = 0
             """,
         )
         executeTest(
-            "enum classes must not be duplicated",
+            "primary constructor parameter 'x' of class 'test.ConstructorParameterIsNotProperty' must be a property",
             """
-                enum class MyEnum
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [MyEnum::class, MyEnum::class], [], [], false)
+                package test
+                class ConstructorParameterIsNotProperty(x: Int)
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [ConstructorParameterIsNotProperty::class], [], false)
+                val x = 0
+            """,
+        )
+        executeTest(
+            "class 'test.NotRegularClass' must be concrete",
+            """
+                package test
+                interface NotRegularClass
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [NotRegularClass::class], [], false)
+                val x = 0
+            """,
+        )
+        executeTest(
+            "class 'test.AbstractClass' must be concrete",
+            """
+                package test
+                abstract class AbstractClass
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [AbstractClass::class], [], false)
                 val x = 0
             """,
         )
@@ -97,52 +103,44 @@ class GeneratorTest { // TODO: review
             """,
         )
         executeTest(
-            "class 'test.NotRegularClass' must be concrete",
+            "class must not be duplicated",
             """
-                package test
-                interface NotRegularClass
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [NotRegularClass::class], [], false)
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [Int::class], [Int::class], false)
                 val x = 0
             """,
         )
         executeTest(
-            "class 'test.AbstractClass' must be concrete",
+            "class must not be duplicated",
             """
-                package test
-                abstract class AbstractClass
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [AbstractClass::class], [], false)
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([ch.softappeal.yass2.serialize.binary.IntEncoder::class], [], [], [Int::class], false)
                 val x = 0
             """,
         )
         executeTest(
-            "class 'test.NoPrimaryConstructor' must hava a primary constructor",
+            "class must not be duplicated",
             """
-                package test
-                class NoPrimaryConstructor {
-                    constructor()
-                }
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [NoPrimaryConstructor::class], [], false)
+                enum class MyEnum
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [MyEnum::class, MyEnum::class], [], [], false)
                 val x = 0
             """,
         )
         executeTest(
-            "primary constructor parameter 'x' of class 'test.ConstructorParameterIsNotProperty' must be a property",
+            "class 'test.Test' in 'enumClasses' must be enum",
             """
                 package test
-                class ConstructorParameterIsNotProperty(x: Int)
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [ConstructorParameterIsNotProperty::class], [], false)
+                class Test
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [Test::class], [], [], false)
                 val x = 0
             """,
         )
         executeTest(
-            "body property 'x' of 'test.BodyPropertyNotVar' must be 'var'",
+            "there can be at most one annotation 'GenerateBinarySerializer' in package 'test'",
             """
                 package test
-                class BodyPropertyNotVar {
-                    val x: Int = 0
-                }
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [BodyPropertyNotVar::class], [], false)
-                val x = 0
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], [], false)
+                val x1 = 0
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], [], false)
+                val x2 = 0
             """,
         )
         executeTest(
@@ -205,7 +203,6 @@ class GeneratorTest { // TODO: review
                 package test
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], [], true)
                 val x1 = 0
-
                 @ch.softappeal.yass2.GenerateDumper([], [])
                 val x2 = 0
             """,
@@ -215,6 +212,14 @@ class GeneratorTest { // TODO: review
     @Test
     fun proxy() {
         executeTest(
+            "'test.NotAnInterface' must be an interface",
+            """
+                package test
+                @ch.softappeal.yass2.GenerateProxy
+                class NotAnInterface
+            """,
+        )
+        executeTest(
             "interface 'test.Overloaded' must not overload functions",
             """
                 package test
@@ -223,14 +228,6 @@ class GeneratorTest { // TODO: review
                     suspend fun f()
                     suspend fun f(i: Int)
                 }
-            """,
-        )
-        executeTest(
-            "'test.NotAnInterface' must be an interface",
-            """
-                package test
-                @ch.softappeal.yass2.GenerateProxy
-                class NotAnInterface
             """,
         )
     }
