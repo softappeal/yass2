@@ -95,7 +95,7 @@ class SocketTest {
                 tcp.connect(serverSocket.localAddress)
                     .receiveLoop(PacketTransport, initiatorSessionFactory(1000))
             } finally {
-                delay(100.milliseconds) // give some time to shut down
+                delay(500.milliseconds) // give some time to shut down
                 acceptorJob.cancel()
             }
         }

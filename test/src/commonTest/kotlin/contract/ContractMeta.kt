@@ -12,8 +12,8 @@ import ch.softappeal.yass2.transport.binaryMessageSerializer
 import ch.softappeal.yass2.transport.session.binaryPacketSerializer
 
 // TODO: shows workaround for https://slack-chats.kotlinlang.org/t/16366233/i-m-trying-out-kotlin-2-0-beta-3-and-it-looks-like-generated
-//   It's expected that common code cannot reference generated code in the compilation of platform code.
-//   Generated codes are treated as platform code and K2 explicitly disallow references from common to platform (you'll have to use expect/actual).
+//       It's expected that common code cannot reference generated code in the compilation of platform code.
+//       Generated codes are treated as platform code and K2 explicitly disallow references from common to platform (you'll have to use expect/actual).
 expect fun createContractSerializer(): Serializer
 
 @GenerateBinarySerializer(

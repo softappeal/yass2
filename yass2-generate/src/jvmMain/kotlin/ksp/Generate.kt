@@ -67,7 +67,7 @@ internal fun KSTypeReference.type(): String {
     return appendable.toString()
 }
 
-// NOTE: default values in annotations don't yet work for multiplatform libraries;
+// TODO: default values in annotations don't yet work for multiplatform libraries;
 //       see https://youtrack.jetbrains.com/issue/KT-59526/Store-annotation-default-values-in-metadata-on-JVM
 private fun KSAnnotation.argument(name: String) = arguments.first { it.name!!.asString() == name }.value!!
 
