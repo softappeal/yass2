@@ -1,7 +1,7 @@
 ### yass2 (Yet Another Service Solution)
 
 * yass2 is
-    * a small [Kotlin](https://kotlinlang.org/) [Multiplatform](https://kotlinlang.org/docs/multiplatform-get-started.html) library
+    * a small [Kotlin](https://kotlinlang.org/) [Multiplatform](https://kotlinlang.org/docs/multiplatform-intro.html) library
     * for efficient asynchronous/non-blocking [Coroutines](https://kotlinlang.org/docs/coroutines-guide.html) based peer-to-peer communication
     * enforcing type-safe contracts with interfaces and data transfer objects
 
@@ -15,18 +15,19 @@
                        +-----------------------------------------+
 
   client process                             server process
-+----------------------------------+       +----------------------------------------------------+
-| // contract usage                |       | // contract implementation                         |
-| val calculator: Calculator = ... |       | class CalculatorImpl : Calculator {                |
-| println(calculator.add(1, 2))    |       |   override suspend fun add(a: Int, b: Int) = a + b |
-|                                  |       | }                                                  |
-|..................................|       |....................................................|
-|         contract library         |       |                 contract library                   |
-|..................................|       |....................................................|
-|          yass2 library           |       |                  yass2 library                     |
-|..................................|       |....................................................|
-|        transport library         | <---> |                transport library                   |
-+----------------------------------+       +----------------------------------------------------+
++----------------------------------+       +----------------------------------------------+
+| // contract usage                |       | // contract implementation                   |
+| val calculator: Calculator = ... |       | class CalculatorImpl : Calculator {          |
+| println(calculator.add(1, 2))    |       |   override suspend fun add(a: Int, b: Int) = |
+|                                  |       |     a + b                                    |
+|                                  |       | }                                            |
+|..................................|       |..............................................|
+|         contract library         |       |              contract library                |
+|..................................|       |..............................................|
+|          yass2 library           |       |               yass2 library                  |
+|..................................|       |..............................................|
+|        transport library         | <---> |             transport library                |
++----------------------------------+       +----------------------------------------------+
 ```
 
 * provides unidirectional and session based bidirectional remoting
