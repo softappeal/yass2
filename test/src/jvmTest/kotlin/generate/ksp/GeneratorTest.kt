@@ -220,7 +220,7 @@ class GeneratorTest {
             """,
         )
         executeTest(
-            "interface 'test.Overloaded' must not overload functions",
+            "interface 'test.Overloaded' must not overload methods",
             """
                 package test
                 @ch.softappeal.yass2.GenerateProxy

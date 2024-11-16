@@ -102,7 +102,7 @@ class GeneratorTest {
             "'ch.softappeal.yass2.generate.reflect.NotAnInterface' must be an interface"
         ) { codeWriter().generateProxy(NotAnInterface::class) }
         assertFailsMessage<IllegalArgumentException>(
-            "interface 'ch.softappeal.yass2.generate.reflect.Overloaded' must not overload functions"
+            "interface 'ch.softappeal.yass2.generate.reflect.Overloaded' must not overload methods"
         ) { codeWriter().generateProxy(Overloaded::class) }
     }
 }

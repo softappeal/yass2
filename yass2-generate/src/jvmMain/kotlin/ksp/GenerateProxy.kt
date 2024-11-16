@@ -2,6 +2,7 @@ package ch.softappeal.yass2.generate.ksp
 
 import ch.softappeal.yass2.generate.CSY
 import ch.softappeal.yass2.generate.CodeWriter
+import ch.softappeal.yass2.generate.sortMethods
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.Service
 import ch.softappeal.yass2.remote.ServiceId
@@ -34,12 +35,7 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
 
     val functions = service.getAllFunctions().toList()
         .filter { it.name !in AnyFunctions }
-        .sortedBy { it.name } // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
-        .apply {
-            require(map { it.name }.toSet().size == size) {
-                "interface '${service.qualifiedName()}' must not overload functions"
-            }
-        }
+        .sortMethods({ name }, { service.qualifiedName() })
 
     writeLine()
     writeNestedLine("public fun${service.types} ${service.withTypes}.proxy(") {

@@ -30,6 +30,13 @@ internal fun Appendable.appendPackage(packageName: String) {
 
 internal enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
 
+internal fun <T> List<T>.sortMethods(methodName: T.() -> String, interfaceName: () -> String) = sortedBy { it.methodName() }
+    .apply {
+        require(map { it.methodName() }.toSet().size == size) {
+            "interface '${interfaceName()}' must not overload methods" // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
+        }
+    }
+
 public class CodeWriter(private val appendable: Appendable, private val depth: Int = 0) {
     public fun writeLine() {
         appendable.appendLine()
