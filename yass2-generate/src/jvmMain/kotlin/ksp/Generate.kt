@@ -5,6 +5,8 @@ import ch.softappeal.yass2.GenerateProxy
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import ch.softappeal.yass2.generate.appendPackage
+import ch.softappeal.yass2.generate.duplicates
+import ch.softappeal.yass2.generate.hasNoDuplicates
 import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
@@ -25,7 +27,11 @@ import kotlin.reflect.KClass
 internal fun KSType.isEnum() = (declaration as KSClassDeclaration).classKind == ClassKind.ENUM_CLASS
 
 internal fun checkNotEnum(classes: List<KSType>, message: String) {
-    classes.firstOrNull { it.isEnum() }?.let { error("enum class '${it.qualifiedName}' $message") }
+    classes.firstOrNull { it.isEnum() }?.let { error("enum class ${it.qualifiedName} $message") }
+}
+
+internal fun List<KSType>.checkNotDuplicated() {
+    require(hasNoDuplicates()) { "classes ${duplicates()} are duplicated" }
 }
 
 internal fun KSClassDeclaration.getAllPropertiesNotThrowable() = getAllProperties().toList()
@@ -38,7 +44,7 @@ internal val KSType.qualifiedName get() = declaration.qualifiedName()
 
 internal fun KSTypeReference.type(): String {
     fun Appendable.appendGenerics() {
-        val element = element ?: error("generic type '${this@type}' must not be implicit")
+        val element = element ?: error("generic type ${this@type} must not be implicit")
         val typeArguments = element.typeArguments
         if (typeArguments.isEmpty()) return
         append('<')
@@ -108,7 +114,7 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
                         }
                     }
                     require(annotations.size <= 1) {
-                        "there can be at most one annotation '${annotation.simpleName}' in package '$packageName'"
+                        "there can be at most one annotation ${annotation.simpleName} in package $packageName"
                     }
                     return annotations.firstOrNull()
                 }
@@ -116,7 +122,7 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
                 val serializer = declarations.annotation(GenerateBinarySerializer::class)
                 val dumper = declarations.annotation(GenerateDumper::class)
                 require((dumper == null) || (serializer == null) || !(serializer.argument("withDumper") as Boolean)) {
-                    "illegal use of annotations '${GenerateBinarySerializer::class.simpleName}' and '${GenerateDumper::class.simpleName}' in package '$packageName'"
+                    "illegal use of annotations ${GenerateBinarySerializer::class.simpleName} and ${GenerateDumper::class.simpleName} in package $packageName"
                 }
 
                 if (serializer != null) {

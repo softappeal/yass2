@@ -10,7 +10,7 @@ internal fun CodeWriter.generateDumper(
     graphConcreteClasses: List<KSType>,
 ) {
     val classes = treeConcreteClasses + graphConcreteClasses
-    require(classes.size == classes.toSet().size) { "class must not be duplicated" }
+    (treeConcreteClasses + graphConcreteClasses).checkNotDuplicated()
     checkNotEnum(classes, "must not be specified")
 
     writeLine()

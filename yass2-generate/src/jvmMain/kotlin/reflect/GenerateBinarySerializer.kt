@@ -26,11 +26,10 @@ public fun CodeWriter.generateBinarySerializer(
     val baseTypes = baseEncoderClasses.getBaseEncoderTypes()
     val baseClasses = baseTypes + enumClasses
 
-    val classes = baseClasses + treeConcreteClasses + graphConcreteClasses
-    require(classes.size == classes.toSet().size) { "class must not be duplicated" }
-    checkNotEnum(baseTypes + treeConcreteClasses + graphConcreteClasses, "belongs to 'enumClasses'")
+    (baseClasses + treeConcreteClasses + graphConcreteClasses).checkNotDuplicated()
+    checkNotEnum(baseTypes + treeConcreteClasses + graphConcreteClasses, "belongs to enumClasses")
     enumClasses.forEach {
-        require(it.isEnum()) { "class '${it.qualifiedName}' in 'enumClasses' must be enum" }
+        require(it.isEnum()) { "class ${it.qualifiedName} in enumClasses must be enum" }
     }
 
     class Property(val property: KProperty1<out Any, *>) {
@@ -55,17 +54,17 @@ public fun CodeWriter.generateBinarySerializer(
         val all: List<Property>
 
         init {
-            require(!klass.isAbstract) { "class '${klass.qualifiedName}' must be concrete" }
+            require(!klass.isAbstract) { "class ${klass.qualifiedName} must be concrete" }
             val properties = klass.getAllPropertiesNotThrowable().map { Property(it) }
             parameter = buildList {
                 val primaryConstructor = klass.primaryConstructor ?: error(
-                    "class '${klass.qualifiedName}' must hava a primary constructor"
+                    "class ${klass.qualifiedName} must hava a primary constructor"
                 )
                 val parameterNames = primaryConstructor.valueParameters.map { it.name }
                 val propertyNames = properties.map { it.property.name }
                 parameterNames.forEach { parameterName ->
                     require(propertyNames.contains(parameterName)) {
-                        "primary constructor parameter '$parameterName' of class '${klass.qualifiedName}' must be a property"
+                        "primary constructor parameter $parameterName of class ${klass.qualifiedName} must be a property"
                     }
                     add(properties.first { it.property.name == parameterName })
                 }
@@ -75,7 +74,7 @@ public fun CodeWriter.generateBinarySerializer(
                     .filter { it !in parameter }
                     .forEach { property ->
                         require(property.property is KMutableProperty1<out Any, *>) {
-                            "body property '${property.property.name}' of '${klass.qualifiedName}' must be 'var'"
+                            "body property ${property.property.name} of ${klass.qualifiedName} must be var"
                         }
                         add(property)
                     }

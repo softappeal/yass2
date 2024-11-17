@@ -31,7 +31,7 @@ private val KSClassDeclaration.withTypes get() = "${qualifiedName()}${if (typePa
 private val KSClassDeclaration.types get() = if (typeParameters.isEmpty()) "" else " $withTypeParameters"
 
 internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
-    require(service.classKind == ClassKind.INTERFACE) { "'${service.qualifiedName()}' must be an interface" }
+    require(service.classKind == ClassKind.INTERFACE) { "${service.qualifiedName()} must be an interface" }
 
     val functions = service.getAllFunctions().toList()
         .filter { it.name !in AnyFunctions }

@@ -30,10 +30,18 @@ internal fun Appendable.appendPackage(packageName: String) {
 
 internal enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
 
+public fun <T> List<T>.hasNoDuplicates() = size == toSet().size
+
+public fun <T> List<T>.duplicates(): List<T> {
+    val seen = HashSet<T>()
+    return filter { !seen.add(it) }
+}
+
 internal fun <T> List<T>.sortMethods(methodName: T.() -> String, interfaceName: () -> String) = sortedBy { it.methodName() }
     .apply {
-        require(map { it.methodName() }.toSet().size == size) {
-            "interface '${interfaceName()}' must not overload methods" // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
+        val methodNames = map { it.methodName() }
+        require(methodNames.hasNoDuplicates()) {
+            "interface ${interfaceName()} has overloaded methods ${methodNames.duplicates()}" // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
         }
     }
 

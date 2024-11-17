@@ -1,7 +1,7 @@
 [versions]
 
 kotlin                 = "2.0.21"        # https://github.com/JetBrains/kotlin
-ksp                    = "2.0.21-1.0.27" # https://github.com/google/ksp
+ksp                    = "2.0.21-1.0.28" # https://github.com/google/ksp
 kotlinx-coroutines     = "1.9.0"         # https://github.com/Kotlin/kotlinx.coroutines
 ktor                   = "3.0.1"         # https://github.com/ktorio/ktor
 kotlin-compile-testing = "1.6.0"         # https://github.com/tschuchortdev/kotlin-compile-testing

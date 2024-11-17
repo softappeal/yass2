@@ -30,7 +30,7 @@ private val KClass<*>.withTypes get() = "$qualifiedName${if (typeParameters.isEm
 private val KClass<*>.types get() = if (typeParameters.isEmpty()) "" else " $withTypeParameters"
 
 public fun CodeWriter.generateProxy(service: KClass<*>) {
-    require(service.java.isInterface) { "'${service.qualifiedName}' must be an interface" }
+    require(service.java.isInterface) { "${service.qualifiedName} must be an interface" }
 
     val functions = service.memberFunctions
         .filter { it.javaMethod!!.declaringClass != Object::class.java }

@@ -9,7 +9,7 @@ public fun CodeWriter.generateDumper(
     graphConcreteClasses: List<KClass<*>> = emptyList(),
 ) {
     val classes = treeConcreteClasses + graphConcreteClasses
-    require(classes.size == classes.toSet().size) { "class must not be duplicated" }
+    classes.checkNotDuplicated()
     checkNotEnum(classes, "must not be specified")
 
     writeLine()

@@ -5,6 +5,8 @@ import ch.softappeal.yass2.GenerateDumper
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import ch.softappeal.yass2.generate.appendPackage
+import ch.softappeal.yass2.generate.duplicates
+import ch.softappeal.yass2.generate.hasNoDuplicates
 import ch.softappeal.yass2.generate.readAndFixLines
 import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
@@ -20,7 +22,11 @@ import kotlin.test.assertEquals
 internal fun KClass<*>.isEnum() = java.isEnum
 
 internal fun checkNotEnum(classes: List<KClass<*>>, message: String) {
-    classes.firstOrNull { it.isEnum() }?.let { klass -> error("enum class '${klass.qualifiedName}' $message") }
+    classes.firstOrNull { it.isEnum() }?.let { klass -> error("enum class ${klass.qualifiedName} $message") }
+}
+
+internal fun List<KClass<*>>.checkNotDuplicated() {
+    require(hasNoDuplicates()) { "classes ${duplicates().map { it.qualifiedName }} are duplicated" }
 }
 
 internal fun KClass<*>.getAllPropertiesNotThrowable() = memberProperties

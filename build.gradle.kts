@@ -2,6 +2,7 @@
 
 @file:Suppress("SpellCheckingInspection")
 
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import java.util.regex.Pattern
 
@@ -49,6 +50,7 @@ allprojects {
         linuxArm64()
         macosArm64()
         explicitApi()
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             allWarningsAsErrors = true
         }
