@@ -10,7 +10,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCompilerApi::class)
-private fun executeTest(message: String, source: String) {
+private fun executeTest(message: String, source: String, lineNumber: Int) {
     val result = KotlinCompilation().apply {
         classpaths = listOf(File("../yass2-core/build/classes/kotlin/jvm/main"))
         sources = listOf(SourceFile.kotlin("Source.kt", source))
@@ -18,6 +18,8 @@ private fun executeTest(message: String, source: String) {
     }.compile()
     assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
     assertTrue(result.messages.contains("Exception: $message"))
+    assertTrue(result.messages.contains(" @FileLocation(filePath="))
+    assertTrue(result.messages.contains("/Source.kt, lineNumber=$lineNumber)"))
 }
 
 class GeneratorTest {
@@ -33,6 +35,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [BodyPropertyNotVar::class], [], false)
                 val x = 0
             """,
+            5,
         )
         executeTest(
             "class test.NoPrimaryConstructor must hava a primary constructor",
@@ -44,6 +47,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [NoPrimaryConstructor::class], [], false)
                 val x = 0
             """,
+            5,
         )
         executeTest(
             "primary constructor parameter x of class test.ConstructorParameterIsNotProperty must be a property",
@@ -53,6 +57,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [ConstructorParameterIsNotProperty::class], [], false)
                 val x = 0
             """,
+            3,
         )
         executeTest(
             "class test.NotRegularClass must be concrete",
@@ -62,6 +67,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [NotRegularClass::class], [], false)
                 val x = 0
             """,
+            3,
         )
         executeTest(
             "class test.AbstractClass must be concrete",
@@ -71,6 +77,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [AbstractClass::class], [], false)
                 val x = 0
             """,
+            3,
         )
         executeTest(
             "enum class test.MyEnum belongs to enumClasses",
@@ -80,6 +87,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], [MyEnum::class], false)
                 val x = 0
             """,
+            3,
         )
         executeTest(
             "enum class test.MyEnum belongs to enumClasses",
@@ -89,6 +97,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [MyEnum::class], [], false)
                 val x = 0
             """,
+            3,
         )
         executeTest(
             "enum class test.MyEnum belongs to enumClasses",
@@ -99,6 +108,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([MyEnumEncoder::class], [], [], [], false)
                 val x = 0
             """,
+            4,
         )
         executeTest(
             "classes [Int] are duplicated",
@@ -106,6 +116,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [Int::class], [Int::class], false)
                 val x = 0
             """,
+            1,
         )
         executeTest(
             "classes [Int] are duplicated",
@@ -113,6 +124,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([ch.softappeal.yass2.serialize.binary.IntEncoder::class], [], [], [Int::class], false)
                 val x = 0
             """,
+            1,
         )
         executeTest(
             "classes [MyEnum] are duplicated",
@@ -121,6 +133,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [MyEnum::class, MyEnum::class], [], [], false)
                 val x = 0
             """,
+            2,
         )
         executeTest(
             "class test.Test in enumClasses must be enum",
@@ -130,6 +143,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [Test::class], [], [], false)
                 val x = 0
             """,
+            3,
         )
         executeTest(
             "there can be at most one annotation GenerateBinarySerializer in package test",
@@ -140,6 +154,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], [], false)
                 val x2 = 0
             """,
+            2,
         )
         executeTest(
             "generic type List<Int> must not be implicit",
@@ -151,6 +166,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [ImplicitGenericsNotAllowed::class], [], false)
                 val x = 0
             """,
+            3,
         )
     }
 
@@ -165,6 +181,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.GenerateDumper([], [])
                 val x2 = 0
             """,
+            2,
         )
         executeTest(
             "classes [Int] are duplicated",
@@ -172,6 +189,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.GenerateDumper([Int::class], [Int::class])
                 val x = 0
             """,
+            1,
         )
         executeTest(
             "enum class test.MyEnum must not be specified",
@@ -181,6 +199,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.GenerateDumper([MyEnum::class], [])
                 val x = 0
             """,
+            3,
         )
         executeTest(
             "enum class test.MyEnum must not be specified",
@@ -190,6 +209,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.GenerateDumper([], [MyEnum::class])
                 val x = 0
             """,
+            3,
         )
     }
 
@@ -204,6 +224,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.GenerateDumper([], [])
                 val x2 = 0
             """,
+            2,
         )
     }
 
@@ -216,6 +237,7 @@ class GeneratorTest {
                 @ch.softappeal.yass2.GenerateProxy
                 class NotAnInterface
             """,
+            3,
         )
         executeTest(
             "interface test.Overloaded has overloaded methods [f]",
@@ -227,6 +249,7 @@ class GeneratorTest {
                     suspend fun f(i: Int)
                 }
             """,
+            3,
         )
     }
 }

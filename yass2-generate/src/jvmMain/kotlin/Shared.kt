@@ -37,13 +37,14 @@ public fun <T> List<T>.duplicates(): List<T> {
     return filter { !seen.add(it) }
 }
 
-internal fun <T> List<T>.sortMethods(methodName: T.() -> String, interfaceName: () -> String) = sortedBy { it.methodName() }
-    .apply {
-        val methodNames = map { it.methodName() }
-        require(methodNames.hasNoDuplicates()) {
-            "interface ${interfaceName()} has overloaded methods ${methodNames.duplicates()}" // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
+internal fun <T> List<T>.sortMethods(methodName: T.() -> String, interfaceName: () -> String, location: String = "") =
+    sortedBy { it.methodName() }
+        .apply {
+            val methodNames = map { it.methodName() }
+            require(methodNames.hasNoDuplicates()) {
+                "interface ${interfaceName()} has overloaded methods ${methodNames.duplicates()}$location" // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
+            }
         }
-    }
 
 public class CodeWriter(private val appendable: Appendable, private val depth: Int = 0) {
     public fun writeLine() {

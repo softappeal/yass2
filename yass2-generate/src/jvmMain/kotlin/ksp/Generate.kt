@@ -21,17 +21,18 @@ import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSTypeParameter
 import com.google.devtools.ksp.symbol.KSTypeReference
+import com.google.devtools.ksp.symbol.Location
 import com.google.devtools.ksp.symbol.Variance
 import kotlin.reflect.KClass
 
 internal fun KSType.isEnum() = (declaration as KSClassDeclaration).classKind == ClassKind.ENUM_CLASS
 
-internal fun checkNotEnum(classes: List<KSType>, message: String) {
-    classes.firstOrNull { it.isEnum() }?.let { error("enum class ${it.qualifiedName} $message") }
+internal fun checkNotEnum(location: Location, classes: List<KSType>, message: String) {
+    classes.firstOrNull { it.isEnum() }?.let { error("enum class ${it.qualifiedName} $message @$location") }
 }
 
-internal fun List<KSType>.checkNotDuplicated() {
-    require(hasNoDuplicates()) { "classes ${duplicates()} are duplicated" }
+internal fun List<KSType>.checkNotDuplicated(location: Location) {
+    require(hasNoDuplicates()) { "classes ${duplicates()} are duplicated @$location" }
 }
 
 internal fun KSClassDeclaration.getAllPropertiesNotThrowable() = getAllProperties().toList()
@@ -44,7 +45,7 @@ internal val KSType.qualifiedName get() = declaration.qualifiedName()
 
 internal fun KSTypeReference.type(): String {
     fun Appendable.appendGenerics() {
-        val element = element ?: error("generic type ${this@type} must not be implicit")
+        val element = element ?: error("generic type ${this@type} must not be implicit @${parent?.location}")
         val typeArguments = element.typeArguments
         if (typeArguments.isEmpty()) return
         append('<')
@@ -114,7 +115,7 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
                         }
                     }
                     require(annotations.size <= 1) {
-                        "there can be at most one annotation ${annotation.simpleName} in package $packageName"
+                        "there can be at most one annotation ${annotation.simpleName} in package $packageName @${annotations.first().location}"
                     }
                     return annotations.firstOrNull()
                 }
@@ -122,7 +123,7 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
                 val serializer = declarations.annotation(GenerateBinarySerializer::class)
                 val dumper = declarations.annotation(GenerateDumper::class)
                 require((dumper == null) || (serializer == null) || !(serializer.argument("withDumper") as Boolean)) {
-                    "illegal use of annotations ${GenerateBinarySerializer::class.simpleName} and ${GenerateDumper::class.simpleName} in package $packageName"
+                    "illegal use of annotations ${GenerateBinarySerializer::class.simpleName} and ${GenerateDumper::class.simpleName} in package $packageName @${serializer!!.location}"
                 }
 
                 if (serializer != null) {
@@ -131,14 +132,16 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
                     val treeConcreteClasses = serializer.argument("treeConcreteClasses") as List<KSType>
                     val graphConcreteClasses = serializer.argument("graphConcreteClasses") as List<KSType>
                     val withDumper = serializer.argument("withDumper") as Boolean
-                    codeWriter.generateBinarySerializer(baseEncoderClasses, enumClasses, treeConcreteClasses, graphConcreteClasses)
-                    if (withDumper) codeWriter.generateDumper(treeConcreteClasses, graphConcreteClasses)
+                    codeWriter.generateBinarySerializer(
+                        serializer.location, baseEncoderClasses, enumClasses, treeConcreteClasses, graphConcreteClasses
+                    )
+                    if (withDumper) codeWriter.generateDumper(serializer.location, treeConcreteClasses, graphConcreteClasses)
                 }
 
                 if (dumper != null) {
                     val treeConcreteClasses = dumper.argument("treeConcreteClasses") as List<KSType>
                     val graphConcreteClasses = dumper.argument("graphConcreteClasses") as List<KSType>
-                    codeWriter.generateDumper(treeConcreteClasses, graphConcreteClasses)
+                    codeWriter.generateDumper(dumper.location, treeConcreteClasses, graphConcreteClasses)
                 }
             }
         }

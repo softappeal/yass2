@@ -4,14 +4,16 @@ import ch.softappeal.yass2.generate.CSY
 import ch.softappeal.yass2.generate.CodeWriter
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.Location
 
 internal fun CodeWriter.generateDumper(
+    location: Location,
     treeConcreteClasses: List<KSType>,
     graphConcreteClasses: List<KSType>,
 ) {
     val classes = treeConcreteClasses + graphConcreteClasses
-    (treeConcreteClasses + graphConcreteClasses).checkNotDuplicated()
-    checkNotEnum(classes, "must not be specified")
+    (treeConcreteClasses + graphConcreteClasses).checkNotDuplicated(location)
+    checkNotEnum(location, classes, "must not be specified")
 
     writeLine()
     writeNestedLine("public fun createDumper(dumpValue: kotlin.text.Appendable.(value: kotlin.Any) -> kotlin.Unit): $CSY.Dumper =") {
