@@ -11,15 +11,11 @@ import ch.softappeal.yass2.transport.Transport
 import io.ktor.network.sockets.Socket
 import io.ktor.network.sockets.openReadChannel
 import io.ktor.network.sockets.openWriteChannel
-import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.core.use
-import io.ktor.utils.io.readInt
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
-
-private suspend fun ByteReadChannel.read(transport: Transport): Any? = read(transport, readInt())
 
 public typealias SocketConnector = suspend () -> Socket
 

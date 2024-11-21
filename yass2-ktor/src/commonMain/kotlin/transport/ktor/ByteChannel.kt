@@ -5,6 +5,7 @@ import ch.softappeal.yass2.transport.Transport
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.ByteWriteChannel
 import io.ktor.utils.io.readFully
+import io.ktor.utils.io.readInt
 import io.ktor.utils.io.writeFully
 import io.ktor.utils.io.writeInt
 
@@ -22,3 +23,5 @@ internal suspend fun ByteReadChannel.read(transport: Transport, length: Int): An
         check(reader.isDrained)
     }
 }
+
+internal suspend fun ByteReadChannel.read(transport: Transport): Any? = read(transport, readInt())
