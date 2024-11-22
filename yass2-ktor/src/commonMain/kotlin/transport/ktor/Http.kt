@@ -13,13 +13,12 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.content.OutgoingContent
 import io.ktor.http.contentLength
 import io.ktor.utils.io.ByteWriteChannel
-import io.ktor.utils.io.writeFully
 
 internal fun Transport.write(message: Message): OutgoingContent.WriteChannelContent {
     val writer = createWriter()
     write(writer, message)
     return object : OutgoingContent.WriteChannelContent() {
-        override suspend fun writeTo(channel: ByteWriteChannel) = channel.writeFully(writer.buffer, 0, writer.current)
+        override suspend fun writeTo(channel: ByteWriteChannel) = channel.writeFully(writer)
         override val contentLength get() = writer.current.toLong()
     }
 }
