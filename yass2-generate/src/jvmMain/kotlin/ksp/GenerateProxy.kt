@@ -38,7 +38,7 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
         .sortMethods({ name }, { service.qualifiedName() }, " @${service.location}")
 
     writeLine()
-    writeNestedLine("public fun${service.types} ${service.withTypes}.proxy(") {
+    writeNestedLine("public ${service.actual()}fun${service.types} ${service.withTypes}.proxy(") {
         if (functions.any { !it.isSuspend }) writeNestedLine("intercept: $CSY.Interceptor,")
         if (functions.any { it.isSuspend }) writeNestedLine("suspendIntercept: $CSY.SuspendInterceptor,")
     }
@@ -64,7 +64,7 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
     if (functions.any { !it.isSuspend }) return
 
     writeLine()
-    writeNestedLine("public fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.proxy(") {
+    writeNestedLine("public ${service.actual()}fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.proxy(") {
         writeNestedLine("tunnel: $CSY.remote.Tunnel,")
     }
     writeNestedLine("): ${service.withTypes} =") {
@@ -87,7 +87,7 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
     }
 
     writeLine()
-    writeNestedLine("public fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.service(") {
+    writeNestedLine("public ${service.actual()}fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.service(") {
         writeNestedLine("implementation: ${service.withTypes},")
     }
     writeNestedLine("): ${Service::class.qualifiedName} =") {

@@ -17,11 +17,12 @@ private fun List<KSType>.getBaseEncoderTypes() =
     map { (it.declaration as KSClassDeclaration).superTypes.first().element!!.typeArguments.first().type!!.resolve() }
 
 internal fun CodeWriter.generateBinarySerializer(
-    location: Location,
     baseEncoderClasses: List<KSType>,
     enumClasses: List<KSType>,
     treeConcreteClasses: List<KSType>,
     graphConcreteClasses: List<KSType>,
+    actual: String,
+    location: Location,
 ) {
     val baseTypes = baseEncoderClasses.getBaseEncoderTypes()
     val baseClasses = baseTypes + enumClasses
@@ -93,7 +94,7 @@ internal fun CodeWriter.generateBinarySerializer(
     }
 
     writeLine()
-    writeNestedLine("public fun createSerializer(): ${BinarySerializer::class.qualifiedName} =") {
+    writeNestedLine("public ${actual}fun createSerializer(): ${BinarySerializer::class.qualifiedName} =") {
         writeNestedLine("${BinarySerializer::class.qualifiedName}(listOf(") {
             baseEncoderClasses.forEach { type -> writeNestedLine("${type.qualifiedName}(),") }
             for (enumEncoderIndex in 1..enumClasses.size) writeNestedLine("EnumEncoder$enumEncoderIndex(),")

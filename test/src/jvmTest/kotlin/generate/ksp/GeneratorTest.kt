@@ -156,18 +156,6 @@ class GeneratorTest {
             """,
             2,
         )
-        executeTest(
-            "generic type List<Int> must not be implicit",
-            """
-                package test
-                class ImplicitGenericsNotAllowed {
-                    var x = emptyList<Int>()
-                }
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [ImplicitGenericsNotAllowed::class], [], false)
-                val x = 0
-            """,
-            3,
-        )
     }
 
     @Test

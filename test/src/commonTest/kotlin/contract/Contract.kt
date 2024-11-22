@@ -1,6 +1,11 @@
 package ch.softappeal.yass2.contract
 
 import ch.softappeal.yass2.GenerateProxy
+import ch.softappeal.yass2.Interceptor
+import ch.softappeal.yass2.SuspendInterceptor
+import ch.softappeal.yass2.remote.Service
+import ch.softappeal.yass2.remote.ServiceId
+import ch.softappeal.yass2.remote.Tunnel
 
 enum class Gender { Female, Male }
 
@@ -80,25 +85,26 @@ interface Calculator : AddCalculator {
     suspend fun divide(a: Int, b: Int): Int
 }
 
+expect fun Calculator.proxy(suspendIntercept: SuspendInterceptor): Calculator
+expect fun ServiceId<Calculator>.proxy(tunnel: Tunnel): Calculator
+expect fun ServiceId<Calculator>.service(implementation: Calculator): Service
+
 @GenerateProxy
 interface Echo {
     @TestAnnotation
     suspend fun echo(value: Any?): Any?
-
     suspend fun echoRequired(value: Any): Any
-
     suspend fun noParametersNoResult()
-
     suspend fun delay(milliSeconds: Int)
-
     suspend fun echoNode(node: Node?): Node?
-
     suspend fun echoNodeRequired(node: Node): Node
-
     suspend fun echoGeneric(map: Map<String?, Node>): Map<Int, Node>?
-
     suspend fun echoMonster(a: List<*>, b: List<List<String?>?>, c: Map<out Int, String>, d: Pair<*, *>): Map<in Int, String>?
 }
+
+expect fun Echo.proxy(suspendIntercept: SuspendInterceptor): Echo
+expect fun ServiceId<Echo>.proxy(tunnel: Tunnel): Echo
+expect fun ServiceId<Echo>.service(implementation: Echo): Service
 
 @GenerateProxy
 interface Mixed {
@@ -106,3 +112,5 @@ interface Mixed {
     suspend fun suspendDivide(a: Int, b: Int): Int
     fun noParametersNoResult()
 }
+
+expect fun Mixed.proxy(intercept: Interceptor, suspendIntercept: SuspendInterceptor): Mixed

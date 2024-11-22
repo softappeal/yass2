@@ -15,6 +15,10 @@ private fun verify(kspPath: String, reflectPath: String, packageName: String) {
             "package ch.softappeal.yass2.$packageName.reflect",
             "package ch.softappeal.yass2.$packageName",
         )
+        .replace(
+            "public fun ",
+            "public actual fun ",
+        )
     assertEquals(reflect, ksp)
 }
 

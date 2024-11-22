@@ -45,8 +45,7 @@ internal val KSType.qualifiedName get() = declaration.qualifiedName()
 
 internal fun KSTypeReference.type(): String {
     fun Appendable.appendGenerics() {
-        val element = element ?: error("generic type ${this@type} must not be implicit @${parent?.location}")
-        val typeArguments = element.typeArguments
+        val typeArguments = element!!.typeArguments
         if (typeArguments.isEmpty()) return
         append('<')
         typeArguments.forEachIndexed { typeArgumentIndex, typeArgument ->
@@ -78,8 +77,32 @@ internal fun KSTypeReference.type(): String {
 //       see https://youtrack.jetbrains.com/issue/KT-59526/Store-annotation-default-values-in-metadata-on-JVM
 private fun KSAnnotation.argument(name: String) = arguments.first { it.name!!.asString() == name }.value!!
 
-private fun KSDeclaration.firstOrNull(annotation: KClass<*>) =
+private val Platforms = setOf(
+    "jvm", // JVM
+    "js", // JavaScript
+    "wasmJs", "wasmWasi",// WebAssembly
+    "macosX64", "macosArm64", // macOS
+    "iosArm64", "iosX64", "iosSimulatorArm64", // iOS
+    "linuxX64", "linuxArm64", // Linux
+    "watchosArm64", "watchosX64", "watchosSimulatorArm64", "watchosDeviceArm64", // watchOS
+    "tvosArm64", "tvosX64", "tvosSimulatorArm64", // tvOS
+    "mingwX64", // Windows
+)
+
+private fun KSDeclaration.isPlatform(): Boolean { // TODO: is there a better solution?
+    val filePath = containingFile!!.filePath
+    Platforms.forEach { platform ->
+        if (filePath.contains("/${platform}Main/") || filePath.contains("/${platform}Test/")) return true
+    }
+    return false
+}
+
+internal fun KSDeclaration.actual() = if (isPlatform()) "" else "actual "
+
+private fun KSDeclaration.annotationOrNull(annotation: KClass<*>) =
     annotations.firstOrNull { it.shortName.asString() == annotation.simpleName }
+
+private class AnnotatedDeclaration(val declaration: KSDeclaration, val annotation: KSAnnotation)
 
 private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
     private val codeGenerator = environment.codeGenerator
@@ -89,7 +112,7 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
             listOf(GenerateProxy::class, GenerateBinarySerializer::class, GenerateDumper::class).forEach { annotation ->
                 resolver.getSymbolsWithAnnotation(annotation.qualifiedName!!)
                     .map { it as KSDeclaration }
-                    .forEach { declaration -> add(Pair(declaration.packageName.asString(), declaration)) }
+                    .forEach { declaration -> add(declaration.packageName.asString() to declaration) }
             }
         }.groupBy({ it.first }, { it.second })
         packageName2declarations.forEach { (packageName, declarations) ->
@@ -104,44 +127,51 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
 
                 buildList {
                     declarations.forEach { declaration ->
-                        declaration.firstOrNull(GenerateProxy::class)?.let { add(declaration) }
+                        declaration.annotationOrNull(GenerateProxy::class)?.let { add(declaration) }
                     }
-                }.sortedBy { it.name }.forEach { codeWriter.generateProxy(it as KSClassDeclaration) }
+                }.sortedBy { it.name }.forEach { declaration -> codeWriter.generateProxy(declaration as KSClassDeclaration) }
 
-                fun List<KSDeclaration>.annotation(annotation: KClass<*>): KSAnnotation? {
-                    val annotations = buildList {
-                        this@annotation.forEach { declaration ->
-                            declaration.firstOrNull(annotation)?.let { add(it) }
+                fun List<KSDeclaration>.annotatedDeclarationOrNull(annotation: KClass<*>): AnnotatedDeclaration? {
+                    val annotatedDeclaration = buildList {
+                        this@annotatedDeclarationOrNull.forEach { declaration ->
+                            declaration.annotationOrNull(annotation)?.let { annotation ->
+                                add(AnnotatedDeclaration(declaration, annotation))
+                            }
                         }
                     }
-                    require(annotations.size <= 1) {
-                        "there can be at most one annotation ${annotation.simpleName} in package $packageName @${annotations.first().location}"
+                    require(annotatedDeclaration.size <= 1) {
+                        "there can be at most one annotation ${annotation.simpleName} in package $packageName @${annotatedDeclaration.first().annotation.location}"
                     }
-                    return annotations.firstOrNull()
+                    return annotatedDeclaration.firstOrNull()
                 }
 
-                val serializer = declarations.annotation(GenerateBinarySerializer::class)
-                val dumper = declarations.annotation(GenerateDumper::class)
-                require((dumper == null) || (serializer == null) || !(serializer.argument("withDumper") as Boolean)) {
-                    "illegal use of annotations ${GenerateBinarySerializer::class.simpleName} and ${GenerateDumper::class.simpleName} in package $packageName @${serializer!!.location}"
+                val serializer = declarations.annotatedDeclarationOrNull(GenerateBinarySerializer::class)
+                val dumper = declarations.annotatedDeclarationOrNull(GenerateDumper::class)
+                require((dumper == null) || (serializer == null) || !(serializer.annotation.argument("withDumper") as Boolean)) {
+                    "illegal use of annotations ${GenerateBinarySerializer::class.simpleName} and ${GenerateDumper::class.simpleName} in package $packageName @${serializer!!.annotation.location}"
                 }
 
                 if (serializer != null) {
-                    val baseEncoderClasses = serializer.argument("baseEncoderClasses") as List<KSType>
-                    val enumClasses = serializer.argument("enumClasses") as List<KSType>
-                    val treeConcreteClasses = serializer.argument("treeConcreteClasses") as List<KSType>
-                    val graphConcreteClasses = serializer.argument("graphConcreteClasses") as List<KSType>
-                    val withDumper = serializer.argument("withDumper") as Boolean
+                    val baseEncoderClasses = serializer.annotation.argument("baseEncoderClasses") as List<KSType>
+                    val enumClasses = serializer.annotation.argument("enumClasses") as List<KSType>
+                    val treeConcreteClasses = serializer.annotation.argument("treeConcreteClasses") as List<KSType>
+                    val graphConcreteClasses = serializer.annotation.argument("graphConcreteClasses") as List<KSType>
+                    val withDumper = serializer.annotation.argument("withDumper") as Boolean
                     codeWriter.generateBinarySerializer(
-                        serializer.location, baseEncoderClasses, enumClasses, treeConcreteClasses, graphConcreteClasses
+                        baseEncoderClasses, enumClasses, treeConcreteClasses, graphConcreteClasses,
+                        serializer.declaration.actual(), serializer.annotation.location,
                     )
-                    if (withDumper) codeWriter.generateDumper(serializer.location, treeConcreteClasses, graphConcreteClasses)
+                    if (withDumper) codeWriter.generateDumper(
+                        treeConcreteClasses, graphConcreteClasses, serializer.declaration.actual(), serializer.annotation.location
+                    )
                 }
 
                 if (dumper != null) {
-                    val treeConcreteClasses = dumper.argument("treeConcreteClasses") as List<KSType>
-                    val graphConcreteClasses = dumper.argument("graphConcreteClasses") as List<KSType>
-                    codeWriter.generateDumper(dumper.location, treeConcreteClasses, graphConcreteClasses)
+                    val treeConcreteClasses = dumper.annotation.argument("treeConcreteClasses") as List<KSType>
+                    val graphConcreteClasses = dumper.annotation.argument("graphConcreteClasses") as List<KSType>
+                    codeWriter.generateDumper(
+                        treeConcreteClasses, graphConcreteClasses, dumper.declaration.actual(), dumper.annotation.location
+                    )
                 }
             }
         }

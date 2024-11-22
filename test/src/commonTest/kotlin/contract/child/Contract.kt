@@ -1,7 +1,9 @@
 package ch.softappeal.yass2.contract.child
 
+import ch.softappeal.yass2.Dumper
 import ch.softappeal.yass2.GenerateDumper
 import ch.softappeal.yass2.GenerateProxy
+import ch.softappeal.yass2.Interceptor
 import ch.softappeal.yass2.contract.ManyProperties
 import ch.softappeal.yass2.contract.Node
 import ch.softappeal.yass2.contract.child.reflect.createDumper
@@ -10,6 +12,10 @@ import ch.softappeal.yass2.contract.child.reflect.createDumper
 interface NoSuspend {
     fun x()
 }
+
+expect fun NoSuspend.proxy(intercept: Interceptor): NoSuspend
+
+expect fun createDumper(dumpValue: Appendable.(value: Any) -> Unit): Dumper
 
 @GenerateDumper(
     treeConcreteClasses = [
