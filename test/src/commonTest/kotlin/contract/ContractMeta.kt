@@ -1,8 +1,8 @@
 package ch.softappeal.yass2.contract
 
 import ch.softappeal.yass2.contract.reflect.createDumper
+import ch.softappeal.yass2.contract.reflect.createSerializer
 import ch.softappeal.yass2.remote.ServiceId
-import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.binary.ByteArrayEncoder
 import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
 import ch.softappeal.yass2.serialize.binary.IntEncoder
@@ -11,10 +11,9 @@ import ch.softappeal.yass2.transport.Transport
 import ch.softappeal.yass2.transport.binaryMessageSerializer
 import ch.softappeal.yass2.transport.session.binaryPacketSerializer
 
-// TODO: shows workaround for https://slack-chats.kotlinlang.org/t/16366233/i-m-trying-out-kotlin-2-0-beta-3-and-it-looks-like-generated
-//       It's expected that common code cannot reference generated code in the compilation of platform code.
-//       Generated codes are treated as platform code and K2 explicitly disallow references from common to platform (you'll have to use expect/actual).
-expect fun createContractSerializer(): Serializer
+// TODO: https://slack-chats.kotlinlang.org/t/16366233/i-m-trying-out-kotlin-2-0-beta-3-and-it-looks-like-generated
+//       Common code cannot reference generated code in the compilation of platform code.
+//       Generated codes are treated as platform code (you'll have to use expect/actual).
 
 @GenerateBinarySerializer(
     baseEncoderClasses = [
@@ -36,8 +35,7 @@ expect fun createContractSerializer(): Serializer
     ],
     withDumper = true,
 )
-val ContractSerializer = createContractSerializer()
-
+val ContractSerializer = createSerializer()
 val MessageSerializer = binaryMessageSerializer(ContractSerializer)
 val PacketSerializer = binaryPacketSerializer(MessageSerializer)
 
