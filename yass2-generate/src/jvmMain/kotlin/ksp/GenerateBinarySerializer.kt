@@ -11,7 +11,6 @@ import com.google.devtools.ksp.isAbstract
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
-import com.google.devtools.ksp.symbol.Location
 
 private fun List<KSType>.getBaseEncoderTypes() =
     map { (it.declaration as KSClassDeclaration).superTypes.first().element!!.typeArguments.first().type!!.resolve() }
@@ -21,16 +20,15 @@ internal fun CodeWriter.generateBinarySerializer(
     enumClasses: List<KSType>,
     treeConcreteClasses: List<KSType>,
     graphConcreteClasses: List<KSType>,
-    actual: String,
-    location: Location,
+    declaration: KSPropertyDeclaration,
 ) {
     val baseTypes = baseEncoderClasses.getBaseEncoderTypes()
     val baseClasses = baseTypes + enumClasses
 
-    (baseClasses + treeConcreteClasses + graphConcreteClasses).checkNotDuplicated(location)
-    checkNotEnum(location, baseTypes + treeConcreteClasses + graphConcreteClasses, "belongs to enumClasses")
+    (baseClasses + treeConcreteClasses + graphConcreteClasses).checkNotDuplicated(declaration)
+    checkNotEnum(declaration, baseTypes + treeConcreteClasses + graphConcreteClasses, "belongs to enumClasses")
     enumClasses.forEach {
-        require(it.isEnum()) { "class ${it.qualifiedName} in enumClasses must be enum @$location" }
+        require(it.isEnum()) { "class ${it.qualifiedName} in enumClasses must be enum @${declaration.location}" }
     }
 
     class Property(val property: KSPropertyDeclaration) {
@@ -57,16 +55,16 @@ internal fun CodeWriter.generateBinarySerializer(
         val all: List<Property>
 
         init {
-            require(!klass.isAbstract()) { "class ${klass.qualifiedName()} must be concrete @$location" }
+            require(!klass.isAbstract()) { "class ${klass.qualifiedName()} must be concrete @${declaration.location}" }
             val properties = klass.getAllPropertiesNotThrowable().map { Property(it) }
             parameter = buildList {
                 val primaryConstructor = klass.primaryConstructor ?: error(
-                    "class ${klass.qualifiedName()} must hava a primary constructor @$location"
+                    "class ${klass.qualifiedName()} must hava a primary constructor @${declaration.location}"
                 )
                 val parameters = primaryConstructor.parameters
                 parameters.forEach { parameter ->
                     require(parameter.isVal || parameter.isVar) {
-                        "primary constructor parameter ${parameter.name!!.asString()} of class ${klass.qualifiedName()} must be a property @$location"
+                        "primary constructor parameter ${parameter.name!!.asString()} of class ${klass.qualifiedName()} must be a property @${declaration.location}"
                     }
                     add(properties.first { it.property.name == parameter.name!!.asString() })
                 }
@@ -76,7 +74,7 @@ internal fun CodeWriter.generateBinarySerializer(
                     .filter { it !in parameter }
                     .forEach { property ->
                         require(property.property.isMutable) {
-                            "body property ${property.property.name} of ${property.property.parentDeclaration?.qualifiedName()} must be var @$location"
+                            "body property ${property.property.name} of ${property.property.parentDeclaration?.qualifiedName()} must be var @${declaration.location}"
                         }
                         add(property)
                     }
@@ -94,7 +92,7 @@ internal fun CodeWriter.generateBinarySerializer(
     }
 
     writeLine()
-    writeNestedLine("public ${actual}fun createSerializer(): ${BinarySerializer::class.qualifiedName} =") {
+    writeNestedLine("public ${declaration.actual()}fun createSerializer(): ${BinarySerializer::class.qualifiedName} =") {
         writeNestedLine("${BinarySerializer::class.qualifiedName}(listOf(") {
             baseEncoderClasses.forEach { type -> writeNestedLine("${type.qualifiedName}(),") }
             for (enumEncoderIndex in 1..enumClasses.size) writeNestedLine("EnumEncoder$enumEncoderIndex(),")

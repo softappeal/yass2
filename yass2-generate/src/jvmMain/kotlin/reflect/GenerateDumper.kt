@@ -13,7 +13,7 @@ public fun CodeWriter.generateDumper(
     checkNotEnum(classes, "must not be specified")
 
     writeLine()
-    writeNestedLine("public fun createDumper(dumpValue: kotlin.text.Appendable.(value: kotlin.Any) -> kotlin.Unit): $CSY.Dumper =") {
+    writeNestedLine("public fun createDumper(dumpValue: $CSY.ValueDumper): $CSY.Dumper =") {
         writeNestedLine("$CSY.createDumper(") {
             writeNestedLine("$CSY.dumperProperties(") {
                 (treeConcreteClasses + graphConcreteClasses).forEach { type ->

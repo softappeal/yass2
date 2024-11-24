@@ -1,18 +1,12 @@
 package ch.softappeal.yass2.generate
 
-import ch.softappeal.yass2.Dumper
 import ch.softappeal.yass2.GenerateDumper
 import ch.softappeal.yass2.GenerateProxy
-import ch.softappeal.yass2.Interceptor
 import ch.softappeal.yass2.Invocation
-import ch.softappeal.yass2.SuspendInterceptor
 import ch.softappeal.yass2.SuspendInvocation
-import ch.softappeal.yass2.remote.Service
 import ch.softappeal.yass2.remote.ServiceId
-import ch.softappeal.yass2.remote.Tunnel
 import ch.softappeal.yass2.remote.tunnel
 import ch.softappeal.yass2.serialize.Serializer
-import ch.softappeal.yass2.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
 import ch.softappeal.yass2.serialize.binary.IntEncoder
 import ch.softappeal.yass2.transport.BytesReader
@@ -21,11 +15,6 @@ import kotlinx.coroutines.runBlocking
 import kotlin.reflect.KFunction
 import kotlin.test.Test
 import kotlin.test.assertEquals
-
-// TODO: shows how to use KSP generate in none-platform code
-//       https://slack-chats.kotlinlang.org/t/16366233/i-m-trying-out-kotlin-2-0-beta-3-and-it-looks-like-generated
-//       Common/intermediate (= none-platform) code cannot reference generated code in the compilation of platform code.
-//       Generated codes are treated as platform code (you'll have to use expect/actual).
 
 @GenerateProxy
 interface Adder {
@@ -36,8 +25,6 @@ private val AdderImpl = object : Adder {
     override fun add(a: Int, b: Int) = a + b
 }
 
-expect fun Adder.proxy(intercept: Interceptor): Adder
-
 @GenerateProxy
 interface SuspendAdder {
     suspend fun add(a: Int, b: Int): Int
@@ -46,10 +33,6 @@ interface SuspendAdder {
 private val SuspendAdderImpl = object : SuspendAdder {
     override suspend fun add(a: Int, b: Int) = a + b
 }
-
-expect fun SuspendAdder.proxy(suspendIntercept: SuspendInterceptor): SuspendAdder
-expect fun ServiceId<SuspendAdder>.proxy(tunnel: Tunnel): SuspendAdder
-expect fun ServiceId<SuspendAdder>.service(implementation: SuspendAdder): Service
 
 @GenerateProxy
 interface MixedAdder {
@@ -62,10 +45,6 @@ private val MixedAdderImpl = object : MixedAdder {
     override suspend fun subtract(a: Int, b: Int) = a + b
 }
 
-expect fun MixedAdder.proxy(intercept: Interceptor, suspendIntercept: SuspendInterceptor): MixedAdder
-
-expect fun createSerializer(): BinarySerializer
-
 @GenerateBinarySerializer(
     baseEncoderClasses = [IntEncoder::class],
     enumClasses = [],
@@ -74,8 +53,6 @@ expect fun createSerializer(): BinarySerializer
     withDumper = false,
 )
 private val ContractSerializer = createSerializer()
-
-expect fun createDumper(dumpValue: Appendable.(value: Any) -> Unit): Dumper
 
 @GenerateDumper(
     treeConcreteClasses = [],

@@ -7,6 +7,8 @@ private typealias DumperProperties = (type: KClass<*>) -> List<KProperty1<Any, A
 
 public typealias Dumper = Appendable.(value: Any?) -> Appendable
 
+public typealias ValueDumper = Appendable.(value: Any) -> Unit
+
 /**
  * Supports the following types out-of-the-box:
  * `null`, [Boolean], [Number], [CharSequence], [List], [Enum] and classes with its properties.
@@ -15,7 +17,7 @@ public typealias Dumper = Appendable.(value: Any?) -> Appendable
 public fun createDumper(
     properties: DumperProperties,
     graphConcreteClasses: Set<KClass<*>>,
-    dumpValue: Appendable.(value: Any) -> Unit,
+    dumpValue: ValueDumper,
 ): Dumper = { value ->
     val dumperAppendable = this
     val object2reference: HashMap<Any, Int> by lazy(LazyThreadSafetyMode.NONE) { HashMap(16) }

@@ -24,7 +24,7 @@ public fun ch.softappeal.yass2.contract.child.NoSuspend.proxy(
     }
 }
 
-public fun createDumper(dumpValue: kotlin.text.Appendable.(value: kotlin.Any) -> kotlin.Unit): ch.softappeal.yass2.Dumper =
+public fun createDumper(dumpValue: ch.softappeal.yass2.ValueDumper): ch.softappeal.yass2.Dumper =
     ch.softappeal.yass2.createDumper(
         ch.softappeal.yass2.dumperProperties(
             ch.softappeal.yass2.contract.ManyProperties::class to listOf(

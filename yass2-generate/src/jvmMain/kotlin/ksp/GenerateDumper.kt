@@ -3,21 +3,20 @@ package ch.softappeal.yass2.generate.ksp
 import ch.softappeal.yass2.generate.CSY
 import ch.softappeal.yass2.generate.CodeWriter
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
-import com.google.devtools.ksp.symbol.Location
 
 internal fun CodeWriter.generateDumper(
     treeConcreteClasses: List<KSType>,
     graphConcreteClasses: List<KSType>,
-    actual: String,
-    location: Location,
+    declaration: KSPropertyDeclaration,
 ) {
     val classes = treeConcreteClasses + graphConcreteClasses
-    (treeConcreteClasses + graphConcreteClasses).checkNotDuplicated(location)
-    checkNotEnum(location, classes, "must not be specified")
+    (treeConcreteClasses + graphConcreteClasses).checkNotDuplicated(declaration)
+    checkNotEnum(declaration, classes, "must not be specified")
 
     writeLine()
-    writeNestedLine("public ${actual}fun createDumper(dumpValue: kotlin.text.Appendable.(value: kotlin.Any) -> kotlin.Unit): $CSY.Dumper =") {
+    writeNestedLine("public ${declaration.actual()}fun createDumper(dumpValue: $CSY.ValueDumper): $CSY.Dumper =") {
         writeNestedLine("$CSY.createDumper(") {
             writeNestedLine("$CSY.dumperProperties(") {
                 (treeConcreteClasses + graphConcreteClasses).forEach { type ->

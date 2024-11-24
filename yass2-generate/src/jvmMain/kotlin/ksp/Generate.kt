@@ -18,21 +18,21 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
+import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSTypeParameter
 import com.google.devtools.ksp.symbol.KSTypeReference
-import com.google.devtools.ksp.symbol.Location
 import com.google.devtools.ksp.symbol.Variance
 import kotlin.reflect.KClass
 
 internal fun KSType.isEnum() = (declaration as KSClassDeclaration).classKind == ClassKind.ENUM_CLASS
 
-internal fun checkNotEnum(location: Location, classes: List<KSType>, message: String) {
-    classes.firstOrNull { it.isEnum() }?.let { error("enum class ${it.qualifiedName} $message @$location") }
+internal fun checkNotEnum(declaration: KSPropertyDeclaration, classes: List<KSType>, message: String) {
+    classes.firstOrNull { it.isEnum() }?.let { error("enum class ${it.qualifiedName} $message @${declaration.location}") }
 }
 
-internal fun List<KSType>.checkNotDuplicated(location: Location) {
-    require(hasNoDuplicates()) { "classes ${duplicates()} are duplicated @$location" }
+internal fun List<KSType>.checkNotDuplicated(declaration: KSPropertyDeclaration) {
+    require(hasNoDuplicates()) { "classes ${duplicates()} are duplicated @${declaration.location}" }
 }
 
 internal fun KSClassDeclaration.getAllPropertiesNotThrowable() = getAllProperties().toList()
@@ -89,7 +89,7 @@ private val Platforms = setOf(
     "mingwX64", // Windows
 )
 
-private fun KSDeclaration.isPlatform(): Boolean { // TODO: is there a better solution?
+private fun KSDeclaration.isPlatformCode(): Boolean { // TODO: is there a better solution?
     val filePath = containingFile!!.filePath
     Platforms.forEach { platform ->
         if (filePath.contains("/${platform}Main/") || filePath.contains("/${platform}Test/")) return true
@@ -97,12 +97,12 @@ private fun KSDeclaration.isPlatform(): Boolean { // TODO: is there a better sol
     return false
 }
 
-internal fun KSDeclaration.actual() = if (isPlatform()) "" else "actual "
+internal fun KSDeclaration.actual() = if (isPlatformCode()) "" else "actual "
 
 private fun KSDeclaration.annotationOrNull(annotation: KClass<*>) =
     annotations.firstOrNull { it.shortName.asString() == annotation.simpleName }
 
-private class AnnotatedDeclaration(val declaration: KSDeclaration, val annotation: KSAnnotation)
+private class AnnotatedDeclaration(val declaration: KSPropertyDeclaration, val annotation: KSAnnotation)
 
 private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
     private val codeGenerator = environment.codeGenerator
@@ -135,7 +135,7 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
                     val annotatedDeclaration = buildList {
                         this@annotatedDeclarationOrNull.forEach { declaration ->
                             declaration.annotationOrNull(annotation)?.let { annotation ->
-                                add(AnnotatedDeclaration(declaration, annotation))
+                                add(AnnotatedDeclaration(declaration as KSPropertyDeclaration, annotation))
                             }
                         }
                     }
@@ -158,20 +158,15 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
                     val graphConcreteClasses = serializer.annotation.argument("graphConcreteClasses") as List<KSType>
                     val withDumper = serializer.annotation.argument("withDumper") as Boolean
                     codeWriter.generateBinarySerializer(
-                        baseEncoderClasses, enumClasses, treeConcreteClasses, graphConcreteClasses,
-                        serializer.declaration.actual(), serializer.annotation.location,
+                        baseEncoderClasses, enumClasses, treeConcreteClasses, graphConcreteClasses, serializer.declaration,
                     )
-                    if (withDumper) codeWriter.generateDumper(
-                        treeConcreteClasses, graphConcreteClasses, serializer.declaration.actual(), serializer.annotation.location
-                    )
+                    if (withDumper) codeWriter.generateDumper(treeConcreteClasses, graphConcreteClasses, serializer.declaration)
                 }
 
                 if (dumper != null) {
                     val treeConcreteClasses = dumper.annotation.argument("treeConcreteClasses") as List<KSType>
                     val graphConcreteClasses = dumper.annotation.argument("graphConcreteClasses") as List<KSType>
-                    codeWriter.generateDumper(
-                        treeConcreteClasses, graphConcreteClasses, dumper.declaration.actual(), dumper.annotation.location
-                    )
+                    codeWriter.generateDumper(treeConcreteClasses, graphConcreteClasses, dumper.declaration)
                 }
             }
         }

@@ -1,6 +1,7 @@
 package ch.softappeal.yass2.contract
 
 import ch.softappeal.yass2.Dumper
+import ch.softappeal.yass2.ValueDumper
 import ch.softappeal.yass2.contract.reflect.createDumper
 import ch.softappeal.yass2.contract.reflect.createSerializer
 import ch.softappeal.yass2.remote.ServiceId
@@ -42,7 +43,7 @@ val PacketSerializer = binaryPacketSerializer(MessageSerializer)
 val CalculatorId: ServiceId<Calculator> = ServiceId(1)
 val EchoId: ServiceId<Echo> = ServiceId(2)
 
-expect fun createDumper(dumpValue: Appendable.(value: Any) -> Unit): Dumper
+expect fun createDumper(dumpValue: ValueDumper): Dumper
 
 val Dumper = createDumper { value ->
     when (value) {
