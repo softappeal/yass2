@@ -91,10 +91,7 @@ private val Platforms = setOf(
 
 private fun KSDeclaration.isPlatformCode(): Boolean { // TODO: is there a better solution?
     val filePath = containingFile!!.filePath
-    Platforms.forEach { platform ->
-        if (filePath.contains("/${platform}Main/") || filePath.contains("/${platform}Test/")) return true
-    }
-    return false
+    return Platforms.any { platform -> filePath.contains("/${platform}Main/") || filePath.contains("/${platform}Test/") }
 }
 
 internal fun KSDeclaration.actual() = if (isPlatformCode()) "" else "actual "
