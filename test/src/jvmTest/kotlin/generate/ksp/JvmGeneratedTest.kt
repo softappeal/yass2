@@ -60,12 +60,14 @@ private val ContractSerializer = createSerializer()
 )
 private val Dumper = createDumper {}
 
-private fun print(function: KFunction<*>, @Suppress("unused") parameters: List<Any?>, invoke: Invocation): Any? {
+private fun print(function: KFunction<*>, @Suppress("UNUSED_PARAMETER") parameters: List<Any?>, invoke: Invocation): Any? {
     println(function.name)
     return invoke()
 }
 
-private suspend fun print(function: KFunction<*>, @Suppress("unused") parameters: List<Any?>, invoke: SuspendInvocation): Any? {
+private suspend fun print(
+    function: KFunction<*>, @Suppress("UNUSED_PARAMETER") parameters: List<Any?>, invoke: SuspendInvocation,
+): Any? {
     println(function.name)
     return invoke()
 }

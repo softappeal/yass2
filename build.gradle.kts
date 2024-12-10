@@ -14,6 +14,13 @@ plugins {
 
 val libraries = libs
 
+fun hasTarget(@Suppress("UNUSED_PARAMETER") enabled: Boolean) = true // enabled
+val jsTarget = hasTarget(false)
+val wasmJsTarget = hasTarget(false)
+val linuxX64Target = hasTarget(false)
+val linuxArm64Target = hasTarget(false)
+val macosArm64Target = hasTarget(false)
+
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
     apply(plugin = "maven-publish")
@@ -35,19 +42,19 @@ allprojects {
                 artifact(tasks["javadocJar"])
             }
         }
-        js {
+        if (jsTarget) js {
             moduleName = project.name
             nodejs()
             binaries.executable()
         }
         @OptIn(ExperimentalWasmDsl::class)
-        wasmJs {
+        if (wasmJsTarget) wasmJs {
             nodejs()
             binaries.executable()
         }
-        linuxX64()
-        linuxArm64()
-        macosArm64()
+        if (linuxX64Target) linuxX64()
+        if (linuxArm64Target) linuxArm64()
+        if (macosArm64Target) macosArm64()
         explicitApi()
         compilerOptions {
             allWarningsAsErrors = true
@@ -134,13 +141,13 @@ val ktorProject = project(":yass2-ktor") {
             jvmMain {
                 dependsOn(jvmAndNixMain)
             }
-            linuxX64Main {
+            if (linuxX64Target) linuxX64Main {
                 dependsOn(jvmAndNixMain)
             }
-            linuxArm64Main {
+            if (linuxArm64Target) linuxArm64Main {
                 dependsOn(jvmAndNixMain)
             }
-            macosArm64Main {
+            if (macosArm64Target) macosArm64Main {
                 dependsOn(jvmAndNixMain)
             }
         }
@@ -171,24 +178,24 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
                     implementation(libraries.kotlin.compile.testing.ksp)
                 }
             }
-            linuxX64Test {
+            if (linuxX64Target) linuxX64Test {
                 dependsOn(jvmAndNixTest)
             }
-            linuxArm64Test {
+            if (linuxArm64Target) linuxArm64Test {
                 dependsOn(jvmAndNixTest)
             }
-            macosArm64Test {
+            if (macosArm64Target) macosArm64Test {
                 dependsOn(jvmAndNixTest)
             }
         }
     }
     dependencies {
         add("kspJvmTest", generateProject)
-        add("kspJsTest", generateProject)
-        add("kspWasmJsTest", generateProject)
-        add("kspLinuxX64Test", generateProject)
-        add("kspLinuxArm64Test", generateProject)
-        add("kspMacosArm64Test", generateProject)
+        if (jsTarget) add("kspJsTest", generateProject)
+        if (wasmJsTarget) add("kspWasmJsTest", generateProject)
+        if (linuxX64Target) add("kspLinuxX64Test", generateProject)
+        if (linuxArm64Target) add("kspLinuxArm64Test", generateProject)
+        if (macosArm64Target) add("kspMacosArm64Test", generateProject)
     }
 }
 
@@ -216,7 +223,7 @@ project(":tutorial") {
                     implementation(generateProject)
                 }
             }
-            jsTest {
+            if (jsTarget) jsTest {
                 dependencies {
                     implementation(libraries.kotlinx.coroutines.test)
                 }
