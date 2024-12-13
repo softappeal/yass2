@@ -1,7 +1,6 @@
 package ch.softappeal.yass2.remote
 
-@Suppress("unused")
-public class ServiceId<S : Any>(public val id: Int)
+public class ServiceId<@Suppress("unused") S : Any>(public val id: Int)
 
 public class Service(internal val id: Int, internal val tunnel: suspend (functionId: Int, parameters: List<Any?>) -> Any?)
 

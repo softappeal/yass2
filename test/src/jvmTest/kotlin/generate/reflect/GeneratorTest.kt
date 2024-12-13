@@ -15,14 +15,12 @@ private interface Overloaded {
     suspend fun f(i: Int)
 }
 
-@Suppress("unused")
 private class BodyPropertyNotVar {
-    val x: Int = 0
+    @Suppress("unused") val x: Int = 0
 }
 
-@Suppress("unused", "ConvertSecondaryConstructorToPrimary")
 private class NoPrimaryConstructor {
-    constructor()
+    @Suppress("unused", "ConvertSecondaryConstructorToPrimary") constructor()
 }
 
 private interface NotRegularClass

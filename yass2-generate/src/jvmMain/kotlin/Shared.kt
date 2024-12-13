@@ -30,7 +30,7 @@ internal fun Appendable.appendPackage(packageName: String) {
 
 internal enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
 
-public fun <T> List<T>.hasNoDuplicates() = size == toSet().size
+public fun <T> List<T>.hasNoDuplicates(): Boolean = size == toSet().size
 
 public fun <T> List<T>.duplicates(): List<T> {
     val seen = HashSet<T>()
