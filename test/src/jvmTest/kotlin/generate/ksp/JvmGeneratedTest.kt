@@ -52,7 +52,7 @@ private val MixedAdderImpl = object : MixedAdder {
     graphConcreteClasses = [],
     withDumper = false,
 )
-private val ContractSerializer = createSerializer()
+private val ContractSerializer = createBinarySerializer()
 
 @GenerateDumper(
     treeConcreteClasses = [],

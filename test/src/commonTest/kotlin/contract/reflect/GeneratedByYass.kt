@@ -267,7 +267,7 @@ private class EnumEncoder1 : ch.softappeal.yass2.serialize.binary.EnumEncoder<ch
     ch.softappeal.yass2.contract.Gender::class, kotlin.enumValues()
 )
 
-public fun createSerializer(): ch.softappeal.yass2.serialize.binary.BinarySerializer =
+public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.BinarySerializer =
     ch.softappeal.yass2.serialize.binary.BinarySerializer(listOf(
         ch.softappeal.yass2.serialize.binary.IntEncoder(),
         ch.softappeal.yass2.serialize.binary.StringEncoder(),

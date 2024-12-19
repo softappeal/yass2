@@ -169,3 +169,31 @@ private val ChildOutput = """
     )
 
 """.trimIndent()
+
+
+/*
+
+TODO
+
+add createTextSerializer
+add remove dumper
+
+
+null
+true
+false
+
+
+boolean:true
+byte:12
+int:12
+long:12
+double:12
+binary:45454545454545
+string:"sadfsadfsdff"
+Color:Red
+[Color:Red,string:"sadf",int(12),null]
+
+Node#0(id=1,link=Node#1(id=2,link=Node#2(i=3,link=#1)))
+
+ */

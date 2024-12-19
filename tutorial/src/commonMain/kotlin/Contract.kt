@@ -121,7 +121,7 @@ private fun Appendable.dumpValue(value: Any) {
     graphConcreteClasses = [],
     withDumper = true,
 )
-public val ContractSerializer: Serializer = createSerializer()
+public val ContractSerializer: Serializer = createBinarySerializer()
 
 public val MessageSerializer: Serializer = binaryMessageSerializer(ContractSerializer)
 public val PacketSerializer: Serializer = binaryPacketSerializer(MessageSerializer)

@@ -22,6 +22,6 @@ expect fun ServiceId<SuspendAdder>.service(implementation: SuspendAdder): Servic
 
 expect fun MixedAdder.proxy(intercept: Interceptor, suspendIntercept: SuspendInterceptor): MixedAdder
 
-expect fun createSerializer(): BinarySerializer
+expect fun createBinarySerializer(): BinarySerializer
 
 expect fun createDumper(dumpValue: ValueDumper): Dumper

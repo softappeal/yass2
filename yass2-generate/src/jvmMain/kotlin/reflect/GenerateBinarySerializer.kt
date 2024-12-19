@@ -92,7 +92,7 @@ public fun CodeWriter.generateBinarySerializer(
     }
 
     writeLine()
-    writeNestedLine("public fun createSerializer(): ${BinarySerializer::class.qualifiedName} =") {
+    writeNestedLine("public fun createBinarySerializer(): ${BinarySerializer::class.qualifiedName} =") {
         writeNestedLine("${BinarySerializer::class.qualifiedName}(listOf(") {
             baseEncoderClasses.forEach { type -> writeNestedLine("${type.qualifiedName}(),") }
             for (enumEncoderIndex in 1..enumClasses.size) writeNestedLine("EnumEncoder$enumEncoderIndex(),")

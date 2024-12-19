@@ -2,8 +2,8 @@ package ch.softappeal.yass2.contract
 
 import ch.softappeal.yass2.Dumper
 import ch.softappeal.yass2.ValueDumper
+import ch.softappeal.yass2.contract.reflect.createBinarySerializer
 import ch.softappeal.yass2.contract.reflect.createDumper
-import ch.softappeal.yass2.contract.reflect.createSerializer
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.serialize.binary.ByteArrayEncoder
@@ -14,7 +14,7 @@ import ch.softappeal.yass2.transport.Transport
 import ch.softappeal.yass2.transport.binaryMessageSerializer
 import ch.softappeal.yass2.transport.session.binaryPacketSerializer
 
-expect fun createSerializer(): BinarySerializer
+expect fun createBinarySerializer(): BinarySerializer
 
 @GenerateBinarySerializer(
     baseEncoderClasses = [
@@ -36,7 +36,7 @@ expect fun createSerializer(): BinarySerializer
     ],
     withDumper = true,
 )
-val ContractSerializer = createSerializer()
+val ContractSerializer = createBinarySerializer()
 val MessageSerializer = binaryMessageSerializer(ContractSerializer)
 val PacketSerializer = binaryPacketSerializer(MessageSerializer)
 
