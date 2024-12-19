@@ -82,19 +82,6 @@ class GeneratorTest {
     }
 
     @Test
-    fun dumper() {
-        assertFailsMessage<IllegalArgumentException>(
-            "classes [kotlin.Int] are duplicated"
-        ) { codeWriter().generateDumper(listOf(Int::class), listOf(Int::class)) }
-        assertFailsMessage<IllegalStateException>(
-            "enum class ch.softappeal.yass2.generate.reflect.Enum must not be specified"
-        ) { codeWriter().generateDumper(listOf(Enum::class)) }
-        assertFailsMessage<IllegalStateException>(
-            "enum class ch.softappeal.yass2.generate.reflect.Enum must not be specified"
-        ) { codeWriter().generateDumper(listOf(), listOf(Enum::class)) }
-    }
-
-    @Test
     fun proxy() {
         assertFailsMessage<IllegalArgumentException>(
             "ch.softappeal.yass2.generate.reflect.NotAnInterface must be an interface"

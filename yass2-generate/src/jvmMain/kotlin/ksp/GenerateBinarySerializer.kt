@@ -2,15 +2,34 @@ package ch.softappeal.yass2.generate.ksp
 
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.PropertyKind
+import ch.softappeal.yass2.generate.duplicates
+import ch.softappeal.yass2.generate.hasNoDuplicates
 import ch.softappeal.yass2.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.serialize.binary.ClassEncoder
 import ch.softappeal.yass2.serialize.binary.EnumEncoder
 import ch.softappeal.yass2.serialize.binary.FIRST_ENCODER_ID
 import ch.softappeal.yass2.serialize.binary.ListEncoderId
 import com.google.devtools.ksp.isAbstract
+import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
+
+private fun KSType.isEnum() = (declaration as KSClassDeclaration).classKind == ClassKind.ENUM_CLASS
+
+private fun checkNotEnum(declaration: KSPropertyDeclaration, classes: List<KSType>) {
+    classes.firstOrNull { it.isEnum() }?.let {
+        error("enum class ${it.qualifiedName} belongs to enumClasses @${declaration.location}")
+    }
+}
+
+private fun List<KSType>.checkNotDuplicated(declaration: KSPropertyDeclaration) {
+    require(hasNoDuplicates()) { "classes ${duplicates()} are duplicated @${declaration.location}" }
+}
+
+private fun KSClassDeclaration.getAllPropertiesNotThrowable() = getAllProperties().toList()
+    .filterNot { (it.name == "cause" || it.name == "message") && ("kotlin.Throwable" == it.parentDeclaration!!.qualifiedName()) }
+    .sortedBy { it.name }
 
 private fun List<KSType>.getBaseEncoderTypes() =
     map { (it.declaration as KSClassDeclaration).superTypes.first().element!!.typeArguments.first().type!!.resolve() }
@@ -26,7 +45,7 @@ internal fun CodeWriter.generateBinarySerializer(
     val baseClasses = baseTypes + enumClasses
 
     (baseClasses + treeConcreteClasses + graphConcreteClasses).checkNotDuplicated(declaration)
-    checkNotEnum(declaration, baseTypes + treeConcreteClasses + graphConcreteClasses, "belongs to enumClasses")
+    checkNotEnum(declaration, baseTypes + treeConcreteClasses + graphConcreteClasses)
     enumClasses.forEach {
         require(it.isEnum()) { "class ${it.qualifiedName} in enumClasses must be enum @${declaration.location}" }
     }

@@ -169,28 +169,3 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
             }
         ),
     ))
-
-public fun createDumper(dumpValue: ch.softappeal.yass2.ValueDumper): ch.softappeal.yass2.Dumper =
-    ch.softappeal.yass2.createDumper(
-        ch.softappeal.yass2.dumperProperties(
-            ch.softappeal.yass2.tutorial.Address::class to listOf(
-                ch.softappeal.yass2.tutorial.Address::number as kotlin.reflect.KProperty1<Any, Any?>,
-                ch.softappeal.yass2.tutorial.Address::street as kotlin.reflect.KProperty1<Any, Any?>,
-            ),
-            ch.softappeal.yass2.tutorial.Person::class to listOf(
-                ch.softappeal.yass2.tutorial.Person::addresses as kotlin.reflect.KProperty1<Any, Any?>,
-                ch.softappeal.yass2.tutorial.Person::birthday as kotlin.reflect.KProperty1<Any, Any?>,
-                ch.softappeal.yass2.tutorial.Person::gender as kotlin.reflect.KProperty1<Any, Any?>,
-                ch.softappeal.yass2.tutorial.Person::name as kotlin.reflect.KProperty1<Any, Any?>,
-            ),
-            ch.softappeal.yass2.tutorial.DivideByZeroException::class to listOf(
-            ),
-            ch.softappeal.yass2.tutorial.SubClass::class to listOf(
-                ch.softappeal.yass2.tutorial.SubClass::baseClassProperty as kotlin.reflect.KProperty1<Any, Any?>,
-                ch.softappeal.yass2.tutorial.SubClass::subClassProperty as kotlin.reflect.KProperty1<Any, Any?>,
-            ),
-        ),
-        setOf(
-        ),
-        dumpValue,
-    )

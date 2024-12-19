@@ -139,5 +139,4 @@ public annotation class GenerateBinarySerializer(
     val enumClasses: Array<KClass<*>>,
     val treeConcreteClasses: Array<KClass<*>>,
     val graphConcreteClasses: Array<KClass<*>>,
-    val withDumper: Boolean,
 )

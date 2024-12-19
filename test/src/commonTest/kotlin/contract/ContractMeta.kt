@@ -1,9 +1,6 @@
 package ch.softappeal.yass2.contract
 
-import ch.softappeal.yass2.Dumper
-import ch.softappeal.yass2.ValueDumper
 import ch.softappeal.yass2.contract.reflect.createBinarySerializer
-import ch.softappeal.yass2.contract.reflect.createDumper
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.serialize.binary.ByteArrayEncoder
@@ -34,7 +31,6 @@ expect fun createBinarySerializer(): BinarySerializer
     graphConcreteClasses = [
         Node::class,
     ],
-    withDumper = true,
 )
 val ContractSerializer = createBinarySerializer()
 val MessageSerializer = binaryMessageSerializer(ContractSerializer)
@@ -42,14 +38,6 @@ val PacketSerializer = binaryPacketSerializer(MessageSerializer)
 
 val CalculatorId: ServiceId<Calculator> = ServiceId(1)
 val EchoId: ServiceId<Echo> = ServiceId(2)
-
-expect fun createDumper(dumpValue: ValueDumper): Dumper
-
-val Dumper = createDumper { value ->
-    when (value) {
-        is ByteArray -> append("binary")
-    }
-}
 
 val MessageTransport = Transport(MessageSerializer, 100, 100)
 val PacketTransport = Transport(PacketSerializer, 100, 100)

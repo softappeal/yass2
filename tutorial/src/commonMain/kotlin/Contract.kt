@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.tutorial
 
-import ch.softappeal.yass2.Dumper
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.coroutines.session.MustBeImplementedByAcceptor
 import ch.softappeal.yass2.remote.coroutines.session.MustBeImplementedByInitiator
@@ -27,10 +26,6 @@ internal class MyDateEncoder : BaseEncoder<MyDate>(MyDate::class,
     { writer, value -> writer.writeLong(value.currentTimeMillis) },
     { reader -> MyDate(reader.readLong()) }
 )
-
-private fun Appendable.append(value: MyDate) {
-    append("MyDate(${value.currentTimeMillis})")
-}
 
 /**
  * A concrete class must have a primary constructor and all its parameters must be properties.
@@ -95,13 +90,6 @@ public val CalculatorId: ServiceId<Calculator> = ServiceId(1)
 @MustBeImplementedByInitiator
 public val NewsListenerId: ServiceId<NewsListener> = ServiceId(2)
 
-private fun Appendable.dumpValue(value: Any) {
-    // Writes value (without line breaks) if responsible else does nothing.
-    when (value) {
-        is MyDate -> append(value)
-    }
-}
-
 @GenerateBinarySerializer(
     baseEncoderClasses = [
         // Define all the base encoders needed by the contract (including own base types).
@@ -119,7 +107,6 @@ private fun Appendable.dumpValue(value: Any) {
         SubClass::class,
     ],
     graphConcreteClasses = [],
-    withDumper = true,
 )
 public val ContractSerializer: Serializer = createBinarySerializer()
 
@@ -129,5 +116,3 @@ public val PacketSerializer: Serializer = binaryPacketSerializer(MessageSerializ
 private const val INITIAL_WRITER_CAPACITY = 100
 public val MessageTransport: Transport = Transport(MessageSerializer, INITIAL_WRITER_CAPACITY)
 public val PacketTransport: Transport = Transport(PacketSerializer, INITIAL_WRITER_CAPACITY)
-
-public val Dumper: Dumper = createDumper(Appendable::dumpValue)

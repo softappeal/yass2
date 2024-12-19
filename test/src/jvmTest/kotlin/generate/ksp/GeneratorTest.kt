@@ -159,64 +159,6 @@ class GeneratorTest {
     }
 
     @Test
-    fun dumper() {
-        executeTest(
-            "there can be at most one annotation GenerateDumper in package test",
-            """
-                package test
-                @ch.softappeal.yass2.GenerateDumper([], [])
-                val x1 = 0
-                @ch.softappeal.yass2.GenerateDumper([], [])
-                val x2 = 0
-            """,
-            2,
-        )
-        executeTest(
-            "classes [Int] are duplicated",
-            """
-                @ch.softappeal.yass2.GenerateDumper([Int::class], [Int::class])
-                val x = 0
-            """,
-            2,
-        )
-        executeTest(
-            "enum class test.MyEnum must not be specified",
-            """
-                package test
-                enum class MyEnum
-                @ch.softappeal.yass2.GenerateDumper([MyEnum::class], [])
-                val x = 0
-            """,
-            4,
-        )
-        executeTest(
-            "enum class test.MyEnum must not be specified",
-            """
-                package test
-                enum class MyEnum
-                @ch.softappeal.yass2.GenerateDumper([], [MyEnum::class])
-                val x = 0
-            """,
-            4,
-        )
-    }
-
-    @Test
-    fun mixed() {
-        executeTest(
-            "illegal use of annotations GenerateBinarySerializer and GenerateDumper in package test",
-            """
-                package test
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], [], true)
-                val x1 = 0
-                @ch.softappeal.yass2.GenerateDumper([], [])
-                val x2 = 0
-            """,
-            2,
-        )
-    }
-
-    @Test
     fun proxy() {
         executeTest(
             "test.NotAnInterface must be an interface",

@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.tutorial
 
-import ch.softappeal.yass2.Dumper
 import ch.softappeal.yass2.remote.Tunnel
 import ch.softappeal.yass2.remote.coroutines.session.Connection
 import ch.softappeal.yass2.remote.coroutines.session.Session
@@ -30,20 +29,6 @@ private suspend fun useCalculator(calculator: Calculator) {
 }
 
 public suspend fun showUsage() {
-    fun useDumper(dumper: Dumper) {
-        println("*** useDumper ***")
-        val person = Person(
-            "Guru",
-            Gender.Female,
-            MyDate(0),
-            listOf(
-                Address("Infinity Drive").apply { number = 1 },
-                Address("Hollywood Boulevard")
-            )
-        )
-        println(StringBuilder().dumper(person))
-    }
-
     fun useSerializer(serializer: Serializer) {
         println("*** useSerializer ***")
         val writer = BytesWriter(100)
@@ -61,7 +46,6 @@ public suspend fun showUsage() {
         }
         useCalculator(calculator)
     }
-    useDumper(Dumper)
     useSerializer(ContractSerializer)
     useInterceptor()
 }

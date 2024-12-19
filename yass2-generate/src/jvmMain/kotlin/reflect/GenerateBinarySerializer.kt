@@ -2,6 +2,8 @@ package ch.softappeal.yass2.generate.reflect
 
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.PropertyKind
+import ch.softappeal.yass2.generate.duplicates
+import ch.softappeal.yass2.generate.hasNoDuplicates
 import ch.softappeal.yass2.serialize.binary.BaseEncoder
 import ch.softappeal.yass2.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.serialize.binary.ClassEncoder
@@ -11,8 +13,24 @@ import ch.softappeal.yass2.serialize.binary.ListEncoderId
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
+import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
+
+private fun KClass<*>.isEnum() = java.isEnum
+
+private fun checkNotEnum(classes: List<KClass<*>>) {
+    classes.firstOrNull { it.isEnum() }?.let { klass -> error("enum class ${klass.qualifiedName} belongs to enumClasses") }
+}
+
+private fun List<KClass<*>>.checkNotDuplicated() {
+    require(hasNoDuplicates()) { "classes ${duplicates().map { it.qualifiedName }} are duplicated" }
+}
+
+private fun KClass<*>.getAllPropertiesNotThrowable() = memberProperties
+    .filterNot { (it.name == "cause" || it.name == "message") && isSubclassOf(Throwable::class) }
+    .sortedBy { it.name }
 
 private fun List<KClass<out BaseEncoder<*>>>.getBaseEncoderTypes() =
     map { it.supertypes.first().arguments.first().type!!.classifier as KClass<*> }
@@ -27,7 +45,7 @@ public fun CodeWriter.generateBinarySerializer(
     val baseClasses = baseTypes + enumClasses
 
     (baseClasses + treeConcreteClasses + graphConcreteClasses).checkNotDuplicated()
-    checkNotEnum(baseTypes + treeConcreteClasses + graphConcreteClasses, "belongs to enumClasses")
+    checkNotEnum(baseTypes + treeConcreteClasses + graphConcreteClasses)
     enumClasses.forEach {
         require(it.isEnum()) { "class ${it.qualifiedName} in enumClasses must be enum" }
     }

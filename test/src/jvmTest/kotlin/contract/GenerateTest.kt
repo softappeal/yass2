@@ -4,7 +4,6 @@ import ch.softappeal.yass2.contract.child.NoSuspend
 import ch.softappeal.yass2.generate.reflect.Mode
 import ch.softappeal.yass2.generate.reflect.generate
 import ch.softappeal.yass2.generate.reflect.generateBinarySerializer
-import ch.softappeal.yass2.generate.reflect.generateDumper
 import ch.softappeal.yass2.generate.reflect.generateProxy
 import kotlin.test.Test
 
@@ -17,7 +16,6 @@ class GenerateTest {
             Mode.Verify,
         ) {
             generateProxy(NoSuspend::class)
-            generateDumper(listOf(ManyProperties::class), listOf(Node::class))
         }
         generate(
             "src/commonTest/kotlin/contract/reflect",

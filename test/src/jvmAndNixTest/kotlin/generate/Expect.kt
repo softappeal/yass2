@@ -1,9 +1,7 @@
 package ch.softappeal.yass2.generate
 
-import ch.softappeal.yass2.Dumper
 import ch.softappeal.yass2.Interceptor
 import ch.softappeal.yass2.SuspendInterceptor
-import ch.softappeal.yass2.ValueDumper
 import ch.softappeal.yass2.remote.Service
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.Tunnel
@@ -23,5 +21,3 @@ expect fun ServiceId<SuspendAdder>.service(implementation: SuspendAdder): Servic
 expect fun MixedAdder.proxy(intercept: Interceptor, suspendIntercept: SuspendInterceptor): MixedAdder
 
 expect fun createBinarySerializer(): BinarySerializer
-
-expect fun createDumper(dumpValue: ValueDumper): Dumper

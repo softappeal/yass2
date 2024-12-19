@@ -23,29 +23,3 @@ public fun ch.softappeal.yass2.contract.child.NoSuspend.proxy(
         }
     }
 }
-
-public fun createDumper(dumpValue: ch.softappeal.yass2.ValueDumper): ch.softappeal.yass2.Dumper =
-    ch.softappeal.yass2.createDumper(
-        ch.softappeal.yass2.dumperProperties(
-            ch.softappeal.yass2.contract.ManyProperties::class to listOf(
-                ch.softappeal.yass2.contract.ManyProperties::a as kotlin.reflect.KProperty1<Any, Any?>,
-                ch.softappeal.yass2.contract.ManyProperties::b as kotlin.reflect.KProperty1<Any, Any?>,
-                ch.softappeal.yass2.contract.ManyProperties::c as kotlin.reflect.KProperty1<Any, Any?>,
-                ch.softappeal.yass2.contract.ManyProperties::d as kotlin.reflect.KProperty1<Any, Any?>,
-                ch.softappeal.yass2.contract.ManyProperties::e as kotlin.reflect.KProperty1<Any, Any?>,
-                ch.softappeal.yass2.contract.ManyProperties::f as kotlin.reflect.KProperty1<Any, Any?>,
-                ch.softappeal.yass2.contract.ManyProperties::g as kotlin.reflect.KProperty1<Any, Any?>,
-                ch.softappeal.yass2.contract.ManyProperties::h as kotlin.reflect.KProperty1<Any, Any?>,
-                ch.softappeal.yass2.contract.ManyProperties::i as kotlin.reflect.KProperty1<Any, Any?>,
-                ch.softappeal.yass2.contract.ManyProperties::j as kotlin.reflect.KProperty1<Any, Any?>,
-            ),
-            ch.softappeal.yass2.contract.Node::class to listOf(
-                ch.softappeal.yass2.contract.Node::id as kotlin.reflect.KProperty1<Any, Any?>,
-                ch.softappeal.yass2.contract.Node::link as kotlin.reflect.KProperty1<Any, Any?>,
-            ),
-        ),
-        setOf(
-            ch.softappeal.yass2.contract.Node::class,
-        ),
-        dumpValue,
-    )

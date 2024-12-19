@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.generate.ksp
 
-import ch.softappeal.yass2.GenerateDumper
 import ch.softappeal.yass2.GenerateProxy
 import ch.softappeal.yass2.Invocation
 import ch.softappeal.yass2.SuspendInvocation
@@ -50,15 +49,8 @@ private val MixedAdderImpl = object : MixedAdder {
     enumClasses = [],
     treeConcreteClasses = [],
     graphConcreteClasses = [],
-    withDumper = false,
 )
 private val ContractSerializer = createBinarySerializer()
-
-@GenerateDumper(
-    treeConcreteClasses = [],
-    graphConcreteClasses = [],
-)
-private val Dumper = createDumper {}
 
 private fun print(function: KFunction<*>, @Suppress("UNUSED_PARAMETER") parameters: List<Any?>, invoke: Invocation): Any? {
     println(function.name)
@@ -84,7 +76,6 @@ class JvmGeneratedTest {
     @Test
     fun test() {
         assertEquals(1001, ContractSerializer.copy(1001))
-        assertEquals("321", StringBuilder().Dumper(321).toString())
         assertEquals(3, AdderImpl.proxy(::print).add(1, 2))
         assertEquals(3, MixedAdderImpl.proxy(::print, ::print).add(1, 2))
         runBlocking {
