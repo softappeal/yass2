@@ -107,8 +107,14 @@ class HttpTest {
         var context: String? = null
         val transport = Transport(
             ContextMessageSerializer(
-                BinarySerializer(listOf(StringEncoder())), MessageSerializer,
-                { context }, { context = it },
+                object : BinarySerializer() {
+                    init {
+                        initialize(StringEncoder())
+                    }
+                },
+                MessageSerializer,
+                { context },
+                { context = it },
             ),
             100, 100,
         )

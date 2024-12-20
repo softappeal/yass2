@@ -3,14 +3,12 @@ package ch.softappeal.yass2.transport
 import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.contract.DivideByZeroException
 import ch.softappeal.yass2.contract.MessageSerializer
-import ch.softappeal.yass2.contract.Node
 import ch.softappeal.yass2.remote.ExceptionReply
 import ch.softappeal.yass2.remote.Message
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.ValueReply
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 private fun <T : Message> copy(value: T): T = MessageSerializer.copy(value)
@@ -24,21 +22,6 @@ class BinaryMessageSerializerTest {
         assertEquals(serviceId, request.serviceId)
         assertEquals(functionId, request.functionId)
         assertTrue(request.parameters.isEmpty())
-    }
-
-    @Test
-    fun requestParameterGraph() {
-        val serviceId = 123456
-        val functionId = 4711
-        val node = Node(123)
-        val request = copy(Request(serviceId, functionId, listOf(node, node)))
-        assertEquals(serviceId, request.serviceId)
-        assertEquals(functionId, request.functionId)
-        assertEquals(2, request.parameters.size)
-        val node0 = request.parameters[0] as Node
-        val node1 = request.parameters[1] as Node
-        assertEquals(node.id, node0.id)
-        assertSame(node0, node1)
     }
 
     @Test

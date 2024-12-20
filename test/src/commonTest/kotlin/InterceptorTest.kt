@@ -4,7 +4,6 @@ import ch.softappeal.yass2.contract.Calculator
 import ch.softappeal.yass2.contract.DivideByZeroException
 import ch.softappeal.yass2.contract.Echo
 import ch.softappeal.yass2.contract.Mixed
-import ch.softappeal.yass2.contract.Node
 import ch.softappeal.yass2.contract.child.NoSuspend
 import ch.softappeal.yass2.contract.reflect.proxy
 import kotlinx.coroutines.TimeoutCancellationException
@@ -31,11 +30,6 @@ val EchoImpl = object : Echo {
     override suspend fun echoRequired(value: Any) = value
     override suspend fun noParametersNoResult() {}
     override suspend fun delay(milliSeconds: Int) = delay(milliSeconds.toLong())
-    override suspend fun echoNode(node: Node?) = node
-    override suspend fun echoNodeRequired(node: Node) = node
-    override suspend fun echoGeneric(map: Map<String?, Node>): Map<Int, Node>? =
-        mapOf(map.entries.first().key!!.toInt() to map.entries.first().value)
-
     override suspend fun echoMonster(a: List<*>, b: List<List<String?>?>, c: Map<out Int, String>, d: Pair<*, *>) = null
 }
 
@@ -89,9 +83,6 @@ suspend fun test(calculatorImpl: Calculator, echoImpl: Echo) {
     println(assertSuspendFailsWith<TimeoutCancellationException> {
         withTimeout(100.milliseconds) { echo.delay(200) }
     })
-    assertEquals(123, echo.echoNodeRequired(Node(123)).id)
-    assertEquals(123, echo.echoNode(Node(123))!!.id)
-    assertNull(echo.echoNode(null))
 }
 
 class InterceptorTest {
@@ -181,17 +172,6 @@ class InterceptorTest {
     @Test
     fun suspendTest() = runTest {
         test(CalculatorImpl, EchoImpl)
-    }
-
-    @Test
-    fun testGeneric() = runTest {
-        val echo = EchoImpl.proxy { _, _, invoke ->
-            invoke()
-        }
-        assertEquals("hello", echo.echo("hello"))
-        val map = echo.echoGeneric(mapOf("13" to Node(99)))!!
-        assertEquals(1, map.size)
-        assertEquals(99, map[13]!!.id)
     }
 
     @Test

@@ -55,8 +55,6 @@ internal fun KSTypeReference.type(): String {
     return appendable.toString()
 }
 
-// TODO: default values in annotations don't yet work for multiplatform libraries;
-//       see https://youtrack.jetbrains.com/issue/KT-59526/Store-annotation-default-values-in-metadata-on-JVM
 private fun KSAnnotation.argument(name: String) = arguments.first { it.name!!.asString() == name }.value!!
 
 private val Platforms = setOf(
@@ -128,11 +126,8 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
                 if (serializer != null) {
                     val baseEncoderClasses = serializer.annotation.argument("baseEncoderClasses") as List<KSType>
                     val enumClasses = serializer.annotation.argument("enumClasses") as List<KSType>
-                    val treeConcreteClasses = serializer.annotation.argument("treeConcreteClasses") as List<KSType>
-                    val graphConcreteClasses = serializer.annotation.argument("graphConcreteClasses") as List<KSType>
-                    codeWriter.generateBinarySerializer(
-                        baseEncoderClasses, enumClasses, treeConcreteClasses, graphConcreteClasses, serializer.declaration,
-                    )
+                    val concreteClasses = serializer.annotation.argument("concreteClasses") as List<KSType>
+                    codeWriter.generateBinarySerializer(baseEncoderClasses, enumClasses, concreteClasses, serializer.declaration)
                 }
             }
         }

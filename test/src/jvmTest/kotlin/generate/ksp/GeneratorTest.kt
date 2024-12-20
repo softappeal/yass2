@@ -32,7 +32,7 @@ class GeneratorTest {
                 class BodyPropertyNotVar {
                     val x: Int = 0
                 }
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [BodyPropertyNotVar::class], [], false)
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [BodyPropertyNotVar::class])
                 val x = 0
             """,
             6,
@@ -44,7 +44,7 @@ class GeneratorTest {
                 class NoPrimaryConstructor {
                     constructor()
                 }
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [NoPrimaryConstructor::class], [], false)
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [NoPrimaryConstructor::class])
                 val x = 0
             """,
             6,
@@ -54,7 +54,7 @@ class GeneratorTest {
             """
                 package test
                 class ConstructorParameterIsNotProperty(x: Int)
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [ConstructorParameterIsNotProperty::class], [], false)
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [ConstructorParameterIsNotProperty::class])
                 val x = 0
             """,
             4,
@@ -64,7 +64,7 @@ class GeneratorTest {
             """
                 package test
                 interface NotRegularClass
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [NotRegularClass::class], [], false)
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [NotRegularClass::class])
                 val x = 0
             """,
             4,
@@ -74,7 +74,7 @@ class GeneratorTest {
             """
                 package test
                 abstract class AbstractClass
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [AbstractClass::class], [], false)
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [AbstractClass::class])
                 val x = 0
             """,
             4,
@@ -84,7 +84,7 @@ class GeneratorTest {
             """
                 package test
                 enum class MyEnum
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], [MyEnum::class], false)
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [MyEnum::class])
                 val x = 0
             """,
             4,
@@ -94,7 +94,7 @@ class GeneratorTest {
             """
                 package test
                 enum class MyEnum
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [MyEnum::class], [], false)
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [MyEnum::class])
                 val x = 0
             """,
             4,
@@ -105,7 +105,7 @@ class GeneratorTest {
                 package test
                 enum class MyEnum
                 class MyEnumEncoder : ch.softappeal.yass2.serialize.binary.EnumEncoder<MyEnum>(MyEnum::class, enumValues())
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([MyEnumEncoder::class], [], [], [], false)
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([MyEnumEncoder::class], [], [])
                 val x = 0
             """,
             5,
@@ -113,15 +113,7 @@ class GeneratorTest {
         executeTest(
             "classes [Int] are duplicated",
             """
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [Int::class], [Int::class], false)
-                val x = 0
-            """,
-            2,
-        )
-        executeTest(
-            "classes [Int] are duplicated",
-            """
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([ch.softappeal.yass2.serialize.binary.IntEncoder::class], [], [], [Int::class], false)
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([ch.softappeal.yass2.serialize.binary.IntEncoder::class], [], [Int::class])
                 val x = 0
             """,
             2,
@@ -130,7 +122,7 @@ class GeneratorTest {
             "classes [MyEnum] are duplicated",
             """
                 enum class MyEnum
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [MyEnum::class, MyEnum::class], [], [], false)
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [MyEnum::class, MyEnum::class], [])
                 val x = 0
             """,
             3,
@@ -140,7 +132,7 @@ class GeneratorTest {
             """
                 package test
                 class Test
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [Test::class], [], [], false)
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [Test::class], [])
                 val x = 0
             """,
             4,
@@ -149,9 +141,9 @@ class GeneratorTest {
             "there can be at most one annotation GenerateBinarySerializer in package test",
             """
                 package test
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], [], false)
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [])
                 val x1 = 0
-                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [], [], false)
+                @ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer([], [], [])
                 val x2 = 0
             """,
             2,

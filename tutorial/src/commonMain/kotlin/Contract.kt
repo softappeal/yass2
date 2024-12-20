@@ -23,8 +23,8 @@ public class MyDate(public val currentTimeMillis: Long)
 
 // Shows how to implement an own base type encoder.
 internal class MyDateEncoder : BaseEncoder<MyDate>(MyDate::class,
-    { writer, value -> writer.writeLong(value.currentTimeMillis) },
-    { reader -> MyDate(reader.readLong()) }
+    { value -> writeLong(value.currentTimeMillis) },
+    { MyDate(readLong()) }
 )
 
 /**
@@ -100,13 +100,12 @@ public val NewsListenerId: ServiceId<NewsListener> = ServiceId(2)
     enumClasses = [
         Gender::class,
     ],
-    treeConcreteClasses = [
+    concreteClasses = [
         Address::class,
         Person::class,
         DivideByZeroException::class,
         SubClass::class,
     ],
-    graphConcreteClasses = [],
 )
 public val ContractSerializer: Serializer = createBinarySerializer()
 

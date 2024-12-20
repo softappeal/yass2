@@ -33,7 +33,6 @@ class ComplexId(
 class Lists(
     val list: List<Id> = listOf(),
     val listOptional: List<Id>? = null,
-    val mutableList: MutableList<Id> = mutableListOf(),
 )
 
 open class Id2 : Id() {
@@ -59,10 +58,6 @@ class ManyProperties(
     var c: Int = 0
     var a: Int = 0
     var i: Int = 0
-}
-
-class Node(val id: Int) {
-    var link: Node? = null
 }
 
 class DivideByZeroException : RuntimeException()
@@ -96,9 +91,6 @@ interface Echo {
     suspend fun echoRequired(value: Any): Any
     suspend fun noParametersNoResult()
     suspend fun delay(milliSeconds: Int)
-    suspend fun echoNode(node: Node?): Node?
-    suspend fun echoNodeRequired(node: Node): Node
-    suspend fun echoGeneric(map: Map<String?, Node>): Map<Int, Node>?
     suspend fun echoMonster(a: List<*>, b: List<List<String?>?>, c: Map<out Int, String>, d: Pair<*, *>): Map<in Int, String>?
 }
 

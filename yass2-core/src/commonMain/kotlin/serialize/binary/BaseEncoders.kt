@@ -36,43 +36,43 @@ public fun Writer.writeString(value: String) {
 public fun Reader.readString(): String = readByteArray().decodeToString(throwOnInvalidSequence = true)
 
 public class BooleanEncoder : BaseEncoder<Boolean>(Boolean::class,
-    { writer, value -> writer.writeBoolean(value) },
-    { reader -> reader.readBoolean() }
+    { value -> writeBoolean(value) },
+    { readBoolean() }
 )
 
 public class ByteEncoder : BaseEncoder<Byte>(Byte::class,
-    { writer, value -> writer.writeByte(value) },
-    { reader -> reader.readByte() }
+    { value -> writeByte(value) },
+    { readByte() }
 )
 
 public class IntEncoder : BaseEncoder<Int>(Int::class,
-    { writer, value -> writer.writeZigZagVarInt(value) },
-    { reader -> reader.readZigZagVarInt() }
+    { value -> writeZigZagVarInt(value) },
+    { readZigZagVarInt() }
 )
 
 public class LongEncoder : BaseEncoder<Long>(Long::class,
-    { writer, value -> writer.writeZigZagVarLong(value) },
-    { reader -> reader.readZigZagVarLong() }
+    { value -> writeZigZagVarLong(value) },
+    { readZigZagVarLong() }
 )
 
 public class DoubleEncoder : BaseEncoder<Double>(Double::class,
-    { writer, value -> writer.writeDouble(value) },
-    { reader -> reader.readDouble() }
+    { value -> writeDouble(value) },
+    { readDouble() }
 )
 
 public class ByteArrayEncoder : BaseEncoder<ByteArray>(ByteArray::class,
-    { writer, value -> writer.writeByteArray(value) },
-    { reader -> reader.readByteArray() }
+    { value -> writeByteArray(value) },
+    { readByteArray() }
 )
 
 public class StringEncoder : BaseEncoder<String>(String::class,
-    { writer, value -> writer.writeString(value) },
-    { reader -> reader.readString() }
+    { value -> writeString(value) },
+    { readString() }
 )
 
 public abstract class EnumEncoder<T : Enum<T>>(type: KClass<T>, constants: Array<T>) : BaseEncoder<T>(type,
-    { writer, value -> writer.writeVarInt(value.ordinal) },
-    { reader -> constants[reader.readVarInt()] }
+    { value -> writeVarInt(value.ordinal) },
+    { constants[readVarInt()] }
 )
 
 public fun <T : Any> Writer.writeOptional(value: T?, write: Writer.(value: T) -> Unit): Unit = if (value == null) {

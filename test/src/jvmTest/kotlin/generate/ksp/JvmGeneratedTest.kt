@@ -47,8 +47,7 @@ private val MixedAdderImpl = object : MixedAdder {
 @GenerateBinarySerializer(
     baseEncoderClasses = [IntEncoder::class],
     enumClasses = [],
-    treeConcreteClasses = [],
-    graphConcreteClasses = [],
+    concreteClasses = [],
 )
 private val ContractSerializer = createBinarySerializer()
 

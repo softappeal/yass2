@@ -112,60 +112,64 @@ private class EnumEncoder1 : ch.softappeal.yass2.serialize.binary.EnumEncoder<ch
 )
 
 public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.BinarySerializer =
-    ch.softappeal.yass2.serialize.binary.BinarySerializer(listOf(
-        ch.softappeal.yass2.serialize.binary.IntEncoder(),
-        ch.softappeal.yass2.serialize.binary.StringEncoder(),
-        ch.softappeal.yass2.tutorial.MyDateEncoder(),
-        EnumEncoder1(),
-        ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.tutorial.Address::class, false,
-            { w, i ->
-                w.writeNoIdRequired(4, i.street)
-                w.writeNoIdOptional(3, i.number)
-            },
-            { r ->
-                val i = ch.softappeal.yass2.tutorial.Address(
-                    r.readNoIdRequired(4) as kotlin.String,
-                )
-                i.number = r.readNoIdOptional(3) as kotlin.Int?
-                i
-            }
-        ),
-        ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.tutorial.Person::class, false,
-            { w, i ->
-                w.writeNoIdRequired(4, i.name)
-                w.writeNoIdRequired(6, i.gender)
-                w.writeNoIdRequired(5, i.birthday)
-                w.writeNoIdRequired(1, i.addresses)
-            },
-            { r ->
-                val i = ch.softappeal.yass2.tutorial.Person(
-                    r.readNoIdRequired(4) as kotlin.String,
-                    r.readNoIdRequired(6) as ch.softappeal.yass2.tutorial.Gender,
-                    r.readNoIdRequired(5) as ch.softappeal.yass2.tutorial.MyDate,
-                    r.readNoIdRequired(1) as kotlin.collections.List<ch.softappeal.yass2.tutorial.Address>,
-                )
-                i
-            }
-        ),
-        ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.tutorial.DivideByZeroException::class, false,
-            { _, _ -> },
-            {
-                val i = ch.softappeal.yass2.tutorial.DivideByZeroException(
-                )
-                i
-            }
-        ),
-        ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.tutorial.SubClass::class, false,
-            { w, i ->
-                w.writeNoIdRequired(4, i.baseClassProperty)
-                w.writeNoIdRequired(4, i.subClassProperty)
-            },
-            { r ->
-                val i = ch.softappeal.yass2.tutorial.SubClass(
-                    r.readNoIdRequired(4) as kotlin.String,
-                    r.readNoIdRequired(4) as kotlin.String,
-                )
-                i
-            }
-        ),
-    ))
+    object : ch.softappeal.yass2.serialize.binary.BinarySerializer() {
+        init {
+            initialize(
+                ch.softappeal.yass2.serialize.binary.IntEncoder(),
+                ch.softappeal.yass2.serialize.binary.StringEncoder(),
+                ch.softappeal.yass2.tutorial.MyDateEncoder(),
+                EnumEncoder1(),
+                ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.tutorial.Address::class,
+                    { i ->
+                        writeNoIdRequired(3, i.street)
+                        writeNoIdOptional(2, i.number)
+                    },
+                    {
+                        val i = ch.softappeal.yass2.tutorial.Address(
+                            readNoIdRequired(3) as kotlin.String,
+                        )
+                        i.number = readNoIdOptional(2) as kotlin.Int?
+                        i
+                    }
+                ),
+                ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.tutorial.Person::class,
+                    { i ->
+                        writeNoIdRequired(3, i.name)
+                        writeNoIdRequired(5, i.gender)
+                        writeNoIdRequired(4, i.birthday)
+                        writeNoIdRequired(1, i.addresses)
+                    },
+                    {
+                        val i = ch.softappeal.yass2.tutorial.Person(
+                            readNoIdRequired(3) as kotlin.String,
+                            readNoIdRequired(5) as ch.softappeal.yass2.tutorial.Gender,
+                            readNoIdRequired(4) as ch.softappeal.yass2.tutorial.MyDate,
+                            readNoIdRequired(1) as kotlin.collections.List<ch.softappeal.yass2.tutorial.Address>,
+                        )
+                        i
+                    }
+                ),
+                ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.tutorial.DivideByZeroException::class,
+                    { _ -> },
+                    {
+                        val i = ch.softappeal.yass2.tutorial.DivideByZeroException(
+                        )
+                        i
+                    }
+                ),
+                ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.tutorial.SubClass::class,
+                    { i ->
+                        writeNoIdRequired(3, i.baseClassProperty)
+                        writeNoIdRequired(3, i.subClassProperty)
+                    },
+                    {
+                        val i = ch.softappeal.yass2.tutorial.SubClass(
+                            readNoIdRequired(3) as kotlin.String,
+                            readNoIdRequired(3) as kotlin.String,
+                        )
+                        i
+                    }
+                ),
+            )
+        }
+    }

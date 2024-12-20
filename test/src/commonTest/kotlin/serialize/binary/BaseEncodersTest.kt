@@ -15,8 +15,8 @@ private class ColorEncoder : EnumEncoder<Color>(Color::class, enumValues())
 private class OptionalString(val s: String?)
 
 private class OptionalStringEncoder : BaseEncoder<OptionalString>(OptionalString::class,
-    { writer, value -> writer.writeOptional(value.s) { writeString(it) } },
-    { reader -> OptionalString(reader.readOptional { readString() }) }
+    { value -> writeOptional(value.s) { writeString(it) } },
+    { OptionalString(readOptional { readString() }) }
 )
 
 class BaseEncodersTest {

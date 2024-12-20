@@ -63,13 +63,10 @@ class GeneratorTest {
         ) { generateBinarySerializer(Enum::class) }
         assertFailsMessage<IllegalStateException>(
             "enum class ch.softappeal.yass2.generate.reflect.Enum belongs to enumClasses"
-        ) { codeWriter().generateBinarySerializer(listOf(), listOf(), listOf(), listOf(Enum::class)) }
+        ) { codeWriter().generateBinarySerializer(listOf(), listOf(), listOf(Enum::class)) }
         assertFailsMessage<IllegalStateException>(
             "enum class ch.softappeal.yass2.generate.reflect.Enum belongs to enumClasses"
         ) { codeWriter().generateBinarySerializer(listOf(MyEnumEncoder::class), listOf(), listOf()) }
-        assertFailsMessage<IllegalArgumentException>(
-            "classes [kotlin.Int] are duplicated"
-        ) { codeWriter().generateBinarySerializer(listOf(), listOf(), listOf(Int::class), listOf(Int::class)) }
         assertFailsMessage<IllegalArgumentException>(
             "classes [kotlin.Int] are duplicated"
         ) { codeWriter().generateBinarySerializer(listOf(IntEncoder::class), listOf(), listOf(Int::class)) }

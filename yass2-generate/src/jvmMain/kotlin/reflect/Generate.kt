@@ -17,8 +17,7 @@ public fun CodeWriter.generateBinarySerializer(property: KProperty<Serializer>) 
     generateBinarySerializer(
         annotation.baseEncoderClasses.asList(),
         annotation.enumClasses.asList(),
-        annotation.treeConcreteClasses.asList(),
-        annotation.graphConcreteClasses.asList(),
+        annotation.concreteClasses.asList(),
     )
 }
 

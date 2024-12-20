@@ -33,7 +33,7 @@ class RemoteTest {
 
     @Test
     fun noFunction() = runTest {
-        assertFailsMessage<IllegalStateException>("service with id 1 has no function with id 7") {
+        assertFailsMessage<IllegalStateException>("service with id 1 has no function with id 4") {
             ServiceId<Echo>(CalculatorId.id).proxy(tunnel(CalculatorId.service(CalculatorImpl))).noParametersNoResult()
         }
     }

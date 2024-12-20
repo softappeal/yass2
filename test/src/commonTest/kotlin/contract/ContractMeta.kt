@@ -22,14 +22,11 @@ expect fun createBinarySerializer(): BinarySerializer
     enumClasses = [
         Gender::class,
     ],
-    treeConcreteClasses = [
+    concreteClasses = [
         IntException::class, PlainId::class, ComplexId::class, Lists::class,
         Id2::class, Id3::class, IdWrapper::class, ManyProperties::class,
         DivideByZeroException::class,
         ThrowableFake::class,
-    ],
-    graphConcreteClasses = [
-        Node::class,
     ],
 )
 val ContractSerializer = createBinarySerializer()
