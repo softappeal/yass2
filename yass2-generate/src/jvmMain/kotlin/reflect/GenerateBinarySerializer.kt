@@ -4,9 +4,8 @@ import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.PropertyKind
 import ch.softappeal.yass2.generate.duplicates
 import ch.softappeal.yass2.generate.hasNoDuplicates
-import ch.softappeal.yass2.serialize.binary.BaseEncoder
 import ch.softappeal.yass2.serialize.binary.BinarySerializer
-import ch.softappeal.yass2.serialize.binary.ClassEncoder
+import ch.softappeal.yass2.serialize.binary.Encoder
 import ch.softappeal.yass2.serialize.binary.EnumEncoder
 import ch.softappeal.yass2.serialize.binary.FIRST_ENCODER_ID
 import ch.softappeal.yass2.serialize.binary.LIST_ENCODER_ID
@@ -16,6 +15,7 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.full.superclasses
 import kotlin.reflect.full.valueParameters
 
 private fun KClass<*>.isEnum() = java.isEnum
@@ -32,11 +32,11 @@ private fun KClass<*>.getAllPropertiesNotThrowable() = memberProperties
     .filterNot { (it.name == "cause" || it.name == "message") && isSubclassOf(Throwable::class) }
     .sortedBy { it.name }
 
-private fun List<KClass<out BaseEncoder<*>>>.getBaseEncoderTypes() =
+private fun List<KClass<out Encoder<*>>>.getBaseEncoderTypes() =
     map { it.supertypes.first().arguments.first().type!!.classifier as KClass<*> }
 
 public fun CodeWriter.generateBinarySerializer(
-    baseEncoderClasses: List<KClass<out BaseEncoder<*>>>,
+    baseEncoderClasses: List<KClass<out Encoder<*>>>,
     enumClasses: List<KClass<*>>,
     concreteClasses: List<KClass<*>>,
 ) {
@@ -59,8 +59,18 @@ public fun CodeWriter.generateBinarySerializer(
             if (type == List::class) {
                 encoderId = LIST_ENCODER_ID
             } else {
-                val index = baseClasses.indexOfFirst { it == type }
-                if (index >= 0) encoderId = index + FIRST_ENCODER_ID else kind = PropertyKind.WithId
+                val baseClassIndex = baseClasses.indexOfFirst { it == type }
+                if (baseClassIndex >= 0) {
+                    encoderId = baseClassIndex + FIRST_ENCODER_ID
+                } else {
+                    fun KClass<*>.hasSuperCLass(superClass: KClass<*>) = superclasses.contains(superClass)
+                    val concreteClassIndex = concreteClasses.indexOfFirst { it == type }
+                    if (concreteClassIndex >= 0 && concreteClasses.none { it.hasSuperCLass(concreteClasses[concreteClassIndex]) }) {
+                        encoderId = concreteClassIndex + baseClasses.size + FIRST_ENCODER_ID
+                    } else {
+                        kind = PropertyKind.WithId
+                    }
+                }
             }
         }
     }
@@ -102,54 +112,49 @@ public fun CodeWriter.generateBinarySerializer(
 
     enumClasses.forEachIndexed { enumClassIndex, enumClass ->
         writeLine()
-        writeNestedLine("private class EnumEncoder${enumClassIndex + 1} : ${EnumEncoder::class.qualifiedName}<${enumClass.qualifiedName}>(") {
+        writeNestedLine(
+            "private class EnumEncoder${enumClassIndex + 1} : ${EnumEncoder::class.qualifiedName}<${enumClass.qualifiedName}>(",
+            ")",
+        ) {
             writeNestedLine("${enumClass.qualifiedName}::class, kotlin.enumValues()")
         }
-        writeNestedLine(")")
     }
 
     writeLine()
     writeNestedLine("public fun createBinarySerializer(): ${BinarySerializer::class.qualifiedName} =") {
-        writeNestedLine("object : ${BinarySerializer::class.qualifiedName}() {") {
-            writeNestedLine("init {") {
-                writeNestedLine("initialize(") {
+        writeNestedLine("object : ${BinarySerializer::class.qualifiedName}() {", "}") {
+            writeNestedLine("init {", "}") {
+                writeNestedLine("initialize(", ")") {
                     baseEncoderClasses.forEach { type -> writeNestedLine("${type.qualifiedName}(),") }
                     for (enumEncoderIndex in 1..enumClasses.size) writeNestedLine("EnumEncoder$enumEncoderIndex(),")
                     concreteClasses.forEach { type ->
                         fun Property.encoderId(tail: String = "") = if (kind != PropertyKind.WithId) "$encoderId$tail" else ""
-                        writeNestedLine("${ClassEncoder::class.qualifiedName}(${type.qualifiedName}::class,") {
+                        writeNestedLine("${Encoder::class.qualifiedName}(${type.qualifiedName}::class,", "),") {
                             val properties = Properties(type)
                             if (properties.all.isEmpty()) {
                                 writeNestedLine("{ _ -> },")
                             } else {
-                                writeNestedLine("{ i ->") {
+                                writeNestedLine("{ i ->", "},") {
                                     properties.all.forEach { property ->
                                         writeNestedLine("write${property.kind}(${property.encoderId(", ")}i.${property.property.name})")
                                     }
                                 }
-                                writeNestedLine("},")
                             }
-                            writeNestedLine("{") {
-                                writeNestedLine("val i = ${type.qualifiedName}(") {
+                            writeNestedLine("{", "}") {
+                                writeNestedLine("val i = ${type.qualifiedName}(", ")") {
                                     properties.parameter.forEach { property ->
                                         writeNestedLine("read${property.kind}(${property.encoderId()}) as ${property.property.returnType},")
                                     }
                                 }
-                                writeNestedLine(")")
                                 properties.body.forEach { property ->
                                     writeNestedLine("i.${property.property.name} = read${property.kind}(${property.encoderId()}) as ${property.property.returnType}")
                                 }
                                 writeNestedLine("i")
                             }
-                            writeNestedLine("}")
                         }
-                        writeNestedLine("),")
                     }
                 }
-                writeNestedLine(")")
             }
-            writeNestedLine("}")
         }
-        writeNestedLine("}")
     }
 }

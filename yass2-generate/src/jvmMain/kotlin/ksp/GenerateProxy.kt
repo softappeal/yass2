@@ -42,7 +42,7 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
         if (functions.any { !it.isSuspend }) writeNestedLine("intercept: $CSY.Interceptor,")
         if (functions.any { it.isSuspend }) writeNestedLine("suspendIntercept: $CSY.SuspendInterceptor,")
     }
-    writeNestedLine("): ${service.withTypes} = object : ${service.withTypes} {") {
+    writeNestedLine("): ${service.withTypes} = object : ${service.withTypes} {", "}") {
         functions.forEachIndexed { functionIndex, function ->
             if (functionIndex != 0) writeLine()
             val hasResult = function.hasResult()
@@ -59,7 +59,6 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
             writeNestedLine("}")
         }
     }
-    writeNestedLine("}")
 
     if (functions.any { !it.isSuspend }) return
 
@@ -68,7 +67,7 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
         writeNestedLine("tunnel: $CSY.remote.Tunnel,")
     }
     writeNestedLine("): ${service.withTypes} =") {
-        writeNestedLine("object : ${service.withTypes} {") {
+        writeNestedLine("object : ${service.withTypes} {", "}") {
             functions.forEachIndexed { functionIndex, function ->
                 if (functionIndex != 0) writeLine()
                 val hasResult = function.hasResult()
@@ -83,7 +82,6 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
                 writeLine()
             }
         }
-        writeNestedLine("}")
     }
 
     writeLine()
@@ -91,20 +89,17 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
         writeNestedLine("implementation: ${service.withTypes},")
     }
     writeNestedLine("): ${Service::class.qualifiedName} =") {
-        writeNestedLine("${Service::class.qualifiedName}(id) { functionId, parameters ->") {
-            writeNestedLine("when (functionId) {") {
+        writeNestedLine("${Service::class.qualifiedName}(id) { functionId, parameters ->", "}") {
+            writeNestedLine("when (functionId) {", "}") {
                 functions.forEachIndexed { functionIndex, function ->
-                    writeNestedLine("$functionIndex -> implementation.${function.name}(") {
+                    writeNestedLine("$functionIndex -> implementation.${function.name}(", ")") {
                         function.parameters.forEachIndexed { parameterIndex, parameter ->
                             writeNestedLine("parameters[$parameterIndex] as ${parameter.type.type()},")
                         }
                     }
-                    writeNestedLine(")")
                 }
                 writeNestedLine("else -> error(\"service with id ${'$'}id has no function with id ${'$'}functionId\")")
             }
-            writeNestedLine("}")
         }
-        writeNestedLine("}")
     }
 }

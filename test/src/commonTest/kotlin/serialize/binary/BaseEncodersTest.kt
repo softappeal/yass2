@@ -3,7 +3,6 @@ package ch.softappeal.yass2.serialize.binary
 import ch.softappeal.yass2.transport.BytesReader
 import ch.softappeal.yass2.transport.BytesWriter
 import ch.softappeal.yass2.transport.checkTail
-import ch.softappeal.yass2.transport.internalCurrent
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -14,7 +13,7 @@ private class ColorEncoder : EnumEncoder<Color>(Color::class, enumValues())
 
 private class OptionalString(val s: String?)
 
-private class OptionalStringEncoder : BaseEncoder<OptionalString>(OptionalString::class,
+private class OptionalStringEncoder : Encoder<OptionalString>(OptionalString::class,
     { value -> writeOptional(value.s) { writeString(it) } },
     { OptionalString(readOptional { readString() }) }
 )
@@ -22,7 +21,7 @@ private class OptionalStringEncoder : BaseEncoder<OptionalString>(OptionalString
 class BaseEncodersTest {
     @Test
     fun test() {
-        fun <T : Any> BaseEncoder<T>.check(value: T, vararg bytes: Int) {
+        fun <T : Any> Encoder<T>.check(value: T, vararg bytes: Int) {
             val writer = BytesWriter(1000)
             with(writer) {
                 write(this, value)
@@ -35,7 +34,7 @@ class BaseEncodersTest {
                 } else {
                     assertEquals(value, read(this))
                 }
-                assertEquals(bytes.size, internalCurrent(this))
+                assertEquals(bytes.size, current)
             }
         }
         with(BooleanEncoder()) {
@@ -104,9 +103,9 @@ class BaseEncodersTest {
         }
         with(BytesReader(writer.buffer)) {
             assertNull(encoder.read(this).s)
-            assertEquals(1, internalCurrent(this))
+            assertEquals(1, current)
             assertEquals("hello", encoder.read(this).s)
-            assertEquals(8, internalCurrent(this))
+            assertEquals(8, current)
         }
     }
 }

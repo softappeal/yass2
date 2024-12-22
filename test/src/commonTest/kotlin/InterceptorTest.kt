@@ -4,7 +4,6 @@ import ch.softappeal.yass2.contract.Calculator
 import ch.softappeal.yass2.contract.DivideByZeroException
 import ch.softappeal.yass2.contract.Echo
 import ch.softappeal.yass2.contract.Mixed
-import ch.softappeal.yass2.contract.child.NoSuspend
 import ch.softappeal.yass2.contract.reflect.proxy
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
@@ -18,7 +17,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.time.Duration.Companion.milliseconds
-import ch.softappeal.yass2.contract.child.reflect.proxy as childProxy
 
 val CalculatorImpl = object : Calculator {
     override suspend fun add(a: Int, b: Int) = a + b
@@ -37,10 +35,6 @@ private val MixedImpl = object : Mixed {
     override fun divide(a: Int, b: Int) = if (b == 0) throw DivideByZeroException() else a / b
     override suspend fun suspendDivide(a: Int, b: Int) = divide(a, b)
     override fun noParametersNoResult() {}
-}
-
-private val NoSuspendImpl = object : NoSuspend {
-    override fun x() {}
 }
 
 val Printer: SuspendInterceptor = { function, parameters, invoke ->
@@ -164,9 +158,6 @@ class InterceptorTest {
         println(mixed.hashCode())
         assertNotEquals(mixed, Any())
         assertEquals(3, counter)
-        val noSuspend = NoSuspendImpl.childProxy(testInterceptor + printer)
-        noSuspend.x()
-        assertEquals(4, counter)
     }
 
     @Test

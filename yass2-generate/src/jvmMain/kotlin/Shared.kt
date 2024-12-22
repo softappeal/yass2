@@ -79,4 +79,9 @@ public class CodeWriter(private val appendable: Appendable, private val depth: I
         writeNestedLine(s)
         nested(write)
     }
+
+    public fun writeNestedLine(start: String, end: String, write: CodeWriter.() -> Unit) {
+        writeNestedLine(start, write)
+        writeNestedLine(end)
+    }
 }

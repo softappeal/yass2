@@ -3,7 +3,6 @@ package ch.softappeal.yass2.serialize.binary
 import ch.softappeal.yass2.transport.BytesReader
 import ch.softappeal.yass2.transport.BytesWriter
 import ch.softappeal.yass2.transport.checkTail
-import ch.softappeal.yass2.transport.internalCurrent
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -39,7 +38,7 @@ class IntTest {
             assertEquals(Long.MIN_VALUE, readLong())
             assertEquals(Long.MAX_VALUE, readLong())
             assertEquals(0x12_34_56_78_9A_BC_DE_F0, readLong())
-            assertEquals(38, internalCurrent(this))
+            assertEquals(38, current)
         }
     }
 }

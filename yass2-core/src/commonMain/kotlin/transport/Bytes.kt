@@ -3,12 +3,10 @@ package ch.softappeal.yass2.transport
 import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Writer
 
-public class BytesWriter(initialCapacity: Int) : Writer {
-    public var buffer: ByteArray = ByteArray(initialCapacity)
-        private set
+public class BytesWriter(public var buffer: ByteArray) : Writer {
+    public constructor(initialCapacity: Int) : this(ByteArray(initialCapacity))
 
     public var current: Int = 0
-        private set
 
     override fun writeByte(byte: Byte) {
         if (current >= buffer.size) buffer = buffer.copyOf(maxOf(1000, 2 * buffer.size))
@@ -23,9 +21,8 @@ public class BytesWriter(initialCapacity: Int) : Writer {
     }
 }
 
-public class BytesReader(private val buffer: ByteArray) : Reader {
-    internal var current: Int = 0
-        private set
+public class BytesReader(public var buffer: ByteArray) : Reader {
+    public var current: Int = 0
 
     public val isDrained: Boolean get() = current >= buffer.size
 
@@ -43,5 +40,3 @@ public class BytesReader(private val buffer: ByteArray) : Reader {
         }
     }
 }
-
-public fun internalCurrent(reader: BytesReader): Int = reader.current

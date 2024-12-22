@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.transport
 
-import ch.softappeal.yass2.serialize.Serializer
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -8,21 +7,6 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
-
-fun <T> Serializer.copy(value: T, check: BytesWriter.() -> Unit = {}): T {
-    val writer = BytesWriter(1000)
-    var size: Int
-    with(writer) {
-        write(this, value)
-        size = current
-        check()
-    }
-    return with(BytesReader(writer.buffer)) {
-        @Suppress("UNCHECKED_CAST") val result = read(this) as T
-        assertEquals(size, internalCurrent(this))
-        result
-    }
-}
 
 fun BytesWriter.checkTail(vararg bytes: Int) {
     assertEquals(bytes.map { it.toByte() }, buffer.copyOfRange(current - bytes.size, current).toList())
@@ -56,22 +40,22 @@ class BytesTest {
         }
         with(BytesReader(writer.buffer)) {
             assertFalse(isDrained)
-            assertEquals(0, internalCurrent(this))
+            assertEquals(0, current)
             assertEquals(-128, readByte())
-            assertEquals(1, internalCurrent(this))
+            assertEquals(1, current)
             assertEquals(127, readByte())
-            assertEquals(2, internalCurrent(this))
+            assertEquals(2, current)
             assertFails { readBytes(-1) }
-            assertEquals(2, internalCurrent(this))
+            assertEquals(2, current)
             assertEquals(0, readBytes(0).size)
-            assertEquals(2, internalCurrent(this))
+            assertEquals(2, current)
             assertFailsWith<IllegalArgumentException> { readBytes(3) }
-            assertEquals(2, internalCurrent(this))
+            assertEquals(2, current)
             assertEquals(byteArrayOf(1, 2).toList(), readBytes(2).toList())
-            assertEquals(4, internalCurrent(this))
+            assertEquals(4, current)
             assertTrue(isDrained)
             assertFailsWith<IllegalArgumentException> { readByte() }
-            assertEquals(4, internalCurrent(this))
+            assertEquals(4, current)
         }
         writer = BytesWriter(0)
         with(writer) {

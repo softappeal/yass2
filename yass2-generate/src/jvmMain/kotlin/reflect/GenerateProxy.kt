@@ -41,7 +41,7 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
         if (functions.any { !it.isSuspend }) writeNestedLine("intercept: $CSY.Interceptor,")
         if (functions.any { it.isSuspend }) writeNestedLine("suspendIntercept: $CSY.SuspendInterceptor,")
     }
-    writeNestedLine("): ${service.withTypes} = object : ${service.withTypes} {") {
+    writeNestedLine("): ${service.withTypes} = object : ${service.withTypes} {", "}") {
         functions.forEachIndexed { functionIndex, function ->
             if (functionIndex != 0) writeLine()
             val hasResult = function.hasResult()
@@ -58,7 +58,6 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
             writeNestedLine("}")
         }
     }
-    writeNestedLine("}")
 
     if (functions.any { !it.isSuspend }) return
 
@@ -67,7 +66,7 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
         writeNestedLine("tunnel: $CSY.remote.Tunnel,")
     }
     writeNestedLine("): ${service.withTypes} =") {
-        writeNestedLine("object : ${service.withTypes} {") {
+        writeNestedLine("object : ${service.withTypes} {", "}") {
             functions.forEachIndexed { functionIndex, function ->
                 if (functionIndex != 0) writeLine()
                 val hasResult = function.hasResult()
@@ -82,7 +81,6 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
                 writeLine()
             }
         }
-        writeNestedLine("}")
     }
 
     writeLine()
@@ -90,20 +88,17 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
         writeNestedLine("implementation: ${service.withTypes},")
     }
     writeNestedLine("): ${Service::class.qualifiedName} =") {
-        writeNestedLine("${Service::class.qualifiedName}(id) { functionId, parameters ->") {
-            writeNestedLine("when (functionId) {") {
+        writeNestedLine("${Service::class.qualifiedName}(id) { functionId, parameters ->", "}") {
+            writeNestedLine("when (functionId) {", "}") {
                 functions.forEachIndexed { functionIndex, function ->
-                    writeNestedLine("$functionIndex -> implementation.${function.name}(") {
+                    writeNestedLine("$functionIndex -> implementation.${function.name}(", ")") {
                         function.valueParameters.forEachIndexed { parameterIndex, parameter ->
                             writeNestedLine("parameters[$parameterIndex] as ${parameter.type},")
                         }
                     }
-                    writeNestedLine(")")
                 }
                 writeNestedLine("else -> error(\"service with id ${'$'}id has no function with id ${'$'}functionId\")")
             }
-            writeNestedLine("}")
         }
-        writeNestedLine("}")
     }
 }

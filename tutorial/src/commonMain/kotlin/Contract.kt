@@ -4,7 +4,7 @@ import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.coroutines.session.MustBeImplementedByAcceptor
 import ch.softappeal.yass2.remote.coroutines.session.MustBeImplementedByInitiator
 import ch.softappeal.yass2.serialize.Serializer
-import ch.softappeal.yass2.serialize.binary.BaseEncoder
+import ch.softappeal.yass2.serialize.binary.Encoder
 import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
 import ch.softappeal.yass2.serialize.binary.IntEncoder
 import ch.softappeal.yass2.serialize.binary.StringEncoder
@@ -22,7 +22,7 @@ import ch.softappeal.yass2.transport.session.binaryPacketSerializer
 public class MyDate(public val currentTimeMillis: Long)
 
 // Shows how to implement an own base type encoder.
-internal class MyDateEncoder : BaseEncoder<MyDate>(MyDate::class,
+internal class MyDateEncoder : Encoder<MyDate>(MyDate::class,
     { value -> writeLong(value.currentTimeMillis) },
     { MyDate(readLong()) }
 )

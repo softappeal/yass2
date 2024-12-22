@@ -119,7 +119,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                 ch.softappeal.yass2.serialize.binary.StringEncoder(),
                 ch.softappeal.yass2.tutorial.MyDateEncoder(),
                 EnumEncoder1(),
-                ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.tutorial.Address::class,
+                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.tutorial.Address::class,
                     { i ->
                         writeNoIdRequired(3, i.street)
                         writeNoIdOptional(2, i.number)
@@ -132,7 +132,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.tutorial.Person::class,
+                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.tutorial.Person::class,
                     { i ->
                         writeNoIdRequired(3, i.name)
                         writeNoIdRequired(5, i.gender)
@@ -149,7 +149,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.tutorial.DivideByZeroException::class,
+                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.tutorial.DivideByZeroException::class,
                     { _ -> },
                     {
                         val i = ch.softappeal.yass2.tutorial.DivideByZeroException(
@@ -157,7 +157,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.tutorial.SubClass::class,
+                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.tutorial.SubClass::class,
                     { i ->
                         writeNoIdRequired(3, i.baseClassProperty)
                         writeNoIdRequired(3, i.subClassProperty)

@@ -1,29 +1,49 @@
 package ch.softappeal.yass2.serialize.binary
 
 import ch.softappeal.yass2.assertFailsMessage
-import ch.softappeal.yass2.contract.ComplexId
+import ch.softappeal.yass2.contract.A
+import ch.softappeal.yass2.contract.B
 import ch.softappeal.yass2.contract.ContractSerializer
 import ch.softappeal.yass2.contract.Gender
-import ch.softappeal.yass2.contract.Id2
-import ch.softappeal.yass2.contract.Id3
-import ch.softappeal.yass2.contract.IdWrapper
 import ch.softappeal.yass2.contract.IntException
+import ch.softappeal.yass2.contract.IntWrapper
 import ch.softappeal.yass2.contract.Lists
 import ch.softappeal.yass2.contract.ManyProperties
-import ch.softappeal.yass2.contract.PlainId
+import ch.softappeal.yass2.contract.Optionals
+import ch.softappeal.yass2.contract.Poly
 import ch.softappeal.yass2.contract.ThrowableFake
 import ch.softappeal.yass2.performance
 import ch.softappeal.yass2.serialize.Reader
+import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Writer
+import ch.softappeal.yass2.transport.BytesReader
 import ch.softappeal.yass2.transport.BytesWriter
 import ch.softappeal.yass2.transport.checkTail
-import ch.softappeal.yass2.transport.copy
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-private fun <T> checkedCopy(value: T, vararg bytes: Int): T = ContractSerializer.copy(value) { checkTail(*bytes) }
+fun <T> Serializer.copy(value: T, check: BytesWriter.() -> Unit = {}): T {
+    val writer = BytesWriter(1000)
+    var size: Int
+    with(writer) {
+        write(this, value)
+        size = current
+        check()
+    }
+    return with(BytesReader(writer.buffer)) {
+        @Suppress("UNCHECKED_CAST") val result = read(this) as T
+        assertEquals(size, current)
+        result
+    }
+}
+
+private fun <T> checkedCopy(value: T, vararg bytes: Int): T = ContractSerializer.copy(value) {
+    assertEquals(current, bytes.size, "actual: ${buffer.copyOfRange(0, current).toList()}")
+    checkTail(*bytes)
+}
 
 val ManyPropertiesConst = ManyProperties(8, 4, 6, 7, 2).apply {
     a = 1
@@ -67,6 +87,14 @@ class BinarySerializerTest {
     }
 
     @Test
+    fun list() {
+        assertEquals(0, checkedCopy(listOf<Int>(), 1, 0).size)
+        assertEquals(listOf<Any?>(null, 60), checkedCopy(listOf<Any?>(null, 60), 1, 2, 0, 2, 120))
+        assertEquals(listOf<Any?>(null, 60), checkedCopy(mutableListOf<Any?>(null, 60), 1, 2, 0, 2, 120))
+        checkedCopy(mutableListOf<Any>(), 1, 0).add(123)
+    }
+
+    @Test
     fun testInt() {
         assertEquals(60, checkedCopy(60, 2, 120))
     }
@@ -78,88 +106,147 @@ class BinarySerializerTest {
     }
 
     @Test
-    fun list() {
-        assertEquals(0, checkedCopy(listOf<String>(), 1, 0).size)
-        assertEquals(listOf<Any?>(null, 60), checkedCopy(listOf<Any?>(null, 60), 1, 2, 0, 2, 120))
-        assertEquals(mutableListOf<Any?>(null, 60), checkedCopy(listOf<Any?>(null, 60), 1, 2, 0, 2, 120))
-        assertEquals(listOf<Any?>(null, 60), checkedCopy(mutableListOf<Any?>(null, 60), 1, 2, 0, 2, 120))
-        assertEquals(mutableListOf<Any?>(null, 60), checkedCopy(mutableListOf<Any?>(null, 60), 1, 2, 0, 2, 120))
-        checkedCopy(mutableListOf<Any>(), 1, 0).add(123)
-    }
-
-    @Test
     fun intException() {
-        with(checkedCopy(IntException(null), 6, 0)) { assertNull(i) }
-        with(checkedCopy(IntException(60), 6, 1, 120)) { assertEquals(60, i) }
+        with(checkedCopy(IntException(10), 6, 20)) { assertEquals(10, i) }
     }
 
     @Test
-    fun complexId() {
-        with(checkedCopy(ComplexId(), 8, 7, 120, 0, 7, 118, 0, 116)) {
-            assertEquals(60, baseId.id)
-            assertTrue(baseId is PlainId)
-            assertNull(baseIdOptional)
-            assertEquals(59, plainId.id)
-            assertNull(plainIdOptional)
-            assertEquals(58, id)
+    fun intWrapper() {
+        with(checkedCopy(IntWrapper(10), 7, 20)) { assertEquals(10, i) }
+    }
+
+    @Test
+    fun optionals() {
+        with(checkedCopy(
+            Optionals(
+                10,
+                20,
+                IntWrapper(30),
+                IntWrapper(40),
+            ),
+            8,
+            20,
+            1, 40,
+            60,
+            1, 80,
+        )) {
+            assertEquals(10, i)
+            assertEquals(20, iOptional)
+            assertEquals(30, intWrapper.i)
+            assertEquals(40, intWrapperOptional!!.i)
         }
-        with(checkedCopy(ComplexId(baseIdOptional = PlainId(61)), 8, 7, 120, 7, 122, 7, 118, 0, 116)) {
-            assertEquals(60, baseId.id)
-            assertTrue(baseId is PlainId)
-            assertEquals(61, baseIdOptional!!.id)
-            assertTrue(baseIdOptional is PlainId)
-            assertEquals(59, plainId.id)
-            assertNull(plainIdOptional)
-            assertEquals(58, id)
+        with(checkedCopy(
+            Optionals(
+                10,
+                null,
+                IntWrapper(30),
+                null,
+            ),
+            8,
+            20,
+            0,
+            60,
+            0,
+        )) {
+            assertEquals(10, i)
+            assertNull(iOptional)
+            assertEquals(30, intWrapper.i)
+            assertNull(intWrapperOptional)
         }
-        with(checkedCopy(ComplexId(plainId = PlainId(61)), 8, 7, 120, 0, 7, 122, 0, 116)) {
-            assertEquals(60, baseId.id)
-            assertTrue(baseId is PlainId)
-            assertNull(baseIdOptional)
-            assertEquals(61, plainId.id)
-            assertNull(plainIdOptional)
-            assertEquals(58, id)
+    }
+
+    @Test
+    fun a() {
+        assertEquals(1, A(1).a)
+        with(checkedCopy(A(10), 10, 20)) {
+            assertEquals(10, a)
         }
-        with(checkedCopy(ComplexId(plainIdOptional = PlainId(61)), 8, 7, 120, 0, 7, 118, 7, 122, 116)) {
-            assertEquals(60, baseId.id)
-            assertTrue(baseId is PlainId)
-            assertNull(baseIdOptional)
-            assertEquals(59, plainId.id)
-            assertEquals(61, plainIdOptional!!.id)
-            assertEquals(58, id)
+    }
+
+    @Test
+    fun b() {
+        with(B(1, 2)) {
+            assertEquals(1, a)
+            assertEquals(2, b)
+        }
+        with(checkedCopy(B(10, 20), 11, 20, 40)) {
+            assertEquals(10, a)
+            assertEquals(20, b)
+        }
+    }
+
+    @Test
+    fun poly() {
+        with(checkedCopy(
+            Poly(
+                A(10),
+                B(30, 40),
+            ),
+            12,
+            10, 20,
+            60, 80,
+        )) {
+            assertEquals(10, a.a)
+            assertFalse(a is B)
+            assertEquals(30, b.a)
+            assertEquals(40, b.b)
+        }
+        with(checkedCopy(
+            Poly(
+                B(10, 20),
+                B(30, 40),
+            ),
+            12,
+            11, 20, 40,
+            60, 80,
+        )) {
+            assertEquals(10, a.a)
+            assertEquals(20, (a as B).b)
+            assertEquals(30, b.a)
+            assertEquals(40, b.b)
         }
     }
 
     @Test
     fun lists() {
-        with(checkedCopy(Lists(), 9, 0, 0)) {
-            assertTrue(list.isEmpty())
+        with(checkedCopy(
+            Lists(
+                listOf(10),
+                listOf(20),
+                mutableListOf(30),
+                mutableListOf(40),
+            ),
+            9,
+            1, 2, 20,
+            1, 1, 2, 40,
+            1, 2, 60,
+            1, 1, 2, 80,
+        )) {
+            assertEquals(listOf(10), list)
+            assertEquals(listOf(20), listOptional)
+            assertEquals(listOf(30), mutableList)
+            mutableList.add(99)
+            assertEquals(listOf(40), mutableListOptional!!)
+            mutableListOptional.add(99)
+        }
+        with(checkedCopy(
+            Lists(
+                listOf(10),
+                null,
+                mutableListOf(30),
+                null,
+            ),
+            9,
+            1, 2, 20,
+            0,
+            1, 2, 60,
+            0,
+        )) {
+            assertEquals(listOf(10), list)
             assertNull(listOptional)
-        }
-        with(checkedCopy(Lists(list = listOf(PlainId())))) {
-            assertEquals(1, list.size)
-            assertEquals(60, list[0].id)
-            assertTrue(list[0] is PlainId)
-            assertNull(listOptional)
-        }
-        with(checkedCopy(Lists(listOptional = listOf()), 9, 0, 1, 0)) {
-            assertTrue(list.isEmpty())
-            assertTrue(listOptional!!.isEmpty())
-        }
-    }
-
-    @Test
-    fun idWrapper() {
-        with(checkedCopy(IdWrapper(), 12, 10, 120, 0)) {
-            assertEquals(id::class, Id2::class)
-            assertEquals(60, id.id)
-            assertNull(idOptional)
-        }
-        with(checkedCopy(IdWrapper(idOptional = Id3()), 12, 10, 120, 11, 120)) {
-            assertEquals(id::class, Id2::class)
-            assertEquals(60, id.id)
-            assertEquals(idOptional!!::class, Id3::class)
-            assertEquals(60, idOptional.id)
+            assertEquals(listOf(30), mutableList)
+            mutableList.add(99)
+            assertNull(mutableListOptional)
         }
     }
 

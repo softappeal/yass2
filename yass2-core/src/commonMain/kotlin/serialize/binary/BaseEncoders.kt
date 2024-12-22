@@ -35,42 +35,42 @@ public fun Writer.writeString(value: String) {
 
 public fun Reader.readString(): String = readByteArray().decodeToString(throwOnInvalidSequence = true)
 
-public class BooleanEncoder : BaseEncoder<Boolean>(Boolean::class,
+public class BooleanEncoder : Encoder<Boolean>(Boolean::class,
     { value -> writeBoolean(value) },
     { readBoolean() }
 )
 
-public class ByteEncoder : BaseEncoder<Byte>(Byte::class,
+public class ByteEncoder : Encoder<Byte>(Byte::class,
     { value -> writeByte(value) },
     { readByte() }
 )
 
-public class IntEncoder : BaseEncoder<Int>(Int::class,
+public class IntEncoder : Encoder<Int>(Int::class,
     { value -> writeZigZagVarInt(value) },
     { readZigZagVarInt() }
 )
 
-public class LongEncoder : BaseEncoder<Long>(Long::class,
+public class LongEncoder : Encoder<Long>(Long::class,
     { value -> writeZigZagVarLong(value) },
     { readZigZagVarLong() }
 )
 
-public class DoubleEncoder : BaseEncoder<Double>(Double::class,
+public class DoubleEncoder : Encoder<Double>(Double::class,
     { value -> writeDouble(value) },
     { readDouble() }
 )
 
-public class ByteArrayEncoder : BaseEncoder<ByteArray>(ByteArray::class,
+public class ByteArrayEncoder : Encoder<ByteArray>(ByteArray::class,
     { value -> writeByteArray(value) },
     { readByteArray() }
 )
 
-public class StringEncoder : BaseEncoder<String>(String::class,
+public class StringEncoder : Encoder<String>(String::class,
     { value -> writeString(value) },
     { readString() }
 )
 
-public abstract class EnumEncoder<T : Enum<T>>(type: KClass<T>, constants: Array<T>) : BaseEncoder<T>(type,
+public abstract class EnumEncoder<T : Enum<T>>(type: KClass<T>, constants: Array<T>) : Encoder<T>(type,
     { value -> writeVarInt(value.ordinal) },
     { constants[readVarInt()] }
 )

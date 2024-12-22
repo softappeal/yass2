@@ -224,96 +224,100 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                 ch.softappeal.yass2.serialize.binary.StringEncoder(),
                 ch.softappeal.yass2.serialize.binary.ByteArrayEncoder(),
                 EnumEncoder1(),
-                ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.contract.IntException::class,
+                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.IntException::class,
                     { i ->
-                        writeNoIdOptional(2, i.i)
+                        writeNoIdRequired(2, i.i)
                     },
                     {
                         val i = ch.softappeal.yass2.contract.IntException(
-                            readNoIdOptional(2) as kotlin.Int?,
-                        )
-                        i
-                    }
-                ),
-                ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.contract.PlainId::class,
-                    { i ->
-                        writeNoIdRequired(2, i.id)
-                    },
-                    {
-                        val i = ch.softappeal.yass2.contract.PlainId(
                             readNoIdRequired(2) as kotlin.Int,
                         )
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.contract.ComplexId::class,
+                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.IntWrapper::class,
                     { i ->
-                        writeWithId(i.baseId)
-                        writeWithId(i.baseIdOptional)
-                        writeWithId(i.plainId)
-                        writeWithId(i.plainIdOptional)
-                        writeNoIdRequired(2, i.id)
+                        writeNoIdRequired(2, i.i)
                     },
                     {
-                        val i = ch.softappeal.yass2.contract.ComplexId(
-                            readWithId() as ch.softappeal.yass2.contract.Id,
-                            readWithId() as ch.softappeal.yass2.contract.Id?,
-                            readWithId() as ch.softappeal.yass2.contract.PlainId,
-                            readWithId() as ch.softappeal.yass2.contract.PlainId?,
+                        val i = ch.softappeal.yass2.contract.IntWrapper(
+                            readNoIdRequired(2) as kotlin.Int,
                         )
-                        i.id = readNoIdRequired(2) as kotlin.Int
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.contract.Lists::class,
+                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.Optionals::class,
+                    { i ->
+                        writeNoIdRequired(2, i.i)
+                        writeNoIdOptional(2, i.iOptional)
+                        writeNoIdRequired(7, i.intWrapper)
+                        writeNoIdOptional(7, i.intWrapperOptional)
+                    },
+                    {
+                        val i = ch.softappeal.yass2.contract.Optionals(
+                            readNoIdRequired(2) as kotlin.Int,
+                            readNoIdOptional(2) as kotlin.Int?,
+                            readNoIdRequired(7) as ch.softappeal.yass2.contract.IntWrapper,
+                            readNoIdOptional(7) as ch.softappeal.yass2.contract.IntWrapper?,
+                        )
+                        i
+                    }
+                ),
+                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.Lists::class,
                     { i ->
                         writeNoIdRequired(1, i.list)
                         writeNoIdOptional(1, i.listOptional)
+                        writeNoIdRequired(1, i.mutableList)
+                        writeNoIdOptional(1, i.mutableListOptional)
                     },
                     {
                         val i = ch.softappeal.yass2.contract.Lists(
-                            readNoIdRequired(1) as kotlin.collections.List<ch.softappeal.yass2.contract.Id>,
-                            readNoIdOptional(1) as kotlin.collections.List<ch.softappeal.yass2.contract.Id>?,
+                            readNoIdRequired(1) as kotlin.collections.List<kotlin.Int>,
+                            readNoIdOptional(1) as kotlin.collections.List<kotlin.Int>?,
+                            readNoIdRequired(1) as kotlin.collections.MutableList<kotlin.Int>,
+                            readNoIdOptional(1) as kotlin.collections.MutableList<kotlin.Int>?,
                         )
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.contract.Id2::class,
+                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.A::class,
                     { i ->
-                        writeNoIdRequired(2, i.id)
+                        writeNoIdRequired(2, i.a)
                     },
                     {
-                        val i = ch.softappeal.yass2.contract.Id2(
+                        val i = ch.softappeal.yass2.contract.A(
+                            readNoIdRequired(2) as kotlin.Int,
                         )
-                        i.id = readNoIdRequired(2) as kotlin.Int
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.contract.Id3::class,
+                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.B::class,
                     { i ->
-                        writeNoIdRequired(2, i.id)
+                        writeNoIdRequired(2, i.a)
+                        writeNoIdRequired(2, i.b)
                     },
                     {
-                        val i = ch.softappeal.yass2.contract.Id3(
+                        val i = ch.softappeal.yass2.contract.B(
+                            readNoIdRequired(2) as kotlin.Int,
+                            readNoIdRequired(2) as kotlin.Int,
                         )
-                        i.id = readNoIdRequired(2) as kotlin.Int
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.contract.IdWrapper::class,
+                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.Poly::class,
                     { i ->
-                        writeWithId(i.id)
-                        writeWithId(i.idOptional)
+                        writeWithId(i.a)
+                        writeNoIdRequired(11, i.b)
                     },
                     {
-                        val i = ch.softappeal.yass2.contract.IdWrapper(
-                            readWithId() as ch.softappeal.yass2.contract.Id2,
-                            readWithId() as ch.softappeal.yass2.contract.Id2?,
+                        val i = ch.softappeal.yass2.contract.Poly(
+                            readWithId() as ch.softappeal.yass2.contract.A,
+                            readNoIdRequired(11) as ch.softappeal.yass2.contract.B,
                         )
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.contract.ManyProperties::class,
+                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.ManyProperties::class,
                     { i ->
                         writeNoIdRequired(2, i.h)
                         writeNoIdRequired(2, i.d)
@@ -342,7 +346,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.contract.DivideByZeroException::class,
+                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.DivideByZeroException::class,
                     { _ -> },
                     {
                         val i = ch.softappeal.yass2.contract.DivideByZeroException(
@@ -350,7 +354,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.ClassEncoder(ch.softappeal.yass2.contract.ThrowableFake::class,
+                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.ThrowableFake::class,
                     { i ->
                         writeNoIdRequired(3, i.cause)
                         writeNoIdRequired(3, i.message)

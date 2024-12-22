@@ -4,8 +4,8 @@ import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.contract.PacketSerializer
 import ch.softappeal.yass2.remote.ValueReply
 import ch.softappeal.yass2.remote.coroutines.session.Packet
+import ch.softappeal.yass2.serialize.binary.copy
 import ch.softappeal.yass2.transport.BytesWriter
-import ch.softappeal.yass2.transport.copy
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
