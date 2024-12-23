@@ -19,7 +19,6 @@ import ch.softappeal.yass2.remote.tunnel
 import ch.softappeal.yass2.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.serialize.binary.StringEncoder
 import ch.softappeal.yass2.transport.ContextMessageSerializer
-import ch.softappeal.yass2.transport.Transport
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.ws
 import io.ktor.client.request.header

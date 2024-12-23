@@ -15,7 +15,6 @@ plugins {
 val libraries = libs
 
 fun hasTarget(@Suppress("UNUSED_PARAMETER") enabled: Boolean) = true // enabled
-val jsTarget = hasTarget(false)
 val wasmJsTarget = hasTarget(false)
 val linuxX64Target = hasTarget(false)
 val linuxArm64Target = hasTarget(false)
@@ -41,11 +40,6 @@ allprojects {
             mavenPublication {
                 artifact(tasks["javadocJar"])
             }
-        }
-        if (jsTarget) js {
-            moduleName = project.name
-            nodejs()
-            binaries.executable()
         }
         @OptIn(ExperimentalWasmDsl::class)
         if (wasmJsTarget) wasmJs {
@@ -191,7 +185,6 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
     }
     dependencies {
         add("kspJvmTest", generateProject)
-        if (jsTarget) add("kspJsTest", generateProject)
         if (wasmJsTarget) add("kspWasmJsTest", generateProject)
         if (linuxX64Target) add("kspLinuxX64Test", generateProject)
         if (linuxArm64Target) add("kspLinuxArm64Test", generateProject)
@@ -204,7 +197,7 @@ project(":tutorial") {
         sourceSets {
             commonMain {
                 dependencies {
-                    implementation(coroutinesProject)
+                    implementation(ktorProject)
                 }
             }
             commonTest {
@@ -214,7 +207,6 @@ project(":tutorial") {
             }
             jvmMain {
                 dependencies {
-                    implementation(ktorProject)
                     implementation(libraries.bundles.ktor.cio)
                 }
             }
@@ -223,7 +215,7 @@ project(":tutorial") {
                     implementation(generateProject)
                 }
             }
-            if (jsTarget) jsTest {
+            if (wasmJsTarget) wasmJsTest {
                 dependencies {
                     implementation(libraries.kotlinx.coroutines.test)
                 }

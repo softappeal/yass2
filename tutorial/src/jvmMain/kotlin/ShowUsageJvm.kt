@@ -25,8 +25,9 @@ private const val PATH = "/yass"
 private fun Application.theModule() {
     install(io.ktor.server.websocket.WebSockets)
     routing {
+        staticFiles("/", File("./build/js/packages/yass2-tutorial-wasm-js/kotlin"))
         staticFiles("/", File("./")) // needed for debugging (sources)
-        staticFiles("/", File("./build/js/packages/tutorial/kotlin"))
+        staticFiles("/", File("./tutorial/")) // needed for debugging (sources)
 
         // shows server-side unidirectional remoting with Http
         route(MessageTransport, PATH, tunnel(

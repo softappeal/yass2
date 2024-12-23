@@ -22,8 +22,9 @@ import java.io.File
 private fun Application.theModule() {
     install(WebSockets)
     routing {
+        staticFiles("/", File("./build/js/packages/yass2-test-wasm-js-test/kotlin"))
         staticFiles("/", File("./")) // needed for debugging (sources)
-        staticFiles("/", File("./build/js/packages/test-test/kotlin"))
+        staticFiles("/", File("./test/")) // needed for debugging (sources)
         route(
             MessageTransport,
             PATH,

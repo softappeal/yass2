@@ -1,21 +1,17 @@
 package ch.softappeal.yass2.transport
 
+import ch.softappeal.yass2.serialize.binary.checkTail
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
-import kotlin.test.assertSame
 import kotlin.test.assertTrue
-
-fun BytesWriter.checkTail(vararg bytes: Int) {
-    assertEquals(bytes.map { it.toByte() }, buffer.copyOfRange(current - bytes.size, current).toList())
-}
 
 class BytesTest {
     @Test
     fun test() {
-        var writer = BytesWriter(4)
+        val writer = BytesWriter(4)
         with(writer) {
             val buffer = this.buffer
             assertEquals(0, current)
@@ -36,7 +32,10 @@ class BytesTest {
             assertFails { checkTail(1, 22) }
             writeBytes(ByteArray(0))
             assertEquals(4, current)
-            assertSame(buffer, this.buffer)
+            assertFailsWith<IndexOutOfBoundsException> { writeByte(0) }
+            assertEquals(4, current)
+            assertFailsWith<IndexOutOfBoundsException> { writeBytes(ByteArray(1000)) }
+            assertEquals(4, current)
         }
         with(BytesReader(writer.buffer)) {
             assertFalse(isDrained)
@@ -49,45 +48,13 @@ class BytesTest {
             assertEquals(2, current)
             assertEquals(0, readBytes(0).size)
             assertEquals(2, current)
-            assertFailsWith<IllegalArgumentException> { readBytes(3) }
+            assertFailsWith<IndexOutOfBoundsException> { readBytes(3) }
             assertEquals(2, current)
             assertEquals(byteArrayOf(1, 2).toList(), readBytes(2).toList())
             assertEquals(4, current)
             assertTrue(isDrained)
-            assertFailsWith<IllegalArgumentException> { readByte() }
+            assertFailsWith<IndexOutOfBoundsException> { readByte() }
             assertEquals(4, current)
-        }
-        writer = BytesWriter(0)
-        with(writer) {
-            assertEquals(0, writer.buffer.size)
-            assertEquals(0, current)
-            writeByte(0)
-            assertEquals(1000, writer.buffer.size)
-            assertEquals(1, current)
-        }
-        writer = BytesWriter(0)
-        with(writer) {
-            writeBytes(ByteArray(1000))
-            assertEquals(2000, writer.buffer.size)
-            assertEquals(1000, current)
-            writeByte(0)
-            assertEquals(2000, writer.buffer.size)
-            assertEquals(1001, current)
-        }
-        writer = BytesWriter(1000)
-        with(writer) {
-            writeBytes(ByteArray(1001))
-            assertEquals(2001, writer.buffer.size)
-            assertEquals(1001, current)
-        }
-        writer = BytesWriter(1000)
-        with(writer) {
-            writeBytes(ByteArray(10_000))
-            assertEquals(11_000, writer.buffer.size)
-            assertEquals(10_000, current)
-            writeBytes(ByteArray(2_000))
-            assertEquals(22_000, writer.buffer.size)
-            assertEquals(12_000, current)
         }
     }
 }

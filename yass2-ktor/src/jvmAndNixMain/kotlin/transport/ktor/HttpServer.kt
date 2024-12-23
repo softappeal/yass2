@@ -2,7 +2,6 @@ package ch.softappeal.yass2.transport.ktor
 
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.Tunnel
-import ch.softappeal.yass2.transport.Transport
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.receiveChannel
 import io.ktor.server.response.respond

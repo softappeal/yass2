@@ -18,20 +18,16 @@ import kotlinx.coroutines.launch
 private const val HttpUrl = "/yass"
 private const val WsUrl = "ws://localhost:28947/yass"
 
-private suspend fun ktorTest() {
-    HttpClient(JsClient()) {
-        install(Plugin)
-    }.use { client ->
-        client.tunnel(MessageTransport, HttpUrl).test(1000)
-        client.ws(WsUrl) {
-            receiveLoop(PacketTransport, initiatorSessionFactory(1000))
-        }
-    }
-}
-
 @OptIn(ExperimentalJsExport::class) @JsExport
-fun wasmRemoteTest() {
+fun remoteTest() {
     @OptIn(DelicateCoroutinesApi::class) GlobalScope.launch {
-        ktorTest()
+        HttpClient(JsClient()) {
+            install(Plugin)
+        }.use { client ->
+            client.tunnel(MessageTransport, HttpUrl).test(1000)
+            client.ws(WsUrl) {
+                receiveLoop(PacketTransport, initiatorSessionFactory(1000))
+            }
+        }
     }
 }

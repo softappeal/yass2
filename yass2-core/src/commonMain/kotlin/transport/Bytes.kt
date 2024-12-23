@@ -4,18 +4,17 @@ import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Writer
 
 public class BytesWriter(public var buffer: ByteArray) : Writer {
-    public constructor(initialCapacity: Int) : this(ByteArray(initialCapacity))
+    public constructor(size: Int) : this(ByteArray(size))
 
     public var current: Int = 0
 
     override fun writeByte(byte: Byte) {
-        if (current >= buffer.size) buffer = buffer.copyOf(maxOf(1000, 2 * buffer.size))
-        buffer[current++] = byte
+        buffer[current] = byte
+        current += 1
     }
 
     override fun writeBytes(bytes: ByteArray) {
         val newCurrent = current + bytes.size
-        if (newCurrent > buffer.size) buffer = buffer.copyOf(maxOf(newCurrent + 1000, 2 * buffer.size))
         bytes.copyInto(buffer, current)
         current = newCurrent
     }
@@ -27,13 +26,13 @@ public class BytesReader(public var buffer: ByteArray) : Reader {
     public val isDrained: Boolean get() = current >= buffer.size
 
     override fun readByte(): Byte {
-        require(current < buffer.size)
-        return buffer[current++]
+        val b = buffer[current]
+        current += 1
+        return b
     }
 
     override fun readBytes(length: Int): ByteArray {
         val newCurrent = current + length
-        require(newCurrent <= buffer.size)
         return ByteArray(length).apply {
             buffer.copyInto(this, 0, current, newCurrent)
             current = newCurrent

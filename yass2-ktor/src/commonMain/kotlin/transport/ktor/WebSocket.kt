@@ -5,7 +5,6 @@ import ch.softappeal.yass2.remote.coroutines.session.Packet
 import ch.softappeal.yass2.remote.coroutines.session.SessionFactory
 import ch.softappeal.yass2.remote.coroutines.session.receiveLoop
 import ch.softappeal.yass2.transport.BytesReader
-import ch.softappeal.yass2.transport.Transport
 import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.close

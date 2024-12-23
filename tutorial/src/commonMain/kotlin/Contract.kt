@@ -10,8 +10,8 @@ import ch.softappeal.yass2.serialize.binary.IntEncoder
 import ch.softappeal.yass2.serialize.binary.StringEncoder
 import ch.softappeal.yass2.serialize.binary.readLong
 import ch.softappeal.yass2.serialize.binary.writeLong
-import ch.softappeal.yass2.transport.Transport
 import ch.softappeal.yass2.transport.binaryMessageSerializer
+import ch.softappeal.yass2.transport.ktor.Transport
 import ch.softappeal.yass2.transport.session.binaryPacketSerializer
 
 /**

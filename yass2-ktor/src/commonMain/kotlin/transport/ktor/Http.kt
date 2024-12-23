@@ -3,7 +3,6 @@ package ch.softappeal.yass2.transport.ktor
 import ch.softappeal.yass2.remote.Message
 import ch.softappeal.yass2.remote.Reply
 import ch.softappeal.yass2.remote.Tunnel
-import ch.softappeal.yass2.transport.Transport
 import io.ktor.client.HttpClient
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody

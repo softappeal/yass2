@@ -22,15 +22,12 @@
     - transport `yass2-core`
         - BinaryMessageSerializer.kt `[common]`
         - Bytes.kt `[common]`
-        - Transport.kt `[common]`
-        - js `yass2-coroutines`
-            - Connect.kt `[js]`
-            - Tunnel.kt `[js]`
         - ktor `yass2-ktor`
             - ByteChannel.kt `[common]`
             - Http.kt `[common]`
             - HttpServer.kt `[jvmAndNix]`
             - Socket.kt `[jvmAndNix]`
+            - Transport.kt `[common]`
             - WebSocket.kt `[common]`
         - session `yass2-coroutines`
             - BinaryPacketSerializer.kt `[common]`

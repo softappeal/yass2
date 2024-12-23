@@ -7,7 +7,6 @@ import ch.softappeal.yass2.remote.coroutines.session.Connection
 import ch.softappeal.yass2.remote.coroutines.session.Packet
 import ch.softappeal.yass2.remote.coroutines.session.SessionFactory
 import ch.softappeal.yass2.remote.coroutines.session.receiveLoop
-import ch.softappeal.yass2.transport.Transport
 import io.ktor.network.sockets.Socket
 import io.ktor.network.sockets.openReadChannel
 import io.ktor.network.sockets.openWriteChannel
