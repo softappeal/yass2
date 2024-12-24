@@ -8,7 +8,7 @@ import ch.softappeal.yass2.contract.DEMO_HEADER_KEY
 import ch.softappeal.yass2.contract.DEMO_HEADER_VALUE
 import ch.softappeal.yass2.contract.MessageSerializer
 import ch.softappeal.yass2.contract.MessageTransport
-import ch.softappeal.yass2.contract.PacketTransport
+import ch.softappeal.yass2.contract.PacketSerializer
 import ch.softappeal.yass2.contract.reflect.proxy
 import ch.softappeal.yass2.contract.reflect.service
 import ch.softappeal.yass2.remote.coroutines.session.acceptorSessionFactory
@@ -53,7 +53,7 @@ private fun Application.webSocketModule() {
     routing {
         webSocket(PATH) {
             receiveLoop(
-                PacketTransport,
+                PacketSerializer,
                 acceptorSessionFactory { (connection.session as WebSocketServerSession).call.request.headers[DEMO_HEADER_KEY]!! }
             )
         }
@@ -92,7 +92,7 @@ class HttpTest {
                     install(io.ktor.client.plugins.websocket.WebSockets)
                 }.use { client ->
                     client.ws("ws://$LOCAL_HOST:$randomPort$PATH", { header(DEMO_HEADER_KEY, DEMO_HEADER_VALUE) }) {
-                        receiveLoop(PacketTransport, initiatorSessionFactory(1000))
+                        receiveLoop(PacketSerializer, initiatorSessionFactory(1000))
                     }
                 }
             }
