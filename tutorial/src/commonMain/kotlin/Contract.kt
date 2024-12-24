@@ -1,18 +1,18 @@
 package ch.softappeal.yass2.tutorial
 
 import ch.softappeal.yass2.remote.ServiceId
-import ch.softappeal.yass2.remote.coroutines.session.MustBeImplementedByAcceptor
-import ch.softappeal.yass2.remote.coroutines.session.MustBeImplementedByInitiator
+import ch.softappeal.yass2.remote.binaryMessageSerializer
+import ch.softappeal.yass2.remote.coroutines.MustBeImplementedByAcceptor
+import ch.softappeal.yass2.remote.coroutines.MustBeImplementedByInitiator
+import ch.softappeal.yass2.remote.coroutines.binaryPacketSerializer
 import ch.softappeal.yass2.serialize.Serializer
+import ch.softappeal.yass2.serialize.Transport
 import ch.softappeal.yass2.serialize.binary.Encoder
 import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
 import ch.softappeal.yass2.serialize.binary.IntEncoder
 import ch.softappeal.yass2.serialize.binary.StringEncoder
 import ch.softappeal.yass2.serialize.binary.readLong
 import ch.softappeal.yass2.serialize.binary.writeLong
-import ch.softappeal.yass2.transport.binaryMessageSerializer
-import ch.softappeal.yass2.transport.ktor.Transport
-import ch.softappeal.yass2.transport.session.binaryPacketSerializer
 
 /**
  * The base types Boolean, Byte, Int, Long, Double, String and ByteArray are supported.
@@ -112,6 +112,5 @@ public val ContractSerializer: Serializer = createBinarySerializer()
 public val MessageSerializer: Serializer = binaryMessageSerializer(ContractSerializer)
 public val PacketSerializer: Serializer = binaryPacketSerializer(MessageSerializer)
 
-private const val INITIAL_WRITER_CAPACITY = 100
-public val MessageTransport: Transport = Transport(MessageSerializer, INITIAL_WRITER_CAPACITY)
-public val PacketTransport: Transport = Transport(PacketSerializer, INITIAL_WRITER_CAPACITY)
+public val MessageTransport: Transport = Transport(MessageSerializer)
+public val PacketTransport: Transport = Transport(PacketSerializer)

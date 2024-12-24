@@ -197,7 +197,7 @@ project(":tutorial") {
         sourceSets {
             commonMain {
                 dependencies {
-                    implementation(ktorProject)
+                    implementation(coroutinesProject)
                 }
             }
             commonTest {
@@ -207,6 +207,7 @@ project(":tutorial") {
             }
             jvmMain {
                 dependencies {
+                    implementation(ktorProject)
                     implementation(libraries.bundles.ktor.cio)
                 }
             }
@@ -215,9 +216,16 @@ project(":tutorial") {
                     implementation(generateProject)
                 }
             }
-            if (wasmJsTarget) wasmJsTest {
-                dependencies {
-                    implementation(libraries.kotlinx.coroutines.test)
+            if (wasmJsTarget) {
+                wasmJsMain {
+                    dependencies {
+                        implementation(ktorProject)
+                    }
+                }
+                wasmJsTest {
+                    dependencies {
+                        implementation(libraries.kotlinx.coroutines.test)
+                    }
                 }
             }
         }

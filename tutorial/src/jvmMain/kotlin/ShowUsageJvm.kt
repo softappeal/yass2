@@ -2,10 +2,10 @@
 
 package ch.softappeal.yass2.tutorial
 
+import ch.softappeal.yass2.ktor.receiveLoop
+import ch.softappeal.yass2.ktor.route
+import ch.softappeal.yass2.ktor.tunnel
 import ch.softappeal.yass2.remote.tunnel
-import ch.softappeal.yass2.transport.ktor.receiveLoop
-import ch.softappeal.yass2.transport.ktor.route
-import ch.softappeal.yass2.transport.ktor.tunnel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.ws
 import io.ktor.server.application.Application

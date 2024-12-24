@@ -1,13 +1,13 @@
 package ch.softappeal.yass2.tutorial
 
 import ch.softappeal.yass2.remote.Tunnel
-import ch.softappeal.yass2.remote.coroutines.session.Connection
-import ch.softappeal.yass2.remote.coroutines.session.Session
-import ch.softappeal.yass2.remote.coroutines.session.SessionFactory
+import ch.softappeal.yass2.remote.coroutines.Connection
+import ch.softappeal.yass2.remote.coroutines.Session
+import ch.softappeal.yass2.remote.coroutines.SessionFactory
 import ch.softappeal.yass2.remote.tunnel
+import ch.softappeal.yass2.serialize.BytesReader
+import ch.softappeal.yass2.serialize.BytesWriter
 import ch.softappeal.yass2.serialize.Serializer
-import ch.softappeal.yass2.transport.BytesReader
-import ch.softappeal.yass2.transport.BytesWriter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

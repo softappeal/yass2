@@ -38,7 +38,7 @@ public abstract class BinarySerializer : Serializer {
         },
         {
             var size = readVarInt()
-            ArrayList<Any?>(minOf(size, 100)).apply { // prevents easy out-of-memory attack
+            ArrayList<Any?>(minOf(size, 10)).apply { // prevents easy out-of-memory attack
                 while (size-- > 0) add(readWithId())
             }
         }

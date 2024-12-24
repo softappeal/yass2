@@ -5,11 +5,11 @@ import ch.softappeal.yass2.Invocation
 import ch.softappeal.yass2.SuspendInvocation
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.tunnel
+import ch.softappeal.yass2.serialize.BytesReader
+import ch.softappeal.yass2.serialize.BytesWriter
 import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
 import ch.softappeal.yass2.serialize.binary.IntEncoder
-import ch.softappeal.yass2.transport.BytesReader
-import ch.softappeal.yass2.transport.BytesWriter
 import kotlinx.coroutines.runBlocking
 import kotlin.reflect.KFunction
 import kotlin.test.Test

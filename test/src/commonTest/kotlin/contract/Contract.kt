@@ -6,14 +6,14 @@ import ch.softappeal.yass2.SuspendInterceptor
 import ch.softappeal.yass2.remote.Service
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.Tunnel
+import ch.softappeal.yass2.remote.binaryMessageSerializer
+import ch.softappeal.yass2.remote.coroutines.binaryPacketSerializer
+import ch.softappeal.yass2.serialize.Transport
 import ch.softappeal.yass2.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.serialize.binary.ByteArrayEncoder
 import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
 import ch.softappeal.yass2.serialize.binary.IntEncoder
 import ch.softappeal.yass2.serialize.binary.StringEncoder
-import ch.softappeal.yass2.transport.binaryMessageSerializer
-import ch.softappeal.yass2.transport.ktor.Transport
-import ch.softappeal.yass2.transport.session.binaryPacketSerializer
 
 enum class Gender { Female, Male }
 
@@ -124,8 +124,8 @@ val ContractSerializer = ch.softappeal.yass2.contract.reflect.createBinarySerial
 val MessageSerializer = binaryMessageSerializer(ContractSerializer)
 val PacketSerializer = binaryPacketSerializer(MessageSerializer)
 
-val MessageTransport = Transport(MessageSerializer, 100, 100)
-val PacketTransport = Transport(PacketSerializer, 100, 100)
+val MessageTransport = Transport(MessageSerializer)
+val PacketTransport = Transport(PacketSerializer)
 
 val CalculatorId: ServiceId<Calculator> = ServiceId(1)
 val EchoId: ServiceId<Echo> = ServiceId(2)

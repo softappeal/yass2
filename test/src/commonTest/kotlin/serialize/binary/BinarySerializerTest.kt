@@ -13,11 +13,12 @@ import ch.softappeal.yass2.contract.Optionals
 import ch.softappeal.yass2.contract.Poly
 import ch.softappeal.yass2.contract.ThrowableFake
 import ch.softappeal.yass2.performance
+import ch.softappeal.yass2.serialize.BytesReader
+import ch.softappeal.yass2.serialize.BytesWriter
 import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Writer
-import ch.softappeal.yass2.transport.BytesReader
-import ch.softappeal.yass2.transport.BytesWriter
+import ch.softappeal.yass2.serialize.checkTail
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -37,10 +38,6 @@ fun <T> Serializer.copy(value: T, check: BytesWriter.() -> Unit = {}): T {
         assertEquals(size, current)
         result
     }
-}
-
-fun BytesWriter.checkTail(vararg bytes: Int) {
-    assertEquals(bytes.map { it.toByte() }, buffer.copyOfRange(current - bytes.size, current).toList())
 }
 
 private fun <T> checkedCopy(value: T, vararg bytes: Int): T = ContractSerializer.copy(value) {
