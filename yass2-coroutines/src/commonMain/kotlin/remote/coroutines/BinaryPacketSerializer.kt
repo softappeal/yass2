@@ -1,7 +1,6 @@
-package ch.softappeal.yass2.transport.session
+package ch.softappeal.yass2.remote.coroutines
 
 import ch.softappeal.yass2.remote.Message
-import ch.softappeal.yass2.remote.coroutines.session.Packet
 import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Writer

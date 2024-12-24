@@ -1,12 +1,12 @@
-package ch.softappeal.yass2.transport.ktor
+package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.remote.Reply
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.Tunnel
-import ch.softappeal.yass2.remote.coroutines.session.Connection
-import ch.softappeal.yass2.remote.coroutines.session.Packet
-import ch.softappeal.yass2.remote.coroutines.session.SessionFactory
-import ch.softappeal.yass2.remote.coroutines.session.receiveLoop
+import ch.softappeal.yass2.remote.coroutines.Connection
+import ch.softappeal.yass2.remote.coroutines.Packet
+import ch.softappeal.yass2.remote.coroutines.SessionFactory
+import ch.softappeal.yass2.remote.coroutines.receiveLoop
 import io.ktor.network.sockets.Socket
 import io.ktor.network.sockets.openReadChannel
 import io.ktor.network.sockets.openWriteChannel

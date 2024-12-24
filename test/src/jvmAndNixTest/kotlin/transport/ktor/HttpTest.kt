@@ -32,6 +32,11 @@ import io.ktor.server.websocket.webSocket
 import io.ktor.utils.io.core.use
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.runBlocking
+import ktor.CallCce
+import ktor.Transport
+import ktor.receiveLoop
+import ktor.route
+import ktor.tunnel
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -1,5 +1,7 @@
 package ch.softappeal.yass2.transport
 
+import ch.softappeal.yass2.serialize.BytesReader
+import ch.softappeal.yass2.serialize.BytesWriter
 import ch.softappeal.yass2.serialize.binary.checkTail
 import kotlin.test.Test
 import kotlin.test.assertEquals

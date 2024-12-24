@@ -1,7 +1,7 @@
 package ch.softappeal.yass2.serialize.binary
 
-import ch.softappeal.yass2.transport.BytesReader
-import ch.softappeal.yass2.transport.BytesWriter
+import ch.softappeal.yass2.serialize.BytesReader
+import ch.softappeal.yass2.serialize.BytesWriter
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

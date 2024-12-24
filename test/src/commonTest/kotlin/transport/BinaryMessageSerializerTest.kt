@@ -7,6 +7,8 @@ import ch.softappeal.yass2.remote.ExceptionReply
 import ch.softappeal.yass2.remote.Message
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.ValueReply
+import ch.softappeal.yass2.serialize.BytesReader
+import ch.softappeal.yass2.serialize.BytesWriter
 import ch.softappeal.yass2.serialize.binary.copy
 import kotlin.test.Test
 import kotlin.test.assertEquals

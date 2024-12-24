@@ -4,8 +4,8 @@ import ch.softappeal.yass2.contract.MessageTransport
 import ch.softappeal.yass2.contract.PacketTransport
 import ch.softappeal.yass2.remote.coroutines.session.initiatorSessionFactory
 import ch.softappeal.yass2.remote.coroutines.session.test
-import ch.softappeal.yass2.transport.ktor.receiveLoop
-import ch.softappeal.yass2.transport.ktor.tunnel
+import ktor.receiveLoop
+import ktor.tunnel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.js.JsClient
 import io.ktor.client.plugins.websocket.WebSockets.Plugin

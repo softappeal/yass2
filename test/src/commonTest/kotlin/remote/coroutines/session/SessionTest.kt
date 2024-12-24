@@ -18,6 +18,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
+import remote.coroutines.Connection
+import remote.coroutines.Packet
+import remote.coroutines.Session
+import remote.coroutines.SessionFactory
+import remote.coroutines.connect
+import remote.coroutines.watch
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.test.Test

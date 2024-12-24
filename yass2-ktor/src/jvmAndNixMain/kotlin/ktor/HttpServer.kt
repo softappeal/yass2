@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.transport.ktor
+package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.Tunnel

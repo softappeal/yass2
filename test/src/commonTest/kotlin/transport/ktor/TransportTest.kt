@@ -2,6 +2,7 @@ package ch.softappeal.yass2.transport.ktor
 
 import ch.softappeal.yass2.contract.ContractSerializer
 import kotlinx.coroutines.test.runTest
+import ktor.Transport
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

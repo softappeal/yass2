@@ -1,7 +1,7 @@
-package ch.softappeal.yass2.transport.ktor
+package ch.softappeal.yass2.ktor
 
+import ch.softappeal.yass2.serialize.BytesWriter
 import ch.softappeal.yass2.serialize.Serializer
-import ch.softappeal.yass2.transport.BytesWriter
 
 public class Transport(
     serializer: Serializer,

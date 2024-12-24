@@ -1,9 +1,5 @@
-package ch.softappeal.yass2.transport
+package ch.softappeal.yass2.remote
 
-import ch.softappeal.yass2.remote.ExceptionReply
-import ch.softappeal.yass2.remote.Message
-import ch.softappeal.yass2.remote.Request
-import ch.softappeal.yass2.remote.ValueReply
 import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Writer

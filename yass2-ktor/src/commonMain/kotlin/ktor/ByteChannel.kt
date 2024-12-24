@@ -1,7 +1,7 @@
-package ch.softappeal.yass2.transport.ktor
+package ch.softappeal.yass2.ktor
 
-import ch.softappeal.yass2.transport.BytesReader
-import ch.softappeal.yass2.transport.BytesWriter
+import ch.softappeal.yass2.serialize.BytesReader
+import ch.softappeal.yass2.serialize.BytesWriter
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.ByteWriteChannel
 import io.ktor.utils.io.readFully

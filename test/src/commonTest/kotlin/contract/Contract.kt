@@ -3,17 +3,17 @@ package ch.softappeal.yass2.contract
 import ch.softappeal.yass2.GenerateProxy
 import ch.softappeal.yass2.Interceptor
 import ch.softappeal.yass2.SuspendInterceptor
+import ch.softappeal.yass2.ktor.Transport
 import ch.softappeal.yass2.remote.Service
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.Tunnel
+import ch.softappeal.yass2.remote.binaryMessageSerializer
+import ch.softappeal.yass2.remote.coroutines.binaryPacketSerializer
 import ch.softappeal.yass2.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.serialize.binary.ByteArrayEncoder
 import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
 import ch.softappeal.yass2.serialize.binary.IntEncoder
 import ch.softappeal.yass2.serialize.binary.StringEncoder
-import ch.softappeal.yass2.transport.binaryMessageSerializer
-import ch.softappeal.yass2.transport.ktor.Transport
-import ch.softappeal.yass2.transport.session.binaryPacketSerializer
 
 enum class Gender { Female, Male }
 

@@ -1,13 +1,10 @@
-package ch.softappeal.yass2.remote.coroutines.session
+package ch.softappeal.yass2.remote.coroutines
 
 import ch.softappeal.yass2.remote.Message
 import ch.softappeal.yass2.remote.Reply
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.Tunnel
-import ch.softappeal.yass2.remote.coroutines.AtomicBoolean
-import ch.softappeal.yass2.remote.coroutines.AtomicInteger
-import ch.softappeal.yass2.remote.coroutines.ThreadSafeMap
 import ch.softappeal.yass2.tryFinally
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
