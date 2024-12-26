@@ -9,7 +9,7 @@ import kotlin.test.assertNull
 
 private enum class Color { Red, Green }
 
-private class ColorEncoder : EnumEncoder<Color>(Color::class, enumValues())
+private val ColorEncoder = EnumEncoder(Color::class, enumValues())
 
 private class OptionalString(val s: String?)
 
@@ -85,7 +85,7 @@ class BaseEncodersTest {
             check(byteArrayOf(), 0)
             check(byteArrayOf(0, 1, -1, 127, -128), 5, 0, 1, -1, 127, -128)
         }
-        with(ColorEncoder()) {
+        with(ColorEncoder) {
             check(Color.Red, 0)
             check(Color.Green, 1)
         }

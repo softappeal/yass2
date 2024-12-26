@@ -2,7 +2,7 @@ package ch.softappeal.yass2.generate.reflect
 
 import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.generate.CodeWriter
-import ch.softappeal.yass2.serialize.binary.EnumEncoder
+import ch.softappeal.yass2.serialize.binary.Encoder
 import ch.softappeal.yass2.serialize.binary.IntEncoder
 import kotlin.reflect.KClass
 import kotlin.test.Test
@@ -29,9 +29,9 @@ private abstract class AbstractClass
 
 private class ConstructorParameterIsNotProperty(@Suppress("UNUSED_PARAMETER") x: Int)
 
-private enum class Enum
+private enum class Enum { One }
 
-private class MyEnumEncoder : EnumEncoder<Enum>(Enum::class, enumValues())
+private class MyEnumEncoder : Encoder<Enum>(Enum::class, {}, { Enum.One })
 
 private class NotEnum
 

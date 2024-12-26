@@ -110,23 +110,13 @@ public fun CodeWriter.generateBinarySerializer(
         }
     }
 
-    enumClasses.forEachIndexed { enumClassIndex, enumClass ->
-        writeLine()
-        writeNestedLine(
-            "private class EnumEncoder${enumClassIndex + 1} : ${EnumEncoder::class.qualifiedName}<${enumClass.qualifiedName}>(",
-            ")",
-        ) {
-            writeNestedLine("${enumClass.qualifiedName}::class, kotlin.enumValues()")
-        }
-    }
-
     writeLine()
     writeNestedLine("public fun createBinarySerializer(): ${BinarySerializer::class.qualifiedName} =") {
         writeNestedLine("object : ${BinarySerializer::class.qualifiedName}() {", "}") {
             writeNestedLine("init {", "}") {
                 writeNestedLine("initialize(", ")") {
                     baseEncoderClasses.forEach { type -> writeNestedLine("${type.qualifiedName}(),") }
-                    for (enumEncoderIndex in 1..enumClasses.size) writeNestedLine("EnumEncoder$enumEncoderIndex(),")
+                    enumClasses.forEach { type -> writeNestedLine("${EnumEncoder::class.qualifiedName}(${type.qualifiedName}::class, enumValues()),") }
                     concreteClasses.forEach { type ->
                         fun Property.encoderId(tail: String = "") = if (kind != PropertyKind.WithId) "$encoderId$tail" else ""
                         writeNestedLine("${Encoder::class.qualifiedName}(${type.qualifiedName}::class,", "),") {

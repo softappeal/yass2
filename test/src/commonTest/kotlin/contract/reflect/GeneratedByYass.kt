@@ -212,10 +212,6 @@ public fun ch.softappeal.yass2.contract.Mixed.proxy(
     }
 }
 
-private class EnumEncoder1 : ch.softappeal.yass2.serialize.binary.EnumEncoder<ch.softappeal.yass2.contract.Gender>(
-    ch.softappeal.yass2.contract.Gender::class, kotlin.enumValues()
-)
-
 public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.BinarySerializer =
     object : ch.softappeal.yass2.serialize.binary.BinarySerializer() {
         init {
@@ -223,7 +219,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                 ch.softappeal.yass2.serialize.binary.IntEncoder(),
                 ch.softappeal.yass2.serialize.binary.StringEncoder(),
                 ch.softappeal.yass2.serialize.binary.ByteArrayEncoder(),
-                EnumEncoder1(),
+                ch.softappeal.yass2.serialize.binary.EnumEncoder(ch.softappeal.yass2.contract.Gender::class, enumValues()),
                 ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.IntException::class,
                     { i ->
                         writeNoIdRequired(2, i.i)

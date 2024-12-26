@@ -107,10 +107,6 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.tutorial.New
         }
     }
 
-private class EnumEncoder1 : ch.softappeal.yass2.serialize.binary.EnumEncoder<ch.softappeal.yass2.tutorial.Gender>(
-    ch.softappeal.yass2.tutorial.Gender::class, kotlin.enumValues()
-)
-
 public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.BinarySerializer =
     object : ch.softappeal.yass2.serialize.binary.BinarySerializer() {
         init {
@@ -118,7 +114,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                 ch.softappeal.yass2.serialize.binary.IntEncoder(),
                 ch.softappeal.yass2.serialize.binary.StringEncoder(),
                 ch.softappeal.yass2.tutorial.MyDateEncoder(),
-                EnumEncoder1(),
+                ch.softappeal.yass2.serialize.binary.EnumEncoder(ch.softappeal.yass2.tutorial.Gender::class, enumValues()),
                 ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.tutorial.Address::class,
                     { i ->
                         writeNoIdRequired(3, i.street)

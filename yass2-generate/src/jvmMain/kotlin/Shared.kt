@@ -46,7 +46,7 @@ internal fun <T> List<T>.sortMethods(methodName: T.() -> String, interfaceName: 
             }
         }
 
-public class CodeWriter(private val appendable: Appendable, private val depth: Int = 0) {
+public class CodeWriter(private val appendable: Appendable, private val indent: String = "") {
     public fun writeLine() {
         appendable.appendLine()
     }
@@ -56,7 +56,7 @@ public class CodeWriter(private val appendable: Appendable, private val depth: I
     }
 
     private fun nested(write: CodeWriter.() -> Unit) {
-        CodeWriter(appendable, depth + 1).write()
+        CodeWriter(appendable, "$indent    ").write()
     }
 
     public fun writeLine(s: String, write: CodeWriter.() -> Unit) {
@@ -66,7 +66,7 @@ public class CodeWriter(private val appendable: Appendable, private val depth: I
     }
 
     public fun writeNested(s: String) {
-        write("    ".repeat(depth))
+        write(indent)
         write(s)
     }
 

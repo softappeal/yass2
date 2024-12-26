@@ -70,7 +70,7 @@ public class StringEncoder : Encoder<String>(String::class,
     { readString() }
 )
 
-public abstract class EnumEncoder<T : Enum<T>>(type: KClass<T>, constants: Array<T>) : Encoder<T>(type,
+public class EnumEncoder<T : Enum<T>>(type: KClass<T>, constants: Array<T>) : Encoder<T>(type,
     { value -> writeVarInt(value.ordinal) },
     { constants[readVarInt()] }
 )
