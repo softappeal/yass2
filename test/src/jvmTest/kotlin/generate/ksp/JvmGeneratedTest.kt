@@ -45,8 +45,9 @@ private val MixedAdderImpl = object : MixedAdder {
 }
 
 @GenerateSerializer(
-    binaryEncoderClasses = [IntBinaryEncoder::class],
     concreteClasses = [],
+    binaryEncoderClasses = [IntBinaryEncoder::class],
+    textEncoderClasses = [],
 )
 private val ContractSerializer = createBinarySerializer()
 

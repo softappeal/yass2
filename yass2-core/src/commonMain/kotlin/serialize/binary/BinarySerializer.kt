@@ -23,6 +23,9 @@ public const val BINARY_NULL_ENCODER_ID: Int = 0
 public const val BINARY_LIST_ENCODER_ID: Int = 1
 public const val BINARY_FIRST_ENCODER_ID: Int = 2
 
+/**
+ * Has built-in encoders for null and [List].
+ */
 public abstract class BinarySerializer : Serializer {
     private data class EncoderId(val id: Int, val encoder: AbstractBinaryEncoder)
 

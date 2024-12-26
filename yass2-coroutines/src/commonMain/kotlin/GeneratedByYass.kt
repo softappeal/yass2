@@ -9,6 +9,7 @@
     "RedundantNullableReturnType",
     "KotlinRedundantDiagnosticSuppress",
     "RedundantSuppression",
+    "UNUSED_ANONYMOUS_PARAMETER",
 )
 
 package ch.softappeal.yass2.remote.coroutines

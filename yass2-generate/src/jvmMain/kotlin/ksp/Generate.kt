@@ -128,9 +128,11 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
                 val serializer = declarations.annotatedDeclarationOrNull(GenerateSerializer::class)
                 if (serializer != null) {
                     val binaryEncoderClasses = serializer.annotation.argument("binaryEncoderClasses") as List<KSType>
+                    val textEncoderClasses = serializer.annotation.argument("textEncoderClasses") as List<KSType>
                     val concreteClasses = serializer.annotation.argument("concreteClasses") as List<KSType>
-                    codeWriter.generateBinarySerializer(
+                    codeWriter.generateSerializer(
                         binaryEncoderClasses,
+                        textEncoderClasses,
                         concreteClasses.filter { it.isEnum() },
                         concreteClasses.filterNot { it.isEnum() },
                         serializer.declaration

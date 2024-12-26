@@ -36,6 +36,7 @@
 
 * generates code (works on any platform and is fast) either with [KSP](https://kotlinlang.org/docs/ksp-overview.html) or with reflection
     * fast, compact and extendable binary serializer for high throughput and low latency
+    * extendable textual serializer
     * interceptor (around advice, aspect-oriented programming)
     * remoting (proxy and service)
 

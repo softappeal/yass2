@@ -18,8 +18,9 @@ internal fun KClass<*>.isEnum() = java.isEnum
 public fun CodeWriter.generateBinarySerializer(property: KProperty<Serializer>) {
     val annotation = property.findAnnotation<GenerateSerializer>()!!
     val concreteClasses = annotation.concreteClasses.asList()
-    generateBinarySerializer(
+    generateSerializer(
         annotation.binaryEncoderClasses.asList(),
+        annotation.textEncoderClasses.asList(),
         concreteClasses.filter { it.isEnum() }.map { @Suppress("UNCHECKED_CAST") (it as KClass<Enum<*>>) },
         concreteClasses.filterNot { it.isEnum() },
     )

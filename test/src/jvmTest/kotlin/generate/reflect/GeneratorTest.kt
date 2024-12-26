@@ -4,6 +4,7 @@ import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.serialize.binary.BinaryEncoder
 import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
+import ch.softappeal.yass2.serialize.binary.StringBinaryEncoder
 import kotlin.reflect.KClass
 import kotlin.test.Test
 
@@ -39,7 +40,7 @@ class GeneratorTest {
     @Test
     fun binarySerializer() {
         fun generateBinarySerializer(klass: KClass<*>) {
-            codeWriter().generateBinarySerializer(listOf(), listOf(), listOf(klass))
+            codeWriter().generateSerializer(listOf(StringBinaryEncoder::class), listOf(), listOf(), listOf(klass))
         }
         assertFailsMessage<IllegalArgumentException>(
             "body property x of ch.softappeal.yass2.generate.reflect.BodyPropertyNotVar must be var"
@@ -61,16 +62,20 @@ class GeneratorTest {
         ) { generateBinarySerializer(Enum::class) }
         assertFailsMessage<IllegalStateException>(
             "enum class ch.softappeal.yass2.generate.reflect.Enum belongs to enumClasses"
-        ) { codeWriter().generateBinarySerializer(listOf(), listOf(), listOf(Enum::class)) }
+        ) { codeWriter().generateSerializer(listOf(StringBinaryEncoder::class), listOf(), listOf(), listOf(Enum::class)) }
         assertFailsMessage<IllegalStateException>(
             "enum class ch.softappeal.yass2.generate.reflect.Enum belongs to enumClasses"
-        ) { codeWriter().generateBinarySerializer(listOf(MyEnumEncoder::class), listOf(), listOf()) }
+        ) { codeWriter().generateSerializer(listOf(MyEnumEncoder::class), listOf(), listOf(), listOf()) }
         assertFailsMessage<IllegalArgumentException>(
             "classes [kotlin.Int] are duplicated"
-        ) { codeWriter().generateBinarySerializer(listOf(IntBinaryEncoder::class), listOf(), listOf(Int::class)) }
+        ) { codeWriter().generateSerializer(listOf(IntBinaryEncoder::class), listOf(), listOf(), listOf(Int::class)) }
         assertFailsMessage<IllegalArgumentException>(
             "classes [ch.softappeal.yass2.generate.reflect.Enum] are duplicated"
-        ) { codeWriter().generateBinarySerializer(listOf(), listOf(Enum::class, Enum::class), listOf()) }
+        ) {
+            codeWriter().generateSerializer(
+                listOf(StringBinaryEncoder::class), listOf(), listOf(Enum::class, Enum::class), listOf()
+            )
+        }
     }
 
     @Test

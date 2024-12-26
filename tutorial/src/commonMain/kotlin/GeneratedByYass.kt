@@ -9,6 +9,7 @@
     "RedundantNullableReturnType",
     "KotlinRedundantDiagnosticSuppress",
     "RedundantSuppression",
+    "UNUSED_ANONYMOUS_PARAMETER",
 )
 
 package ch.softappeal.yass2.tutorial
@@ -114,8 +115,11 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                 ch.softappeal.yass2.serialize.binary.IntBinaryEncoder(),
                 ch.softappeal.yass2.serialize.binary.StringBinaryEncoder(),
                 ch.softappeal.yass2.tutorial.MyDateEncoder(),
-                ch.softappeal.yass2.serialize.binary.EnumBinaryEncoder(ch.softappeal.yass2.tutorial.Gender::class, enumValues()),
-                ch.softappeal.yass2.serialize.binary.BinaryEncoder(ch.softappeal.yass2.tutorial.Address::class,
+                ch.softappeal.yass2.serialize.binary.EnumBinaryEncoder(
+                    ch.softappeal.yass2.tutorial.Gender::class, enumValues(),
+                ),
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(
+                    ch.softappeal.yass2.tutorial.Address::class,
                     { i ->
                         writeNoIdRequired(3, i.street)
                         writeNoIdOptional(2, i.number)
@@ -128,7 +132,8 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.BinaryEncoder(ch.softappeal.yass2.tutorial.Person::class,
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(
+                    ch.softappeal.yass2.tutorial.Person::class,
                     { i ->
                         writeNoIdRequired(3, i.name)
                         writeNoIdRequired(5, i.gender)
@@ -145,15 +150,18 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.BinaryEncoder(ch.softappeal.yass2.tutorial.DivideByZeroException::class,
-                    { _ -> },
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(
+                    ch.softappeal.yass2.tutorial.DivideByZeroException::class,
+                    { i ->
+                    },
                     {
                         val i = ch.softappeal.yass2.tutorial.DivideByZeroException(
                         )
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.BinaryEncoder(ch.softappeal.yass2.tutorial.SubClass::class,
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(
+                    ch.softappeal.yass2.tutorial.SubClass::class,
                     { i ->
                         writeNoIdRequired(3, i.baseClassProperty)
                         writeNoIdRequired(3, i.subClassProperty)

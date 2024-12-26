@@ -22,6 +22,7 @@ internal fun Appendable.appendPackage(packageName: String) {
             "RedundantNullableReturnType",
             "KotlinRedundantDiagnosticSuppress",
             "RedundantSuppression",
+            "UNUSED_ANONYMOUS_PARAMETER",
         )
     
         package $packageName

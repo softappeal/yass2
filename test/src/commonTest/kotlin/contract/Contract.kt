@@ -14,6 +14,8 @@ import ch.softappeal.yass2.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.serialize.binary.ByteArrayBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.StringBinaryEncoder
+import ch.softappeal.yass2.serialize.text.IntTextEncoder
+import ch.softappeal.yass2.serialize.text.TextSerializer
 
 enum class Gender { Female, Male }
 
@@ -101,11 +103,6 @@ interface Mixed {
 }
 
 @GenerateSerializer(
-    binaryEncoderClasses = [
-        IntBinaryEncoder::class,
-        StringBinaryEncoder::class,
-        ByteArrayBinaryEncoder::class,
-    ],
     concreteClasses = [
         Gender::class,
         IntException::class,
@@ -119,6 +116,14 @@ interface Mixed {
         DivideByZeroException::class,
         ThrowableFake::class,
         GenderWrapper::class,
+    ],
+    binaryEncoderClasses = [
+        IntBinaryEncoder::class,
+        StringBinaryEncoder::class,
+        ByteArrayBinaryEncoder::class,
+    ],
+    textEncoderClasses = [
+        IntTextEncoder::class,
     ],
 )
 val ContractSerializer = ch.softappeal.yass2.contract.reflect.createBinarySerializer()
@@ -151,3 +156,4 @@ expect fun ServiceId<Echo>.service(implementation: Echo): Service
 expect fun Mixed.proxy(intercept: Interceptor, suspendIntercept: SuspendInterceptor): Mixed
 
 expect fun createBinarySerializer(): BinarySerializer
+expect fun createTextSerializer(): TextSerializer

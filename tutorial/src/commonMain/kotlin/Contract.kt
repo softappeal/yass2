@@ -91,12 +91,6 @@ public val CalculatorId: ServiceId<Calculator> = ServiceId(1)
 public val NewsListenerId: ServiceId<NewsListener> = ServiceId(2)
 
 @GenerateSerializer(
-    binaryEncoderClasses = [
-        // Define all the base encoders needed by the contract (including own base types).
-        IntBinaryEncoder::class,
-        StringBinaryEncoder::class,
-        MyDateEncoder::class,
-    ],
     concreteClasses = [
         Gender::class,
         Address::class,
@@ -104,6 +98,13 @@ public val NewsListenerId: ServiceId<NewsListener> = ServiceId(2)
         DivideByZeroException::class,
         SubClass::class,
     ],
+    binaryEncoderClasses = [
+        // Define all the base encoders needed by the contract (including own base types).
+        IntBinaryEncoder::class,
+        StringBinaryEncoder::class,
+        MyDateEncoder::class,
+    ],
+    textEncoderClasses = [],
 )
 public val ContractSerializer: Serializer = createBinarySerializer()
 
