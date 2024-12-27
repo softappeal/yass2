@@ -18,8 +18,6 @@ import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.superclasses
 import kotlin.reflect.full.valueParameters
 
-private fun KClass<*>.isEnum() = java.isEnum
-
 private fun checkNotEnum(classes: List<KClass<*>>) {
     classes.firstOrNull { it.isEnum() }?.let { klass -> error("enum class ${klass.qualifiedName} belongs to enumClasses") }
 }
@@ -37,7 +35,7 @@ private fun List<KClass<out Encoder<*>>>.getBaseEncoderTypes() =
 
 public fun CodeWriter.generateBinarySerializer(
     baseEncoderClasses: List<KClass<out Encoder<*>>>,
-    enumClasses: List<KClass<*>>,
+    enumClasses: List<KClass<out Enum<*>>>,
     concreteClasses: List<KClass<*>>,
 ) {
     val baseTypes = baseEncoderClasses.getBaseEncoderTypes()
@@ -45,9 +43,6 @@ public fun CodeWriter.generateBinarySerializer(
 
     (baseClasses + concreteClasses).checkNotDuplicated()
     checkNotEnum(baseTypes + concreteClasses)
-    enumClasses.forEach {
-        require(it.isEnum()) { "class ${it.qualifiedName} in enumClasses must be enum" }
-    }
 
     class Property(val property: KProperty1<out Any, *>) {
         var kind: PropertyKind

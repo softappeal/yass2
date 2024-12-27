@@ -104,10 +104,8 @@ interface Mixed {
         StringEncoder::class,
         ByteArrayEncoder::class,
     ],
-    enumClasses = [
-        Gender::class,
-    ],
     concreteClasses = [
+        Gender::class,
         IntException::class,
         IntWrapper::class,
         Optionals::class,

@@ -97,10 +97,8 @@ public val NewsListenerId: ServiceId<NewsListener> = ServiceId(2)
         StringEncoder::class,
         MyDateEncoder::class,
     ],
-    enumClasses = [
-        Gender::class,
-    ],
     concreteClasses = [
+        Gender::class,
         Address::class,
         Person::class,
         DivideByZeroException::class,

@@ -85,10 +85,10 @@ public abstract class BinarySerializer : Serializer {
  * [concreteClasses] must be concrete and must have a primary constructor and all its parameters must be properties.
  * Body properties are allowed but must be of `var` kind.
  * Inheritance is supported.
+ * [Enum] classes also belong to [concreteClasses].
  */
 @Target(AnnotationTarget.PROPERTY)
 public annotation class GenerateBinarySerializer(
     val baseEncoderClasses: Array<KClass<out Encoder<*>>>,
-    val enumClasses: Array<KClass<*>>,
     val concreteClasses: Array<KClass<*>>,
 )

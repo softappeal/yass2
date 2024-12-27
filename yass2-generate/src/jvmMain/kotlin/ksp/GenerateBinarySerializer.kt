@@ -10,12 +10,9 @@ import ch.softappeal.yass2.serialize.binary.EnumEncoder
 import ch.softappeal.yass2.serialize.binary.FIRST_ENCODER_ID
 import ch.softappeal.yass2.serialize.binary.LIST_ENCODER_ID
 import com.google.devtools.ksp.isAbstract
-import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
-
-private fun KSType.isEnum() = (declaration as KSClassDeclaration).classKind == ClassKind.ENUM_CLASS
 
 private fun checkNotEnum(declaration: KSPropertyDeclaration, classes: List<KSType>) {
     classes.firstOrNull { it.isEnum() }?.let {
@@ -45,9 +42,6 @@ internal fun CodeWriter.generateBinarySerializer(
 
     (baseClasses + concreteClasses).checkNotDuplicated(declaration)
     checkNotEnum(declaration, baseTypes + concreteClasses)
-    enumClasses.forEach {
-        require(it.isEnum()) { "class ${it.qualifiedName} in enumClasses must be enum @${declaration.location}" }
-    }
 
     class Property(val property: KSPropertyDeclaration) {
         var kind: PropertyKind

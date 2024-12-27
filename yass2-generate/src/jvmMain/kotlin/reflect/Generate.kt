@@ -8,16 +8,20 @@ import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
 import java.nio.file.Files
 import kotlin.io.path.writeText
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.findAnnotation
 import kotlin.test.assertEquals
 
+internal fun KClass<*>.isEnum() = java.isEnum
+
 public fun CodeWriter.generateBinarySerializer(property: KProperty<Serializer>) {
     val annotation = property.findAnnotation<GenerateBinarySerializer>()!!
+    val concreteClasses = annotation.concreteClasses.asList()
     generateBinarySerializer(
         annotation.baseEncoderClasses.asList(),
-        annotation.enumClasses.asList(),
-        annotation.concreteClasses.asList(),
+        concreteClasses.filter { it.isEnum() }.map { @Suppress("UNCHECKED_CAST") (it as KClass<Enum<*>>) },
+        concreteClasses.filterNot { it.isEnum() },
     )
 }
 

@@ -10,6 +10,7 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
+import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
@@ -20,6 +21,8 @@ import com.google.devtools.ksp.symbol.KSTypeParameter
 import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.Variance
 import kotlin.reflect.KClass
+
+internal fun KSType.isEnum() = (declaration as KSClassDeclaration).classKind == ClassKind.ENUM_CLASS
 
 internal fun KSDeclaration.qualifiedName() = qualifiedName!!.asString()
 internal val KSDeclaration.name get() = simpleName.asString()
@@ -125,9 +128,13 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
                 val serializer = declarations.annotatedDeclarationOrNull(GenerateBinarySerializer::class)
                 if (serializer != null) {
                     val baseEncoderClasses = serializer.annotation.argument("baseEncoderClasses") as List<KSType>
-                    val enumClasses = serializer.annotation.argument("enumClasses") as List<KSType>
                     val concreteClasses = serializer.annotation.argument("concreteClasses") as List<KSType>
-                    codeWriter.generateBinarySerializer(baseEncoderClasses, enumClasses, concreteClasses, serializer.declaration)
+                    codeWriter.generateBinarySerializer(
+                        baseEncoderClasses,
+                        concreteClasses.filter { it.isEnum() },
+                        concreteClasses.filterNot { it.isEnum() },
+                        serializer.declaration
+                    )
                 }
             }
         }

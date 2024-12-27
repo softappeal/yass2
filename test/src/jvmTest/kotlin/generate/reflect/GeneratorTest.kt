@@ -33,8 +33,6 @@ private enum class Enum { One }
 
 private class MyEnumEncoder : Encoder<Enum>(Enum::class, {}, { Enum.One })
 
-private class NotEnum
-
 private fun codeWriter() = CodeWriter(StringBuilder())
 
 class GeneratorTest {
@@ -73,9 +71,6 @@ class GeneratorTest {
         assertFailsMessage<IllegalArgumentException>(
             "classes [ch.softappeal.yass2.generate.reflect.Enum] are duplicated"
         ) { codeWriter().generateBinarySerializer(listOf(), listOf(Enum::class, Enum::class), listOf()) }
-        assertFailsMessage<IllegalArgumentException>(
-            "class ch.softappeal.yass2.generate.reflect.NotEnum in enumClasses must be enum"
-        ) { codeWriter().generateBinarySerializer(listOf(), listOf(NotEnum::class), listOf()) }
     }
 
     @Test
