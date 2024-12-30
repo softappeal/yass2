@@ -17,6 +17,8 @@ import ch.softappeal.yass2.serialize.binary.StringEncoder
 
 enum class Gender { Female, Male }
 
+class GenderWrapper(val gender: Gender)
+
 class IntException(val i: Int) : RuntimeException()
 
 class IntWrapper(val i: Int)
@@ -116,6 +118,7 @@ interface Mixed {
         ManyProperties::class,
         DivideByZeroException::class,
         ThrowableFake::class,
+        GenderWrapper::class,
     ],
 )
 val ContractSerializer = ch.softappeal.yass2.contract.reflect.createBinarySerializer()

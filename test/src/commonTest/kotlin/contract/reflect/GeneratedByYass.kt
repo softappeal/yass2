@@ -363,6 +363,17 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         i
                     }
                 ),
+                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.GenderWrapper::class,
+                    { i ->
+                        writeNoIdRequired(5, i.gender)
+                    },
+                    {
+                        val i = ch.softappeal.yass2.contract.GenderWrapper(
+                            readNoIdRequired(5) as ch.softappeal.yass2.contract.Gender,
+                        )
+                        i
+                    }
+                ),
             )
         }
     }

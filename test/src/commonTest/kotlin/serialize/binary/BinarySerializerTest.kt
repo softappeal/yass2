@@ -5,6 +5,7 @@ import ch.softappeal.yass2.contract.A
 import ch.softappeal.yass2.contract.B
 import ch.softappeal.yass2.contract.ContractSerializer
 import ch.softappeal.yass2.contract.Gender
+import ch.softappeal.yass2.contract.GenderWrapper
 import ch.softappeal.yass2.contract.IntException
 import ch.softappeal.yass2.contract.IntWrapper
 import ch.softappeal.yass2.contract.Lists
@@ -113,6 +114,11 @@ class BinarySerializerTest {
     @Test
     fun intWrapper() {
         with(checkedCopy(IntWrapper(10), 7, 20)) { assertEquals(10, i) }
+    }
+
+    @Test
+    fun genderWrapper() {
+        with(checkedCopy(GenderWrapper(Gender.Male), 16, 1)) { assertEquals(Gender.Male, gender) }
     }
 
     @Test
