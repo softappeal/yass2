@@ -8,36 +8,36 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class IntTest {
+class BinaryIntTest {
     @Test
     fun test() {
         val writer = BytesWriter(1000)
         with(writer) {
-            writeBoolean(false)
-            writeBoolean(true)
-            writeInt(Int.MIN_VALUE)
+            writeBinaryBoolean(false)
+            writeBinaryBoolean(true)
+            writeBinaryInt(Int.MIN_VALUE)
             checkTail(0x80, 0x00, 0x00, 0x00)
-            writeInt(Int.MAX_VALUE)
+            writeBinaryInt(Int.MAX_VALUE)
             checkTail(0x7F, 0xFF, 0xFF, 0xFF)
-            writeInt(0x12_34_56_78)
+            writeBinaryInt(0x12_34_56_78)
             checkTail(0x12, 0x34, 0x56, 0x78)
-            writeLong(Long.MIN_VALUE)
+            writeBinaryLong(Long.MIN_VALUE)
             checkTail(0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
-            writeLong(Long.MAX_VALUE)
+            writeBinaryLong(Long.MAX_VALUE)
             checkTail(0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF)
-            writeLong(0x12_34_56_78_9A_BC_DE_F0)
+            writeBinaryLong(0x12_34_56_78_9A_BC_DE_F0)
             checkTail(0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0)
             assertEquals(38, current)
         }
         with(BytesReader(writer.buffer)) {
-            assertFalse(readBoolean())
-            assertTrue(readBoolean())
-            assertEquals(Int.MIN_VALUE, readInt())
-            assertEquals(Int.MAX_VALUE, readInt())
-            assertEquals(0x12_34_56_78, readInt())
-            assertEquals(Long.MIN_VALUE, readLong())
-            assertEquals(Long.MAX_VALUE, readLong())
-            assertEquals(0x12_34_56_78_9A_BC_DE_F0, readLong())
+            assertFalse(readBinaryBoolean())
+            assertTrue(readBinaryBoolean())
+            assertEquals(Int.MIN_VALUE, readBinaryInt())
+            assertEquals(Int.MAX_VALUE, readBinaryInt())
+            assertEquals(0x12_34_56_78, readBinaryInt())
+            assertEquals(Long.MIN_VALUE, readBinaryLong())
+            assertEquals(Long.MAX_VALUE, readBinaryLong())
+            assertEquals(0x12_34_56_78_9A_BC_DE_F0, readBinaryLong())
             assertEquals(38, current)
         }
     }

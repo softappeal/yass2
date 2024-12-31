@@ -4,10 +4,10 @@ import ch.softappeal.yass2.remote.Message
 import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Writer
-import ch.softappeal.yass2.serialize.binary.readBoolean
-import ch.softappeal.yass2.serialize.binary.readInt
-import ch.softappeal.yass2.serialize.binary.writeBoolean
-import ch.softappeal.yass2.serialize.binary.writeInt
+import ch.softappeal.yass2.serialize.binary.readBinaryBoolean
+import ch.softappeal.yass2.serialize.binary.readBinaryInt
+import ch.softappeal.yass2.serialize.binary.writeBinaryBoolean
+import ch.softappeal.yass2.serialize.binary.writeBinaryInt
 
 /**
  * Returns a binary [Serializer] for [Packet]?.
@@ -15,15 +15,15 @@ import ch.softappeal.yass2.serialize.binary.writeInt
  */
 public fun binaryPacketSerializer(messageSerializer: Serializer): Serializer = object : Serializer {
     override fun write(writer: Writer, value: Any?) = when (value) {
-        null -> writer.writeBoolean(false)
+        null -> writer.writeBinaryBoolean(false)
         is Packet -> {
-            writer.writeBoolean(true)
-            writer.writeInt(value.requestNumber)
+            writer.writeBinaryBoolean(true)
+            writer.writeBinaryInt(value.requestNumber)
             messageSerializer.write(writer, value.message)
         }
         else -> error("unexpected value '$value'")
     }
 
     override fun read(reader: Reader): Packet? =
-        if (reader.readBoolean()) Packet(reader.readInt(), messageSerializer.read(reader) as Message) else null
+        if (reader.readBinaryBoolean()) Packet(reader.readBinaryInt(), messageSerializer.read(reader) as Message) else null
 }

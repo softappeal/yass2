@@ -5,14 +5,14 @@ import ch.softappeal.yass2.remote.binaryMessageSerializer
 import ch.softappeal.yass2.remote.coroutines.MustBeImplementedByAcceptor
 import ch.softappeal.yass2.remote.coroutines.MustBeImplementedByInitiator
 import ch.softappeal.yass2.remote.coroutines.binaryPacketSerializer
+import ch.softappeal.yass2.serialize.GenerateSerializer
 import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Transport
-import ch.softappeal.yass2.serialize.binary.Encoder
-import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
-import ch.softappeal.yass2.serialize.binary.IntEncoder
-import ch.softappeal.yass2.serialize.binary.StringEncoder
-import ch.softappeal.yass2.serialize.binary.readLong
-import ch.softappeal.yass2.serialize.binary.writeLong
+import ch.softappeal.yass2.serialize.binary.BinaryEncoder
+import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
+import ch.softappeal.yass2.serialize.binary.StringBinaryEncoder
+import ch.softappeal.yass2.serialize.binary.readBinaryLong
+import ch.softappeal.yass2.serialize.binary.writeBinaryLong
 
 /**
  * The base types Boolean, Byte, Int, Long, Double, String and ByteArray are supported.
@@ -22,9 +22,9 @@ import ch.softappeal.yass2.serialize.binary.writeLong
 public class MyDate(public val currentTimeMillis: Long)
 
 // Shows how to implement an own base type encoder.
-internal class MyDateEncoder : Encoder<MyDate>(MyDate::class,
-    { value -> writeLong(value.currentTimeMillis) },
-    { MyDate(readLong()) }
+internal class MyDateEncoder : BinaryEncoder<MyDate>(MyDate::class,
+    { value -> writeBinaryLong(value.currentTimeMillis) },
+    { MyDate(readBinaryLong()) }
 )
 
 /**
@@ -90,11 +90,11 @@ public val CalculatorId: ServiceId<Calculator> = ServiceId(1)
 @MustBeImplementedByInitiator
 public val NewsListenerId: ServiceId<NewsListener> = ServiceId(2)
 
-@GenerateBinarySerializer(
-    baseEncoderClasses = [
+@GenerateSerializer(
+    binaryEncoderClasses = [
         // Define all the base encoders needed by the contract (including own base types).
-        IntEncoder::class,
-        StringEncoder::class,
+        IntBinaryEncoder::class,
+        StringBinaryEncoder::class,
         MyDateEncoder::class,
     ],
     concreteClasses = [

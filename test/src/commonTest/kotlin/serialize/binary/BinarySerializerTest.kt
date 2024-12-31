@@ -72,7 +72,7 @@ private fun ManyProperties.assertManyProperties() {
 fun duplicatedType(thePackage: String) = assertFailsMessage<IllegalArgumentException>("duplicated type 'class ${thePackage}Int'") {
     object : BinarySerializer() {
         init {
-            initialize(IntEncoder(), IntEncoder())
+            initialize(IntBinaryEncoder(), IntBinaryEncoder())
         }
     }
 }
@@ -266,6 +266,18 @@ class BinarySerializerTest {
         val throwableFake = ContractSerializer.copy(ThrowableFake("cause", "message"))
         assertEquals("cause", throwableFake.cause)
         assertEquals("message", throwableFake.message)
+        with(checkedCopy(
+            ThrowableFake(
+                null,
+                "m",
+            ),
+            15,
+            0,
+            1, 109,
+        )) {
+            assertNull(cause)
+            assertEquals("m", message)
+        }
     }
 
     @Test

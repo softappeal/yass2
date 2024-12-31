@@ -7,9 +7,9 @@ import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.tunnel
 import ch.softappeal.yass2.serialize.BytesReader
 import ch.softappeal.yass2.serialize.BytesWriter
+import ch.softappeal.yass2.serialize.GenerateSerializer
 import ch.softappeal.yass2.serialize.Serializer
-import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
-import ch.softappeal.yass2.serialize.binary.IntEncoder
+import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
 import kotlinx.coroutines.runBlocking
 import kotlin.reflect.KFunction
 import kotlin.test.Test
@@ -44,8 +44,8 @@ private val MixedAdderImpl = object : MixedAdder {
     override suspend fun subtract(a: Int, b: Int) = a + b
 }
 
-@GenerateBinarySerializer(
-    baseEncoderClasses = [IntEncoder::class],
+@GenerateSerializer(
+    binaryEncoderClasses = [IntBinaryEncoder::class],
     concreteClasses = [],
 )
 private val ContractSerializer = createBinarySerializer()

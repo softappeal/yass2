@@ -8,12 +8,12 @@ import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.Tunnel
 import ch.softappeal.yass2.remote.binaryMessageSerializer
 import ch.softappeal.yass2.remote.coroutines.binaryPacketSerializer
+import ch.softappeal.yass2.serialize.GenerateSerializer
 import ch.softappeal.yass2.serialize.Transport
 import ch.softappeal.yass2.serialize.binary.BinarySerializer
-import ch.softappeal.yass2.serialize.binary.ByteArrayEncoder
-import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
-import ch.softappeal.yass2.serialize.binary.IntEncoder
-import ch.softappeal.yass2.serialize.binary.StringEncoder
+import ch.softappeal.yass2.serialize.binary.ByteArrayBinaryEncoder
+import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
+import ch.softappeal.yass2.serialize.binary.StringBinaryEncoder
 
 enum class Gender { Female, Male }
 
@@ -66,7 +66,7 @@ class ManyProperties(
 class DivideByZeroException : RuntimeException()
 
 class ThrowableFake(
-    val cause: String,
+    val cause: String?,
     val message: String,
 )
 
@@ -100,11 +100,11 @@ interface Mixed {
     fun noParametersNoResult()
 }
 
-@GenerateBinarySerializer(
-    baseEncoderClasses = [
-        IntEncoder::class,
-        StringEncoder::class,
-        ByteArrayEncoder::class,
+@GenerateSerializer(
+    binaryEncoderClasses = [
+        IntBinaryEncoder::class,
+        StringBinaryEncoder::class,
+        ByteArrayBinaryEncoder::class,
     ],
     concreteClasses = [
         Gender::class,

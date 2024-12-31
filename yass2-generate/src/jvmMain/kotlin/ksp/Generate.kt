@@ -4,7 +4,7 @@ import ch.softappeal.yass2.GenerateProxy
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import ch.softappeal.yass2.generate.appendPackage
-import ch.softappeal.yass2.serialize.binary.GenerateBinarySerializer
+import ch.softappeal.yass2.serialize.GenerateSerializer
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
@@ -89,7 +89,7 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val packageName2declarations = buildList {
-            listOf(GenerateProxy::class, GenerateBinarySerializer::class).forEach { annotation ->
+            listOf(GenerateProxy::class, GenerateSerializer::class).forEach { annotation ->
                 resolver.getSymbolsWithAnnotation(annotation.qualifiedName!!)
                     .map { it as KSDeclaration }
                     .forEach { declaration -> add(declaration.packageName.asString() to declaration) }
@@ -125,12 +125,12 @@ private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolPr
                     return annotatedDeclaration.firstOrNull()
                 }
 
-                val serializer = declarations.annotatedDeclarationOrNull(GenerateBinarySerializer::class)
+                val serializer = declarations.annotatedDeclarationOrNull(GenerateSerializer::class)
                 if (serializer != null) {
-                    val baseEncoderClasses = serializer.annotation.argument("baseEncoderClasses") as List<KSType>
+                    val binaryEncoderClasses = serializer.annotation.argument("binaryEncoderClasses") as List<KSType>
                     val concreteClasses = serializer.annotation.argument("concreteClasses") as List<KSType>
                     codeWriter.generateBinarySerializer(
-                        baseEncoderClasses,
+                        binaryEncoderClasses,
                         concreteClasses.filter { it.isEnum() },
                         concreteClasses.filterNot { it.isEnum() },
                         serializer.declaration

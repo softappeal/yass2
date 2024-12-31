@@ -2,8 +2,8 @@ package ch.softappeal.yass2.generate.reflect
 
 import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.generate.CodeWriter
-import ch.softappeal.yass2.serialize.binary.Encoder
-import ch.softappeal.yass2.serialize.binary.IntEncoder
+import ch.softappeal.yass2.serialize.binary.BinaryEncoder
+import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
 import kotlin.reflect.KClass
 import kotlin.test.Test
 
@@ -31,7 +31,7 @@ private class ConstructorParameterIsNotProperty(@Suppress("UNUSED_PARAMETER") x:
 
 private enum class Enum { One }
 
-private class MyEnumEncoder : Encoder<Enum>(Enum::class, {}, { Enum.One })
+private class MyEnumEncoder : BinaryEncoder<Enum>(Enum::class, {}, { Enum.One })
 
 private fun codeWriter() = CodeWriter(StringBuilder())
 
@@ -67,7 +67,7 @@ class GeneratorTest {
         ) { codeWriter().generateBinarySerializer(listOf(MyEnumEncoder::class), listOf(), listOf()) }
         assertFailsMessage<IllegalArgumentException>(
             "classes [kotlin.Int] are duplicated"
-        ) { codeWriter().generateBinarySerializer(listOf(IntEncoder::class), listOf(), listOf(Int::class)) }
+        ) { codeWriter().generateBinarySerializer(listOf(IntBinaryEncoder::class), listOf(), listOf(Int::class)) }
         assertFailsMessage<IllegalArgumentException>(
             "classes [ch.softappeal.yass2.generate.reflect.Enum] are duplicated"
         ) { codeWriter().generateBinarySerializer(listOf(), listOf(Enum::class, Enum::class), listOf()) }

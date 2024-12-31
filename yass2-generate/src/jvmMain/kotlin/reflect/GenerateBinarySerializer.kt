@@ -4,11 +4,11 @@ import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.PropertyKind
 import ch.softappeal.yass2.generate.duplicates
 import ch.softappeal.yass2.generate.hasNoDuplicates
+import ch.softappeal.yass2.serialize.binary.BINARY_FIRST_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.BINARY_LIST_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.BinaryEncoder
 import ch.softappeal.yass2.serialize.binary.BinarySerializer
-import ch.softappeal.yass2.serialize.binary.Encoder
-import ch.softappeal.yass2.serialize.binary.EnumEncoder
-import ch.softappeal.yass2.serialize.binary.FIRST_ENCODER_ID
-import ch.softappeal.yass2.serialize.binary.LIST_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.EnumBinaryEncoder
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
@@ -30,19 +30,19 @@ private fun KClass<*>.getAllPropertiesNotThrowable() = memberProperties
     .filterNot { (it.name == "cause" || it.name == "message") && isSubclassOf(Throwable::class) }
     .sortedBy { it.name }
 
-private fun List<KClass<out Encoder<*>>>.getBaseEncoderTypes() =
+private fun List<KClass<out BinaryEncoder<*>>>.getBinaryEncoderTypes() =
     map { it.supertypes.first().arguments.first().type!!.classifier as KClass<*> }
 
 public fun CodeWriter.generateBinarySerializer(
-    baseEncoderClasses: List<KClass<out Encoder<*>>>,
+    binaryEncoderClasses: List<KClass<out BinaryEncoder<*>>>,
     enumClasses: List<KClass<out Enum<*>>>,
     concreteClasses: List<KClass<*>>,
 ) {
-    val baseTypes = baseEncoderClasses.getBaseEncoderTypes()
-    val baseClasses = baseTypes + enumClasses
+    val binaryEncoderTypes = binaryEncoderClasses.getBinaryEncoderTypes()
+    val baseClasses = binaryEncoderTypes + enumClasses
 
     (baseClasses + concreteClasses).checkNotDuplicated()
-    checkNotEnum(baseTypes + concreteClasses)
+    checkNotEnum(binaryEncoderTypes + concreteClasses)
 
     class Property(val property: KProperty1<out Any, *>) {
         var kind: PropertyKind
@@ -52,16 +52,16 @@ public fun CodeWriter.generateBinarySerializer(
             val type = property.returnType.classifier as KClass<*>
             kind = if (property.returnType.isMarkedNullable) PropertyKind.NoIdOptional else PropertyKind.NoIdRequired
             if (type == List::class) {
-                encoderId = LIST_ENCODER_ID
+                encoderId = BINARY_LIST_ENCODER_ID
             } else {
                 val baseClassIndex = baseClasses.indexOfFirst { it == type }
                 if (baseClassIndex >= 0) {
-                    encoderId = baseClassIndex + FIRST_ENCODER_ID
+                    encoderId = baseClassIndex + BINARY_FIRST_ENCODER_ID
                 } else {
                     fun KClass<*>.hasSuperCLass(superClass: KClass<*>) = superclasses.contains(superClass)
                     val concreteClassIndex = concreteClasses.indexOfFirst { it == type }
                     if (concreteClassIndex >= 0 && concreteClasses.none { it.hasSuperCLass(concreteClasses[concreteClassIndex]) }) {
-                        encoderId = concreteClassIndex + baseClasses.size + FIRST_ENCODER_ID
+                        encoderId = concreteClassIndex + baseClasses.size + BINARY_FIRST_ENCODER_ID
                     } else {
                         kind = PropertyKind.WithId
                     }
@@ -110,11 +110,11 @@ public fun CodeWriter.generateBinarySerializer(
         writeNestedLine("object : ${BinarySerializer::class.qualifiedName}() {", "}") {
             writeNestedLine("init {", "}") {
                 writeNestedLine("initialize(", ")") {
-                    baseEncoderClasses.forEach { type -> writeNestedLine("${type.qualifiedName}(),") }
-                    enumClasses.forEach { type -> writeNestedLine("${EnumEncoder::class.qualifiedName}(${type.qualifiedName}::class, enumValues()),") }
+                    binaryEncoderClasses.forEach { type -> writeNestedLine("${type.qualifiedName}(),") }
+                    enumClasses.forEach { type -> writeNestedLine("${EnumBinaryEncoder::class.qualifiedName}(${type.qualifiedName}::class, enumValues()),") }
                     concreteClasses.forEach { type ->
                         fun Property.encoderId(tail: String = "") = if (kind != PropertyKind.WithId) "$encoderId$tail" else ""
-                        writeNestedLine("${Encoder::class.qualifiedName}(${type.qualifiedName}::class,", "),") {
+                        writeNestedLine("${BinaryEncoder::class.qualifiedName}(${type.qualifiedName}::class,", "),") {
                             val properties = Properties(type)
                             if (properties.all.isEmpty()) {
                                 writeNestedLine("{ _ -> },")

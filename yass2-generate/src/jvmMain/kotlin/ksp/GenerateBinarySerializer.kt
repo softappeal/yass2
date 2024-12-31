@@ -4,11 +4,11 @@ import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.PropertyKind
 import ch.softappeal.yass2.generate.duplicates
 import ch.softappeal.yass2.generate.hasNoDuplicates
+import ch.softappeal.yass2.serialize.binary.BINARY_FIRST_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.BINARY_LIST_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.BinaryEncoder
 import ch.softappeal.yass2.serialize.binary.BinarySerializer
-import ch.softappeal.yass2.serialize.binary.Encoder
-import ch.softappeal.yass2.serialize.binary.EnumEncoder
-import ch.softappeal.yass2.serialize.binary.FIRST_ENCODER_ID
-import ch.softappeal.yass2.serialize.binary.LIST_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.EnumBinaryEncoder
 import com.google.devtools.ksp.isAbstract
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
@@ -28,20 +28,20 @@ private fun KSClassDeclaration.getAllPropertiesNotThrowable() = getAllProperties
     .filterNot { (it.name == "cause" || it.name == "message") && ("kotlin.Throwable" == it.parentDeclaration!!.qualifiedName()) }
     .sortedBy { it.name }
 
-private fun List<KSType>.getBaseEncoderTypes() =
+private fun List<KSType>.getBinaryEncoderTypes() =
     map { (it.declaration as KSClassDeclaration).superTypes.first().element!!.typeArguments.first().type!!.resolve() }
 
 internal fun CodeWriter.generateBinarySerializer(
-    baseEncoderClasses: List<KSType>,
+    binaryEncoderClasses: List<KSType>,
     enumClasses: List<KSType>,
     concreteClasses: List<KSType>,
     declaration: KSPropertyDeclaration,
 ) {
-    val baseTypes = baseEncoderClasses.getBaseEncoderTypes()
-    val baseClasses = baseTypes + enumClasses
+    val binaryEncoderTypes = binaryEncoderClasses.getBinaryEncoderTypes()
+    val baseClasses = binaryEncoderTypes + enumClasses
 
     (baseClasses + concreteClasses).checkNotDuplicated(declaration)
-    checkNotEnum(declaration, baseTypes + concreteClasses)
+    checkNotEnum(declaration, binaryEncoderTypes + concreteClasses)
 
     class Property(val property: KSPropertyDeclaration) {
         var kind: PropertyKind
@@ -53,18 +53,18 @@ internal fun CodeWriter.generateBinarySerializer(
             val typeNotNullable = type.makeNotNullable()
             val typeNotNullableName = typeNotNullable.qualifiedName
             if (typeNotNullableName == List::class.qualifiedName || typeNotNullableName == "kotlin.collections.MutableList") {
-                encoderId = LIST_ENCODER_ID
+                encoderId = BINARY_LIST_ENCODER_ID
             } else {
                 val baseClassIndex = baseClasses.indexOfFirst { it == typeNotNullable }
                 if (baseClassIndex >= 0) {
-                    encoderId = baseClassIndex + FIRST_ENCODER_ID
+                    encoderId = baseClassIndex + BINARY_FIRST_ENCODER_ID
                 } else {
                     fun KSType.hasSuperCLass(superClass: KSType) =
                         (this.declaration as KSClassDeclaration).superTypes.map { it.resolve() }.contains(superClass)
 
                     val concreteClassIndex = concreteClasses.indexOfFirst { it == typeNotNullable }
                     if (concreteClassIndex >= 0 && concreteClasses.none { it.hasSuperCLass(concreteClasses[concreteClassIndex]) }) {
-                        encoderId = concreteClassIndex + baseClasses.size + FIRST_ENCODER_ID
+                        encoderId = concreteClassIndex + baseClasses.size + BINARY_FIRST_ENCODER_ID
                     } else {
                         kind = PropertyKind.WithId
                     }
@@ -112,11 +112,11 @@ internal fun CodeWriter.generateBinarySerializer(
         writeNestedLine("object : ${BinarySerializer::class.qualifiedName}() {", "}") {
             writeNestedLine("init {", "}") {
                 writeNestedLine("initialize(", ")") {
-                    baseEncoderClasses.forEach { type -> writeNestedLine("${type.qualifiedName}(),") }
-                    enumClasses.forEach { type -> writeNestedLine("${EnumEncoder::class.qualifiedName}(${type.qualifiedName}::class, enumValues()),") }
+                    binaryEncoderClasses.forEach { type -> writeNestedLine("${type.qualifiedName}(),") }
+                    enumClasses.forEach { type -> writeNestedLine("${EnumBinaryEncoder::class.qualifiedName}(${type.qualifiedName}::class, enumValues()),") }
                     concreteClasses.forEach { type ->
                         fun Property.encoderId(tail: String = "") = if (kind != PropertyKind.WithId) "$encoderId$tail" else ""
-                        writeNestedLine("${Encoder::class.qualifiedName}(${type.qualifiedName}::class,", "),") {
+                        writeNestedLine("${BinaryEncoder::class.qualifiedName}(${type.qualifiedName}::class,", "),") {
                             val properties = Properties(type.declaration as KSClassDeclaration)
                             if (properties.all.isEmpty()) {
                                 writeNestedLine("{ _ -> },")

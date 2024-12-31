@@ -9,19 +9,19 @@ import kotlin.test.assertNull
 
 private enum class Color { Red, Green }
 
-private val ColorEncoder = EnumEncoder(Color::class, enumValues())
+private val ColorEncoder = EnumBinaryEncoder(Color::class, enumValues())
 
 private class OptionalString(val s: String?)
 
-private class OptionalStringEncoder : Encoder<OptionalString>(OptionalString::class,
-    { value -> writeOptional(value.s) { writeString(it) } },
-    { OptionalString(readOptional { readString() }) }
+private class OptionalStringEncoder : BinaryEncoder<OptionalString>(OptionalString::class,
+    { value -> writeBinaryOptional(value.s) { writeBinaryString(it) } },
+    { OptionalString(readBinaryOptional { readBinaryString() }) }
 )
 
-class BaseEncodersTest {
+class BinaryEncodersTest {
     @Test
     fun test() {
-        fun <T : Any> Encoder<T>.check(value: T, vararg bytes: Int) {
+        fun <T : Any> BinaryEncoder<T>.check(value: T, vararg bytes: Int) {
             val writer = BytesWriter(1000)
             with(writer) {
                 write(this, value)
@@ -37,39 +37,39 @@ class BaseEncodersTest {
                 assertEquals(bytes.size, current)
             }
         }
-        with(BooleanEncoder()) {
+        with(BooleanBinaryEncoder()) {
             check(false, 0)
             check(true, 1)
         }
-        with(ByteEncoder()) {
+        with(ByteBinaryEncoder()) {
             check(0, 0)
             check(-1, -1)
             check(1, 1)
             check(Byte.MAX_VALUE, 127)
             check(Byte.MIN_VALUE, -128)
         }
-        with(IntEncoder()) {
+        with(IntBinaryEncoder()) {
             check(0, 0)
             check(-1, 1)
             check(1, 2)
             check(Int.MAX_VALUE, -2, -1, -1, -1, 15)
             check(Int.MIN_VALUE, -1, -1, -1, -1, 15)
         }
-        with(LongEncoder()) {
+        with(LongBinaryEncoder()) {
             check(0, 0)
             check(-1, 1)
             check(1, 2)
             check(Long.MAX_VALUE, -2, -1, -1, -1, -1, -1, -1, -1, -1, 1)
             check(Long.MIN_VALUE, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1)
         }
-        with(DoubleEncoder()) {
+        with(DoubleBinaryEncoder()) {
             check(123.456, 64, 94, -35, 47, 26, -97, -66, 119)
             check(Double.POSITIVE_INFINITY, 127, -16, 0, 0, 0, 0, 0, 0)
             check(Double.NEGATIVE_INFINITY, -1, -16, 0, 0, 0, 0, 0, 0)
             check(Double.NaN, 127, -8, 0, 0, 0, 0, 0, 0)
         }
         @Suppress("SpellCheckingInspection")
-        with(StringEncoder()) {
+        with(StringBinaryEncoder()) {
             check("", 0)
             check("abc", 3, 97, 98, 99)
             check("\u0000\u0001\u007F", 3, 0x00, 0x01, 0x7F)
@@ -81,7 +81,7 @@ class BaseEncodersTest {
             check("\uD800\uDC01", 4, -16, -112, -128, -127) // U+010001
             check("\uDBFF\uDFFF", 4, -12, -113, -65, -65)   // U+1FFFFF
         }
-        with(ByteArrayEncoder()) {
+        with(ByteArrayBinaryEncoder()) {
             check(byteArrayOf(), 0)
             check(byteArrayOf(0, 1, -1, 127, -128), 5, 0, 1, -1, 127, -128)
         }

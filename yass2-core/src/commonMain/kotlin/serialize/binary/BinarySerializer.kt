@@ -5,33 +5,33 @@ import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Writer
 import kotlin.reflect.KClass
 
-public abstract class AbstractEncoder internal constructor(internal val type: KClass<*>) {
+public abstract class AbstractBinaryEncoder internal constructor(internal val type: KClass<*>) {
     internal abstract fun write(writer: Writer, value: Any?)
     internal abstract fun read(reader: Reader): Any?
 }
 
-public open class Encoder<T : Any>(
+public open class BinaryEncoder<T : Any>(
     type: KClass<T>,
     public val write: Writer.(value: T) -> Unit,
     public val read: Reader.() -> T,
-) : AbstractEncoder(type) {
+) : AbstractBinaryEncoder(type) {
     override fun write(writer: Writer, value: Any?) = writer.write(@Suppress("UNCHECKED_CAST") (value as T))
     override fun read(reader: Reader) = reader.read()
 }
 
-public const val NULL_ENCODER_ID: Int = 0
-public const val LIST_ENCODER_ID: Int = 1
-public const val FIRST_ENCODER_ID: Int = 2
+public const val BINARY_NULL_ENCODER_ID: Int = 0
+public const val BINARY_LIST_ENCODER_ID: Int = 1
+public const val BINARY_FIRST_ENCODER_ID: Int = 2
 
 public abstract class BinarySerializer : Serializer {
-    private data class EncoderId(val id: Int, val encoder: AbstractEncoder)
+    private data class EncoderId(val id: Int, val encoder: AbstractBinaryEncoder)
 
-    private val nullEncoderId = EncoderId(NULL_ENCODER_ID, object : AbstractEncoder(Unit::class) {
+    private val nullEncoderId = EncoderId(BINARY_NULL_ENCODER_ID, object : AbstractBinaryEncoder(Unit::class) {
         override fun write(writer: Writer, value: Any?) {}
         override fun read(reader: Reader) = null
     })
 
-    private val listEncoderId = EncoderId(LIST_ENCODER_ID, Encoder(List::class,
+    private val listEncoderId = EncoderId(BINARY_LIST_ENCODER_ID, BinaryEncoder(List::class,
         { list ->
             writeVarInt(list.size)
             for (element in list) writeWithId(element)
@@ -44,10 +44,10 @@ public abstract class BinarySerializer : Serializer {
         }
     ))
 
-    private lateinit var encoders: Array<AbstractEncoder>
+    private lateinit var encoders: Array<AbstractBinaryEncoder>
     private lateinit var type2encoderId: MutableMap<KClass<*>, EncoderId>
 
-    protected fun initialize(vararg encoders: Encoder<*>) {
+    protected fun initialize(vararg encoders: BinaryEncoder<*>) {
         this.encoders = (listOf(nullEncoderId.encoder, listEncoderId.encoder) + encoders).toTypedArray()
         type2encoderId = HashMap(this.encoders.size)
         this.encoders.forEachIndexed { id, encoder ->
@@ -67,28 +67,16 @@ public abstract class BinarySerializer : Serializer {
 
     protected fun Writer.writeNoIdRequired(encoderId: Int, value: Any): Unit = encoders[encoderId].write(this, value)
     protected fun Writer.writeNoIdOptional(encoderId: Int, value: Any?): Unit = if (value == null) {
-        writeBoolean(false)
+        writeBinaryBoolean(false)
     } else {
-        writeBoolean(true)
+        writeBinaryBoolean(true)
         writeNoIdRequired(encoderId, value)
     }
 
     protected fun Reader.readWithId(): Any? = encoders[readVarInt()].read(this)
     protected fun Reader.readNoIdRequired(encoderId: Int): Any = encoders[encoderId].read(this)!!
-    protected fun Reader.readNoIdOptional(encoderId: Int): Any? = if (readBoolean()) readNoIdRequired(encoderId) else null
+    protected fun Reader.readNoIdOptional(encoderId: Int): Any? = if (readBinaryBoolean()) readNoIdRequired(encoderId) else null
 
     override fun write(writer: Writer, value: Any?): Unit = writer.writeWithId(value)
     override fun read(reader: Reader): Any? = reader.readWithId()
 }
-
-/**
- * [concreteClasses] must be concrete and must have a primary constructor and all its parameters must be properties.
- * Body properties are allowed but must be of `var` kind.
- * Inheritance is supported.
- * [Enum] classes also belong to [concreteClasses].
- */
-@Target(AnnotationTarget.PROPERTY)
-public annotation class GenerateBinarySerializer(
-    val baseEncoderClasses: Array<KClass<out Encoder<*>>>,
-    val concreteClasses: Array<KClass<*>>,
-)

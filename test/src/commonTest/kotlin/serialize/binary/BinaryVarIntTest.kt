@@ -6,7 +6,7 @@ import ch.softappeal.yass2.serialize.checkTail
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class VarIntTest {
+class BinaryVarIntTest {
     @Test
     fun varInt() {
         val writer = BytesWriter(1000)

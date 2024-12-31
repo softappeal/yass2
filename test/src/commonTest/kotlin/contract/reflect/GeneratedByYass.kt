@@ -216,11 +216,11 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
     object : ch.softappeal.yass2.serialize.binary.BinarySerializer() {
         init {
             initialize(
-                ch.softappeal.yass2.serialize.binary.IntEncoder(),
-                ch.softappeal.yass2.serialize.binary.StringEncoder(),
-                ch.softappeal.yass2.serialize.binary.ByteArrayEncoder(),
-                ch.softappeal.yass2.serialize.binary.EnumEncoder(ch.softappeal.yass2.contract.Gender::class, enumValues()),
-                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.IntException::class,
+                ch.softappeal.yass2.serialize.binary.IntBinaryEncoder(),
+                ch.softappeal.yass2.serialize.binary.StringBinaryEncoder(),
+                ch.softappeal.yass2.serialize.binary.ByteArrayBinaryEncoder(),
+                ch.softappeal.yass2.serialize.binary.EnumBinaryEncoder(ch.softappeal.yass2.contract.Gender::class, enumValues()),
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(ch.softappeal.yass2.contract.IntException::class,
                     { i ->
                         writeNoIdRequired(2, i.i)
                     },
@@ -231,7 +231,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.IntWrapper::class,
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(ch.softappeal.yass2.contract.IntWrapper::class,
                     { i ->
                         writeNoIdRequired(2, i.i)
                     },
@@ -242,7 +242,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.Optionals::class,
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(ch.softappeal.yass2.contract.Optionals::class,
                     { i ->
                         writeNoIdRequired(2, i.i)
                         writeNoIdOptional(2, i.iOptional)
@@ -259,7 +259,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.Lists::class,
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(ch.softappeal.yass2.contract.Lists::class,
                     { i ->
                         writeNoIdRequired(1, i.list)
                         writeNoIdOptional(1, i.listOptional)
@@ -276,7 +276,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.A::class,
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(ch.softappeal.yass2.contract.A::class,
                     { i ->
                         writeNoIdRequired(2, i.a)
                     },
@@ -287,7 +287,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.B::class,
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(ch.softappeal.yass2.contract.B::class,
                     { i ->
                         writeNoIdRequired(2, i.a)
                         writeNoIdRequired(2, i.b)
@@ -300,7 +300,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.Poly::class,
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(ch.softappeal.yass2.contract.Poly::class,
                     { i ->
                         writeWithId(i.a)
                         writeNoIdRequired(11, i.b)
@@ -313,7 +313,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.ManyProperties::class,
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(ch.softappeal.yass2.contract.ManyProperties::class,
                     { i ->
                         writeNoIdRequired(2, i.h)
                         writeNoIdRequired(2, i.d)
@@ -342,7 +342,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.DivideByZeroException::class,
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(ch.softappeal.yass2.contract.DivideByZeroException::class,
                     { _ -> },
                     {
                         val i = ch.softappeal.yass2.contract.DivideByZeroException(
@@ -350,20 +350,20 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.ThrowableFake::class,
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(ch.softappeal.yass2.contract.ThrowableFake::class,
                     { i ->
-                        writeNoIdRequired(3, i.cause)
+                        writeNoIdOptional(3, i.cause)
                         writeNoIdRequired(3, i.message)
                     },
                     {
                         val i = ch.softappeal.yass2.contract.ThrowableFake(
-                            readNoIdRequired(3) as kotlin.String,
+                            readNoIdOptional(3) as kotlin.String?,
                             readNoIdRequired(3) as kotlin.String,
                         )
                         i
                     }
                 ),
-                ch.softappeal.yass2.serialize.binary.Encoder(ch.softappeal.yass2.contract.GenderWrapper::class,
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(ch.softappeal.yass2.contract.GenderWrapper::class,
                     { i ->
                         writeNoIdRequired(5, i.gender)
                     },

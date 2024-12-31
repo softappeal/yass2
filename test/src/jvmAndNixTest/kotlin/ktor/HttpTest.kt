@@ -19,7 +19,7 @@ import ch.softappeal.yass2.remote.coroutines.tunnel
 import ch.softappeal.yass2.remote.tunnel
 import ch.softappeal.yass2.serialize.Transport
 import ch.softappeal.yass2.serialize.binary.BinarySerializer
-import ch.softappeal.yass2.serialize.binary.StringEncoder
+import ch.softappeal.yass2.serialize.binary.StringBinaryEncoder
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.ws
 import io.ktor.client.request.header
@@ -109,7 +109,7 @@ class HttpTest {
             ContextMessageSerializer(
                 object : BinarySerializer() {
                     init {
-                        initialize(StringEncoder())
+                        initialize(StringBinaryEncoder())
                     }
                 },
                 MessageSerializer,
