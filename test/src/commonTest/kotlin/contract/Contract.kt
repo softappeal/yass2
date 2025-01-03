@@ -14,6 +14,7 @@ import ch.softappeal.yass2.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.serialize.binary.ByteArrayBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.StringBinaryEncoder
+import ch.softappeal.yass2.serialize.text.ByteArrayTextEncoder
 import ch.softappeal.yass2.serialize.text.IntTextEncoder
 import ch.softappeal.yass2.serialize.text.TextSerializer
 
@@ -124,6 +125,7 @@ interface Mixed {
     ],
     textEncoderClasses = [
         IntTextEncoder::class,
+        ByteArrayTextEncoder::class,
     ],
 )
 val ContractSerializer = ch.softappeal.yass2.contract.reflect.createBinarySerializer()

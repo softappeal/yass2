@@ -21,8 +21,8 @@ private fun Reader.readTextByte(): Char = readByte().toInt().toChar()
 
 public open class TextEncoder<T : Any>(
     internal val type: KClass<T>,
-    public val write: TextWriter.(value: T) -> Unit,
-    public val read: TextReader.() -> T,
+    internal val write: TextWriter.(value: T) -> Unit,
+    internal val read: TextReader.() -> T,
 ) {
     internal fun write(writer: TextWriter, value: Any?) = writer.write(@Suppress("UNCHECKED_CAST") (value as T))
     internal fun read(reader: TextReader) = reader.read()

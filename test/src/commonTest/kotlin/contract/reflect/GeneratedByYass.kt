@@ -398,6 +398,7 @@ public fun createTextSerializer(): ch.softappeal.yass2.serialize.text.TextSerial
         init {
             initialize(
                 ch.softappeal.yass2.serialize.text.IntTextEncoder(),
+                ch.softappeal.yass2.serialize.text.ByteArrayTextEncoder(),
                 ch.softappeal.yass2.serialize.text.EnumTextEncoder(
                     ch.softappeal.yass2.contract.Gender::class,
                     ch.softappeal.yass2.contract.Gender::valueOf,
@@ -576,7 +577,7 @@ public fun createTextSerializer(): ch.softappeal.yass2.serialize.text.TextSerial
                 ch.softappeal.yass2.serialize.text.ClassTextEncoder(
                     ch.softappeal.yass2.contract.GenderWrapper::class,
                     { i ->
-                        writeNoId("gender", 3, i.gender)
+                        writeNoId("gender", 4, i.gender)
                     },
                     {
                         val i = ch.softappeal.yass2.contract.GenderWrapper(
@@ -584,7 +585,7 @@ public fun createTextSerializer(): ch.softappeal.yass2.serialize.text.TextSerial
                         )
                         i
                     },
-                    "gender" to 3,
+                    "gender" to 4,
                 ),
             )
         }

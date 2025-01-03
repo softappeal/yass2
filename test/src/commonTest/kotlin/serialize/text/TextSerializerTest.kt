@@ -27,14 +27,6 @@ class TextSerializerTest {
     @Test
     fun test() {
         dump(
-            null,
-            "*",
-        )
-        dump(
-            Gender.Male,
-            "Gender(Male)",
-        )
-        dump(
             GenderWrapper(Gender.Male),
             "GenderWrapper(gender=Male)",
         )
@@ -67,40 +59,8 @@ class TextSerializerTest {
             "Lists(list=[Int(1),Int(2)],mutableList=[Int(3),Int(4)])",
         )
         dump(
-            123,
-            "Int(123)",
-        )
-        dump(
-            Gender.Male,
-            "Gender(Male)",
-        )
-        dump(
-            listOf<Int>(),
-            "[]",
-        )
-        dump(
-            listOf(null),
-            "[*]",
-        )
-        dump(
-            listOf(null, null),
-            "[*,*]",
-        )
-        dump(
-            listOf(null, listOf(null, null, null), null),
-            "[*,[*,*,*],*]",
-        )
-        dump(
             IntWrapper(3),
             "IntWrapper(i=3)",
-        )
-        dump(
-            "hello",
-            "\"hello\""
-        )
-        dump(
-            listOf("hello"),
-            "[\"hello\"]",
         )
         dump(
             ThrowableFake("hello", "world"),

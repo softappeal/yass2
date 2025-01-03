@@ -41,13 +41,6 @@ class BinaryEncodersTest {
             check(false, 0)
             check(true, 1)
         }
-        with(ByteBinaryEncoder()) {
-            check(0, 0)
-            check(-1, -1)
-            check(1, 1)
-            check(Byte.MAX_VALUE, 127)
-            check(Byte.MIN_VALUE, -128)
-        }
         with(IntBinaryEncoder()) {
             check(0, 0)
             check(-1, 1)

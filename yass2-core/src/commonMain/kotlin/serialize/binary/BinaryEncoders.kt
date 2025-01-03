@@ -40,11 +40,6 @@ public class BooleanBinaryEncoder : BinaryEncoder<Boolean>(Boolean::class,
     { readBinaryBoolean() }
 )
 
-public class ByteBinaryEncoder : BinaryEncoder<Byte>(Byte::class,
-    { value -> writeByte(value) },
-    { readByte() }
-)
-
 public class IntBinaryEncoder : BinaryEncoder<Int>(Int::class,
     { value -> writeZigZagVarInt(value) },
     { readZigZagVarInt() }
