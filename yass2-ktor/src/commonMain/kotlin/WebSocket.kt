@@ -17,7 +17,7 @@ public class WebSocketConnection internal constructor(
     override suspend fun write(packet: Packet?) {
         val writer = transport.createWriter()
         transport.write(writer, packet)
-        session.outgoing.send(Frame.Binary(true, writer.buffer.copyOfRange(0, writer.current)))
+        session.outgoing.send(Frame.Binary(true, writer.buffer.copyOf(writer.current)))
     }
 
     override suspend fun closed(): Unit = session.close()

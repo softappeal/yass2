@@ -1,3 +1,5 @@
+@file:Suppress("DuplicatedCode")
+
 package ch.softappeal.yass2.generate.reflect
 
 import ch.softappeal.yass2.generate.CodeWriter

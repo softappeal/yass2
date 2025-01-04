@@ -65,6 +65,7 @@ private suspend fun print(
 
 private val AdderId = ServiceId<SuspendAdder>(1)
 
+@Suppress("SameParameterValue")
 private fun Serializer.copy(value: Int): Int {
     val writer = BytesWriter(1000)
     write(writer, value)

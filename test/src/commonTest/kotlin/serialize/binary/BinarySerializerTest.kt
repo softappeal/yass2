@@ -42,7 +42,7 @@ fun <T> Serializer.copy(value: T, check: BytesWriter.() -> Unit = {}): T {
 }
 
 private fun <T> checkedCopy(value: T, vararg bytes: Int): T = ContractSerializer.copy(value) {
-    assertEquals(current, bytes.size, "actual: ${buffer.copyOfRange(0, current).toList()}")
+    assertEquals(current, bytes.size, "actual: ${buffer.copyOf(current).toList()}")
     checkTail(*bytes)
 }
 

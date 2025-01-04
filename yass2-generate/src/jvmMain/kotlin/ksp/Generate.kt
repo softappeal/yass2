@@ -60,6 +60,7 @@ internal fun KSTypeReference.type(): String {
 
 private fun KSAnnotation.argument(name: String) = arguments.first { it.name!!.asString() == name }.value!!
 
+@Suppress("SpellCheckingInspection")
 private val Platforms = setOf(
     "jvm", // JVM
     "js", // JavaScript

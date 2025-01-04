@@ -13,12 +13,6 @@ public fun Writer.writeTextBytes(string: String) {
     writeBytes(string.encodeToByteArray(throwOnInvalidSequence = true))
 }
 
-public fun Writer.writeTextByte(char: Char) {
-    writeByte(char.code.toByte())
-}
-
-private fun Reader.readTextByte(): Char = readByte().toInt().toChar()
-
 public open class TextEncoder<T : Any>(
     internal val type: KClass<T>,
     internal val write: TextWriter.(value: T) -> Unit,
@@ -37,14 +31,15 @@ public class ClassTextEncoder<T : Any>(
     internal val property2id = propertyId.toMap()
 }
 
-public const val TEXT_DELIMITER: Char = ','
-public const val TEXT_LIST_START: Char = '['
-public const val TEXT_LIST_END: Char = ']'
-public const val TEXT_OBJECT_START: Char = '('
-public const val TEXT_OBJECT_END: Char = ')'
-public const val TEXT_NULL: Char = '*'
-public const val TEXT_PROPERTY: Char = '='
-public const val TEXT_STRING: Char = '"'
+// The following constants are ASCII characters and therefore encoded in one byte in UTF-8.
+public const val TEXT_DELIMITER: Byte = ','.code.toByte()
+public const val TEXT_LIST_START: Byte = '['.code.toByte()
+public const val TEXT_LIST_END: Byte = ']'.code.toByte()
+public const val TEXT_OBJECT_START: Byte = '('.code.toByte()
+public const val TEXT_OBJECT_END: Byte = ')'.code.toByte()
+public const val TEXT_NULL: Byte = '*'.code.toByte()
+public const val TEXT_PROPERTY: Byte = '='.code.toByte()
+public const val TEXT_STRING: Byte = '"'.code.toByte()
 
 public const val TEXT_STRING_ENCODER_ID: Int = 0
 public const val TEXT_LIST_ENCODER_ID: Int = 1
@@ -54,8 +49,7 @@ public const val TEXT_FIRST_ENCODER_ID: Int = 2
  * Has built-in encoders for null, [String] and [List].
  * It reads/writes UTF-8 encoded strings.
  */
-public abstract class TextSerializer : Serializer {
-    // TODO: review for full/correct UTF-8 support
+public abstract class TextSerializer : Serializer { // TODO: add tests for assertions
     // TODO: add skipping of white space; add multiline output
     // TODO: add MessageSerializer and PacketSerializer
 
@@ -75,33 +69,32 @@ public abstract class TextSerializer : Serializer {
 
     private val stringEncoder = TextEncoder(String::class, // TODO: add quoting of STRING
         { value ->
-            writeTextByte(TEXT_STRING)
+            writeByte(TEXT_STRING)
             writeTextBytes(value)
-            writeTextByte(TEXT_STRING)
+            writeByte(TEXT_STRING)
         },
         {
-            readNextChar()
+            readNextCodePoint()
             readDelimiter(TEXT_STRING)
         }
     )
 
     private val listEncoder = TextEncoder(List::class,
         { list ->
-            writeTextByte(TEXT_LIST_START)
+            writeByte(TEXT_LIST_START)
             list.forEachIndexed { index, element ->
-                if (index != 0) writeTextByte(TEXT_DELIMITER)
+                if (index != 0) writeByte(TEXT_DELIMITER)
                 writeWithId(element)
             }
-            writeTextByte(TEXT_LIST_END)
+            writeByte(TEXT_LIST_END)
         },
         {
-            check(expectedChar(TEXT_LIST_START)) { "'$TEXT_LIST_START' expected" }
             ArrayList<Any?>(10).apply {
                 var first = true
                 while (true) {
-                    readNextChar()
-                    if (expectedChar(TEXT_LIST_END)) return@apply
-                    if (first) first = false else if (expectedChar(TEXT_DELIMITER)) readNextChar()
+                    readNextCodePoint()
+                    if (expectedCodePoint(TEXT_LIST_END)) return@apply
+                    if (first) first = false else if (expectedCodePoint(TEXT_DELIMITER)) readNextCodePoint()
                     add(readWithId())
                 }
             }
@@ -110,14 +103,15 @@ public abstract class TextSerializer : Serializer {
 
     private fun TextWriter.writeWithId(value: Any?) {
         when (value) {
-            null -> writeTextByte(TEXT_NULL)
+            null -> writeByte(TEXT_NULL)
             is String -> stringEncoder.write(this, value)
             is List<*> -> listEncoder.write(this, value)
             else -> {
                 val encoder = type2encoder[value::class] ?: error("missing type '${value::class}'")
-                writeTextBytes("${encoder.type.simpleName}$TEXT_OBJECT_START")
+                writeTextBytes(encoder.type.simpleName!!)
+                writeByte(TEXT_OBJECT_START)
                 encoder.write(this, value)
-                writeTextByte(TEXT_OBJECT_END)
+                writeByte(TEXT_OBJECT_END)
             }
         }
     }
@@ -126,8 +120,9 @@ public abstract class TextSerializer : Serializer {
         private var first: Boolean = true
         private fun writeProperty(property: String, value: Any?, writeValue: () -> Unit) {
             if (value == null) return
-            if (first) first = false else writeTextByte(TEXT_DELIMITER)
-            writeTextBytes("$property$TEXT_PROPERTY")
+            if (first) first = false else writeByte(TEXT_DELIMITER)
+            writeTextBytes(property)
+            writeByte(TEXT_PROPERTY)
             writeValue()
         }
 
@@ -141,36 +136,36 @@ public abstract class TextSerializer : Serializer {
     }
 
     private fun TextReader.readWithId(): Any? = when {
-        expectedChar(TEXT_NULL) -> null
-        expectedChar(TEXT_STRING) -> stringEncoder.read(this)
-        expectedChar(TEXT_LIST_START) -> listEncoder.read(this)
+        expectedCodePoint(TEXT_NULL) -> null
+        expectedCodePoint(TEXT_STRING) -> stringEncoder.read(this)
+        expectedCodePoint(TEXT_LIST_START) -> listEncoder.read(this)
         else -> {
             val className = readDelimiter(TEXT_OBJECT_START)
             val encoder = className2encoder[className] ?: error("missing encoder for class '${className}'")
-            readNextChar()
+            readNextCodePoint()
             if (encoder is ClassTextEncoder) readObject(encoder) else encoder.read(this)
         }
     }
 
-    public inner class TextReader(private val reader: Reader, private var nextChar: Char) : Reader by reader {
-        internal fun expectedChar(char: Char) = nextChar == char
-        internal fun readNextChar() {
-            nextChar = readTextByte()
+    public inner class TextReader(private val reader: Reader, private var nextCodePoint: Int) : Reader by reader {
+        internal fun expectedCodePoint(codePoint: Byte) = nextCodePoint == codePoint.toInt()
+        internal fun readNextCodePoint() {
+            nextCodePoint = readCodePoint()
         }
 
         private fun readUntil(predicate: () -> Boolean) = buildString {
             while (!predicate()) {
-                append(nextChar)
-                readNextChar()
+                addCodePoint(nextCodePoint)
+                readNextCodePoint()
             }
         }
 
-        internal fun readDelimiter(delimiter: Char) = readUntil { expectedChar(delimiter) }
+        internal fun readDelimiter(delimiter: Byte) = readUntil { expectedCodePoint(delimiter) }
 
         /**
          * Reads until [TEXT_OBJECT_END] or [TEXT_DELIMITER].
          */
-        public fun readTextBytes(): String = readUntil { expectedChar(TEXT_OBJECT_END) || expectedChar(TEXT_DELIMITER) }
+        public fun readTextBytes(): String = readUntil { expectedCodePoint(TEXT_OBJECT_END) || expectedCodePoint(TEXT_DELIMITER) }
 
         private lateinit var properties: MutableMap<String, Any?>
 
@@ -178,13 +173,13 @@ public abstract class TextSerializer : Serializer {
             properties = mutableMapOf()
             var first = true
             while (true) {
-                if (expectedChar(TEXT_OBJECT_END)) break
-                if (first) first = false else if (expectedChar(TEXT_DELIMITER)) readNextChar()
+                if (expectedCodePoint(TEXT_OBJECT_END)) break
+                if (first) first = false else if (expectedCodePoint(TEXT_DELIMITER)) readNextCodePoint()
                 val propertyName = readDelimiter(TEXT_PROPERTY)
-                readNextChar()
+                readNextCodePoint()
                 val id = encoder.property2id[propertyName]
                 properties[propertyName] = if (id != null) encoders[id].read(this) else {
-                    with(TextReader(this, nextChar)) { readWithId() }.apply { readNextChar() }
+                    with(TextReader(this, nextCodePoint)) { readWithId() }.apply { readNextCodePoint() }
                 }
             }
             return encoder.read(this)
@@ -196,7 +191,7 @@ public abstract class TextSerializer : Serializer {
     }
 
     override fun write(writer: Writer, value: Any?): Unit = TextWriter(writer).writeWithId(value)
-    override fun read(reader: Reader): Any? = TextReader(reader, reader.readTextByte()).readWithId()
+    override fun read(reader: Reader): Any? = TextReader(reader, reader.readCodePoint()).readWithId()
 }
 
 public fun TextSerializer.writeString(value: Any?): String = with(BytesWriter(1000)) {
