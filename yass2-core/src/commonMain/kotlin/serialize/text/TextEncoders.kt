@@ -25,7 +25,7 @@ public class DoubleTextEncoder : TextEncoder<Double>(Double::class,
 )
 
 @ExperimentalEncodingApi
-private val B64 = Base64.Default
+private val B64 = Base64.Default // uses A-Za-z0-9+/=
 
 @OptIn(ExperimentalEncodingApi::class)
 public class ByteArrayTextEncoder : TextEncoder<ByteArray>(ByteArray::class,

@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.serialize.binary
 
-import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.contract.A
 import ch.softappeal.yass2.contract.B
 import ch.softappeal.yass2.contract.ContractSerializer
@@ -22,6 +21,7 @@ import ch.softappeal.yass2.serialize.Writer
 import ch.softappeal.yass2.serialize.checkTail
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -67,18 +67,6 @@ private fun ManyProperties.assertManyProperties() {
             i == 9 &&
             j == 10
     )
-}
-
-fun duplicatedType(thePackage: String) = assertFailsMessage<IllegalArgumentException>("duplicated type 'class ${thePackage}Int'") {
-    object : BinarySerializer() {
-        init {
-            initialize(IntBinaryEncoder(), IntBinaryEncoder())
-        }
-    }
-}
-
-fun missingType(thePackage: String) = assertFailsMessage<IllegalStateException>("missing type 'class ${thePackage}Boolean'") {
-    ContractSerializer.write(BytesWriter(1000), true)
 }
 
 class BinarySerializerTest {
@@ -316,5 +304,27 @@ class BinarySerializerTest {
             writerReader.current = 0
             (ContractSerializer.read(writerReader) as ManyProperties).assertManyProperties()
         }
+    }
+
+    @Test
+    fun duplicatedType() {
+        val message = assertFailsWith<IllegalArgumentException> {
+            object : BinarySerializer() {
+                init {
+                    initialize(IntBinaryEncoder(), IntBinaryEncoder())
+                }
+            }
+        }.message!!
+        assertTrue(message.startsWith("duplicated type 'class "))
+        assertTrue(message.endsWith("Int'"))
+    }
+
+    @Test
+    fun missingType() {
+        val message = assertFailsWith<IllegalStateException> {
+            ContractSerializer.write(BytesWriter(1000), true)
+        }.message!!
+        assertTrue(message.startsWith("missing type 'class "))
+        assertTrue(message.endsWith("Boolean'"))
     }
 }

@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.serialize.text
+package ch.softappeal.yass2.serialize.text // TODO: replace with future Kotlin stdlib functions
 
 import ch.softappeal.yass2.serialize.Reader
 
@@ -6,15 +6,15 @@ import ch.softappeal.yass2.serialize.Reader
 
 // see https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates
 internal fun StringBuilder.addCodePoint(codePoint: Int) {
-    if (codePoint in 0 until 0x10000) append(codePoint.toChar()) else {
-        val cp = codePoint - 0x10000
-        append(((cp ushr 10) + 0xD800).toChar()) // high surrogate
-        append(((cp and 0x3FF) + 0xDC00).toChar()) // low surrogate
+    if (codePoint in 0..Char.MAX_VALUE.code) append(codePoint.toChar()) else {
+        val cp = codePoint - (Char.MAX_VALUE.code + 1)
+        append(((cp ushr 10) + Char.MIN_HIGH_SURROGATE.code).toChar())
+        append(((cp and 0b11_1111_1111) + Char.MIN_LOW_SURROGATE.code).toChar())
     }
 }
 
 // see https://en.wikipedia.org/wiki/UTF-8#Description
-internal fun Reader.readCodePoint(): Int {
+internal fun Reader.readCodePoint(): Int { // TODO: doesn't check for illegal UTF-8 encoding
     fun rb() = readByte().toInt()
     val first = rb()
     return when {

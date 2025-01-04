@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.serialize.text
 
+import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.contract.Gender
 import ch.softappeal.yass2.serialize.BytesWriter
 import kotlin.test.Test
@@ -49,6 +50,9 @@ class TextEncodersTest {
         test("\uD800\uDC01", "\"\uD800\uDC01\"", "22f090808122") // U+010001
         test("\uD800\uDFFF", "\"\uD800\uDFFF\"", "22f0908fbf22") // U+0103FF
         test("\uDBFF\uDFFF", "\"\uDBFF\uDFFF\"", "22f48fbfbf22") // U+10FFFF
+        test("\"", "\"\\\"\"")
+        test("\\", "\"\\\\\"")
+        assertFailsMessage<IllegalStateException>("illegal escape with codePoint 97") { serializer.readString("\"\\a\"") }
 
         test(listOf<Int>(), "[]")
         test(listOf(null), "[*]")

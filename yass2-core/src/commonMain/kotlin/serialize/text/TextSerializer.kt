@@ -38,8 +38,14 @@ public const val TEXT_LIST_END: Byte = ']'.code.toByte()
 public const val TEXT_OBJECT_START: Byte = '('.code.toByte()
 public const val TEXT_OBJECT_END: Byte = ')'.code.toByte()
 public const val TEXT_NULL: Byte = '*'.code.toByte()
-public const val TEXT_PROPERTY: Byte = '='.code.toByte()
-public const val TEXT_STRING: Byte = '"'.code.toByte()
+public const val TEXT_EQUAL: Byte = '='.code.toByte()
+public const val TEXT_QUOTE: Byte = '"'.code.toByte()
+public const val TEXT_ESCAPE: Byte = '\\'.code.toByte()
+
+private const val ESCAPE = TEXT_ESCAPE.toInt().toChar().toString()
+private const val ESCAPE_ESCAPE = ESCAPE + ESCAPE
+private const val QUOTE = TEXT_QUOTE.toInt().toChar().toString()
+private const val ESCAPE_QUOTE = ESCAPE + QUOTE
 
 public const val TEXT_STRING_ENCODER_ID: Int = 0
 public const val TEXT_LIST_ENCODER_ID: Int = 1
@@ -49,9 +55,10 @@ public const val TEXT_FIRST_ENCODER_ID: Int = 2
  * Has built-in encoders for null, [String] and [List].
  * It reads/writes UTF-8 encoded strings.
  */
-public abstract class TextSerializer : Serializer { // TODO: add tests for assertions
+public abstract class TextSerializer : Serializer {
     // TODO: add skipping of white space; add multiline output
     // TODO: add MessageSerializer and PacketSerializer
+    // TODO: space instead of delimiter? delimiter optional?
 
     private lateinit var encoders: Array<TextEncoder<*>>
     private lateinit var type2encoder: MutableMap<KClass<*>, TextEncoder<*>>
@@ -63,19 +70,36 @@ public abstract class TextSerializer : Serializer { // TODO: add tests for asser
         className2encoder = HashMap(this.encoders.size)
         this.encoders.forEach { encoder ->
             require(type2encoder.put(encoder.type, encoder) == null) { "duplicated type '${encoder.type}'" }
-            require(className2encoder.put(encoder.type.simpleName!!, encoder) == null) { "duplicated className '${encoder.type}'" }
+            require(className2encoder.put(encoder.type.simpleName!!, encoder) == null) {
+                "duplicated className '${encoder.type.simpleName}'"
+            }
         }
     }
 
-    private val stringEncoder = TextEncoder(String::class, // TODO: add quoting of STRING
-        { value ->
-            writeByte(TEXT_STRING)
-            writeTextBytes(value)
-            writeByte(TEXT_STRING)
+    private val stringEncoder = TextEncoder(String::class,
+        { string ->
+            writeByte(TEXT_QUOTE)
+            writeTextBytes(string.replace(ESCAPE, ESCAPE_ESCAPE).replace(QUOTE, ESCAPE_QUOTE))
+            writeByte(TEXT_QUOTE)
         },
         {
-            readNextCodePoint()
-            readDelimiter(TEXT_STRING)
+            buildString {
+                while (true) {
+                    readNextCodePoint()
+                    when {
+                        expectedCodePoint(TEXT_QUOTE) -> break
+                        expectedCodePoint(TEXT_ESCAPE) -> {
+                            readNextCodePoint()
+                            when {
+                                expectedCodePoint(TEXT_QUOTE) -> append(TEXT_QUOTE.toInt().toChar())
+                                expectedCodePoint(TEXT_ESCAPE) -> append(TEXT_ESCAPE.toInt().toChar())
+                                else -> error("illegal escape with codePoint $nextCodePoint")
+                            }
+                        }
+                        else -> addCodePoint(nextCodePoint)
+                    }
+                }
+            }
         }
     )
 
@@ -122,7 +146,7 @@ public abstract class TextSerializer : Serializer { // TODO: add tests for asser
             if (value == null) return
             if (first) first = false else writeByte(TEXT_DELIMITER)
             writeTextBytes(property)
-            writeByte(TEXT_PROPERTY)
+            writeByte(TEXT_EQUAL)
             writeValue()
         }
 
@@ -137,7 +161,7 @@ public abstract class TextSerializer : Serializer { // TODO: add tests for asser
 
     private fun TextReader.readWithId(): Any? = when {
         expectedCodePoint(TEXT_NULL) -> null
-        expectedCodePoint(TEXT_STRING) -> stringEncoder.read(this)
+        expectedCodePoint(TEXT_QUOTE) -> stringEncoder.read(this)
         expectedCodePoint(TEXT_LIST_START) -> listEncoder.read(this)
         else -> {
             val className = readDelimiter(TEXT_OBJECT_START)
@@ -147,7 +171,7 @@ public abstract class TextSerializer : Serializer { // TODO: add tests for asser
         }
     }
 
-    public inner class TextReader(private val reader: Reader, private var nextCodePoint: Int) : Reader by reader {
+    public inner class TextReader(private val reader: Reader, internal var nextCodePoint: Int) : Reader by reader {
         internal fun expectedCodePoint(codePoint: Byte) = nextCodePoint == codePoint.toInt()
         internal fun readNextCodePoint() {
             nextCodePoint = readCodePoint()
@@ -175,12 +199,12 @@ public abstract class TextSerializer : Serializer { // TODO: add tests for asser
             while (true) {
                 if (expectedCodePoint(TEXT_OBJECT_END)) break
                 if (first) first = false else if (expectedCodePoint(TEXT_DELIMITER)) readNextCodePoint()
-                val propertyName = readDelimiter(TEXT_PROPERTY)
+                val propertyName = readDelimiter(TEXT_EQUAL)
                 readNextCodePoint()
                 val id = encoder.property2id[propertyName]
-                properties[propertyName] = if (id != null) encoders[id].read(this) else {
+                check(properties.put(propertyName, if (id != null) encoders[id].read(this) else {
                     with(TextReader(this, nextCodePoint)) { readWithId() }.apply { readNextCodePoint() }
-                }
+                }) == null) { "duplicated property '$propertyName' for type '${encoder.type.simpleName}'" }
             }
             return encoder.read(this)
         }
