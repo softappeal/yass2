@@ -58,7 +58,6 @@ public const val TEXT_FIRST_ENCODER_ID: Int = 2
 public abstract class TextSerializer : Serializer {
     // TODO: add skipping of white space; add multiline output
     // TODO: add MessageSerializer and PacketSerializer
-    // TODO: space instead of delimiter? delimiter optional?
 
     private lateinit var encoders: Array<TextEncoder<*>>
     private lateinit var type2encoder: MutableMap<KClass<*>, TextEncoder<*>>
@@ -114,12 +113,11 @@ public abstract class TextSerializer : Serializer {
         },
         {
             ArrayList<Any?>(10).apply {
-                var first = true
-                while (true) {
-                    readNextCodePoint()
-                    if (expectedCodePoint(TEXT_RBRACKET)) return@apply
-                    if (first) first = false else if (expectedCodePoint(TEXT_COMMA)) readNextCodePoint()
+                readNextCodePoint()
+                while (!expectedCodePoint(TEXT_RBRACKET)) {
                     add(readWithId())
+                    readNextCodePoint()
+                    if (expectedCodePoint(TEXT_COMMA)) readNextCodePoint()
                 }
             }
         }
@@ -195,16 +193,14 @@ public abstract class TextSerializer : Serializer {
 
         internal fun readObject(encoder: ClassTextEncoder<*>): Any {
             properties = mutableMapOf()
-            var first = true
-            while (true) {
-                if (expectedCodePoint(TEXT_RPAREN)) break
-                if (first) first = false else if (expectedCodePoint(TEXT_COMMA)) readNextCodePoint()
+            while (!expectedCodePoint(TEXT_RPAREN)) {
                 val propertyName = readDelimiter(TEXT_COLON)
                 readNextCodePoint()
                 val id = encoder.property2id[propertyName]
                 check(properties.put(propertyName, if (id != null) encoders[id].read(this) else {
                     with(TextReader(this, nextCodePoint)) { readWithId() }.apply { readNextCodePoint() }
                 }) == null) { "duplicated property '$propertyName' for type '${encoder.type.simpleName}'" }
+                if (expectedCodePoint(TEXT_COMMA)) readNextCodePoint()
             }
             return encoder.read(this)
         }

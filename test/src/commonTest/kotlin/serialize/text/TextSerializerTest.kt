@@ -23,12 +23,13 @@ import kotlin.test.assertTrue
 
 private val SERIALIZER = createTextSerializer()
 
-private fun dump(value: Any?, serialized: String) {
+private fun dump(value: Any?, serialized: String, vararg others: String) {
     fun write(data: Any?) {
         assertEquals(serialized, SERIALIZER.writeString(data))
     }
     write(value)
     write(SERIALIZER.readString(serialized))
+    others.forEach { write(SERIALIZER.readString(it)) }
 }
 
 private class Int
@@ -48,10 +49,14 @@ class TextSerializerTest {
         dump(
             Poly(B(1, 2), B(3, 4)),
             "Poly(a:B(a:1,b:2),b:B(a:3,b:4))",
+            "Poly(a:B(a:1,b:2,),b:B(a:3,b:4,),)",
+            "Poly(a:B(a:1,b:2)b:B(a:3,b:4))",
         )
         dump(
             listOf(null, 123, A(1), mutableListOf(1, 2)),
             "[*,Int(123),A(a:1),[Int(1),Int(2)]]",
+            "[*,Int(123),A(a:1,),[Int(1),Int(2),],]",
+            "[*Int(123)A(a:1)[Int(1)Int(2)]]",
         )
         dump(
             Optionals(1, null, IntWrapper(3), null),
