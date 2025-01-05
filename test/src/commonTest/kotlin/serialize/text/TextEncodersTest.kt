@@ -40,7 +40,7 @@ class TextEncodersTest {
         test(null, "*")
 
         test("", "\"\"")
-        test("hello", "\"hello\"")
+        test(" hello world ", "\" hello world \"")
         test("\u0000\u0001\u007F", "\"\u0000\u0001\u007F\"", "2200017f22")
         test("\u0080", "\"\u0080\"", "22c28022")
         test("\u07FF", "\"\u07FF\"", "22dfbf22")
@@ -50,9 +50,9 @@ class TextEncodersTest {
         test("\uD800\uDC01", "\"\uD800\uDC01\"", "22f090808122") // U+010001
         test("\uD800\uDFFF", "\"\uD800\uDFFF\"", "22f0908fbf22") // U+0103FF
         test("\uDBFF\uDFFF", "\"\uDBFF\uDFFF\"", "22f48fbfbf22") // U+10FFFF
-        test("\"", "\"\\\"\"")
-        test("\\", "\"\\\\\"")
-        assertFailsMessage<IllegalStateException>("illegal escape with codePoint 97") { serializer.readString("\"\\a\"") }
+        test("\"a", "\"\\\"a\"")
+        test("\\b", "\"\\\\b\"")
+        assertFailsMessage<IllegalStateException>("illegal escape with codePoint 97") { serializer.readString("\"\\ab\"") }
 
         test(listOf<Int>(), "[]")
         test(listOf(null), "[*]")

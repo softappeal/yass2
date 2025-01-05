@@ -39,6 +39,19 @@ class TextSerializerTest {
     @Test
     fun test() {
         dump(
+            Gender.Male,
+            "Gender(Male)",
+            "  Gender  (  Male  )",
+        )
+        dump(
+            123,
+            "Int(123)",
+            "  Int  (  123  )",
+            """  
+                Int(123)
+            """.trimIndent(),
+        )
+        dump(
             GenderWrapper(Gender.Male),
             "GenderWrapper(gender:Male)",
         )
@@ -51,12 +64,41 @@ class TextSerializerTest {
             "Poly(a:B(a:1,b:2),b:B(a:3,b:4))",
             "Poly(a:B(a:1,b:2,),b:B(a:3,b:4,),)",
             "Poly(a:B(a:1,b:2)b:B(a:3,b:4))",
+            "  Poly  (  a  :  B  (  a  :  1  b  :  2  )  b  :  B  (  a  :  3  b  :  4  )  )",
+            "  Poly  (  a  :  B  (  a  :  1  ,  b  :  2  ,  )  ,  b  :  B  (  a  :  3  ,  b  :  4  ,  )  ,  )",
+            """
+                Poly(
+                    a: B(
+                        a: 1
+                        b: 2
+                    )
+                    b: B(
+                        a: 3
+                        b: 4
+                    )
+                )
+            """.trimIndent(),
         )
         dump(
             listOf(null, 123, A(1), mutableListOf(1, 2)),
             "[*,Int(123),A(a:1),[Int(1),Int(2)]]",
             "[*,Int(123),A(a:1,),[Int(1),Int(2),],]",
             "[*Int(123)A(a:1)[Int(1)Int(2)]]",
+            "  \t \r \n [  *  Int  (  123  )  A  (  a  :  1  )  [  Int  (  1  )  Int  (  2  )  ]  ]",
+            "  \t \r \n [  *  Int  (  123  )  A  (  a  :  1  )  [  Int  (  1  )  ,  Int  (  2  )  ,  ]  ,  ]",
+            """
+                [
+                    *
+                    Int(123)
+                    A(
+                        a: 1
+                    )
+                    [
+                        Int(1)
+                        Int(2)
+                    ]
+                ]
+            """.trimIndent(),
         )
         dump(
             Optionals(1, null, IntWrapper(3), null),
@@ -73,6 +115,18 @@ class TextSerializerTest {
         dump(
             Lists(listOf(1, 2), null, mutableListOf(3, 4), null),
             "Lists(list:[Int(1),Int(2)],mutableList:[Int(3),Int(4)])",
+            """
+                Lists(
+                    list : [
+                        Int(1)
+                        Int(2)
+                    ]
+                    mutableList : [
+                        Int(3)
+                        Int(4)
+                    ]
+                )
+            """.trimIndent(),
         )
         dump(
             IntWrapper(3),
@@ -97,6 +151,10 @@ class TextSerializerTest {
         dump(
             DivideByZeroException(),
             "DivideByZeroException()",
+            """
+                DivideByZeroException(
+                )
+            """.trimIndent(),
         )
     }
 

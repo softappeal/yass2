@@ -56,7 +56,7 @@ public const val TEXT_FIRST_ENCODER_ID: Int = 2
  * It reads/writes UTF-8 encoded strings.
  */
 public abstract class TextSerializer : Serializer {
-    // TODO: add skipping of white space; add multiline output
+    // TODO: add multiline output
     // TODO: add MessageSerializer and PacketSerializer
 
     private lateinit var encoders: Array<TextEncoder<*>>
@@ -117,7 +117,9 @@ public abstract class TextSerializer : Serializer {
                 while (!expectedCodePoint(TEXT_RBRACKET)) {
                     add(readWithId())
                     readNextCodePoint()
+                    skipWhitespace()
                     if (expectedCodePoint(TEXT_COMMA)) readNextCodePoint()
+                    skipWhitespace()
                 }
             }
         }
@@ -157,15 +159,19 @@ public abstract class TextSerializer : Serializer {
         }
     }
 
-    private fun TextReader.readWithId(): Any? = when {
-        expectedCodePoint(TEXT_ASTERIX) -> null
-        expectedCodePoint(TEXT_QUOTE) -> stringEncoder.read(this)
-        expectedCodePoint(TEXT_LBRACKET) -> listEncoder.read(this)
-        else -> {
-            val className = readDelimiter(TEXT_LPAREN)
-            val encoder = className2encoder[className] ?: error("missing encoder for class '${className}'")
-            readNextCodePoint()
-            if (encoder is ClassTextEncoder) readObject(encoder) else encoder.read(this)
+    private fun TextReader.readWithId(): Any? {
+        skipWhitespace()
+        return when {
+            expectedCodePoint(TEXT_ASTERIX) -> null
+            expectedCodePoint(TEXT_QUOTE) -> stringEncoder.read(this)
+            expectedCodePoint(TEXT_LBRACKET) -> listEncoder.read(this)
+            else -> {
+                val className = readDelimiter(TEXT_LPAREN)
+                val encoder = className2encoder[className] ?: error("missing encoder for class '${className}'")
+                readNextCodePoint()
+                skipWhitespace()
+                if (encoder is ClassTextEncoder) readObject(encoder) else encoder.read(this)
+            }
         }
     }
 
@@ -176,10 +182,11 @@ public abstract class TextSerializer : Serializer {
         }
 
         private fun readUntil(predicate: () -> Boolean) = buildString {
-            while (!predicate()) {
+            while (!predicate() && !isWhitespace()) {
                 addCodePoint(nextCodePoint)
                 readNextCodePoint()
             }
+            skipWhitespace()
         }
 
         internal fun readDelimiter(delimiter: Byte) = readUntil { expectedCodePoint(delimiter) }
@@ -196,17 +203,30 @@ public abstract class TextSerializer : Serializer {
             while (!expectedCodePoint(TEXT_RPAREN)) {
                 val propertyName = readDelimiter(TEXT_COLON)
                 readNextCodePoint()
+                skipWhitespace()
                 val id = encoder.property2id[propertyName]
                 check(properties.put(propertyName, if (id != null) encoders[id].read(this) else {
                     with(TextReader(this, nextCodePoint)) { readWithId() }.apply { readNextCodePoint() }
                 }) == null) { "duplicated property '$propertyName' for type '${encoder.type.simpleName}'" }
+                skipWhitespace()
                 if (expectedCodePoint(TEXT_COMMA)) readNextCodePoint()
+                skipWhitespace()
             }
             return encoder.read(this)
         }
 
         public fun getProperty(property: String): Any? {
             return properties[property]
+        }
+
+        private fun isWhitespace() =
+            expectedCodePoint(32) || // SPACE
+                expectedCodePoint(9) || // TAB
+                expectedCodePoint(10) || // LF
+                expectedCodePoint(13) // CR
+
+        internal fun skipWhitespace() {
+            while (isWhitespace()) readNextCodePoint()
         }
     }
 
