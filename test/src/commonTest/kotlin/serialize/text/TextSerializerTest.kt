@@ -39,55 +39,55 @@ class TextSerializerTest {
     fun test() {
         dump(
             GenderWrapper(Gender.Male),
-            "GenderWrapper(gender=Male)",
+            "GenderWrapper(gender:Male)",
         )
         dump(
             Poly(A(1), B(3, 4)),
-            "Poly(a=A(a=1),b=B(a=3,b=4))",
+            "Poly(a:A(a:1),b:B(a:3,b:4))",
         )
         dump(
             Poly(B(1, 2), B(3, 4)),
-            "Poly(a=B(a=1,b=2),b=B(a=3,b=4))",
+            "Poly(a:B(a:1,b:2),b:B(a:3,b:4))",
         )
         dump(
             listOf(null, 123, A(1), mutableListOf(1, 2)),
-            "[*,Int(123),A(a=1),[Int(1),Int(2)]]",
+            "[*,Int(123),A(a:1),[Int(1),Int(2)]]",
         )
         dump(
             Optionals(1, null, IntWrapper(3), null),
-            "Optionals(i=1,intWrapper=IntWrapper(i=3))",
+            "Optionals(i:1,intWrapper:IntWrapper(i:3))",
         )
         dump(
             Optionals(1, 2, IntWrapper(3), IntWrapper(4)),
-            "Optionals(i=1,iOptional=2,intWrapper=IntWrapper(i=3),intWrapperOptional=IntWrapper(i=4))",
+            "Optionals(i:1,iOptional:2,intWrapper:IntWrapper(i:3),intWrapperOptional:IntWrapper(i:4))",
         )
         dump(
             Lists(listOf(1, 2), listOf(3, 4), mutableListOf(5, 6), mutableListOf(7, 8)),
-            "Lists(list=[Int(1),Int(2)],listOptional=[Int(3),Int(4)],mutableList=[Int(5),Int(6)],mutableListOptional=[Int(7),Int(8)])",
+            "Lists(list:[Int(1),Int(2)],listOptional:[Int(3),Int(4)],mutableList:[Int(5),Int(6)],mutableListOptional:[Int(7),Int(8)])",
         )
         dump(
             Lists(listOf(1, 2), null, mutableListOf(3, 4), null),
-            "Lists(list=[Int(1),Int(2)],mutableList=[Int(3),Int(4)])",
+            "Lists(list:[Int(1),Int(2)],mutableList:[Int(3),Int(4)])",
         )
         dump(
             IntWrapper(3),
-            "IntWrapper(i=3)",
+            "IntWrapper(i:3)",
         )
         dump(
             ThrowableFake("hello", "world"),
-            "ThrowableFake(cause=\"hello\",message=\"world\")",
+            "ThrowableFake(cause:\"hello\",message:\"world\")",
         )
         dump(
             ThrowableFake(null, "m"),
-            "ThrowableFake(message=\"m\")",
+            "ThrowableFake(message:\"m\")",
         )
         dump(
             ManyPropertiesConst,
-            "ManyProperties(h=8,d=4,f=6,g=7,b=2,a=1,c=3,e=5,i=9,j=10)",
+            "ManyProperties(h:8,d:4,f:6,g:7,b:2,a:1,c:3,e:5,i:9,j:10)",
         )
         dump(
             IntException(10),
-            "IntException(i=10)",
+            "IntException(i:10)",
         )
         dump(
             DivideByZeroException(),
@@ -137,25 +137,25 @@ class TextSerializerTest {
 
     @Test
     fun properties() {
-        SERIALIZER.readString("Optionals(i=1,intWrapper=IntWrapper(i=3))") // implicit optional properties iOptional and intWrapperOptional
+        SERIALIZER.readString("Optionals(i:1,intWrapper:IntWrapper(i:3))") // implicit optional properties iOptional and intWrapperOptional
         assertNull( // optional property intWrapperOptional with id explicitly set to null
-            (SERIALIZER.readString("Optionals(i=1,intWrapper=IntWrapper(i=3),intWrapperOptional=*)") as Optionals).intWrapperOptional
+            (SERIALIZER.readString("Optionals(i:1,intWrapper:IntWrapper(i:3),intWrapperOptional:*)") as Optionals).intWrapperOptional
         )
         assertFailsMessage<IllegalStateException>("duplicated property 'i' for type 'Optionals'") {
-            SERIALIZER.readString("Optionals(i=1,intWrapper=IntWrapper(i=3),i=2)")
+            SERIALIZER.readString("Optionals(i:1,intWrapper:IntWrapper(i:3),i:2)")
         }
         println(assertFailsWith<Exception> { // wrong typ of property intWrapper
-            SERIALIZER.readString("Optionals(i=1,intWrapper=A(a=3))")
+            SERIALIZER.readString("Optionals(i:1,intWrapper:A(a:3))")
         })
         println(assertFailsWith<Exception> { // required property intWrapper set to null
-            SERIALIZER.readString("Optionals(i=1,intWrapper=*)")
+            SERIALIZER.readString("Optionals(i:1,intWrapper:*)")
         })
         println(assertFailsWith<Exception> { // missing required property intWrapper
-            SERIALIZER.readString("Optionals(i=1)")
+            SERIALIZER.readString("Optionals(i:1)")
         })
         println(assertFailsWith<Exception> { // missing required property i
-            SERIALIZER.readString("Optionals(intWrapper=IntWrapper(i=3))")
+            SERIALIZER.readString("Optionals(intWrapper:IntWrapper(i:3))")
         })
-        SERIALIZER.readString("Optionals(i=1,intWrapper=IntWrapper(i=3),ignored=*)") // NOTE: illegal properties are ignored
+        SERIALIZER.readString("Optionals(i:1,intWrapper:IntWrapper(i:3),ignored:*)") // TODO: illegal properties are ignored
     }
 }
