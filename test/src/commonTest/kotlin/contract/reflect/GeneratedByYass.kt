@@ -393,8 +393,8 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
         }
     }
 
-public fun createTextSerializer(): ch.softappeal.yass2.serialize.text.TextSerializer =
-    object : ch.softappeal.yass2.serialize.text.TextSerializer() {
+public fun createTextSerializer(multilineWrite: kotlin.Boolean): ch.softappeal.yass2.serialize.text.TextSerializer =
+    object : ch.softappeal.yass2.serialize.text.TextSerializer(multilineWrite) {
         init {
             initialize(
                 ch.softappeal.yass2.serialize.text.IntTextEncoder(),

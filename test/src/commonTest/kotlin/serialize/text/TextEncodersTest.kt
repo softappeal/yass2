@@ -11,7 +11,7 @@ class TextEncodersTest {
     @Suppress("SpellCheckingInspection")
     @Test
     fun test() {
-        val serializer = object : TextSerializer() {
+        val serializer = object : TextSerializer(false) {
             init {
                 initialize(
                     BooleanTextEncoder(),

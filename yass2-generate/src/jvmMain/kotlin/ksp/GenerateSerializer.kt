@@ -187,8 +187,8 @@ internal fun CodeWriter.generateSerializer(
         }
 
         writeLine()
-        writeNestedLine("public ${declaration.actual()}fun createTextSerializer(): ${TextSerializer::class.qualifiedName} =") {
-            writeNestedLine("object : ${TextSerializer::class.qualifiedName}() {", "}") {
+        writeNestedLine("public ${declaration.actual()}fun createTextSerializer(multilineWrite: kotlin.Boolean): ${TextSerializer::class.qualifiedName} =") {
+            writeNestedLine("object : ${TextSerializer::class.qualifiedName}(multilineWrite) {", "}") {
                 writeNestedLine("init {", "}") {
                     writeNestedLine("initialize(", ")") {
                         textEncoderClasses.forEach { type -> writeNestedLine("${type.qualifiedName}(),") }

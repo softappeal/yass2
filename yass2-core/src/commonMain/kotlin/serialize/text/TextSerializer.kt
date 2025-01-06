@@ -51,12 +51,13 @@ public const val TEXT_STRING_ENCODER_ID: Int = 0
 public const val TEXT_LIST_ENCODER_ID: Int = 1
 public const val TEXT_FIRST_ENCODER_ID: Int = 2
 
+private val Tab = ByteArray(4) { ' '.code.toByte() }
+
 /**
  * Has built-in encoders for null, [String] and [List].
  * It reads/writes UTF-8 encoded strings.
  */
-public abstract class TextSerializer : Serializer {
-    // TODO: add multiline output
+public abstract class TextSerializer(private val multilineWrite: Boolean) : Serializer {
     // TODO: add MessageSerializer and PacketSerializer
 
     private lateinit var encoders: Array<TextEncoder<*>>
@@ -105,10 +106,16 @@ public abstract class TextSerializer : Serializer {
     private val listEncoder = TextEncoder(List::class,
         { list ->
             writeByte(TEXT_LBRACKET)
-            list.forEachIndexed { index, element ->
-                if (index != 0) writeByte(TEXT_COMMA)
-                writeWithId(element)
+            writeNewLine()
+            with(nested()) {
+                list.forEachIndexed { index, element ->
+                    if (!multilineWrite && index != 0) writeByte(TEXT_COMMA)
+                    writeIndent()
+                    writeWithId(element)
+                    writeNewLine()
+                }
             }
+            writeIndent()
             writeByte(TEXT_RBRACKET)
         },
         {
@@ -125,6 +132,10 @@ public abstract class TextSerializer : Serializer {
         }
     )
 
+    private fun Writer.writeNewLine() {
+        if (multilineWrite) writeByte('\n'.code.toByte())
+    }
+
     private fun TextWriter.writeWithId(value: Any?) {
         when (value) {
             null -> writeByte(TEXT_ASTERIX)
@@ -134,28 +145,41 @@ public abstract class TextSerializer : Serializer {
                 val encoder = type2encoder[value::class] ?: error("missing type '${value::class}'")
                 writeTextBytes(encoder.type.simpleName!!)
                 writeByte(TEXT_LPAREN)
-                encoder.write(this, value)
+                if (encoder !is ClassTextEncoder) encoder.write(this, value) else {
+                    writeNewLine()
+                    with(nested()) { encoder.write(this, value) }
+                    writeIndent()
+                }
                 writeByte(TEXT_RPAREN)
             }
         }
     }
 
-    public inner class TextWriter(private val writer: Writer) : Writer by writer {
-        private var first: Boolean = true
+    public inner class TextWriter(private val writer: Writer, private val indent: Int = 0) : Writer by writer {
+        internal fun nested() = if (multilineWrite) TextWriter(this, indent + 1) else this
+
+        internal fun writeIndent() {
+            if (multilineWrite) repeat(indent) { writeBytes(Tab) }
+        }
+
+        private var firstProperty: Boolean = true
         private fun writeProperty(property: String, value: Any?, writeValue: () -> Unit) {
             if (value == null) return
-            if (first) first = false else writeByte(TEXT_COMMA)
+            if (multilineWrite || firstProperty) firstProperty = false else writeByte(TEXT_COMMA)
+            writeIndent()
             writeTextBytes(property)
             writeByte(TEXT_COLON)
+            if (multilineWrite) writeByte(' '.code.toByte())
             writeValue()
+            writeNewLine()
         }
 
         public fun writeWithId(property: String, value: Any?) {
-            writeProperty(property, value) { TextWriter(this).writeWithId(value) }
+            writeProperty(property, value) { TextWriter(this, indent).writeWithId(value) }
         }
 
         public fun writeNoId(property: String, id: Int, value: Any?) {
-            writeProperty(property, value) { encoders[id].write(TextWriter(this), value) }
+            writeProperty(property, value) { encoders[id].write(this, value) }
         }
     }
 

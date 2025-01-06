@@ -158,4 +158,4 @@ expect fun ServiceId<Echo>.service(implementation: Echo): Service
 expect fun Mixed.proxy(intercept: Interceptor, suspendIntercept: SuspendInterceptor): Mixed
 
 expect fun createBinarySerializer(): BinarySerializer
-expect fun createTextSerializer(): TextSerializer
+expect fun createTextSerializer(multilineWrite: Boolean): TextSerializer
