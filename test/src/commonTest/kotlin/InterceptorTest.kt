@@ -4,7 +4,7 @@ import ch.softappeal.yass2.contract.Calculator
 import ch.softappeal.yass2.contract.DivideByZeroException
 import ch.softappeal.yass2.contract.Echo
 import ch.softappeal.yass2.contract.Mixed
-import ch.softappeal.yass2.contract.reflect.proxy
+import ch.softappeal.yass2.contract.proxy
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
@@ -29,6 +29,7 @@ val EchoImpl = object : Echo {
     override suspend fun noParametersNoResult() {}
     override suspend fun delay(milliSeconds: Int) = delay(milliSeconds.toLong())
     override suspend fun echoMonster(a: List<*>, b: List<List<String?>?>, c: Map<out Int, String>, d: Pair<*, *>) = null
+    override suspend fun echoException(value: Exception) = value
 }
 
 private val MixedImpl = object : Mixed {
@@ -38,7 +39,7 @@ private val MixedImpl = object : Mixed {
 }
 
 val Printer: SuspendInterceptor = { function, parameters, invoke ->
-    print("${function.name} $parameters -> ")
+    print("$function $parameters -> ")
     try {
         val result = invoke()
         println(result)
@@ -55,7 +56,7 @@ suspend fun test(calculatorImpl: Calculator, echoImpl: Echo) {
     var params: List<Any?>? = null
     val testInterceptor: SuspendInterceptor = { function, parameters, invoke ->
         counter++
-        functionName = function.name
+        functionName = function
         params = parameters
         invoke()
     }
@@ -97,7 +98,7 @@ class InterceptorTest {
             value2 = 1
             invoke()
         }
-        assertSame(value, (interceptor1 + interceptor2)(Calculator::add, emptyList()) { value })
+        assertSame(value, (interceptor1 + interceptor2)("add", emptyList()) { value })
         assertNotNull(value1)
         assertNotNull(value2)
     }
@@ -119,7 +120,7 @@ class InterceptorTest {
             value2 = 1
             invoke()
         }
-        assertSame(value, (interceptor1 + interceptor2)(Calculator::add, emptyList()) { value })
+        assertSame(value, (interceptor1 + interceptor2)("add", emptyList()) { value })
         assertNotNull(value1)
         assertNotNull(value2)
     }
@@ -127,7 +128,7 @@ class InterceptorTest {
     @Test
     fun test() {
         val printer: Interceptor = { function, parameters, invoke ->
-            print("${function.name} $parameters -> ")
+            print("$function $parameters -> ")
             try {
                 val result = invoke()
                 println(result)
@@ -142,7 +143,7 @@ class InterceptorTest {
         var params: List<Any?>? = null
         val testInterceptor: Interceptor = { function, parameters, invoke ->
             counter++
-            functionName = function.name
+            functionName = function
             params = parameters
             invoke()
         }

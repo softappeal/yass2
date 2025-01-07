@@ -12,7 +12,7 @@ import ch.softappeal.yass2.contract.Lists
 import ch.softappeal.yass2.contract.Optionals
 import ch.softappeal.yass2.contract.Poly
 import ch.softappeal.yass2.contract.ThrowableFake
-import ch.softappeal.yass2.contract.reflect.createTextSerializer
+import ch.softappeal.yass2.contract.createTextSerializer
 import ch.softappeal.yass2.serialize.BytesWriter
 import ch.softappeal.yass2.serialize.binary.ManyPropertiesConst
 import kotlin.test.Test
@@ -121,6 +121,9 @@ class TextSerializerTest {
             DivideByZeroException(),
             "DivideByZeroException()",
         )
+        dumpSL(listOf<kotlin.Int>(), "[]")
+        dumpSL(listOf(null), "[*]")
+        dumpSL(listOf(null, null), "[*,*]")
     }
 
     @Test
@@ -188,6 +191,30 @@ class TextSerializerTest {
             """
                 DivideByZeroException(
                 )
+            """.trimIndent(),
+        )
+        dumpML(
+            listOf<kotlin.Int>(),
+            """
+                [
+                ]
+            """.trimIndent(),
+        )
+        dumpML(
+            listOf(null),
+            """
+                [
+                    *
+                ]
+            """.trimIndent(),
+        )
+        dumpML(
+            listOf(null, null),
+            """
+                [
+                    *
+                    *
+                ]
             """.trimIndent(),
         )
     }

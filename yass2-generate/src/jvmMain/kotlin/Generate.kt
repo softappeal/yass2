@@ -1,11 +1,12 @@
 package ch.softappeal.yass2.generate
 
-import java.nio.file.Path
+import java.nio.file.Files
+import kotlin.io.path.Path
 import kotlin.io.path.readText
-
-public fun Path.readAndFixLines(): String = readText().replace("\r\n", "\n")
-
-public const val GENERATED_BY_YASS: String = "GeneratedByYass"
+import kotlin.io.path.writeText
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
+import kotlin.test.assertEquals
 
 internal const val CSY = "ch.softappeal.yass2"
 
@@ -29,8 +30,6 @@ internal fun Appendable.appendPackage(packageName: String) {
     """.trimIndent())
 }
 
-internal enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
-
 public fun <T> List<T>.hasNoDuplicates(): Boolean = size == toSet().size
 
 public fun <T> List<T>.duplicates(): List<T> {
@@ -38,14 +37,8 @@ public fun <T> List<T>.duplicates(): List<T> {
     return filter { !seen.add(it) }
 }
 
-internal fun <T> List<T>.sortMethods(methodName: T.() -> String, interfaceName: () -> String, location: String = "") =
-    sortedBy { it.methodName() }
-        .apply {
-            val methodNames = map { it.methodName() }
-            require(methodNames.hasNoDuplicates()) {
-                "interface ${interfaceName()} has overloaded methods ${methodNames.duplicates()}$location" // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
-            }
-        }
+// fixes "kotlin.Exception /* = java.lang.Exception */"
+internal fun KType.convert() = if (classifier is KClass<*> && classifier == Exception::class) "kotlin.Exception" else toString()
 
 public class CodeWriter(private val appendable: Appendable, private val indent: String = "") {
     public fun writeLine() {
@@ -84,5 +77,32 @@ public class CodeWriter(private val appendable: Appendable, private val indent: 
     public fun writeNestedLine(start: String, end: String, write: CodeWriter.() -> Unit) {
         writeNestedLine(start, write)
         writeNestedLine(end)
+    }
+}
+
+public fun CodeWriter.generateProxies(services: List<KClass<*>>) {
+    services.forEach(::generateProxy)
+}
+
+public const val GENERATED_BY_YASS: String = "GeneratedByYass.kt"
+
+public enum class Mode { Verify, Write }
+
+public fun generate(sourceDir: String, packageName: String, mode: Mode, write: CodeWriter.() -> Unit) {
+    val builder = StringBuilder()
+    builder.appendPackage(packageName)
+    CodeWriter(builder).write()
+    val program = builder.toString()
+    val sourcePath = Path(sourceDir)
+    val file = sourcePath.resolve(GENERATED_BY_YASS)
+    when (mode) {
+        Mode.Verify -> {
+            val existingCode = file.readText().replace("\r\n", "\n")
+            assertEquals(existingCode, program)
+        }
+        Mode.Write -> {
+            Files.createDirectories(sourcePath)
+            file.writeText(program)
+        }
     }
 }

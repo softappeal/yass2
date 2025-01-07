@@ -31,7 +31,7 @@ class RemoteFlowTest {
         }
 
         val flowService = flowService(flowFactory).proxy(Printer)
-        val flowServiceId = ServiceId<FlowService<Int, Int>>(13)
+        val flowServiceId = ServiceId<FlowService<Int, Int>>("flow")
         val remoteFlowService = flowServiceId.proxy(tunnel(flowServiceId.service(flowService)))
 
         val flow1 = remoteFlowService.createFlow(1)

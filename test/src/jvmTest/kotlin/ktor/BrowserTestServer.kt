@@ -2,8 +2,7 @@
 
 package ch.softappeal.yass2.ktor
 
-import ch.softappeal.yass2.contract.MessageTransport
-import ch.softappeal.yass2.contract.PacketTransport
+import ch.softappeal.yass2.contract.ContractTransport
 import ch.softappeal.yass2.remote.coroutines.acceptorSessionFactory
 import ch.softappeal.yass2.remote.coroutines.tunnel
 import io.ktor.server.application.Application
@@ -26,13 +25,13 @@ private fun Application.theModule() {
         staticFiles("/", File("./")) // needed for debugging (sources)
         staticFiles("/", File("./test/")) // needed for debugging (sources)
         route(
-            MessageTransport,
+            ContractTransport,
             PATH,
             tunnel { "http-" + currentCoroutineContext()[CallCce]?.call?.request?.uri!! }
         )
         webSocket(PATH) {
             receiveLoop(
-                PacketTransport,
+                ContractTransport,
                 acceptorSessionFactory { "ws-" + (connection.session as WebSocketServerSession).call.request.uri }
             )
         }

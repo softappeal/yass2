@@ -25,6 +25,9 @@ public const val BINARY_FIRST_ENCODER_ID: Int = 2
 
 /**
  * Has built-in encoders for null and [List].
+ * Concrete classes must be concrete and must have a primary constructor and all its parameters must be properties.
+ * Body properties are allowed but must be of `var` kind.
+ * Inheritance is supported.
  */
 public abstract class BinarySerializer : Serializer {
     private data class EncoderId(val id: Int, val encoder: AbstractBinaryEncoder)

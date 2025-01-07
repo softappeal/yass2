@@ -1,11 +1,12 @@
 package ch.softappeal.yass2.ktor
 
-import ch.softappeal.yass2.contract.MessageTransport
-import ch.softappeal.yass2.contract.PacketTransport
+import ch.softappeal.yass2.contract.ContractTransport
+import ch.softappeal.yass2.contract.createTextSerializer
 import ch.softappeal.yass2.remote.coroutines.acceptorSessionFactory
 import ch.softappeal.yass2.remote.coroutines.initiatorSessionFactory
 import ch.softappeal.yass2.remote.coroutines.test
 import ch.softappeal.yass2.remote.coroutines.tunnel
+import ch.softappeal.yass2.serialize.Transport
 import io.ktor.network.selector.SelectorManager
 import io.ktor.network.sockets.ServerSocket
 import io.ktor.network.sockets.TcpSocketBuilder
@@ -37,6 +38,52 @@ private fun runServer(block: suspend CoroutineScope.(tcp: TcpSocketBuilder, serv
     }
 }
 
+private val TextTransport = Transport(createTextSerializer(true))
+
+private fun socketTest(transport: Transport) {
+    runServer { tcp, serverSocket ->
+        val listenerJob = launch {
+            val serverTunnel = tunnel { currentCoroutineContext()[SocketCce]!!.socket.remoteAddress }
+            while (true) {
+                val socket = serverSocket.accept()
+                launch {
+                    socket.handleRequest(transport, serverTunnel)
+                }
+            }
+        }
+        try {
+            val clientTunnel = transport.socketTunnel { tcp.connect(serverSocket.localAddress) }
+            clientTunnel.test(100)
+        } finally {
+            delay(100.milliseconds) // give some time to shut down
+            listenerJob.cancel()
+        }
+    }
+}
+
+private fun socketSessionTest(transport: Transport) { // TODO: spurious failures
+    runServer { tcp, serverSocket ->
+        val acceptorJob = launch {
+            while (true) {
+                val socket = serverSocket.accept()
+                launch {
+                    socket.receiveLoop(
+                        transport,
+                        acceptorSessionFactory { connection.socket.remoteAddress }
+                    )
+                }
+            }
+        }
+        try {
+            tcp.connect(serverSocket.localAddress)
+                .receiveLoop(transport, initiatorSessionFactory(1000))
+        } finally {
+            delay(500.milliseconds) // give some time to shut down
+            acceptorJob.cancel()
+        }
+    }
+}
+
 class SocketTest {
     @Test
     fun closeSocket() {
@@ -57,47 +104,21 @@ class SocketTest {
 
     @Test
     fun socket() {
-        runServer { tcp, serverSocket ->
-            val listenerJob = launch {
-                val serverTunnel = tunnel { currentCoroutineContext()[SocketCce]!!.socket.remoteAddress }
-                while (true) {
-                    val socket = serverSocket.accept()
-                    launch {
-                        socket.handleRequest(MessageTransport, serverTunnel)
-                    }
-                }
-            }
-            try {
-                val clientTunnel = MessageTransport.socketTunnel { tcp.connect(serverSocket.localAddress) }
-                clientTunnel.test(100)
-            } finally {
-                delay(100.milliseconds) // give some time to shut down
-                listenerJob.cancel()
-            }
-        }
+        socketTest(ContractTransport)
     }
 
     @Test
-    fun socketSession() { // TODO: spurious failures
-        runServer { tcp, serverSocket ->
-            val acceptorJob = launch {
-                while (true) {
-                    val socket = serverSocket.accept()
-                    launch {
-                        socket.receiveLoop(
-                            PacketTransport,
-                            acceptorSessionFactory { connection.socket.remoteAddress }
-                        )
-                    }
-                }
-            }
-            try {
-                tcp.connect(serverSocket.localAddress)
-                    .receiveLoop(PacketTransport, initiatorSessionFactory(1000))
-            } finally {
-                delay(500.milliseconds) // give some time to shut down
-                acceptorJob.cancel()
-            }
-        }
+    fun textSocket() {
+        socketTest(TextTransport)
+    }
+
+    @Test
+    fun socketSession() {
+        socketSessionTest(ContractTransport)
+    }
+
+    @Test
+    fun textSocketSession() {
+        socketSessionTest(TextTransport)
     }
 }

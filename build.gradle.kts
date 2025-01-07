@@ -7,7 +7,6 @@ import java.util.regex.Pattern
 
 plugins {
     alias(libs.plugins.multiplatform)
-    alias(libs.plugins.ksp)
     id("maven-publish")
     signing
 }
@@ -89,7 +88,6 @@ val generateProject = project(":yass2-generate") {
                 dependencies {
                     api(coreProject)
                     implementation(kotlin("reflect"))
-                    implementation(libraries.symbol.processing.api)
                     implementation(kotlin("test"))
                 }
             }
@@ -149,7 +147,6 @@ val ktorProject = project(":yass2-ktor") {
 }
 
 project(":test") { // this project is needed due to https://youtrack.jetbrains.com/issue/KT-35073
-    apply(plugin = "com.google.devtools.ksp")
     kotlin {
         sourceSets {
             val commonTest by getting {
@@ -169,7 +166,6 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
                 dependsOn(jvmAndNixTest)
                 dependencies {
                     implementation(generateProject)
-                    implementation(libraries.kotlin.compile.testing.ksp)
                 }
             }
             if (linuxX64Target) linuxX64Test {
@@ -182,13 +178,6 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
                 dependsOn(jvmAndNixTest)
             }
         }
-    }
-    dependencies {
-        add("kspJvmTest", generateProject)
-        if (wasmJsTarget) add("kspWasmJsTest", generateProject)
-        if (linuxX64Target) add("kspLinuxX64Test", generateProject)
-        if (linuxArm64Target) add("kspLinuxArm64Test", generateProject)
-        if (macosArm64Target) add("kspMacosArm64Test", generateProject)
     }
 }
 

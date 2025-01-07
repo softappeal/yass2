@@ -54,12 +54,13 @@ public const val TEXT_FIRST_ENCODER_ID: Int = 2
 private val Tab = ByteArray(4) { ' '.code.toByte() }
 
 /**
- * Has built-in encoders for null, [String] and [List].
  * It reads/writes UTF-8 encoded strings.
+ * Has built-in encoders for null, [String] and [List].
+ * Concrete classes must be concrete and must have a primary constructor and all its parameters must be properties.
+ * Body properties are allowed but must be of `var` kind.
+ * Inheritance is supported.
  */
 public abstract class TextSerializer(private val multilineWrite: Boolean) : Serializer {
-    // TODO: add MessageSerializer and PacketSerializer
-
     private lateinit var encoders: Array<TextEncoder<*>>
     private lateinit var type2encoder: MutableMap<KClass<*>, TextEncoder<*>>
     private lateinit var className2encoder: MutableMap<String, TextEncoder<*>>
@@ -121,6 +122,7 @@ public abstract class TextSerializer(private val multilineWrite: Boolean) : Seri
         {
             ArrayList<Any?>(10).apply {
                 readNextCodePoint()
+                skipWhitespace()
                 while (!expectedCodePoint(TEXT_RBRACKET)) {
                     add(readWithId())
                     readNextCodePoint()
@@ -136,30 +138,30 @@ public abstract class TextSerializer(private val multilineWrite: Boolean) : Seri
         if (multilineWrite) writeByte('\n'.code.toByte())
     }
 
-    private fun TextWriter.writeWithId(value: Any?) {
-        when (value) {
-            null -> writeByte(TEXT_ASTERIX)
-            is String -> stringEncoder.write(this, value)
-            is List<*> -> listEncoder.write(this, value)
-            else -> {
-                val encoder = type2encoder[value::class] ?: error("missing type '${value::class}'")
-                writeTextBytes(encoder.type.simpleName!!)
-                writeByte(TEXT_LPAREN)
-                if (encoder !is ClassTextEncoder) encoder.write(this, value) else {
-                    writeNewLine()
-                    with(nested()) { encoder.write(this, value) }
-                    writeIndent()
-                }
-                writeByte(TEXT_RPAREN)
-            }
-        }
-    }
-
     public inner class TextWriter(private val writer: Writer, private val indent: Int = 0) : Writer by writer {
         internal fun nested() = if (multilineWrite) TextWriter(this, indent + 1) else this
 
         internal fun writeIndent() {
             if (multilineWrite) repeat(indent) { writeBytes(Tab) }
+        }
+
+        internal fun writeWithId(value: Any?) {
+            when (value) {
+                null -> writeByte(TEXT_ASTERIX)
+                is String -> stringEncoder.write(this, value)
+                is List<*> -> listEncoder.write(this, value)
+                else -> {
+                    val encoder = type2encoder[value::class] ?: error("missing type '${value::class}'")
+                    writeTextBytes(encoder.type.simpleName!!)
+                    writeByte(TEXT_LPAREN)
+                    if (encoder !is ClassTextEncoder) encoder.write(this, value) else {
+                        writeNewLine()
+                        with(nested()) { encoder.write(this, value) }
+                        writeIndent()
+                    }
+                    writeByte(TEXT_RPAREN)
+                }
+            }
         }
 
         private var firstProperty: Boolean = true
@@ -183,26 +185,21 @@ public abstract class TextSerializer(private val multilineWrite: Boolean) : Seri
         }
     }
 
-    private fun TextReader.readWithId(): Any? {
-        skipWhitespace()
-        return when {
-            expectedCodePoint(TEXT_ASTERIX) -> null
-            expectedCodePoint(TEXT_QUOTE) -> stringEncoder.read(this)
-            expectedCodePoint(TEXT_LBRACKET) -> listEncoder.read(this)
-            else -> {
-                val className = readDelimiter(TEXT_LPAREN)
-                val encoder = className2encoder[className] ?: error("missing encoder for class '${className}'")
-                readNextCodePoint()
-                skipWhitespace()
-                if (encoder is ClassTextEncoder) readObject(encoder) else encoder.read(this)
-            }
-        }
-    }
-
     public inner class TextReader(private val reader: Reader, internal var nextCodePoint: Int) : Reader by reader {
         internal fun expectedCodePoint(codePoint: Byte) = nextCodePoint == codePoint.toInt()
+
         internal fun readNextCodePoint() {
             nextCodePoint = readCodePoint()
+        }
+
+        private fun isWhitespace() =
+            expectedCodePoint(32) || // SPACE
+                expectedCodePoint(9) || // TAB
+                expectedCodePoint(10) || // LF
+                expectedCodePoint(13) // CR
+
+        internal fun skipWhitespace() {
+            while (isWhitespace()) readNextCodePoint()
         }
 
         private fun readUntil(predicate: () -> Boolean) = buildString {
@@ -213,16 +210,32 @@ public abstract class TextSerializer(private val multilineWrite: Boolean) : Seri
             skipWhitespace()
         }
 
-        internal fun readDelimiter(delimiter: Byte) = readUntil { expectedCodePoint(delimiter) }
+        private fun readDelimiter(delimiter: Byte) = readUntil { expectedCodePoint(delimiter) }
 
         /**
          * Reads until [TEXT_RPAREN] or [TEXT_COMMA].
          */
         public fun readTextBytes(): String = readUntil { expectedCodePoint(TEXT_RPAREN) || expectedCodePoint(TEXT_COMMA) }
 
+        internal fun readWithId(): Any? {
+            skipWhitespace()
+            return when {
+                expectedCodePoint(TEXT_ASTERIX) -> null
+                expectedCodePoint(TEXT_QUOTE) -> stringEncoder.read(this)
+                expectedCodePoint(TEXT_LBRACKET) -> listEncoder.read(this)
+                else -> {
+                    val className = readDelimiter(TEXT_LPAREN)
+                    val encoder = className2encoder[className] ?: error("missing encoder for class '${className}'")
+                    readNextCodePoint()
+                    skipWhitespace()
+                    if (encoder is ClassTextEncoder) readObject(encoder) else encoder.read(this)
+                }
+            }
+        }
+
         private lateinit var properties: MutableMap<String, Any?>
 
-        internal fun readObject(encoder: ClassTextEncoder<*>): Any {
+        private fun readObject(encoder: ClassTextEncoder<*>): Any {
             properties = mutableMapOf()
             while (!expectedCodePoint(TEXT_RPAREN)) {
                 val propertyName = readDelimiter(TEXT_COLON)
@@ -241,16 +254,6 @@ public abstract class TextSerializer(private val multilineWrite: Boolean) : Seri
 
         public fun getProperty(property: String): Any? {
             return properties[property]
-        }
-
-        private fun isWhitespace() =
-            expectedCodePoint(32) || // SPACE
-                expectedCodePoint(9) || // TAB
-                expectedCodePoint(10) || // LF
-                expectedCodePoint(13) // CR
-
-        internal fun skipWhitespace() {
-            while (isWhitespace()) readNextCodePoint()
         }
     }
 

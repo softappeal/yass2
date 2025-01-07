@@ -1,30 +1,26 @@
 package ch.softappeal.yass2.tutorial
 
+import ch.softappeal.yass2.remote.ExceptionReply
+import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.ServiceId
-import ch.softappeal.yass2.remote.binaryMessageSerializer
+import ch.softappeal.yass2.remote.ValueReply
 import ch.softappeal.yass2.remote.coroutines.MustBeImplementedByAcceptor
 import ch.softappeal.yass2.remote.coroutines.MustBeImplementedByInitiator
-import ch.softappeal.yass2.remote.coroutines.binaryPacketSerializer
-import ch.softappeal.yass2.serialize.GenerateSerializer
+import ch.softappeal.yass2.remote.coroutines.Packet
 import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Transport
-import ch.softappeal.yass2.serialize.binary.BinaryEncoder
-import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
-import ch.softappeal.yass2.serialize.binary.StringBinaryEncoder
-import ch.softappeal.yass2.serialize.binary.readBinaryLong
-import ch.softappeal.yass2.serialize.binary.writeBinaryLong
+import ch.softappeal.yass2.serialize.text.IntTextEncoder
+import ch.softappeal.yass2.serialize.text.TextEncoder
+import ch.softappeal.yass2.serialize.text.writeTextBytes
 
 /**
- * The base types Boolean, Byte, Int, Long, Double, String and ByteArray are supported.
- * Other own base types like [MyDate] could be added.
+ * Shows how to implement an own base type.
  * In contrast to regular classes, own base types could implement a more efficient serializing.
  */
-public class MyDate(public val currentTimeMillis: Long)
-
-// Shows how to implement an own base type encoder.
-internal class MyDateEncoder : BinaryEncoder<MyDate>(MyDate::class,
-    { value -> writeBinaryLong(value.currentTimeMillis) },
-    { MyDate(readBinaryLong()) }
+public data class MyDate(public val currentTimeMillis: Long)
+internal class MyDateEncoder : TextEncoder<MyDate>(MyDate::class,
+    { value -> writeTextBytes(value.currentTimeMillis.toString()) },
+    { MyDate(readTextBytes().toLong()) }
 )
 
 /**
@@ -84,32 +80,31 @@ public interface NewsListener {
     public suspend fun notify(news: String)
 }
 
+internal val Services = listOf(Calculator::class, NewsListener::class)
+
 @MustBeImplementedByAcceptor
-public val CalculatorId: ServiceId<Calculator> = ServiceId(1)
+public val CalculatorId: ServiceId<Calculator> = ServiceId("calc")
 
 @MustBeImplementedByInitiator
-public val NewsListenerId: ServiceId<NewsListener> = ServiceId(2)
+public val NewsListenerId: ServiceId<NewsListener> = ServiceId("news")
 
-@GenerateSerializer(
-    concreteClasses = [
-        Gender::class,
-        Address::class,
-        Person::class,
-        DivideByZeroException::class,
-        SubClass::class,
-    ],
-    binaryEncoderClasses = [
-        // Define all the base encoders needed by the contract (including own base types).
-        IntBinaryEncoder::class,
-        StringBinaryEncoder::class,
-        MyDateEncoder::class,
-    ],
-    textEncoderClasses = [],
+internal val ConcreteClasses = listOf(
+    Gender::class,
+    Address::class,
+    Person::class,
+    DivideByZeroException::class,
+    SubClass::class,
+    Request::class, ValueReply::class, ExceptionReply::class, // needed by ch.softappeal.yass2.remote (also needs String)
+    Packet::class, // needed by ch.softappeal.yass2.remote.coroutines (also needs Int)
 )
-public val ContractSerializer: Serializer = createBinarySerializer()
 
-public val MessageSerializer: Serializer = binaryMessageSerializer(ContractSerializer)
-public val PacketSerializer: Serializer = binaryPacketSerializer(MessageSerializer)
+// Define all the additional base encoders needed by the contract (including own base types).
+internal val EncoderClasses = listOf(
+    // String is built-in
+    IntTextEncoder::class,
+    MyDateEncoder::class,
+)
 
-public val MessageTransport: Transport = Transport(MessageSerializer)
-public val PacketTransport: Transport = Transport(PacketSerializer)
+public val TransportSerializer: Serializer = createTextSerializer(true)
+
+public val ContractTransport: Transport = Transport(TransportSerializer)

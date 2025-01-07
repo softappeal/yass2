@@ -1,10 +1,5 @@
-@file:Suppress("DuplicatedCode")
+package ch.softappeal.yass2.generate
 
-package ch.softappeal.yass2.generate.reflect
-
-import ch.softappeal.yass2.generate.CSY
-import ch.softappeal.yass2.generate.CodeWriter
-import ch.softappeal.yass2.generate.sortMethods
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.Service
 import ch.softappeal.yass2.remote.ServiceId
@@ -19,7 +14,7 @@ private fun KFunction<*>.hasResult() = returnType.classifier != Unit::class
 private fun CodeWriter.writeSignature(function: KFunction<*>) {
     writeNestedLine("override ${if (function.isSuspend) "suspend " else ""}fun ${function.name}(") {
         function.valueParameters.forEachIndexed { parameterIndex, parameter ->
-            writeNestedLine("p${parameterIndex + 1}: ${parameter.type},")
+            writeNestedLine("p${parameterIndex + 1}: ${parameter.type.convert()},")
         }
     }
     writeNested(")")
@@ -36,7 +31,13 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
 
     val functions = service.memberFunctions
         .filter { it.javaMethod!!.declaringClass != Object::class.java }
-        .sortMethods({ name }, { service.qualifiedName!! })
+        .sortedBy { it.name }
+        .apply {
+            val methodNames = map { it.name }
+            require(methodNames.hasNoDuplicates()) {
+                "interface ${service.qualifiedName} has overloaded methods ${methodNames.duplicates()}" // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
+            }
+        }
 
     writeLine()
     writeNestedLine("public fun${service.types} ${service.withTypes}.proxy(") {
@@ -48,14 +49,14 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
             if (functionIndex != 0) writeLine()
             val hasResult = function.hasResult()
             writeSignature(function)
-            if (hasResult) write(": ${function.returnType}")
+            if (hasResult) write(": ${function.returnType.convert()}")
             writeLine(" {") {
-                writeNestedLine("${if (hasResult) "return " else ""}${if (function.isSuspend) "suspendIntercept" else "intercept"}(${service.withTypes}::${function.name}, listOf(${function.parameters()})) {") {
+                writeNestedLine("${if (hasResult) "return " else ""}${if (function.isSuspend) "suspendIntercept" else "intercept"}(\"${function.name}\", listOf(${function.parameters()})) {") {
                     writeNestedLine("this@proxy.${function.name}(${function.parameters()})")
                 }
                 writeNested("}")
             }
-            if (hasResult) write(" as ${function.returnType}")
+            if (hasResult) write(" as ${function.returnType.convert()}")
             writeLine()
             writeNestedLine("}")
         }
@@ -74,9 +75,9 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
                 val hasResult = function.hasResult()
                 writeSignature(function)
                 writeLine(" ${if (hasResult) "=" else "{"}") {
-                    writeNestedLine("tunnel(${Request::class.qualifiedName}(id, $functionIndex, listOf(${function.parameters()})))") {
+                    writeNestedLine("tunnel(${Request::class.qualifiedName}(id, \"${function.name}\", listOf(${function.parameters()})))") {
                         writeNested(".process()")
-                        if (hasResult) write(" as ${function.returnType}") else writeLine()
+                        if (hasResult) write(" as ${function.returnType.convert()}") else writeLine()
                     }
                 }
                 if (!hasResult) writeNested("}")
@@ -90,16 +91,16 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
         writeNestedLine("implementation: ${service.withTypes},")
     }
     writeNestedLine("): ${Service::class.qualifiedName} =") {
-        writeNestedLine("${Service::class.qualifiedName}(id) { functionId, parameters ->", "}") {
-            writeNestedLine("when (functionId) {", "}") {
-                functions.forEachIndexed { functionIndex, function ->
-                    writeNestedLine("$functionIndex -> implementation.${function.name}(", ")") {
+        writeNestedLine("${Service::class.qualifiedName}(id) { function, parameters ->", "}") {
+            writeNestedLine("when (function) {", "}") {
+                functions.forEach { function ->
+                    writeNestedLine("\"${function.name}\" -> implementation.${function.name}(", ")") {
                         function.valueParameters.forEachIndexed { parameterIndex, parameter ->
-                            writeNestedLine("parameters[$parameterIndex] as ${parameter.type},")
+                            writeNestedLine("parameters[$parameterIndex] as ${parameter.type.convert()},")
                         }
                     }
                 }
-                writeNestedLine("else -> error(\"service with id ${'$'}id has no function with id ${'$'}functionId\")")
+                writeNestedLine("else -> error(\"service '${'$'}id' has no function '${'$'}function'\")")
             }
         }
     }

@@ -6,8 +6,8 @@ import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.contract.CalculatorId
 import ch.softappeal.yass2.contract.Echo
 import ch.softappeal.yass2.contract.EchoId
-import ch.softappeal.yass2.contract.reflect.proxy
-import ch.softappeal.yass2.contract.reflect.service
+import ch.softappeal.yass2.contract.proxy
+import ch.softappeal.yass2.contract.service
 import ch.softappeal.yass2.performance
 import ch.softappeal.yass2.test
 import kotlinx.coroutines.test.runTest
@@ -19,21 +19,21 @@ private val TestTunnel = tunnel(CalculatorId.service(CalculatorImpl), EchoId.ser
 
 class RemoteTest {
     @Test
-    fun duplicatedService() = assertFailsMessage<IllegalArgumentException>("duplicated service id") {
+    fun duplicatedService() = assertFailsMessage<IllegalArgumentException>("duplicated service") {
         tunnel(EchoId.service(EchoImpl), EchoId.service(EchoImpl))
     }
 
     @Test
     fun noService() = runTest {
-        assertFailsMessage<IllegalStateException>("no service with id 123") {
+        assertFailsMessage<IllegalStateException>("no service '123'") {
             CalculatorId.proxy(TestTunnel)
-            TestTunnel(Request(123, 0, listOf()))
+            TestTunnel(Request("123", "0", listOf()))
         }
     }
 
     @Test
     fun noFunction() = runTest {
-        assertFailsMessage<IllegalStateException>("service with id 1 has no function with id 4") {
+        assertFailsMessage<IllegalStateException>("service 'calc' has no function 'noParametersNoResult'") {
             ServiceId<Echo>(CalculatorId.id).proxy(tunnel(CalculatorId.service(CalculatorImpl))).noParametersNoResult()
         }
     }

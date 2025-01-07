@@ -32,7 +32,7 @@ public suspend fun showUsage() {
     fun useSerializer(serializer: Serializer) {
         println("*** useSerializer ***")
         val writer = BytesWriter(100)
-        serializer.write(writer, "hello")
+        serializer.write(writer, MyDate(123456))
         val reader = BytesReader(writer.buffer)
         val value = serializer.read(reader)
         println(value)
@@ -41,12 +41,12 @@ public suspend fun showUsage() {
     suspend fun useInterceptor() {
         println("*** useInterceptor ***")
         val calculator = CalculatorImpl.proxy { function, _, invoke ->
-            println("calling function '${function.name}'")
+            println("calling function '$function'")
             invoke()
         }
         useCalculator(calculator)
     }
-    useSerializer(ContractSerializer)
+    useSerializer(TransportSerializer)
     useInterceptor()
 }
 

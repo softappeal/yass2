@@ -5,8 +5,8 @@ import ch.softappeal.yass2.EchoImpl
 import ch.softappeal.yass2.assertSuspendFailsWith
 import ch.softappeal.yass2.contract.CalculatorId
 import ch.softappeal.yass2.contract.EchoId
-import ch.softappeal.yass2.contract.reflect.proxy
-import ch.softappeal.yass2.contract.reflect.service
+import ch.softappeal.yass2.contract.proxy
+import ch.softappeal.yass2.contract.service
 import ch.softappeal.yass2.performance
 import ch.softappeal.yass2.remote.Tunnel
 import ch.softappeal.yass2.remote.tunnel

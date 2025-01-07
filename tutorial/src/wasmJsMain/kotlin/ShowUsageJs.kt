@@ -25,11 +25,11 @@ public fun showJsUsage() {
         }.use { client ->
 
             // shows client-side unidirectional remoting with Http
-            useServices(client.tunnel(MessageTransport, "/yass"))
+            useServices(client.tunnel(ContractTransport, "/yass"))
 
             // shows client-side session based bidirectional remoting with WebSocket
             client.ws("ws://localhost:28947/yass") {
-                receiveLoop(PacketTransport, CoroutineScope(Job()).initiatorSessionFactory())
+                receiveLoop(ContractTransport, CoroutineScope(Job()).initiatorSessionFactory())
             }
 
         }

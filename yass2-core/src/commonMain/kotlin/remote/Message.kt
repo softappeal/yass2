@@ -2,7 +2,7 @@ package ch.softappeal.yass2.remote
 
 public sealed class Message
 
-public class Request(public val serviceId: Int, public val functionId: Int, public val parameters: List<Any?>) : Message()
+public class Request(public val service: String, public val function: String, public val parameters: List<Any?>) : Message()
 
 public sealed class Reply : Message() {
     public abstract fun process(): Any?

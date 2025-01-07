@@ -2,7 +2,6 @@ package ch.softappeal.yass2.serialize.binary
 
 import ch.softappeal.yass2.contract.A
 import ch.softappeal.yass2.contract.B
-import ch.softappeal.yass2.contract.ContractSerializer
 import ch.softappeal.yass2.contract.Gender
 import ch.softappeal.yass2.contract.GenderWrapper
 import ch.softappeal.yass2.contract.IntException
@@ -12,6 +11,7 @@ import ch.softappeal.yass2.contract.ManyProperties
 import ch.softappeal.yass2.contract.Optionals
 import ch.softappeal.yass2.contract.Poly
 import ch.softappeal.yass2.contract.ThrowableFake
+import ch.softappeal.yass2.contract.TransportSerializer
 import ch.softappeal.yass2.performance
 import ch.softappeal.yass2.serialize.BytesReader
 import ch.softappeal.yass2.serialize.BytesWriter
@@ -41,7 +41,7 @@ fun <T> Serializer.copy(value: T, check: BytesWriter.() -> Unit = {}): T {
     }
 }
 
-private fun <T> checkedCopy(value: T, vararg bytes: Int): T = ContractSerializer.copy(value) {
+private fun <T> checkedCopy(value: T, vararg bytes: Int): T = TransportSerializer.copy(value) {
     assertEquals(current, bytes.size, "actual: ${buffer.copyOf(current).toList()}")
     checkTail(*bytes)
 }
@@ -251,7 +251,7 @@ class BinarySerializerTest {
 
     @Test
     fun throwableFake() {
-        val throwableFake = ContractSerializer.copy(ThrowableFake("cause", "message"))
+        val throwableFake = TransportSerializer.copy(ThrowableFake("cause", "message"))
         assertEquals("cause", throwableFake.cause)
         assertEquals("message", throwableFake.message)
         with(checkedCopy(
@@ -300,9 +300,9 @@ class BinarySerializerTest {
         val writerReader = WriterReader()
         performance(100_000) {
             writerReader.current = 0
-            ContractSerializer.write(writerReader, ManyPropertiesConst)
+            TransportSerializer.write(writerReader, ManyPropertiesConst)
             writerReader.current = 0
-            (ContractSerializer.read(writerReader) as ManyProperties).assertManyProperties()
+            (TransportSerializer.read(writerReader) as ManyProperties).assertManyProperties()
         }
     }
 
@@ -322,7 +322,7 @@ class BinarySerializerTest {
     @Test
     fun missingType() {
         val message = assertFailsWith<IllegalStateException> {
-            ContractSerializer.write(BytesWriter(1000), true)
+            TransportSerializer.write(BytesWriter(1000), true)
         }.message!!
         assertTrue(message.startsWith("missing type 'class "))
         assertTrue(message.endsWith("Boolean'"))

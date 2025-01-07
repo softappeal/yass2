@@ -1,7 +1,6 @@
 package ch.softappeal.yass2.js
 
-import ch.softappeal.yass2.contract.MessageTransport
-import ch.softappeal.yass2.contract.PacketTransport
+import ch.softappeal.yass2.contract.ContractTransport
 import ch.softappeal.yass2.ktor.receiveLoop
 import ch.softappeal.yass2.ktor.tunnel
 import ch.softappeal.yass2.remote.coroutines.initiatorSessionFactory
@@ -24,9 +23,9 @@ fun remoteTest() {
         HttpClient(JsClient()) {
             install(Plugin)
         }.use { client ->
-            client.tunnel(MessageTransport, HttpUrl).test(1000)
+            client.tunnel(ContractTransport, HttpUrl).test(1000)
             client.ws(WsUrl) {
-                receiveLoop(PacketTransport, initiatorSessionFactory(1000))
+                receiveLoop(ContractTransport, initiatorSessionFactory(1000))
             }
         }
     }

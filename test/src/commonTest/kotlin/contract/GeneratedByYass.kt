@@ -12,7 +12,7 @@
     "UNUSED_ANONYMOUS_PARAMETER",
 )
 
-package ch.softappeal.yass2.contract.reflect
+package ch.softappeal.yass2.contract
 
 public fun ch.softappeal.yass2.contract.Calculator.proxy(
     suspendIntercept: ch.softappeal.yass2.SuspendInterceptor,
@@ -21,7 +21,7 @@ public fun ch.softappeal.yass2.contract.Calculator.proxy(
         p1: kotlin.Int,
         p2: kotlin.Int,
     ): kotlin.Int {
-        return suspendIntercept(ch.softappeal.yass2.contract.Calculator::add, listOf(p1, p2)) {
+        return suspendIntercept("add", listOf(p1, p2)) {
             this@proxy.add(p1, p2)
         } as kotlin.Int
     }
@@ -30,7 +30,7 @@ public fun ch.softappeal.yass2.contract.Calculator.proxy(
         p1: kotlin.Int,
         p2: kotlin.Int,
     ): kotlin.Int {
-        return suspendIntercept(ch.softappeal.yass2.contract.Calculator::divide, listOf(p1, p2)) {
+        return suspendIntercept("divide", listOf(p1, p2)) {
             this@proxy.divide(p1, p2)
         } as kotlin.Int
     }
@@ -44,31 +44,31 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Cal
             p1: kotlin.Int,
             p2: kotlin.Int,
         ) =
-            tunnel(ch.softappeal.yass2.remote.Request(id, 0, listOf(p1, p2)))
+            tunnel(ch.softappeal.yass2.remote.Request(id, "add", listOf(p1, p2)))
                 .process() as kotlin.Int
 
         override suspend fun divide(
             p1: kotlin.Int,
             p2: kotlin.Int,
         ) =
-            tunnel(ch.softappeal.yass2.remote.Request(id, 1, listOf(p1, p2)))
+            tunnel(ch.softappeal.yass2.remote.Request(id, "divide", listOf(p1, p2)))
                 .process() as kotlin.Int
     }
 
 public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Calculator>.service(
     implementation: ch.softappeal.yass2.contract.Calculator,
 ): ch.softappeal.yass2.remote.Service =
-    ch.softappeal.yass2.remote.Service(id) { functionId, parameters ->
-        when (functionId) {
-            0 -> implementation.add(
+    ch.softappeal.yass2.remote.Service(id) { function, parameters ->
+        when (function) {
+            "add" -> implementation.add(
                 parameters[0] as kotlin.Int,
                 parameters[1] as kotlin.Int,
             )
-            1 -> implementation.divide(
+            "divide" -> implementation.divide(
                 parameters[0] as kotlin.Int,
                 parameters[1] as kotlin.Int,
             )
-            else -> error("service with id $id has no function with id $functionId")
+            else -> error("service '$id' has no function '$function'")
         }
     }
 
@@ -78,7 +78,7 @@ public fun ch.softappeal.yass2.contract.Echo.proxy(
     override suspend fun delay(
         p1: kotlin.Int,
     ) {
-        suspendIntercept(ch.softappeal.yass2.contract.Echo::delay, listOf(p1)) {
+        suspendIntercept("delay", listOf(p1)) {
             this@proxy.delay(p1)
         }
     }
@@ -86,9 +86,17 @@ public fun ch.softappeal.yass2.contract.Echo.proxy(
     override suspend fun echo(
         p1: kotlin.Any?,
     ): kotlin.Any? {
-        return suspendIntercept(ch.softappeal.yass2.contract.Echo::echo, listOf(p1)) {
+        return suspendIntercept("echo", listOf(p1)) {
             this@proxy.echo(p1)
         } as kotlin.Any?
+    }
+
+    override suspend fun echoException(
+        p1: kotlin.Exception,
+    ): kotlin.Exception {
+        return suspendIntercept("echoException", listOf(p1)) {
+            this@proxy.echoException(p1)
+        } as kotlin.Exception
     }
 
     override suspend fun echoMonster(
@@ -97,7 +105,7 @@ public fun ch.softappeal.yass2.contract.Echo.proxy(
         p3: kotlin.collections.Map<out kotlin.Int, kotlin.String>,
         p4: kotlin.Pair<*, *>,
     ): kotlin.collections.Map<in kotlin.Int, kotlin.String>? {
-        return suspendIntercept(ch.softappeal.yass2.contract.Echo::echoMonster, listOf(p1, p2, p3, p4)) {
+        return suspendIntercept("echoMonster", listOf(p1, p2, p3, p4)) {
             this@proxy.echoMonster(p1, p2, p3, p4)
         } as kotlin.collections.Map<in kotlin.Int, kotlin.String>?
     }
@@ -105,14 +113,14 @@ public fun ch.softappeal.yass2.contract.Echo.proxy(
     override suspend fun echoRequired(
         p1: kotlin.Any,
     ): kotlin.Any {
-        return suspendIntercept(ch.softappeal.yass2.contract.Echo::echoRequired, listOf(p1)) {
+        return suspendIntercept("echoRequired", listOf(p1)) {
             this@proxy.echoRequired(p1)
         } as kotlin.Any
     }
 
     override suspend fun noParametersNoResult(
     ) {
-        suspendIntercept(ch.softappeal.yass2.contract.Echo::noParametersNoResult, listOf()) {
+        suspendIntercept("noParametersNoResult", listOf()) {
             this@proxy.noParametersNoResult()
         }
     }
@@ -125,15 +133,21 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Ech
         override suspend fun delay(
             p1: kotlin.Int,
         ) {
-            tunnel(ch.softappeal.yass2.remote.Request(id, 0, listOf(p1)))
+            tunnel(ch.softappeal.yass2.remote.Request(id, "delay", listOf(p1)))
                 .process()
         }
 
         override suspend fun echo(
             p1: kotlin.Any?,
         ) =
-            tunnel(ch.softappeal.yass2.remote.Request(id, 1, listOf(p1)))
+            tunnel(ch.softappeal.yass2.remote.Request(id, "echo", listOf(p1)))
                 .process() as kotlin.Any?
+
+        override suspend fun echoException(
+            p1: kotlin.Exception,
+        ) =
+            tunnel(ch.softappeal.yass2.remote.Request(id, "echoException", listOf(p1)))
+                .process() as kotlin.Exception
 
         override suspend fun echoMonster(
             p1: kotlin.collections.List<*>,
@@ -141,18 +155,18 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Ech
             p3: kotlin.collections.Map<out kotlin.Int, kotlin.String>,
             p4: kotlin.Pair<*, *>,
         ) =
-            tunnel(ch.softappeal.yass2.remote.Request(id, 2, listOf(p1, p2, p3, p4)))
+            tunnel(ch.softappeal.yass2.remote.Request(id, "echoMonster", listOf(p1, p2, p3, p4)))
                 .process() as kotlin.collections.Map<in kotlin.Int, kotlin.String>?
 
         override suspend fun echoRequired(
             p1: kotlin.Any,
         ) =
-            tunnel(ch.softappeal.yass2.remote.Request(id, 3, listOf(p1)))
+            tunnel(ch.softappeal.yass2.remote.Request(id, "echoRequired", listOf(p1)))
                 .process() as kotlin.Any
 
         override suspend fun noParametersNoResult(
         ) {
-            tunnel(ch.softappeal.yass2.remote.Request(id, 4, listOf()))
+            tunnel(ch.softappeal.yass2.remote.Request(id, "noParametersNoResult", listOf()))
                 .process()
         }
     }
@@ -160,26 +174,29 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Ech
 public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Echo>.service(
     implementation: ch.softappeal.yass2.contract.Echo,
 ): ch.softappeal.yass2.remote.Service =
-    ch.softappeal.yass2.remote.Service(id) { functionId, parameters ->
-        when (functionId) {
-            0 -> implementation.delay(
+    ch.softappeal.yass2.remote.Service(id) { function, parameters ->
+        when (function) {
+            "delay" -> implementation.delay(
                 parameters[0] as kotlin.Int,
             )
-            1 -> implementation.echo(
+            "echo" -> implementation.echo(
                 parameters[0] as kotlin.Any?,
             )
-            2 -> implementation.echoMonster(
+            "echoException" -> implementation.echoException(
+                parameters[0] as kotlin.Exception,
+            )
+            "echoMonster" -> implementation.echoMonster(
                 parameters[0] as kotlin.collections.List<*>,
                 parameters[1] as kotlin.collections.List<kotlin.collections.List<kotlin.String?>?>,
                 parameters[2] as kotlin.collections.Map<out kotlin.Int, kotlin.String>,
                 parameters[3] as kotlin.Pair<*, *>,
             )
-            3 -> implementation.echoRequired(
+            "echoRequired" -> implementation.echoRequired(
                 parameters[0] as kotlin.Any,
             )
-            4 -> implementation.noParametersNoResult(
+            "noParametersNoResult" -> implementation.noParametersNoResult(
             )
-            else -> error("service with id $id has no function with id $functionId")
+            else -> error("service '$id' has no function '$function'")
         }
     }
 
@@ -191,14 +208,14 @@ public fun ch.softappeal.yass2.contract.Mixed.proxy(
         p1: kotlin.Int,
         p2: kotlin.Int,
     ): kotlin.Int {
-        return intercept(ch.softappeal.yass2.contract.Mixed::divide, listOf(p1, p2)) {
+        return intercept("divide", listOf(p1, p2)) {
             this@proxy.divide(p1, p2)
         } as kotlin.Int
     }
 
     override fun noParametersNoResult(
     ) {
-        intercept(ch.softappeal.yass2.contract.Mixed::noParametersNoResult, listOf()) {
+        intercept("noParametersNoResult", listOf()) {
             this@proxy.noParametersNoResult()
         }
     }
@@ -207,7 +224,7 @@ public fun ch.softappeal.yass2.contract.Mixed.proxy(
         p1: kotlin.Int,
         p2: kotlin.Int,
     ): kotlin.Int {
-        return suspendIntercept(ch.softappeal.yass2.contract.Mixed::suspendDivide, listOf(p1, p2)) {
+        return suspendIntercept("suspendDivide", listOf(p1, p2)) {
             this@proxy.suspendDivide(p1, p2)
         } as kotlin.Int
     }
@@ -385,6 +402,60 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                     {
                         val i = ch.softappeal.yass2.contract.GenderWrapper(
                             readNoIdRequired(5) as ch.softappeal.yass2.contract.Gender,
+                        )
+                        i
+                    }
+                ),
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(
+                    ch.softappeal.yass2.remote.Request::class,
+                    { i ->
+                        writeNoIdRequired(3, i.service)
+                        writeNoIdRequired(3, i.function)
+                        writeNoIdRequired(1, i.parameters)
+                    },
+                    {
+                        val i = ch.softappeal.yass2.remote.Request(
+                            readNoIdRequired(3) as kotlin.String,
+                            readNoIdRequired(3) as kotlin.String,
+                            readNoIdRequired(1) as kotlin.collections.List<kotlin.Any?>,
+                        )
+                        i
+                    }
+                ),
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(
+                    ch.softappeal.yass2.remote.ValueReply::class,
+                    { i ->
+                        writeWithId(i.value)
+                    },
+                    {
+                        val i = ch.softappeal.yass2.remote.ValueReply(
+                            readWithId() as kotlin.Any?,
+                        )
+                        i
+                    }
+                ),
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(
+                    ch.softappeal.yass2.remote.ExceptionReply::class,
+                    { i ->
+                        writeWithId(i.exception)
+                    },
+                    {
+                        val i = ch.softappeal.yass2.remote.ExceptionReply(
+                            readWithId() as kotlin.Exception,
+                        )
+                        i
+                    }
+                ),
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(
+                    ch.softappeal.yass2.remote.coroutines.Packet::class,
+                    { i ->
+                        writeNoIdRequired(2, i.requestNumber)
+                        writeWithId(i.message)
+                    },
+                    {
+                        val i = ch.softappeal.yass2.remote.coroutines.Packet(
+                            readNoIdRequired(2) as kotlin.Int,
+                            readWithId() as ch.softappeal.yass2.remote.Message,
                         )
                         i
                     }
@@ -586,6 +657,61 @@ public fun createTextSerializer(multilineWrite: kotlin.Boolean): ch.softappeal.y
                         i
                     },
                     "gender" to 4,
+                ),
+                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
+                    ch.softappeal.yass2.remote.Request::class,
+                    { i ->
+                        writeNoId("service", 0, i.service)
+                        writeNoId("function", 0, i.function)
+                        writeNoId("parameters", 1, i.parameters)
+                    },
+                    {
+                        val i = ch.softappeal.yass2.remote.Request(
+                            getProperty("service") as kotlin.String,
+                            getProperty("function") as kotlin.String,
+                            getProperty("parameters") as kotlin.collections.List<kotlin.Any?>,
+                        )
+                        i
+                    },
+                ),
+                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
+                    ch.softappeal.yass2.remote.ValueReply::class,
+                    { i ->
+                        writeWithId("value", i.value)
+                    },
+                    {
+                        val i = ch.softappeal.yass2.remote.ValueReply(
+                            getProperty("value") as kotlin.Any?,
+                        )
+                        i
+                    },
+                ),
+                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
+                    ch.softappeal.yass2.remote.ExceptionReply::class,
+                    { i ->
+                        writeWithId("exception", i.exception)
+                    },
+                    {
+                        val i = ch.softappeal.yass2.remote.ExceptionReply(
+                            getProperty("exception") as kotlin.Exception,
+                        )
+                        i
+                    },
+                ),
+                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
+                    ch.softappeal.yass2.remote.coroutines.Packet::class,
+                    { i ->
+                        writeNoId("requestNumber", 2, i.requestNumber)
+                        writeWithId("message", i.message)
+                    },
+                    {
+                        val i = ch.softappeal.yass2.remote.coroutines.Packet(
+                            getProperty("requestNumber") as kotlin.Int,
+                            getProperty("message") as ch.softappeal.yass2.remote.Message,
+                        )
+                        i
+                    },
+                    "requestNumber" to 2,
                 ),
             )
         }

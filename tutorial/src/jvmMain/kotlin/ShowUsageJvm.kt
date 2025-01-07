@@ -30,12 +30,12 @@ private fun Application.theModule() {
         staticFiles("/", File("./tutorial/")) // needed for debugging (sources)
 
         // shows server-side unidirectional remoting with Http
-        route(MessageTransport, PATH, tunnel(
+        route(ContractTransport, PATH, tunnel(
             CalculatorId.service(CalculatorImpl),
         ))
 
         // shows server-side session based bidirectional remoting with WebSocket
-        webSocket(PATH) { receiveLoop(PacketTransport, acceptorSessionFactory()) }
+        webSocket(PATH) { receiveLoop(ContractTransport, acceptorSessionFactory()) }
     }
 }
 
@@ -50,10 +50,10 @@ private suspend fun useKtorRemoting() {
             install(io.ktor.client.plugins.websocket.WebSockets)
         }.use { client ->
             // shows client-side unidirectional remoting with Http
-            useServices(client.tunnel(MessageTransport, "http://$LOCAL_HOST:$PORT$PATH"))
+            useServices(client.tunnel(ContractTransport, "http://$LOCAL_HOST:$PORT$PATH"))
 
             // shows client-side session based bidirectional remoting with WebSocket
-            client.ws("ws://$LOCAL_HOST:$PORT$PATH") { receiveLoop(PacketTransport, initiatorSessionFactory()) }
+            client.ws("ws://$LOCAL_HOST:$PORT$PATH") { receiveLoop(ContractTransport, initiatorSessionFactory()) }
         }
     } finally {
         server.stop()
