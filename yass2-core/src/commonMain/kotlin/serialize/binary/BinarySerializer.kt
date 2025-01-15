@@ -19,25 +19,33 @@ public open class BinaryEncoder<T : Any>(
     override fun read(reader: Reader) = reader.read()
 }
 
-public const val BINARY_NULL_ENCODER_ID: Int = 0
-public const val BINARY_LIST_ENCODER_ID: Int = 1
-public const val BINARY_FIRST_ENCODER_ID: Int = 2
+private data class EncoderId(val id: Int, val encoder: AbstractBinaryEncoder)
 
-/**
- * Has built-in encoders for null and [List].
- * Concrete classes must be concrete and must have a primary constructor and all its parameters must be properties.
- * Body properties are allowed but must be of `var` kind.
- * Inheritance is supported.
- */
+private val NullEncoderId = EncoderId(BinarySerializer.NULL_ENCODER_ID, object : AbstractBinaryEncoder(Unit::class) {
+    override fun write(writer: Writer, value: Any?) {}
+    override fun read(reader: Reader) = null
+})
+
+/** Has built-in encoders for null and [List]. */
 public abstract class BinarySerializer : Serializer {
-    private data class EncoderId(val id: Int, val encoder: AbstractBinaryEncoder)
+    public companion object {
+        internal const val NULL_ENCODER_ID = 0
+        public const val LIST_ENCODER_ID: Int = 1
+        public const val FIRST_ENCODER_ID: Int = 2
+    }
 
-    private val nullEncoderId = EncoderId(BINARY_NULL_ENCODER_ID, object : AbstractBinaryEncoder(Unit::class) {
-        override fun write(writer: Writer, value: Any?) {}
-        override fun read(reader: Reader) = null
-    })
+    private lateinit var encoders: Array<AbstractBinaryEncoder>
+    private lateinit var type2encoderId: MutableMap<KClass<*>, EncoderId>
 
-    private val listEncoderId = EncoderId(BINARY_LIST_ENCODER_ID, BinaryEncoder(List::class,
+    protected fun initialize(vararg binaryEncoders: BinaryEncoder<*>) {
+        encoders = (listOf(NullEncoderId.encoder, listEncoderId.encoder) + binaryEncoders).toTypedArray()
+        type2encoderId = HashMap(encoders.size)
+        encoders.forEachIndexed { id, encoder ->
+            require(type2encoderId.put(encoder.type, EncoderId(id, encoder)) == null) { "duplicated type '${encoder.type}'" }
+        }
+    }
+
+    private val listEncoderId = EncoderId(LIST_ENCODER_ID, BinaryEncoder(List::class,
         { list ->
             writeVarInt(list.size)
             for (element in list) writeWithId(element)
@@ -50,20 +58,9 @@ public abstract class BinarySerializer : Serializer {
         }
     ))
 
-    private lateinit var encoders: Array<AbstractBinaryEncoder>
-    private lateinit var type2encoderId: MutableMap<KClass<*>, EncoderId>
-
-    protected fun initialize(vararg encoders: BinaryEncoder<*>) {
-        this.encoders = (listOf(nullEncoderId.encoder, listEncoderId.encoder) + encoders).toTypedArray()
-        type2encoderId = HashMap(this.encoders.size)
-        this.encoders.forEachIndexed { id, encoder ->
-            require(type2encoderId.put(encoder.type, EncoderId(id, encoder)) == null) { "duplicated type '${encoder.type}'" }
-        }
-    }
-
     protected fun Writer.writeWithId(value: Any?) {
         val (id, encoder) = when (value) {
-            null -> nullEncoderId
+            null -> NullEncoderId
             is List<*> -> listEncoderId
             else -> type2encoderId[value::class] ?: error("missing type '${value::class}'")
         }

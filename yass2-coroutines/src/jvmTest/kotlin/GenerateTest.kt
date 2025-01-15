@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.remote.coroutines
 
-import ch.softappeal.yass2.generate.Mode
 import ch.softappeal.yass2.generate.generate
 import ch.softappeal.yass2.generate.generateProxy
 import kotlin.test.Test
@@ -11,7 +10,6 @@ class GenerateTest {
         generate(
             "src/commonMain/kotlin",
             "ch.softappeal.yass2.remote.coroutines",
-            Mode.Verify,
         ) {
             generateProxy(FlowService::class)
         }

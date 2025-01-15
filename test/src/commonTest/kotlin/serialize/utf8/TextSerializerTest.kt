@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.serialize.text
+package ch.softappeal.yass2.serialize.utf8
 
 import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.contract.A
@@ -12,17 +12,16 @@ import ch.softappeal.yass2.contract.Lists
 import ch.softappeal.yass2.contract.Optionals
 import ch.softappeal.yass2.contract.Poly
 import ch.softappeal.yass2.contract.ThrowableFake
-import ch.softappeal.yass2.contract.createTextSerializer
+import ch.softappeal.yass2.contract.createUtf8Encoders
 import ch.softappeal.yass2.serialize.BytesWriter
 import ch.softappeal.yass2.serialize.binary.ManyPropertiesConst
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-private val SERIALIZER_SL = createTextSerializer(false)
-private val SERIALIZER_ML = createTextSerializer(true)
+private val SERIALIZER_SL = TextSerializer(createUtf8Encoders(), false)
+private val SERIALIZER_ML = TextSerializer(createUtf8Encoders(), true)
 
 private fun dumpSL(value: Any?, serialized: String, vararg others: String) {
     fun write(data: Any?) {
@@ -42,7 +41,7 @@ private fun dumpML(value: Any?, serialized: String) {
 }
 
 private class Int
-private class MyIntEncoder : TextEncoder<Int>(Int::class, { }, { Int() })
+private class MyIntEncoder : Utf8Encoder<Int>(Int::class, { }, { Int() })
 
 class TextSerializerTest {
     @Test
@@ -220,13 +219,35 @@ class TextSerializerTest {
     }
 
     @Test
+    fun properties() {
+        SERIALIZER_SL.readString("Optionals(i:1,intWrapper:IntWrapper(i:3))") // implicit optional properties iOptional and intWrapperOptional
+        assertFailsMessage<IllegalStateException>("no property 'Optionals.noSuchProperty'") {
+            SERIALIZER_SL.readString("Optionals(noSuchProperty:[])")
+        }
+        assertFailsMessage<IllegalStateException>("property 'Optionals.intWrapperOptional' must not be explicitly set to null") {
+            SERIALIZER_SL.readString("Optionals(intWrapperOptional:*)")
+        }
+        assertFailsMessage<IllegalStateException>("duplicated property 'Optionals.i'") {
+            SERIALIZER_SL.readString("Optionals(i:1,i:1)")
+        }
+        println(assertFailsWith<Exception> { // missing required property intWrapper
+            SERIALIZER_SL.readString("Optionals(i:1)")
+        })
+        println(assertFailsWith<Exception> { // missing required property i
+            SERIALIZER_SL.readString("Optionals(intWrapper:IntWrapper(i:3))")
+        })
+        println(assertFailsWith<Exception> { // wrong typ of property intWrapper
+            SERIALIZER_SL.readString("Optionals(i:1,intWrapper:A(a:3))")
+        })
+        println(assertFailsWith<Exception> { // wrong typ of property intWrapper
+            SERIALIZER_SL.readString("Optionals(i:1,intWrapper:[])")
+        })
+    }
+
+    @Test
     fun duplicatedType() {
         val message = assertFailsWith<IllegalArgumentException> {
-            object : TextSerializer(false) {
-                init {
-                    initialize(IntTextEncoder(), IntTextEncoder())
-                }
-            }
+            TextSerializer(listOf(IntUtf8Encoder(), IntUtf8Encoder()), false)
         }.message!!
         assertTrue(message.startsWith("duplicated type 'class "))
         assertTrue(message.endsWith("Int'"))
@@ -235,11 +256,7 @@ class TextSerializerTest {
     @Test
     fun duplicatedClassName() {
         assertFailsMessage<IllegalArgumentException>("duplicated className 'Int'") {
-            object : TextSerializer(false) {
-                init {
-                    initialize(IntTextEncoder(), MyIntEncoder())
-                }
-            }
+            TextSerializer(listOf(IntUtf8Encoder(), MyIntEncoder()), false)
         }
     }
 
@@ -257,29 +274,5 @@ class TextSerializerTest {
         assertFailsMessage<IllegalStateException>("missing encoder for class 'X'") {
             SERIALIZER_SL.readString("X()")
         }
-    }
-
-    @Test
-    fun properties() {
-        SERIALIZER_SL.readString("Optionals(i:1,intWrapper:IntWrapper(i:3))") // implicit optional properties iOptional and intWrapperOptional
-        assertNull( // optional property intWrapperOptional with id explicitly set to null
-            (SERIALIZER_SL.readString("Optionals(i:1,intWrapper:IntWrapper(i:3),intWrapperOptional:*)") as Optionals).intWrapperOptional
-        )
-        assertFailsMessage<IllegalStateException>("duplicated property 'i' for type 'Optionals'") {
-            SERIALIZER_SL.readString("Optionals(i:1,intWrapper:IntWrapper(i:3),i:2)")
-        }
-        println(assertFailsWith<Exception> { // wrong typ of property intWrapper
-            SERIALIZER_SL.readString("Optionals(i:1,intWrapper:A(a:3))")
-        })
-        println(assertFailsWith<Exception> { // required property intWrapper set to null
-            SERIALIZER_SL.readString("Optionals(i:1,intWrapper:*)")
-        })
-        println(assertFailsWith<Exception> { // missing required property intWrapper
-            SERIALIZER_SL.readString("Optionals(i:1)")
-        })
-        println(assertFailsWith<Exception> { // missing required property i
-            SERIALIZER_SL.readString("Optionals(intWrapper:IntWrapper(i:3))")
-        })
-        SERIALIZER_SL.readString("Optionals(i:1,intWrapper:IntWrapper(i:3),ignored:*)") // TODO: illegal properties are ignored
     }
 }

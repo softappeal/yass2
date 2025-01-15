@@ -464,255 +464,266 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
         }
     }
 
-public fun createTextSerializer(multilineWrite: kotlin.Boolean): ch.softappeal.yass2.serialize.text.TextSerializer =
-    object : ch.softappeal.yass2.serialize.text.TextSerializer(multilineWrite) {
-        init {
-            initialize(
-                ch.softappeal.yass2.serialize.text.IntTextEncoder(),
-                ch.softappeal.yass2.serialize.text.ByteArrayTextEncoder(),
-                ch.softappeal.yass2.serialize.text.EnumTextEncoder(
-                    ch.softappeal.yass2.contract.Gender::class,
-                    ch.softappeal.yass2.contract.Gender::valueOf,
-                ),
-                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-                    ch.softappeal.yass2.contract.IntException::class,
-                    { i ->
-                        writeNoId("i", 2, i.i)
-                    },
-                    {
-                        val i = ch.softappeal.yass2.contract.IntException(
-                            getProperty("i") as kotlin.Int,
-                        )
-                        i
-                    },
-                    "i" to 2,
-                ),
-                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-                    ch.softappeal.yass2.contract.IntWrapper::class,
-                    { i ->
-                        writeNoId("i", 2, i.i)
-                    },
-                    {
-                        val i = ch.softappeal.yass2.contract.IntWrapper(
-                            getProperty("i") as kotlin.Int,
-                        )
-                        i
-                    },
-                    "i" to 2,
-                ),
-                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-                    ch.softappeal.yass2.contract.Optionals::class,
-                    { i ->
-                        writeNoId("i", 2, i.i)
-                        writeNoId("iOptional", 2, i.iOptional)
-                        writeWithId("intWrapper", i.intWrapper)
-                        writeWithId("intWrapperOptional", i.intWrapperOptional)
-                    },
-                    {
-                        val i = ch.softappeal.yass2.contract.Optionals(
-                            getProperty("i") as kotlin.Int,
-                            getProperty("iOptional") as kotlin.Int?,
-                            getProperty("intWrapper") as ch.softappeal.yass2.contract.IntWrapper,
-                            getProperty("intWrapperOptional") as ch.softappeal.yass2.contract.IntWrapper?,
-                        )
-                        i
-                    },
-                    "i" to 2,
-                    "iOptional" to 2,
-                ),
-                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-                    ch.softappeal.yass2.contract.Lists::class,
-                    { i ->
-                        writeNoId("list", 1, i.list)
-                        writeNoId("listOptional", 1, i.listOptional)
-                        writeNoId("mutableList", 1, i.mutableList)
-                        writeNoId("mutableListOptional", 1, i.mutableListOptional)
-                    },
-                    {
-                        val i = ch.softappeal.yass2.contract.Lists(
-                            getProperty("list") as kotlin.collections.List<kotlin.Int>,
-                            getProperty("listOptional") as kotlin.collections.List<kotlin.Int>?,
-                            getProperty("mutableList") as kotlin.collections.MutableList<kotlin.Int>,
-                            getProperty("mutableListOptional") as kotlin.collections.MutableList<kotlin.Int>?,
-                        )
-                        i
-                    },
-                ),
-                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-                    ch.softappeal.yass2.contract.A::class,
-                    { i ->
-                        writeNoId("a", 2, i.a)
-                    },
-                    {
-                        val i = ch.softappeal.yass2.contract.A(
-                            getProperty("a") as kotlin.Int,
-                        )
-                        i
-                    },
-                    "a" to 2,
-                ),
-                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-                    ch.softappeal.yass2.contract.B::class,
-                    { i ->
-                        writeNoId("a", 2, i.a)
-                        writeNoId("b", 2, i.b)
-                    },
-                    {
-                        val i = ch.softappeal.yass2.contract.B(
-                            getProperty("a") as kotlin.Int,
-                            getProperty("b") as kotlin.Int,
-                        )
-                        i
-                    },
-                    "a" to 2,
-                    "b" to 2,
-                ),
-                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-                    ch.softappeal.yass2.contract.Poly::class,
-                    { i ->
-                        writeWithId("a", i.a)
-                        writeWithId("b", i.b)
-                    },
-                    {
-                        val i = ch.softappeal.yass2.contract.Poly(
-                            getProperty("a") as ch.softappeal.yass2.contract.A,
-                            getProperty("b") as ch.softappeal.yass2.contract.B,
-                        )
-                        i
-                    },
-                ),
-                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-                    ch.softappeal.yass2.contract.ManyProperties::class,
-                    { i ->
-                        writeNoId("h", 2, i.h)
-                        writeNoId("d", 2, i.d)
-                        writeNoId("f", 2, i.f)
-                        writeNoId("g", 2, i.g)
-                        writeNoId("b", 2, i.b)
-                        writeNoId("a", 2, i.a)
-                        writeNoId("c", 2, i.c)
-                        writeNoId("e", 2, i.e)
-                        writeNoId("i", 2, i.i)
-                        writeNoId("j", 2, i.j)
-                    },
-                    {
-                        val i = ch.softappeal.yass2.contract.ManyProperties(
-                            getProperty("h") as kotlin.Int,
-                            getProperty("d") as kotlin.Int,
-                            getProperty("f") as kotlin.Int,
-                            getProperty("g") as kotlin.Int,
-                            getProperty("b") as kotlin.Int,
-                        )
-                        i.a = getProperty("a") as kotlin.Int
-                        i.c = getProperty("c") as kotlin.Int
-                        i.e = getProperty("e") as kotlin.Int
-                        i.i = getProperty("i") as kotlin.Int
-                        i.j = getProperty("j") as kotlin.Int
-                        i
-                    },
-                    "h" to 2,
-                    "d" to 2,
-                    "f" to 2,
-                    "g" to 2,
-                    "b" to 2,
-                    "a" to 2,
-                    "c" to 2,
-                    "e" to 2,
-                    "i" to 2,
-                    "j" to 2,
-                ),
-                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-                    ch.softappeal.yass2.contract.DivideByZeroException::class,
-                    { i ->
-                    },
-                    {
-                        val i = ch.softappeal.yass2.contract.DivideByZeroException(
-                        )
-                        i
-                    },
-                ),
-                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-                    ch.softappeal.yass2.contract.ThrowableFake::class,
-                    { i ->
-                        writeNoId("cause", 0, i.cause)
-                        writeNoId("message", 0, i.message)
-                    },
-                    {
-                        val i = ch.softappeal.yass2.contract.ThrowableFake(
-                            getProperty("cause") as kotlin.String?,
-                            getProperty("message") as kotlin.String,
-                        )
-                        i
-                    },
-                ),
-                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-                    ch.softappeal.yass2.contract.GenderWrapper::class,
-                    { i ->
-                        writeNoId("gender", 4, i.gender)
-                    },
-                    {
-                        val i = ch.softappeal.yass2.contract.GenderWrapper(
-                            getProperty("gender") as ch.softappeal.yass2.contract.Gender,
-                        )
-                        i
-                    },
-                    "gender" to 4,
-                ),
-                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-                    ch.softappeal.yass2.remote.Request::class,
-                    { i ->
-                        writeNoId("service", 0, i.service)
-                        writeNoId("function", 0, i.function)
-                        writeNoId("parameters", 1, i.parameters)
-                    },
-                    {
-                        val i = ch.softappeal.yass2.remote.Request(
-                            getProperty("service") as kotlin.String,
-                            getProperty("function") as kotlin.String,
-                            getProperty("parameters") as kotlin.collections.List<kotlin.Any?>,
-                        )
-                        i
-                    },
-                ),
-                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-                    ch.softappeal.yass2.remote.ValueReply::class,
-                    { i ->
-                        writeWithId("value", i.value)
-                    },
-                    {
-                        val i = ch.softappeal.yass2.remote.ValueReply(
-                            getProperty("value") as kotlin.Any?,
-                        )
-                        i
-                    },
-                ),
-                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-                    ch.softappeal.yass2.remote.ExceptionReply::class,
-                    { i ->
-                        writeWithId("exception", i.exception)
-                    },
-                    {
-                        val i = ch.softappeal.yass2.remote.ExceptionReply(
-                            getProperty("exception") as kotlin.Exception,
-                        )
-                        i
-                    },
-                ),
-                ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-                    ch.softappeal.yass2.remote.coroutines.Packet::class,
-                    { i ->
-                        writeNoId("requestNumber", 2, i.requestNumber)
-                        writeWithId("message", i.message)
-                    },
-                    {
-                        val i = ch.softappeal.yass2.remote.coroutines.Packet(
-                            getProperty("requestNumber") as kotlin.Int,
-                            getProperty("message") as ch.softappeal.yass2.remote.Message,
-                        )
-                        i
-                    },
-                    "requestNumber" to 2,
-                ),
+public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.serialize.utf8.Utf8Encoder<*>> = listOf(
+    ch.softappeal.yass2.serialize.utf8.IntUtf8Encoder(),
+    ch.softappeal.yass2.serialize.utf8.ByteArrayUtf8Encoder(),
+    ch.softappeal.yass2.serialize.utf8.EnumUtf8Encoder(
+        ch.softappeal.yass2.contract.Gender::class,
+        ch.softappeal.yass2.contract.Gender::valueOf,
+    ),
+    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+        ch.softappeal.yass2.contract.IntException::class,
+        { i ->
+            writeNoId("i", 2, i.i)
+        },
+        {
+            val i = ch.softappeal.yass2.contract.IntException(
+                getProperty("i") as kotlin.Int,
             )
-        }
-    }
+            i
+        },
+        "i" to 2,
+    ),
+    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+        ch.softappeal.yass2.contract.IntWrapper::class,
+        { i ->
+            writeNoId("i", 2, i.i)
+        },
+        {
+            val i = ch.softappeal.yass2.contract.IntWrapper(
+                getProperty("i") as kotlin.Int,
+            )
+            i
+        },
+        "i" to 2,
+    ),
+    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+        ch.softappeal.yass2.contract.Optionals::class,
+        { i ->
+            writeNoId("i", 2, i.i)
+            writeNoId("iOptional", 2, i.iOptional)
+            writeWithId("intWrapper", i.intWrapper)
+            writeWithId("intWrapperOptional", i.intWrapperOptional)
+        },
+        {
+            val i = ch.softappeal.yass2.contract.Optionals(
+                getProperty("i") as kotlin.Int,
+                getProperty("iOptional") as kotlin.Int?,
+                getProperty("intWrapper") as ch.softappeal.yass2.contract.IntWrapper,
+                getProperty("intWrapperOptional") as ch.softappeal.yass2.contract.IntWrapper?,
+            )
+            i
+        },
+        "i" to 2,
+        "iOptional" to 2,
+        "intWrapper" to -1,
+        "intWrapperOptional" to -1,
+    ),
+    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+        ch.softappeal.yass2.contract.Lists::class,
+        { i ->
+            writeNoId("list", 1, i.list)
+            writeNoId("listOptional", 1, i.listOptional)
+            writeNoId("mutableList", 1, i.mutableList)
+            writeNoId("mutableListOptional", 1, i.mutableListOptional)
+        },
+        {
+            val i = ch.softappeal.yass2.contract.Lists(
+                getProperty("list") as kotlin.collections.List<kotlin.Int>,
+                getProperty("listOptional") as kotlin.collections.List<kotlin.Int>?,
+                getProperty("mutableList") as kotlin.collections.MutableList<kotlin.Int>,
+                getProperty("mutableListOptional") as kotlin.collections.MutableList<kotlin.Int>?,
+            )
+            i
+        },
+        "list" to -1,
+        "listOptional" to -1,
+        "mutableList" to -1,
+        "mutableListOptional" to -1,
+    ),
+    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+        ch.softappeal.yass2.contract.A::class,
+        { i ->
+            writeNoId("a", 2, i.a)
+        },
+        {
+            val i = ch.softappeal.yass2.contract.A(
+                getProperty("a") as kotlin.Int,
+            )
+            i
+        },
+        "a" to 2,
+    ),
+    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+        ch.softappeal.yass2.contract.B::class,
+        { i ->
+            writeNoId("a", 2, i.a)
+            writeNoId("b", 2, i.b)
+        },
+        {
+            val i = ch.softappeal.yass2.contract.B(
+                getProperty("a") as kotlin.Int,
+                getProperty("b") as kotlin.Int,
+            )
+            i
+        },
+        "a" to 2,
+        "b" to 2,
+    ),
+    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+        ch.softappeal.yass2.contract.Poly::class,
+        { i ->
+            writeWithId("a", i.a)
+            writeWithId("b", i.b)
+        },
+        {
+            val i = ch.softappeal.yass2.contract.Poly(
+                getProperty("a") as ch.softappeal.yass2.contract.A,
+                getProperty("b") as ch.softappeal.yass2.contract.B,
+            )
+            i
+        },
+        "a" to -1,
+        "b" to -1,
+    ),
+    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+        ch.softappeal.yass2.contract.ManyProperties::class,
+        { i ->
+            writeNoId("h", 2, i.h)
+            writeNoId("d", 2, i.d)
+            writeNoId("f", 2, i.f)
+            writeNoId("g", 2, i.g)
+            writeNoId("b", 2, i.b)
+            writeNoId("a", 2, i.a)
+            writeNoId("c", 2, i.c)
+            writeNoId("e", 2, i.e)
+            writeNoId("i", 2, i.i)
+            writeNoId("j", 2, i.j)
+        },
+        {
+            val i = ch.softappeal.yass2.contract.ManyProperties(
+                getProperty("h") as kotlin.Int,
+                getProperty("d") as kotlin.Int,
+                getProperty("f") as kotlin.Int,
+                getProperty("g") as kotlin.Int,
+                getProperty("b") as kotlin.Int,
+            )
+            i.a = getProperty("a") as kotlin.Int
+            i.c = getProperty("c") as kotlin.Int
+            i.e = getProperty("e") as kotlin.Int
+            i.i = getProperty("i") as kotlin.Int
+            i.j = getProperty("j") as kotlin.Int
+            i
+        },
+        "h" to 2,
+        "d" to 2,
+        "f" to 2,
+        "g" to 2,
+        "b" to 2,
+        "a" to 2,
+        "c" to 2,
+        "e" to 2,
+        "i" to 2,
+        "j" to 2,
+    ),
+    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+        ch.softappeal.yass2.contract.DivideByZeroException::class,
+        { i ->
+        },
+        {
+            val i = ch.softappeal.yass2.contract.DivideByZeroException(
+            )
+            i
+        },
+    ),
+    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+        ch.softappeal.yass2.contract.ThrowableFake::class,
+        { i ->
+            writeNoId("cause", 0, i.cause)
+            writeNoId("message", 0, i.message)
+        },
+        {
+            val i = ch.softappeal.yass2.contract.ThrowableFake(
+                getProperty("cause") as kotlin.String?,
+                getProperty("message") as kotlin.String,
+            )
+            i
+        },
+        "cause" to -1,
+        "message" to -1,
+    ),
+    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+        ch.softappeal.yass2.contract.GenderWrapper::class,
+        { i ->
+            writeNoId("gender", 4, i.gender)
+        },
+        {
+            val i = ch.softappeal.yass2.contract.GenderWrapper(
+                getProperty("gender") as ch.softappeal.yass2.contract.Gender,
+            )
+            i
+        },
+        "gender" to 4,
+    ),
+    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+        ch.softappeal.yass2.remote.Request::class,
+        { i ->
+            writeNoId("service", 0, i.service)
+            writeNoId("function", 0, i.function)
+            writeNoId("parameters", 1, i.parameters)
+        },
+        {
+            val i = ch.softappeal.yass2.remote.Request(
+                getProperty("service") as kotlin.String,
+                getProperty("function") as kotlin.String,
+                getProperty("parameters") as kotlin.collections.List<kotlin.Any?>,
+            )
+            i
+        },
+        "service" to -1,
+        "function" to -1,
+        "parameters" to -1,
+    ),
+    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+        ch.softappeal.yass2.remote.ValueReply::class,
+        { i ->
+            writeWithId("value", i.value)
+        },
+        {
+            val i = ch.softappeal.yass2.remote.ValueReply(
+                getProperty("value") as kotlin.Any?,
+            )
+            i
+        },
+        "value" to -1,
+    ),
+    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+        ch.softappeal.yass2.remote.ExceptionReply::class,
+        { i ->
+            writeWithId("exception", i.exception)
+        },
+        {
+            val i = ch.softappeal.yass2.remote.ExceptionReply(
+                getProperty("exception") as kotlin.Exception,
+            )
+            i
+        },
+        "exception" to -1,
+    ),
+    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+        ch.softappeal.yass2.remote.coroutines.Packet::class,
+        { i ->
+            writeNoId("requestNumber", 2, i.requestNumber)
+            writeWithId("message", i.message)
+        },
+        {
+            val i = ch.softappeal.yass2.remote.coroutines.Packet(
+                getProperty("requestNumber") as kotlin.Int,
+                getProperty("message") as ch.softappeal.yass2.remote.Message,
+            )
+            i
+        },
+        "requestNumber" to 2,
+        "message" to -1,
+    ),
+)

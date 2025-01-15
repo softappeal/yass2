@@ -1,9 +1,8 @@
 package ch.softappeal.yass2.tutorial
 
-import ch.softappeal.yass2.generate.Mode
 import ch.softappeal.yass2.generate.generate
 import ch.softappeal.yass2.generate.generateProxies
-import ch.softappeal.yass2.generate.generateTextSerializer
+import ch.softappeal.yass2.generate.generateUtf8Encoders
 import kotlin.test.Test
 
 class GenerateTest {
@@ -12,10 +11,9 @@ class GenerateTest {
         generate(
             "src/commonMain/kotlin",
             "ch.softappeal.yass2.tutorial",
-            Mode.Verify,
         ) {
             generateProxies(Services)
-            generateTextSerializer(EncoderClasses, ConcreteClasses)
+            generateUtf8Encoders(EncoderClasses, ConcreteClasses)
         }
     }
 }

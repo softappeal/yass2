@@ -9,8 +9,8 @@ import ch.softappeal.yass2.serialize.Transport
 import ch.softappeal.yass2.serialize.binary.ByteArrayBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.StringBinaryEncoder
-import ch.softappeal.yass2.serialize.text.ByteArrayTextEncoder
-import ch.softappeal.yass2.serialize.text.IntTextEncoder
+import ch.softappeal.yass2.serialize.utf8.ByteArrayUtf8Encoder
+import ch.softappeal.yass2.serialize.utf8.IntUtf8Encoder
 
 enum class Gender { Female, Male }
 
@@ -118,9 +118,9 @@ internal val BinaryEncoderClasses = listOf(
     ByteArrayBinaryEncoder::class,
 )
 
-internal val TextEncoderClasses = listOf(
-    IntTextEncoder::class,
-    ByteArrayTextEncoder::class,
+internal val Utf8EncoderClasses = listOf(
+    IntUtf8Encoder::class,
+    ByteArrayUtf8Encoder::class,
 )
 
 val TransportSerializer = createBinarySerializer()

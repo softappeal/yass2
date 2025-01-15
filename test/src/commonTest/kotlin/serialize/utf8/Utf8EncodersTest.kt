@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.serialize.text
+package ch.softappeal.yass2.serialize.utf8
 
 import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.contract.Gender
@@ -7,22 +7,21 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class TextEncodersTest {
+class Utf8EncodersTest {
     @Suppress("SpellCheckingInspection")
     @Test
     fun test() {
-        val serializer = object : TextSerializer(false) {
-            init {
-                initialize(
-                    BooleanTextEncoder(),
-                    IntTextEncoder(),
-                    LongTextEncoder(),
-                    DoubleTextEncoder(),
-                    ByteArrayTextEncoder(),
-                    EnumTextEncoder(Gender::class, Gender::valueOf),
-                )
-            }
-        }
+        val serializer = TextSerializer(
+            listOf(
+                BooleanUtf8Encoder(),
+                IntUtf8Encoder(),
+                LongUtf8Encoder(),
+                DoubleUtf8Encoder(),
+                ByteArrayUtf8Encoder(),
+                EnumUtf8Encoder(Gender::class, Gender::valueOf),
+            ),
+            false,
+        )
 
         fun test(value: Any?, result: String, hexResult: String? = null) {
             assertEquals(result, serializer.writeString(value))
@@ -50,8 +49,13 @@ class TextEncodersTest {
         test("\uD800\uDC01", "\"\uD800\uDC01\"", "22f090808122") // U+010001
         test("\uD800\uDFFF", "\"\uD800\uDFFF\"", "22f0908fbf22") // U+0103FF
         test("\uDBFF\uDFFF", "\"\uDBFF\uDFFF\"", "22f48fbfbf22") // U+10FFFF
-        test("\"a", "\"\\\"a\"")
+        test("\"a", "\"\\\"a\"", "225c226122")
         test("\\b", "\"\\\\b\"")
+        test("\ta", "\"\\ta\"", "225c746122")
+        test("\na", "\"\\na\"", "225c6e6122")
+        test("\ra", "\"\\ra\"", "225c726122")
+        println(serializer.readString("\"a\tb\""))
+        println(serializer.readString("\"c\nd\""))
         assertFailsMessage<IllegalStateException>("illegal escape with codePoint 97") { serializer.readString("\"\\ab\"") }
 
         test(listOf<Int>(), "[]")

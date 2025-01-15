@@ -88,7 +88,6 @@ val generateProject = project(":yass2-generate") {
                 dependencies {
                     api(coreProject)
                     implementation(kotlin("reflect"))
-                    implementation(kotlin("test"))
                 }
             }
         }
