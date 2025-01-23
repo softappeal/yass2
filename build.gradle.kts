@@ -81,19 +81,6 @@ allprojects {
 
 val coreProject = project(":yass2-core")
 
-val generateProject = project(":yass2-generate") {
-    kotlin {
-        sourceSets {
-            jvmMain {
-                dependencies {
-                    api(coreProject)
-                    implementation(kotlin("reflect"))
-                }
-            }
-        }
-    }
-}
-
 val coroutinesProject = project(":yass2-coroutines") {
     kotlin {
         sourceSets {
@@ -101,12 +88,6 @@ val coroutinesProject = project(":yass2-coroutines") {
                 dependencies {
                     api(coreProject)
                     api(libraries.kotlinx.coroutines.core)
-                }
-            }
-            jvmTest {
-                dependencies {
-                    implementation(generateProject)
-                    implementation(kotlin("test"))
                 }
             }
         }
@@ -140,6 +121,19 @@ val ktorProject = project(":yass2-ktor") {
             }
             if (macosArm64Target) macosArm64Main {
                 dependsOn(jvmAndNixMain)
+            }
+        }
+    }
+}
+
+val generateProject = project(":yass2-generate") {
+    kotlin {
+        sourceSets {
+            jvmMain {
+                dependencies {
+                    api(coreProject)
+                    implementation(kotlin("reflect"))
+                }
             }
         }
     }

@@ -12,15 +12,17 @@ import kotlinx.coroutines.flow.AbstractFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlin.coroutines.coroutineContext
 
-public interface FlowService<out F, I> {
-    public suspend fun create(flowId: I): Int
-    public suspend fun next(collectId: Int): F?
-    public suspend fun cancel(collectId: Int)
+interface FlowService<out F, I> {
+    suspend fun create(flowId: I): Int
+    suspend fun next(collectId: Int): F?
+    suspend fun cancel(collectId: Int)
 }
 
-public fun <F, I> FlowService<F, I>.createFlow(flowId: I): Flow<F> =
+fun <F, I> FlowService<F, I>.createFlow(flowId: I): Flow<F> =
     @OptIn(ExperimentalCoroutinesApi::class) object : AbstractFlow<F>() {
         override suspend fun collectSafely(collector: FlowCollector<F>) {
             val collectId = create(flowId)
@@ -35,9 +37,24 @@ public fun <F, I> FlowService<F, I>.createFlow(flowId: I): Flow<F> =
         }
     }
 
-public typealias FlowFactory<F, I> = (flowId: I) -> Flow<F>
+// copied from Sync
+private class AtomicInteger(private var value: Int) {
+    private val mutex = Mutex()
+    suspend fun incrementAndGet(): Int = mutex.withLock { ++value }
+}
 
-public fun <F, I> flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I> {
+// copied from Sync
+private class ThreadSafeMap<K, V>(initialCapacity: Int) {
+    private val mutex = Mutex()
+    private val map = HashMap<K, V>(initialCapacity)
+    suspend fun get(key: K): V? = mutex.withLock { map[key] }
+    suspend fun put(key: K, value: V): Unit = mutex.withLock { map[key] = value }
+    suspend fun remove(key: K): V? = mutex.withLock { map.remove(key) }
+}
+
+typealias FlowFactory<F, I> = (flowId: I) -> Flow<F>
+
+fun <F, I> flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I> {
     val nextCollectId = AtomicInteger(0)
     val collectId2channel = ThreadSafeMap<Int, Channel<Reply?>>(16)
     return object : FlowService<F, I> {

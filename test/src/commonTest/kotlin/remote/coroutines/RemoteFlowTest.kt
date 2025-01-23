@@ -3,6 +3,8 @@ package ch.softappeal.yass2.remote.coroutines
 import ch.softappeal.yass2.Printer
 import ch.softappeal.yass2.assertSuspendFailsWith
 import ch.softappeal.yass2.contract.DivideByZeroException
+import ch.softappeal.yass2.contract.proxy
+import ch.softappeal.yass2.contract.service
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.tunnel
 import kotlinx.coroutines.coroutineScope
