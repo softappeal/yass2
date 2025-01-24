@@ -28,7 +28,7 @@ import kotlin.test.assertTrue
 
 fun <T> Serializer.copy(value: T, check: BytesWriter.() -> Unit = {}): T {
     val writer = BytesWriter(1000)
-    var size: Int
+    val size: Int
     with(writer) {
         write(this, value)
         size = current

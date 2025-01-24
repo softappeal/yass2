@@ -30,7 +30,7 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
     require(service.java.isInterface) { "${service.qualifiedName} must be an interface" }
 
     val functions = service.memberFunctions
-        .filter { it.javaMethod!!.declaringClass != Object::class.java }
+        .filter { it.javaMethod!!.declaringClass != Any::class.java }
         .sortedBy { it.name }
         .apply {
             val methodNames = map { it.name }
