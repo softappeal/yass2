@@ -98,7 +98,7 @@ public fun CodeWriter.generateBinarySerializer(
 
     class BinaryProperty(property: KProperty1<out Any, *>) : Property(property) {
         var kind: PropertyKind
-        var encoderId: Int = -1
+        val encoderId: Int
 
         init {
             val type = property.returnType.classifier as KClass<*>
@@ -110,7 +110,10 @@ public fun CodeWriter.generateBinarySerializer(
                     val concreteClassIndex = concreteClasses.indexOfFirst { it == type }
                     if (concreteClassIndex >= 0 && concreteClasses.none { it.hasSuperCLass(concreteClasses[concreteClassIndex]) }) {
                         encoderId = concreteClassIndex + baseClasses.size + BinarySerializer.FIRST_ENCODER_ID
-                    } else kind = PropertyKind.WithId
+                    } else {
+                        kind = PropertyKind.WithId
+                        encoderId = 0 // not used for WithId
+                    }
                 }
             }
         }
@@ -168,12 +171,13 @@ public fun CodeWriter.generateUtf8Encoders(
             String::class -> Utf8Serializer.STRING_ENCODER_ID
             else -> {
                 val baseClassIndex = baseClasses.indexOfFirst { it == type }
-                if (baseClassIndex >= 0) baseClassIndex + Utf8Serializer.FIRST_ENCODER_ID else -1
+                if (baseClassIndex >= 0) baseClassIndex + Utf8Serializer.FIRST_ENCODER_ID else Utf8Serializer.NO_ENCODER_ID
             }
         }
 
-        fun hasId() = encoderId >= 0 && encoderId != Utf8Serializer.STRING_ENCODER_ID && encoderId != Utf8Serializer.LIST_ENCODER_ID
-        fun withId() = encoderId < 0
+        fun withId() = encoderId == Utf8Serializer.NO_ENCODER_ID
+        fun hasId() =
+            encoderId != Utf8Serializer.NO_ENCODER_ID && encoderId != Utf8Serializer.STRING_ENCODER_ID && encoderId != Utf8Serializer.LIST_ENCODER_ID
     }
 
     writeLine()
@@ -209,7 +213,7 @@ public fun CodeWriter.generateUtf8Encoders(
                     writeNestedLine("i")
                 }
                 properties.all.forEach { property ->
-                    writeNestedLine("\"${property.property.name}\" to ${if (property.hasId()) property.encoderId else -1},")
+                    writeNestedLine("\"${property.property.name}\" to ${if (property.hasId()) property.encoderId else Utf8Serializer.NO_ENCODER_ID},")
                 }
             }
         }

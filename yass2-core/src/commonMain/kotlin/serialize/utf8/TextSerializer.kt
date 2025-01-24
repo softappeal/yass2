@@ -87,7 +87,7 @@ public class TextSerializer(
                 val name = readUntil(COLON)
                 readNextCodePointAndSkipWhitespace()
                 val id = encoder.id(name)
-                val value = if (id >= 0) encoder(id).read(this) else {
+                val value = if (id != NO_ENCODER_ID) encoder(id).read(this) else {
                     with(TheReader(this, nextCodePoint)) { readWithId() }.apply { readNextCodePoint() }
                 }
                 skipWhitespace()

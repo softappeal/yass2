@@ -1,8 +1,8 @@
 package ch.softappeal.yass2.ktor
 
-import ch.softappeal.yass2.serialize.BytesReader
 import ch.softappeal.yass2.serialize.BytesWriter
 import ch.softappeal.yass2.serialize.Transport
+import ch.softappeal.yass2.serialize.readBytes
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.ByteWriteChannel
 import io.ktor.utils.io.readFully
@@ -16,10 +16,7 @@ internal suspend fun ByteWriteChannel.writeFully(writer: BytesWriter) {
 
 internal suspend fun ByteReadChannel.read(transport: Transport, length: Int): Any? {
     val buffer = transport.readBytes(length) { bytes, offset, size -> readFully(bytes, offset, offset + size) }
-    val reader = BytesReader(buffer)
-    return transport.read(reader).apply {
-        check(reader.isDrained)
-    }
+    return transport.readBytes(buffer)
 }
 
 internal suspend fun ByteWriteChannel.write(transport: Transport, value: Any?) {

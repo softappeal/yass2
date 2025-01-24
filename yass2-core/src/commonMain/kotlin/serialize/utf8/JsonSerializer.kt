@@ -146,7 +146,7 @@ public class JsonSerializer(
                 val name = readKey()
                 readNextCodePointAndSkipWhitespace()
                 val id = encoder.id(name)
-                val value = if (id < 0) with(TheReader(this, nextCodePoint)) { readWithId() } else {
+                val value = if (id == NO_ENCODER_ID) with(TheReader(this, nextCodePoint)) { readWithId() } else {
                     check(expectedCodePoint(QUOTE)) { "'${QUOTE.toInt().toChar()}' expected" }
                     readNextCodePoint()
                     encoder(id).read(this)

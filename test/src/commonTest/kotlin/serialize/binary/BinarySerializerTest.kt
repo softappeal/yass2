@@ -19,6 +19,8 @@ import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Writer
 import ch.softappeal.yass2.serialize.checkTail
+import ch.softappeal.yass2.serialize.readBytes
+import ch.softappeal.yass2.serialize.writeBytes
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -326,5 +328,13 @@ class BinarySerializerTest {
         }.message!!
         assertTrue(message.startsWith("missing type 'class "))
         assertTrue(message.endsWith("Boolean'"))
+    }
+
+    @Test
+    fun bytes() {
+        assertEquals(
+            "hello",
+            with(TransportSerializer) { readBytes(writeBytes("hello")) }
+        )
     }
 }

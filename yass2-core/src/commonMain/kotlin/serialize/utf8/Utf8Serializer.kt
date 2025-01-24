@@ -1,11 +1,11 @@
 package ch.softappeal.yass2.serialize.utf8
 
-import ch.softappeal.yass2.serialize.BytesReader
-import ch.softappeal.yass2.serialize.BytesWriter
 import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Writer
+import ch.softappeal.yass2.serialize.readBytes
 import ch.softappeal.yass2.serialize.utf8.Utf8Serializer.Utf8Writer
+import ch.softappeal.yass2.serialize.writeBytes
 import kotlin.reflect.KClass
 
 private const val S_BS = Utf8Serializer.BS.toInt().toChar().toString()
@@ -69,6 +69,7 @@ public class ClassUtf8Encoder<T : Any>(
     type: KClass<T>,
     write: Utf8Writer.(value: T) -> Unit,
     read: Utf8Reader.() -> T,
+    /** see [Utf8Serializer.NO_ENCODER_ID] */
     vararg propertyId: Pair<String, Int>,
 ) : Utf8Encoder<T>(type, write, read) {
     private val property2id = propertyId.toMap()
@@ -189,6 +190,8 @@ public abstract class Utf8Serializer(
     )
 
     public companion object {
+        public const val NO_ENCODER_ID: Int = -1
+
         public const val QUOTE: Byte = '"'.code.toByte()
         public const val LBRACKET: Byte = '['.code.toByte()
         public const val COMMA: Byte = ','.code.toByte()
@@ -224,12 +227,5 @@ public abstract class Utf8Serializer(
         className2encoder[className] ?: error("missing encoder for class '$className'")
 }
 
-public fun Utf8Serializer.writeString(value: Any?): String = with(BytesWriter(1000)) {
-    write(this, value)
-    buffer.decodeToString(0, current, throwOnInvalidSequence = true)
-}
-
-public fun Utf8Serializer.readString(string: String): Any? =
-    with(BytesReader(string.encodeToByteArray(throwOnInvalidSequence = true))) {
-        read(this).apply { check(isDrained) }
-    }
+public fun Utf8Serializer.writeString(value: Any?): String = writeBytes(value).decodeToString(throwOnInvalidSequence = true)
+public fun Utf8Serializer.readString(string: String): Any? = readBytes(string.encodeToByteArray(throwOnInvalidSequence = true))

@@ -14,3 +14,12 @@ public interface Serializer {
     public fun write(writer: Writer, value: Any?)
     public fun read(reader: Reader): Any?
 }
+
+public fun Serializer.writeBytes(value: Any?): ByteArray = with(BytesWriter(1000)) {
+    write(this, value)
+    buffer.copyOf(current)
+}
+
+public fun Serializer.readBytes(byteArray: ByteArray): Any? = with(BytesReader(byteArray)) {
+    read(this).apply { checkDrained() }
+}
