@@ -38,7 +38,7 @@ public class JsonSerializer(
                     writeQuoted("")
                     writeByte(RBRACE)
                 }
-                is String -> StringEncoder.write(this, value)
+                is String -> stringEncoder.write(this, value)
                 is List<*> -> listEncoder.write(this, value)
                 else -> {
                     writeByte(LBRACE)
@@ -77,7 +77,7 @@ public class JsonSerializer(
         override fun writeNoId(property: String, id: Int, value: Any?) {
             writeProperty(property, value) {
                 when (id) {
-                    STRING_ENCODER_ID -> StringEncoder.write(this, value)
+                    STRING_ENCODER_ID -> stringEncoder.write(this, value)
                     LIST_ENCODER_ID -> listEncoder.write(this, value)
                     else -> encoder(id).writeQuoted(value)
                 }
@@ -110,7 +110,7 @@ public class JsonSerializer(
         override fun readWithId(): Any? {
             skipWhitespace()
             return when {
-                expectedCodePoint(QUOTE) -> StringEncoder.read(this)
+                expectedCodePoint(QUOTE) -> stringEncoder.read(this)
                 expectedCodePoint(LBRACKET) -> listEncoder.read(this)
                 expectedCodePoint(LBRACE) -> {
                     val type = readKey()

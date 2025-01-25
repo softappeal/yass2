@@ -15,7 +15,7 @@ public class TextSerializer(
         override fun writeWithId(value: Any?) {
             when (value) {
                 null -> writeByte(ASTERIX)
-                is String -> StringEncoder.write(this, value)
+                is String -> stringEncoder.write(this, value)
                 is List<*> -> listEncoder.write(this, value)
                 else -> {
                     val encoder = encoder(value::class)
@@ -70,7 +70,7 @@ public class TextSerializer(
             skipWhitespace()
             return when {
                 expectedCodePoint(ASTERIX) -> null
-                expectedCodePoint(QUOTE) -> StringEncoder.read(this)
+                expectedCodePoint(QUOTE) -> stringEncoder.read(this)
                 expectedCodePoint(LBRACKET) -> listEncoder.read(this)
                 else -> {
                     val className = readUntil(LPAREN)

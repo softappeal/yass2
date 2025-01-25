@@ -5,40 +5,33 @@ import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Writer
 import kotlin.reflect.KClass
 
-public abstract class AbstractBinaryEncoder internal constructor(internal val type: KClass<*>) {
-    internal abstract fun write(writer: Writer, value: Any?)
-    internal abstract fun read(reader: Reader): Any?
-}
-
 public open class BinaryEncoder<T : Any>(
-    type: KClass<T>,
-    public val write: Writer.(value: T) -> Unit,
-    public val read: Reader.() -> T,
-) : AbstractBinaryEncoder(type) {
-    override fun write(writer: Writer, value: Any?) = writer.write(@Suppress("UNCHECKED_CAST") (value as T))
-    override fun read(reader: Reader) = reader.read()
+    internal val type: KClass<T>,
+    private val write: Writer.(value: T) -> Unit,
+    private val read: Reader.() -> T,
+) {
+    public fun write(writer: Writer, value: Any): Unit = writer.write(@Suppress("UNCHECKED_CAST") (value as T))
+    public fun read(reader: Reader): T = reader.read()
 }
-
-private data class EncoderId(val id: Int, val encoder: AbstractBinaryEncoder)
-
-private val NullEncoderId = EncoderId(BinarySerializer.NULL_ENCODER_ID, object : AbstractBinaryEncoder(Unit::class) {
-    override fun write(writer: Writer, value: Any?) {}
-    override fun read(reader: Reader) = null
-})
 
 /** Has built-in encoders for null and [List]. */
 public abstract class BinarySerializer : Serializer {
+    private data class EncoderId(val id: Int, val encoder: BinaryEncoder<*>)
+
+    private lateinit var encoders: Array<BinaryEncoder<*>>
+    private lateinit var type2encoderId: MutableMap<KClass<*>, EncoderId>
+
     public companion object {
-        internal const val NULL_ENCODER_ID = 0
+        private const val NULL_ENCODER_ID = 0
         public const val LIST_ENCODER_ID: Int = 1
         public const val FIRST_ENCODER_ID: Int = 2
     }
 
-    private lateinit var encoders: Array<AbstractBinaryEncoder>
-    private lateinit var type2encoderId: MutableMap<KClass<*>, EncoderId>
-
     protected fun initialize(vararg binaryEncoders: BinaryEncoder<*>) {
-        encoders = (listOf(NullEncoderId.encoder, listEncoderId.encoder) + binaryEncoders).toTypedArray()
+        encoders = (listOf(
+            BinaryEncoder(Unit::class, {}, {}), // placeholder for NULL_ENCODER_ID, methods are never called
+            listEncoderId.encoder,
+        ) + binaryEncoders).toTypedArray()
         type2encoderId = HashMap(encoders.size)
         encoders.forEachIndexed { id, encoder ->
             require(type2encoderId.put(encoder.type, EncoderId(id, encoder)) == null) { "duplicated type '${encoder.type}'" }
@@ -60,7 +53,10 @@ public abstract class BinarySerializer : Serializer {
 
     protected fun Writer.writeWithId(value: Any?) {
         val (id, encoder) = when (value) {
-            null -> NullEncoderId
+            null -> {
+                writeVarInt(NULL_ENCODER_ID)
+                return
+            }
             is List<*> -> listEncoderId
             else -> type2encoderId[value::class] ?: error("missing type '${value::class}'")
         }
@@ -76,8 +72,12 @@ public abstract class BinarySerializer : Serializer {
         writeNoIdRequired(encoderId, value)
     }
 
-    protected fun Reader.readWithId(): Any? = encoders[readVarInt()].read(this)
-    protected fun Reader.readNoIdRequired(encoderId: Int): Any = encoders[encoderId].read(this)!!
+    protected fun Reader.readWithId(): Any? {
+        val id = readVarInt()
+        return if (id == NULL_ENCODER_ID) null else encoders[id].read(this)
+    }
+
+    protected fun Reader.readNoIdRequired(encoderId: Int): Any = encoders[encoderId].read(this)
     protected fun Reader.readNoIdOptional(encoderId: Int): Any? = if (readBinaryBoolean()) readNoIdRequired(encoderId) else null
 
     override fun write(writer: Writer, value: Any?): Unit = writer.writeWithId(value)

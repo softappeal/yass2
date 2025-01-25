@@ -31,45 +31,13 @@ private const val S_BS_TAB = S_BS + "t"
 
 private val Tab = ByteArray(4) { SP }
 
-public abstract class Utf8Reader(private val reader: Reader, private var _nextCodePoint: Int) : Reader by reader {
-    public val nextCodePoint: Int get() = _nextCodePoint
-    public fun expectedCodePoint(codePoint: Byte): Boolean = _nextCodePoint == codePoint.toInt()
-    public fun readNextCodePoint() {
-        _nextCodePoint = readCodePoint()
-    }
-
-    protected fun isWhitespace(): Boolean =
-        expectedCodePoint(SP) || expectedCodePoint(TAB) || expectedCodePoint(NL) || expectedCodePoint(CR)
-
-    protected fun skipWhitespace() {
-        while (isWhitespace()) readNextCodePoint()
-    }
-
-    public fun readNextCodePointAndSkipWhitespace() {
-        readNextCodePoint()
-        skipWhitespace()
-    }
-
-    public abstract fun readString(): String
-    public abstract fun readWithId(): Any?
-
-    protected lateinit var properties: MutableMap<String, Any>
-
-    protected fun Utf8Encoder<*>.addProperty(name: String, value: Any?) {
-        check(value != null) { "property '${type.simpleName}.$name' must not be explicitly set to null" }
-        check(properties.put(name, value) == null) { "duplicated property '${type.simpleName}.$name'" }
-    }
-
-    public fun getProperty(property: String): Any? = properties[property]
-}
-
 public open class Utf8Encoder<T : Any>(
     public val type: KClass<T>,
     private val write: Utf8Serializer.Utf8Writer.(value: T) -> Unit,
-    private val read: Utf8Reader.() -> T,
+    private val read: Utf8Serializer.Utf8Reader.() -> T,
 ) {
     public fun write(writer: Utf8Serializer.Utf8Writer, value: Any?): Unit = writer.write(@Suppress("UNCHECKED_CAST") (value as T))
-    public fun read(reader: Utf8Reader): T = reader.read()
+    public fun read(reader: Utf8Serializer.Utf8Reader): T = reader.read()
 }
 
 public const val NO_ENCODER_ID: Int = -1
@@ -77,7 +45,7 @@ public const val NO_ENCODER_ID: Int = -1
 public class ClassUtf8Encoder<T : Any>(
     type: KClass<T>,
     write: Utf8Serializer.Utf8Writer.(value: T) -> Unit,
-    read: Utf8Reader.() -> T,
+    read: Utf8Serializer.Utf8Reader.() -> T,
     /** see [NO_ENCODER_ID] */
     vararg propertyId: Pair<String, Int>,
 ) : Utf8Encoder<T>(type, write, read) {
@@ -88,43 +56,6 @@ public class ClassUtf8Encoder<T : Any>(
         return id
     }
 }
-
-public object StringEncoder : Utf8Encoder<String>(String::class,
-    { string ->
-        writeByte(QUOTE)
-        writeString(
-            string
-                .replace(S_BS, S_BS_BS) // must be first!
-                .replace(S_QUOTE, S_BS_QUOTE)
-                .replace(S_NL, S_BS_NL)
-                .replace(S_CR, S_BS_CR)
-                .replace(S_TAB, S_BS_TAB)
-        )
-        writeByte(QUOTE)
-    },
-    {
-        buildString {
-            while (true) {
-                readNextCodePoint()
-                when {
-                    expectedCodePoint(QUOTE) -> break
-                    expectedCodePoint(BS) -> {
-                        readNextCodePoint()
-                        when {
-                            expectedCodePoint(QUOTE) -> append(QUOTE.toInt().toChar())
-                            expectedCodePoint(BS) -> append(BS.toInt().toChar())
-                            expectedCodePoint('n'.code.toByte()) -> append(NL.toInt().toChar())
-                            expectedCodePoint('r'.code.toByte()) -> append(CR.toInt().toChar())
-                            expectedCodePoint('t'.code.toByte()) -> append(TAB.toInt().toChar())
-                            else -> error("illegal escape with codePoint $nextCodePoint")
-                        }
-                    }
-                    else -> addCodePoint(nextCodePoint)
-                }
-            }
-        }
-    }
-)
 
 /**
  * It reads/writes UTF-8 encoded strings.
@@ -163,6 +94,75 @@ public abstract class Utf8Serializer(
         public abstract fun writeNoId(property: String, id: Int, value: Any?)
         public abstract fun writeWithId(value: Any?)
     }
+
+    public abstract class Utf8Reader(private val reader: Reader, private var _nextCodePoint: Int) : Reader by reader {
+        public val nextCodePoint: Int get() = _nextCodePoint
+        public fun expectedCodePoint(codePoint: Byte): Boolean = _nextCodePoint == codePoint.toInt()
+        public fun readNextCodePoint() {
+            _nextCodePoint = readCodePoint()
+        }
+
+        protected fun isWhitespace(): Boolean =
+            expectedCodePoint(SP) || expectedCodePoint(TAB) || expectedCodePoint(NL) || expectedCodePoint(CR)
+
+        protected fun skipWhitespace() {
+            while (isWhitespace()) readNextCodePoint()
+        }
+
+        public fun readNextCodePointAndSkipWhitespace() {
+            readNextCodePoint()
+            skipWhitespace()
+        }
+
+        public abstract fun readString(): String
+        public abstract fun readWithId(): Any?
+
+        protected lateinit var properties: MutableMap<String, Any>
+
+        protected fun Utf8Encoder<*>.addProperty(name: String, value: Any?) {
+            check(value != null) { "property '${type.simpleName}.$name' must not be explicitly set to null" }
+            check(properties.put(name, value) == null) { "duplicated property '${type.simpleName}.$name'" }
+        }
+
+        public fun getProperty(property: String): Any? = properties[property]
+    }
+
+    protected val stringEncoder: Utf8Encoder<String> = Utf8Encoder(String::class,
+        { string ->
+            writeByte(QUOTE)
+            writeString(
+                string
+                    .replace(S_BS, S_BS_BS) // must be first!
+                    .replace(S_QUOTE, S_BS_QUOTE)
+                    .replace(S_NL, S_BS_NL)
+                    .replace(S_CR, S_BS_CR)
+                    .replace(S_TAB, S_BS_TAB)
+            )
+            writeByte(QUOTE)
+        },
+        {
+            buildString {
+                while (true) {
+                    readNextCodePoint()
+                    when {
+                        expectedCodePoint(QUOTE) -> break
+                        expectedCodePoint(BS) -> {
+                            readNextCodePoint()
+                            when {
+                                expectedCodePoint(QUOTE) -> append(QUOTE.toInt().toChar())
+                                expectedCodePoint(BS) -> append(BS.toInt().toChar())
+                                expectedCodePoint('n'.code.toByte()) -> append(NL.toInt().toChar())
+                                expectedCodePoint('r'.code.toByte()) -> append(CR.toInt().toChar())
+                                expectedCodePoint('t'.code.toByte()) -> append(TAB.toInt().toChar())
+                                else -> error("illegal escape with codePoint $nextCodePoint")
+                            }
+                        }
+                        else -> addCodePoint(nextCodePoint)
+                    }
+                }
+            }
+        }
+    )
 
     protected val listEncoder: Utf8Encoder<List<*>> = Utf8Encoder(List::class,
         { list ->
@@ -204,7 +204,10 @@ public abstract class Utf8Serializer(
         public const val FIRST_ENCODER_ID: Int = 2
     }
 
-    private val encoders = (listOf(StringEncoder, listEncoder) + utf8Encoders).toTypedArray()
+    private val encoders = (listOf(
+        stringEncoder,
+        listEncoder,
+    ) + utf8Encoders).toTypedArray()
     private val type2encoder = HashMap<KClass<*>, Utf8Encoder<*>>(encoders.size)
     private val className2encoder = HashMap<String, Utf8Encoder<*>>(encoders.size)
 
