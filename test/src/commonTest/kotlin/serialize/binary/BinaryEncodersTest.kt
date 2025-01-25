@@ -13,9 +13,9 @@ private val ColorEncoder = EnumBinaryEncoder(Color::class, enumValues())
 
 private class OptionalString(val s: String?)
 
-private class OptionalStringEncoder : BinaryEncoder<OptionalString>(OptionalString::class,
-    { value -> writeBinaryOptional(value.s) { writeBinaryString(it) } },
-    { OptionalString(readBinaryOptional { readBinaryString() }) }
+private object OptionalStringEncoder : BinaryEncoder<OptionalString>(OptionalString::class,
+    { value -> writeBinaryOptional(value.s) { StringBinaryEncoder.write(this, it) } },
+    { OptionalString(readBinaryOptional { StringBinaryEncoder.read(this) }) }
 )
 
 class BinaryEncodersTest {
@@ -37,32 +37,32 @@ class BinaryEncodersTest {
                 assertEquals(bytes.size, current)
             }
         }
-        with(BooleanBinaryEncoder()) {
+        with(BooleanBinaryEncoder) {
             check(false, 0)
             check(true, 1)
         }
-        with(IntBinaryEncoder()) {
+        with(IntBinaryEncoder) {
             check(0, 0)
             check(-1, 1)
             check(1, 2)
             check(Int.MAX_VALUE, -2, -1, -1, -1, 15)
             check(Int.MIN_VALUE, -1, -1, -1, -1, 15)
         }
-        with(LongBinaryEncoder()) {
+        with(LongBinaryEncoder) {
             check(0, 0)
             check(-1, 1)
             check(1, 2)
             check(Long.MAX_VALUE, -2, -1, -1, -1, -1, -1, -1, -1, -1, 1)
             check(Long.MIN_VALUE, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1)
         }
-        with(DoubleBinaryEncoder()) {
+        with(DoubleBinaryEncoder) {
             check(123.456, 64, 94, -35, 47, 26, -97, -66, 119)
             check(Double.POSITIVE_INFINITY, 127, -16, 0, 0, 0, 0, 0, 0)
             check(Double.NEGATIVE_INFINITY, -1, -16, 0, 0, 0, 0, 0, 0)
             check(Double.NaN, 127, -8, 0, 0, 0, 0, 0, 0)
         }
         @Suppress("SpellCheckingInspection")
-        with(StringBinaryEncoder()) {
+        with(StringBinaryEncoder) {
             check("", 0)
             check("abc", 3, 97, 98, 99)
             check("\u0000\u0001\u007F", 3, 0x00, 0x01, 0x7F)
@@ -74,7 +74,7 @@ class BinaryEncodersTest {
             check("\uD800\uDC01", 4, -16, -112, -128, -127) // U+010001
             check("\uDBFF\uDFFF", 4, -12, -113, -65, -65)   // U+1FFFFF
         }
-        with(ByteArrayBinaryEncoder()) {
+        with(ByteArrayBinaryEncoder) {
             check(byteArrayOf(), 0)
             check(byteArrayOf(0, 1, -1, 127, -128), 5, 0, 1, -1, 127, -128)
         }
@@ -87,7 +87,7 @@ class BinaryEncodersTest {
     @Test
     fun testOptional() {
         val writer = BytesWriter(1000)
-        val encoder = OptionalStringEncoder()
+        val encoder = OptionalStringEncoder
         with(writer) {
             encoder.write(this, OptionalString(null))
             assertEquals(1, current)

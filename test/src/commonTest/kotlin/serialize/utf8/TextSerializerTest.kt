@@ -41,7 +41,7 @@ private fun dumpML(value: Any?, serialized: String) {
 }
 
 private class Int
-private class MyIntEncoder : Utf8Encoder<Int>(Int::class, { }, { Int() })
+private object MyIntEncoder : Utf8Encoder<Int>(Int::class, { }, { Int() })
 
 class TextSerializerTest {
     @Test
@@ -247,7 +247,7 @@ class TextSerializerTest {
     @Test
     fun duplicatedType() {
         val message = assertFailsWith<IllegalArgumentException> {
-            TextSerializer(listOf(IntUtf8Encoder(), IntUtf8Encoder()), false)
+            TextSerializer(listOf(IntUtf8Encoder, IntUtf8Encoder), false)
         }.message!!
         assertTrue(message.startsWith("duplicated type 'class "))
         assertTrue(message.endsWith("Int'"))
@@ -256,7 +256,7 @@ class TextSerializerTest {
     @Test
     fun duplicatedClassName() {
         assertFailsMessage<IllegalArgumentException>("duplicated className 'Int'") {
-            TextSerializer(listOf(IntUtf8Encoder(), MyIntEncoder()), false)
+            TextSerializer(listOf(IntUtf8Encoder, MyIntEncoder), false)
         }
     }
 

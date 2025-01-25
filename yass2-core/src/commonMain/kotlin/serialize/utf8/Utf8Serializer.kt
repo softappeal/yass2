@@ -4,22 +4,32 @@ import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Writer
 import ch.softappeal.yass2.serialize.readBytes
-import ch.softappeal.yass2.serialize.utf8.Utf8Serializer.Utf8Writer
 import ch.softappeal.yass2.serialize.writeBytes
 import kotlin.reflect.KClass
 
-private const val S_BS = Utf8Serializer.BS.toInt().toChar().toString()
+public const val QUOTE: Byte = '"'.code.toByte()
+public const val LBRACKET: Byte = '['.code.toByte()
+public const val COMMA: Byte = ','.code.toByte()
+public const val SP: Byte = ' '.code.toByte()
+public const val COLON: Byte = ':'.code.toByte()
+internal const val BS = '\\'.code.toByte()
+internal const val NL = '\n'.code.toByte()
+internal const val CR = '\r'.code.toByte()
+internal const val TAB = '\t'.code.toByte()
+private const val RBRACKET = ']'.code.toByte()
+
+private const val S_BS = BS.toInt().toChar().toString()
 private const val S_BS_BS = S_BS + S_BS
-private const val S_QUOTE = Utf8Serializer.QUOTE.toInt().toChar().toString()
+private const val S_QUOTE = QUOTE.toInt().toChar().toString()
 private const val S_BS_QUOTE = S_BS + S_QUOTE
-private const val S_NL = Utf8Serializer.NL.toInt().toChar().toString()
+private const val S_NL = NL.toInt().toChar().toString()
 private const val S_BS_NL = S_BS + "n"
-private const val S_CR = Utf8Serializer.CR.toInt().toChar().toString()
+private const val S_CR = CR.toInt().toChar().toString()
 private const val S_BS_CR = S_BS + "r"
-private const val S_TAB = Utf8Serializer.TAB.toInt().toChar().toString()
+private const val S_TAB = TAB.toInt().toChar().toString()
 private const val S_BS_TAB = S_BS + "t"
 
-private val Tab = ByteArray(4) { Utf8Serializer.SP }
+private val Tab = ByteArray(4) { SP }
 
 public abstract class Utf8Reader(private val reader: Reader, private var _nextCodePoint: Int) : Reader by reader {
     public val nextCodePoint: Int get() = _nextCodePoint
@@ -29,10 +39,7 @@ public abstract class Utf8Reader(private val reader: Reader, private var _nextCo
     }
 
     protected fun isWhitespace(): Boolean =
-        expectedCodePoint(Utf8Serializer.SP) ||
-            expectedCodePoint(Utf8Serializer.TAB) ||
-            expectedCodePoint(Utf8Serializer.NL) ||
-            expectedCodePoint(Utf8Serializer.CR)
+        expectedCodePoint(SP) || expectedCodePoint(TAB) || expectedCodePoint(NL) || expectedCodePoint(CR)
 
     protected fun skipWhitespace() {
         while (isWhitespace()) readNextCodePoint()
@@ -58,18 +65,20 @@ public abstract class Utf8Reader(private val reader: Reader, private var _nextCo
 
 public open class Utf8Encoder<T : Any>(
     public val type: KClass<T>,
-    private val write: Utf8Writer.(value: T) -> Unit,
+    private val write: Utf8Serializer.Utf8Writer.(value: T) -> Unit,
     private val read: Utf8Reader.() -> T,
 ) {
-    public fun write(writer: Utf8Writer, value: Any?): Unit = writer.write(@Suppress("UNCHECKED_CAST") (value as T))
+    public fun write(writer: Utf8Serializer.Utf8Writer, value: Any?): Unit = writer.write(@Suppress("UNCHECKED_CAST") (value as T))
     public fun read(reader: Utf8Reader): T = reader.read()
 }
 
+public const val NO_ENCODER_ID: Int = -1
+
 public class ClassUtf8Encoder<T : Any>(
     type: KClass<T>,
-    write: Utf8Writer.(value: T) -> Unit,
+    write: Utf8Serializer.Utf8Writer.(value: T) -> Unit,
     read: Utf8Reader.() -> T,
-    /** see [Utf8Serializer.NO_ENCODER_ID] */
+    /** see [NO_ENCODER_ID] */
     vararg propertyId: Pair<String, Int>,
 ) : Utf8Encoder<T>(type, write, read) {
     private val property2id = propertyId.toMap()
@@ -79,6 +88,43 @@ public class ClassUtf8Encoder<T : Any>(
         return id
     }
 }
+
+public object StringEncoder : Utf8Encoder<String>(String::class,
+    { string ->
+        writeByte(QUOTE)
+        writeString(
+            string
+                .replace(S_BS, S_BS_BS) // must be first!
+                .replace(S_QUOTE, S_BS_QUOTE)
+                .replace(S_NL, S_BS_NL)
+                .replace(S_CR, S_BS_CR)
+                .replace(S_TAB, S_BS_TAB)
+        )
+        writeByte(QUOTE)
+    },
+    {
+        buildString {
+            while (true) {
+                readNextCodePoint()
+                when {
+                    expectedCodePoint(QUOTE) -> break
+                    expectedCodePoint(BS) -> {
+                        readNextCodePoint()
+                        when {
+                            expectedCodePoint(QUOTE) -> append(QUOTE.toInt().toChar())
+                            expectedCodePoint(BS) -> append(BS.toInt().toChar())
+                            expectedCodePoint('n'.code.toByte()) -> append(NL.toInt().toChar())
+                            expectedCodePoint('r'.code.toByte()) -> append(CR.toInt().toChar())
+                            expectedCodePoint('t'.code.toByte()) -> append(TAB.toInt().toChar())
+                            else -> error("illegal escape with codePoint $nextCodePoint")
+                        }
+                    }
+                    else -> addCodePoint(nextCodePoint)
+                }
+            }
+        }
+    }
+)
 
 /**
  * It reads/writes UTF-8 encoded strings.
@@ -118,43 +164,6 @@ public abstract class Utf8Serializer(
         public abstract fun writeWithId(value: Any?)
     }
 
-    protected val stringEncoder: Utf8Encoder<String> = Utf8Encoder(String::class,
-        { string ->
-            writeByte(QUOTE)
-            writeString(
-                string
-                    .replace(S_BS, S_BS_BS) // must be first!
-                    .replace(S_QUOTE, S_BS_QUOTE)
-                    .replace(S_NL, S_BS_NL)
-                    .replace(S_CR, S_BS_CR)
-                    .replace(S_TAB, S_BS_TAB)
-            )
-            writeByte(QUOTE)
-        },
-        {
-            buildString {
-                while (true) {
-                    readNextCodePoint()
-                    when {
-                        expectedCodePoint(QUOTE) -> break
-                        expectedCodePoint(BS) -> {
-                            readNextCodePoint()
-                            when {
-                                expectedCodePoint(QUOTE) -> append(QUOTE.toInt().toChar())
-                                expectedCodePoint(BS) -> append(BS.toInt().toChar())
-                                expectedCodePoint('n'.code.toByte()) -> append(NL.toInt().toChar())
-                                expectedCodePoint('r'.code.toByte()) -> append(CR.toInt().toChar())
-                                expectedCodePoint('t'.code.toByte()) -> append(TAB.toInt().toChar())
-                                else -> error("illegal escape with codePoint $nextCodePoint")
-                            }
-                        }
-                        else -> addCodePoint(nextCodePoint)
-                    }
-                }
-            }
-        }
-    )
-
     protected val listEncoder: Utf8Encoder<List<*>> = Utf8Encoder(List::class,
         { list ->
             writeByte(LBRACKET)
@@ -190,25 +199,12 @@ public abstract class Utf8Serializer(
     )
 
     public companion object {
-        public const val NO_ENCODER_ID: Int = -1
-
-        public const val QUOTE: Byte = '"'.code.toByte()
-        public const val LBRACKET: Byte = '['.code.toByte()
-        public const val COMMA: Byte = ','.code.toByte()
-        public const val SP: Byte = ' '.code.toByte()
-        public const val COLON: Byte = ':'.code.toByte()
-        internal const val BS = '\\'.code.toByte()
-        internal const val NL = '\n'.code.toByte()
-        internal const val CR = '\r'.code.toByte()
-        internal const val TAB = '\t'.code.toByte()
-        private const val RBRACKET = ']'.code.toByte()
-
         public const val STRING_ENCODER_ID: Int = 0
         public const val LIST_ENCODER_ID: Int = 1
         public const val FIRST_ENCODER_ID: Int = 2
     }
 
-    private val encoders = (listOf(stringEncoder, listEncoder) + utf8Encoders).toTypedArray()
+    private val encoders = (listOf(StringEncoder, listEncoder) + utf8Encoders).toTypedArray()
     private val type2encoder = HashMap<KClass<*>, Utf8Encoder<*>>(encoders.size)
     private val className2encoder = HashMap<String, Utf8Encoder<*>>(encoders.size)
 

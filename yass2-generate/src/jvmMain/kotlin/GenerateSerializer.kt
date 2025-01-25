@@ -5,6 +5,7 @@ import ch.softappeal.yass2.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.serialize.binary.EnumBinaryEncoder
 import ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder
 import ch.softappeal.yass2.serialize.utf8.EnumUtf8Encoder
+import ch.softappeal.yass2.serialize.utf8.NO_ENCODER_ID
 import ch.softappeal.yass2.serialize.utf8.Utf8Encoder
 import ch.softappeal.yass2.serialize.utf8.Utf8Serializer
 import kotlin.reflect.KClass
@@ -36,8 +37,8 @@ private data class Classes(
     val concreteClasses: List<KClass<*>>,
 )
 
-private fun getClasses(encoderClasses: List<KClass<*>>, concreteAndEnumClasses: List<KClass<*>>): Classes {
-    val encoderTypes = encoderClasses.map { it.supertypes.first().arguments.first().type!!.classifier as KClass<*> }
+private fun getClasses(encoderObjects: List<KClass<*>>, concreteAndEnumClasses: List<KClass<*>>): Classes {
+    val encoderTypes = encoderObjects.map { it.supertypes.first().arguments.first().type!!.classifier as KClass<*> }
     val enumClasses = concreteAndEnumClasses.filter { it.isEnum() }.map { @Suppress("UNCHECKED_CAST") (it as KClass<Enum<*>>) }
     val concreteClasses = concreteAndEnumClasses.filterNot { it.isEnum() }
     val baseClasses = encoderTypes + enumClasses
@@ -91,10 +92,10 @@ private class Properties<P : Property>(klass: KClass<*>, createProperty: (proper
 private enum class PropertyKind { WithId, NoIdRequired, NoIdOptional }
 
 public fun CodeWriter.generateBinarySerializer(
-    encoderClasses: List<KClass<out BinaryEncoder<*>>>,
+    encoderObjects: List<KClass<out BinaryEncoder<*>>>,
     concreteAndEnumClasses: List<KClass<*>>,
 ) {
-    val (baseClasses, enumClasses, concreteClasses) = getClasses(encoderClasses, concreteAndEnumClasses)
+    val (baseClasses, enumClasses, concreteClasses) = getClasses(encoderObjects, concreteAndEnumClasses)
 
     class BinaryProperty(property: KProperty1<out Any, *>) : Property(property) {
         var kind: PropertyKind
@@ -124,7 +125,7 @@ public fun CodeWriter.generateBinarySerializer(
         writeNestedLine("object : ${BinarySerializer::class.qualifiedName}() {", "}") {
             writeNestedLine("init {", "}") {
                 writeNestedLine("initialize(", ")") {
-                    encoderClasses.forEach { type -> writeNestedLine("${type.qualifiedName}(),") }
+                    encoderObjects.forEach { type -> writeNestedLine("${type.qualifiedName},") }
                     enumClasses.forEach { type ->
                         writeNestedLine("${EnumBinaryEncoder::class.qualifiedName}(", "),") {
                             writeNestedLine("${type.qualifiedName}::class, enumValues(),")
@@ -160,10 +161,10 @@ public fun CodeWriter.generateBinarySerializer(
 }
 
 public fun CodeWriter.generateUtf8Encoders(
-    encoderClasses: List<KClass<out Utf8Encoder<*>>>,
+    encoderObjects: List<KClass<out Utf8Encoder<*>>>,
     concreteAndEnumClasses: List<KClass<*>>,
 ) {
-    val (baseClasses, enumClasses, concreteClasses) = getClasses(encoderClasses, concreteAndEnumClasses)
+    val (baseClasses, enumClasses, concreteClasses) = getClasses(encoderObjects, concreteAndEnumClasses)
 
     class Utf8Property(property: KProperty1<out Any, *>) : Property(property) {
         val encoderId = when (val type = property.returnType.classifier as KClass<*>) {
@@ -171,13 +172,13 @@ public fun CodeWriter.generateUtf8Encoders(
             String::class -> Utf8Serializer.STRING_ENCODER_ID
             else -> {
                 val baseClassIndex = baseClasses.indexOfFirst { it == type }
-                if (baseClassIndex >= 0) baseClassIndex + Utf8Serializer.FIRST_ENCODER_ID else Utf8Serializer.NO_ENCODER_ID
+                if (baseClassIndex >= 0) baseClassIndex + Utf8Serializer.FIRST_ENCODER_ID else NO_ENCODER_ID
             }
         }
 
-        fun withId() = encoderId == Utf8Serializer.NO_ENCODER_ID
+        fun withId() = encoderId == NO_ENCODER_ID
         fun hasId() =
-            encoderId != Utf8Serializer.NO_ENCODER_ID && encoderId != Utf8Serializer.STRING_ENCODER_ID && encoderId != Utf8Serializer.LIST_ENCODER_ID
+            encoderId != NO_ENCODER_ID && encoderId != Utf8Serializer.STRING_ENCODER_ID && encoderId != Utf8Serializer.LIST_ENCODER_ID
     }
 
     writeLine()
@@ -185,7 +186,7 @@ public fun CodeWriter.generateUtf8Encoders(
         "public fun createUtf8Encoders(): ${List::class.qualifiedName}<${Utf8Encoder::class.qualifiedName}<*>> = listOf(",
         ")",
     ) {
-        encoderClasses.forEach { type -> writeNestedLine("${type.qualifiedName}(),") }
+        encoderObjects.forEach { type -> writeNestedLine("${type.qualifiedName},") }
         enumClasses.forEach { type ->
             writeNestedLine("${EnumUtf8Encoder::class.qualifiedName}(", "),") {
                 writeNestedLine("${type.qualifiedName}::class,")
@@ -213,7 +214,7 @@ public fun CodeWriter.generateUtf8Encoders(
                     writeNestedLine("i")
                 }
                 properties.all.forEach { property ->
-                    writeNestedLine("\"${property.property.name}\" to ${if (property.hasId()) property.encoderId else Utf8Serializer.NO_ENCODER_ID},")
+                    writeNestedLine("\"${property.property.name}\" to ${if (property.hasId()) property.encoderId else NO_ENCODER_ID},")
                 }
             }
         }

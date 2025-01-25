@@ -13,7 +13,7 @@ class GenerateTest {
             "ch.softappeal.yass2.tutorial",
         ) {
             generateProxies(Services)
-            generateUtf8Encoders(EncoderClasses, ConcreteClasses)
+            generateUtf8Encoders(EncoderObjects, ConcreteClasses)
         }
     }
 }

@@ -13,11 +13,11 @@ class Utf8EncodersTest {
     fun test() {
         val serializer = TextSerializer(
             listOf(
-                BooleanUtf8Encoder(),
-                IntUtf8Encoder(),
-                LongUtf8Encoder(),
-                DoubleUtf8Encoder(),
-                ByteArrayUtf8Encoder(),
+                BooleanUtf8Encoder,
+                IntUtf8Encoder,
+                LongUtf8Encoder,
+                DoubleUtf8Encoder,
+                ByteArrayUtf8Encoder,
                 EnumUtf8Encoder(Gender::class, Gender::valueOf),
             ),
             false,

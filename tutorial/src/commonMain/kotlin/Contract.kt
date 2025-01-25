@@ -18,7 +18,7 @@ import ch.softappeal.yass2.serialize.utf8.Utf8Encoder
  * In contrast to regular classes, own base types could implement a more efficient serializing.
  */
 public data class MyDate(public val currentTimeMillis: Long)
-internal class MyDateEncoder : Utf8Encoder<MyDate>(MyDate::class,
+internal object MyDateEncoder : Utf8Encoder<MyDate>(MyDate::class,
     { value -> writeString(value.currentTimeMillis.toString()) },
     { MyDate(readString().toLong()) }
 )
@@ -99,7 +99,7 @@ internal val ConcreteClasses = listOf(
 )
 
 // Define all the additional base encoders needed by the contract (including own base types).
-internal val EncoderClasses = listOf(
+internal val EncoderObjects = listOf(
     // String is built-in
     IntUtf8Encoder::class,
     MyDateEncoder::class,

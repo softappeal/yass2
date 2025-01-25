@@ -37,7 +37,7 @@ private class ConstructorParameterIsNotProperty(@Suppress("UNUSED_PARAMETER") x:
 
 private enum class Enum { One }
 
-private class MyEnumEncoder : BinaryEncoder<Enum>(Enum::class, {}, { Enum.One })
+private object MyEnumEncoder : BinaryEncoder<Enum>(Enum::class, {}, { Enum.One })
 
 private fun codeWriter() = CodeWriter(StringBuilder())
 

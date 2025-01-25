@@ -112,13 +112,13 @@ internal val ConcreteClasses = listOf(
     Packet::class,
 )
 
-internal val BinaryEncoderClasses = listOf(
+internal val BinaryEncoderObjects = listOf(
     IntBinaryEncoder::class,
     StringBinaryEncoder::class,
     ByteArrayBinaryEncoder::class,
 )
 
-internal val Utf8EncoderClasses = listOf(
+internal val Utf8EncoderObjects = listOf(
     IntUtf8Encoder::class,
     ByteArrayUtf8Encoder::class,
 )

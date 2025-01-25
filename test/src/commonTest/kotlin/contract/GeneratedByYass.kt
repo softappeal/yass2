@@ -304,9 +304,9 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
     object : ch.softappeal.yass2.serialize.binary.BinarySerializer() {
         init {
             initialize(
-                ch.softappeal.yass2.serialize.binary.IntBinaryEncoder(),
-                ch.softappeal.yass2.serialize.binary.StringBinaryEncoder(),
-                ch.softappeal.yass2.serialize.binary.ByteArrayBinaryEncoder(),
+                ch.softappeal.yass2.serialize.binary.IntBinaryEncoder,
+                ch.softappeal.yass2.serialize.binary.StringBinaryEncoder,
+                ch.softappeal.yass2.serialize.binary.ByteArrayBinaryEncoder,
                 ch.softappeal.yass2.serialize.binary.EnumBinaryEncoder(
                     ch.softappeal.yass2.contract.Gender::class, enumValues(),
                 ),
@@ -535,8 +535,8 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
     }
 
 public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.serialize.utf8.Utf8Encoder<*>> = listOf(
-    ch.softappeal.yass2.serialize.utf8.IntUtf8Encoder(),
-    ch.softappeal.yass2.serialize.utf8.ByteArrayUtf8Encoder(),
+    ch.softappeal.yass2.serialize.utf8.IntUtf8Encoder,
+    ch.softappeal.yass2.serialize.utf8.ByteArrayUtf8Encoder,
     ch.softappeal.yass2.serialize.utf8.EnumUtf8Encoder(
         ch.softappeal.yass2.contract.Gender::class,
         ch.softappeal.yass2.contract.Gender::valueOf,

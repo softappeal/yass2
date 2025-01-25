@@ -313,7 +313,7 @@ class BinarySerializerTest {
         val message = assertFailsWith<IllegalArgumentException> {
             object : BinarySerializer() {
                 init {
-                    initialize(IntBinaryEncoder(), IntBinaryEncoder())
+                    initialize(IntBinaryEncoder, IntBinaryEncoder)
                 }
             }
         }.message!!

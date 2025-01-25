@@ -109,8 +109,8 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.tutorial.New
     }
 
 public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.serialize.utf8.Utf8Encoder<*>> = listOf(
-    ch.softappeal.yass2.serialize.utf8.IntUtf8Encoder(),
-    ch.softappeal.yass2.tutorial.MyDateEncoder(),
+    ch.softappeal.yass2.serialize.utf8.IntUtf8Encoder,
+    ch.softappeal.yass2.tutorial.MyDateEncoder,
     ch.softappeal.yass2.serialize.utf8.EnumUtf8Encoder(
         ch.softappeal.yass2.tutorial.Gender::class,
         ch.softappeal.yass2.tutorial.Gender::valueOf,
