@@ -1,0 +1,298 @@
+// Klib ABI Dump
+// Targets: [linuxArm64, linuxX64, macosArm64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <ch.softappeal.yass2:yass2-core>
+abstract interface ch.softappeal.yass2.serialize/Reader { // ch.softappeal.yass2.serialize/Reader|null[0]
+    abstract fun readByte(): kotlin/Byte // ch.softappeal.yass2.serialize/Reader.readByte|readByte(){}[0]
+    abstract fun readBytes(kotlin/Int): kotlin/ByteArray // ch.softappeal.yass2.serialize/Reader.readBytes|readBytes(kotlin.Int){}[0]
+}
+
+abstract interface ch.softappeal.yass2.serialize/Serializer { // ch.softappeal.yass2.serialize/Serializer|null[0]
+    abstract fun read(ch.softappeal.yass2.serialize/Reader): kotlin/Any? // ch.softappeal.yass2.serialize/Serializer.read|read(ch.softappeal.yass2.serialize.Reader){}[0]
+    abstract fun write(ch.softappeal.yass2.serialize/Writer, kotlin/Any?) // ch.softappeal.yass2.serialize/Serializer.write|write(ch.softappeal.yass2.serialize.Writer;kotlin.Any?){}[0]
+}
+
+abstract interface ch.softappeal.yass2.serialize/Writer { // ch.softappeal.yass2.serialize/Writer|null[0]
+    abstract fun writeByte(kotlin/Byte) // ch.softappeal.yass2.serialize/Writer.writeByte|writeByte(kotlin.Byte){}[0]
+    abstract fun writeBytes(kotlin/ByteArray) // ch.softappeal.yass2.serialize/Writer.writeBytes|writeBytes(kotlin.ByteArray){}[0]
+}
+
+abstract class ch.softappeal.yass2.serialize.binary/BinarySerializer : ch.softappeal.yass2.serialize/Serializer { // ch.softappeal.yass2.serialize.binary/BinarySerializer|null[0]
+    constructor <init>() // ch.softappeal.yass2.serialize.binary/BinarySerializer.<init>|<init>(){}[0]
+
+    final fun (ch.softappeal.yass2.serialize/Reader).readNoIdOptional(kotlin/Int): kotlin/Any? // ch.softappeal.yass2.serialize.binary/BinarySerializer.readNoIdOptional|readNoIdOptional@ch.softappeal.yass2.serialize.Reader(kotlin.Int){}[0]
+    final fun (ch.softappeal.yass2.serialize/Reader).readNoIdRequired(kotlin/Int): kotlin/Any // ch.softappeal.yass2.serialize.binary/BinarySerializer.readNoIdRequired|readNoIdRequired@ch.softappeal.yass2.serialize.Reader(kotlin.Int){}[0]
+    final fun (ch.softappeal.yass2.serialize/Reader).readWithId(): kotlin/Any? // ch.softappeal.yass2.serialize.binary/BinarySerializer.readWithId|readWithId@ch.softappeal.yass2.serialize.Reader(){}[0]
+    final fun (ch.softappeal.yass2.serialize/Writer).writeNoIdOptional(kotlin/Int, kotlin/Any?) // ch.softappeal.yass2.serialize.binary/BinarySerializer.writeNoIdOptional|writeNoIdOptional@ch.softappeal.yass2.serialize.Writer(kotlin.Int;kotlin.Any?){}[0]
+    final fun (ch.softappeal.yass2.serialize/Writer).writeNoIdRequired(kotlin/Int, kotlin/Any) // ch.softappeal.yass2.serialize.binary/BinarySerializer.writeNoIdRequired|writeNoIdRequired@ch.softappeal.yass2.serialize.Writer(kotlin.Int;kotlin.Any){}[0]
+    final fun (ch.softappeal.yass2.serialize/Writer).writeWithId(kotlin/Any?) // ch.softappeal.yass2.serialize.binary/BinarySerializer.writeWithId|writeWithId@ch.softappeal.yass2.serialize.Writer(kotlin.Any?){}[0]
+    final fun initialize(kotlin/Array<out ch.softappeal.yass2.serialize.binary/BinaryEncoder<*>>...) // ch.softappeal.yass2.serialize.binary/BinarySerializer.initialize|initialize(kotlin.Array<out|ch.softappeal.yass2.serialize.binary.BinaryEncoder<*>>...){}[0]
+    open fun read(ch.softappeal.yass2.serialize/Reader): kotlin/Any? // ch.softappeal.yass2.serialize.binary/BinarySerializer.read|read(ch.softappeal.yass2.serialize.Reader){}[0]
+    open fun write(ch.softappeal.yass2.serialize/Writer, kotlin/Any?) // ch.softappeal.yass2.serialize.binary/BinarySerializer.write|write(ch.softappeal.yass2.serialize.Writer;kotlin.Any?){}[0]
+
+    final object Companion { // ch.softappeal.yass2.serialize.binary/BinarySerializer.Companion|null[0]
+        final const val FIRST_ENCODER_ID // ch.softappeal.yass2.serialize.binary/BinarySerializer.Companion.FIRST_ENCODER_ID|{}FIRST_ENCODER_ID[0]
+            final fun <get-FIRST_ENCODER_ID>(): kotlin/Int // ch.softappeal.yass2.serialize.binary/BinarySerializer.Companion.FIRST_ENCODER_ID.<get-FIRST_ENCODER_ID>|<get-FIRST_ENCODER_ID>(){}[0]
+        final const val LIST_ENCODER_ID // ch.softappeal.yass2.serialize.binary/BinarySerializer.Companion.LIST_ENCODER_ID|{}LIST_ENCODER_ID[0]
+            final fun <get-LIST_ENCODER_ID>(): kotlin/Int // ch.softappeal.yass2.serialize.binary/BinarySerializer.Companion.LIST_ENCODER_ID.<get-LIST_ENCODER_ID>|<get-LIST_ENCODER_ID>(){}[0]
+    }
+}
+
+abstract class ch.softappeal.yass2.serialize.utf8/Utf8Serializer : ch.softappeal.yass2.serialize/Serializer { // ch.softappeal.yass2.serialize.utf8/Utf8Serializer|null[0]
+    constructor <init>(kotlin.collections/List<ch.softappeal.yass2.serialize.utf8/Utf8Encoder<*>>, kotlin/Boolean, kotlin/Boolean) // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.<init>|<init>(kotlin.collections.List<ch.softappeal.yass2.serialize.utf8.Utf8Encoder<*>>;kotlin.Boolean;kotlin.Boolean){}[0]
+
+    final val listEncoder // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.listEncoder|{}listEncoder[0]
+        final fun <get-listEncoder>(): ch.softappeal.yass2.serialize.utf8/Utf8Encoder<kotlin.collections/List<*>> // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.listEncoder.<get-listEncoder>|<get-listEncoder>(){}[0]
+    final val multilineWrite // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.multilineWrite|{}multilineWrite[0]
+        final fun <get-multilineWrite>(): kotlin/Boolean // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.multilineWrite.<get-multilineWrite>|<get-multilineWrite>(){}[0]
+    final val stringEncoder // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.stringEncoder|{}stringEncoder[0]
+        final fun <get-stringEncoder>(): ch.softappeal.yass2.serialize.utf8/Utf8Encoder<kotlin/String> // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.stringEncoder.<get-stringEncoder>|<get-stringEncoder>(){}[0]
+
+    final fun encoder(kotlin.reflect/KClass<*>): ch.softappeal.yass2.serialize.utf8/Utf8Encoder<*> // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.encoder|encoder(kotlin.reflect.KClass<*>){}[0]
+    final fun encoder(kotlin/Int): ch.softappeal.yass2.serialize.utf8/Utf8Encoder<*> // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.encoder|encoder(kotlin.Int){}[0]
+    final fun encoder(kotlin/String): ch.softappeal.yass2.serialize.utf8/Utf8Encoder<*> // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.encoder|encoder(kotlin.String){}[0]
+
+    abstract class Utf8Reader : ch.softappeal.yass2.serialize/Reader { // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader|null[0]
+        constructor <init>(ch.softappeal.yass2.serialize/Reader, kotlin/Int) // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader.<init>|<init>(ch.softappeal.yass2.serialize.Reader;kotlin.Int){}[0]
+
+        final val nextCodePoint // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader.nextCodePoint|{}nextCodePoint[0]
+            final fun <get-nextCodePoint>(): kotlin/Int // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader.nextCodePoint.<get-nextCodePoint>|<get-nextCodePoint>(){}[0]
+
+        final var properties // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader.properties|{}properties[0]
+            final fun <get-properties>(): kotlin.collections/MutableMap<kotlin/String, kotlin/Any> // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader.properties.<get-properties>|<get-properties>(){}[0]
+            final fun <set-properties>(kotlin.collections/MutableMap<kotlin/String, kotlin/Any>) // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader.properties.<set-properties>|<set-properties>(kotlin.collections.MutableMap<kotlin.String,kotlin.Any>){}[0]
+
+        abstract fun readString(): kotlin/String // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader.readString|readString(){}[0]
+        abstract fun readWithId(): kotlin/Any? // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader.readWithId|readWithId(){}[0]
+        final fun (ch.softappeal.yass2.serialize.utf8/Utf8Encoder<*>).addProperty(kotlin/String, kotlin/Any?) // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader.addProperty|addProperty@ch.softappeal.yass2.serialize.utf8.Utf8Encoder<*>(kotlin.String;kotlin.Any?){}[0]
+        final fun expectedCodePoint(kotlin/Byte): kotlin/Boolean // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader.expectedCodePoint|expectedCodePoint(kotlin.Byte){}[0]
+        final fun getProperty(kotlin/String): kotlin/Any? // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader.getProperty|getProperty(kotlin.String){}[0]
+        final fun isWhitespace(): kotlin/Boolean // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader.isWhitespace|isWhitespace(){}[0]
+        final fun readNextCodePoint() // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader.readNextCodePoint|readNextCodePoint(){}[0]
+        final fun readNextCodePointAndSkipWhitespace() // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader.readNextCodePointAndSkipWhitespace|readNextCodePointAndSkipWhitespace(){}[0]
+        final fun skipWhitespace() // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader.skipWhitespace|skipWhitespace(){}[0]
+        open fun readByte(): kotlin/Byte // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader.readByte|readByte(){}[0]
+        open fun readBytes(kotlin/Int): kotlin/ByteArray // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader.readBytes|readBytes(kotlin.Int){}[0]
+    }
+
+    abstract inner class Utf8Writer : ch.softappeal.yass2.serialize/Writer { // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Writer|null[0]
+        constructor <init>(ch.softappeal.yass2.serialize/Writer) // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Writer.<init>|<init>(ch.softappeal.yass2.serialize.Writer){}[0]
+
+        abstract fun writeNoId(kotlin/String, kotlin/Int, kotlin/Any?) // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Writer.writeNoId|writeNoId(kotlin.String;kotlin.Int;kotlin.Any?){}[0]
+        abstract fun writeWithId(kotlin/Any?) // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Writer.writeWithId|writeWithId(kotlin.Any?){}[0]
+        abstract fun writeWithId(kotlin/String, kotlin/Any?) // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Writer.writeWithId|writeWithId(kotlin.String;kotlin.Any?){}[0]
+        final fun nested(kotlin/Function0<kotlin/Unit>) // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Writer.nested|nested(kotlin.Function0<kotlin.Unit>){}[0]
+        final fun writeIndent() // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Writer.writeIndent|writeIndent(){}[0]
+        final fun writeNewLine() // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Writer.writeNewLine|writeNewLine(){}[0]
+        final fun writeString(kotlin/String) // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Writer.writeString|writeString(kotlin.String){}[0]
+        open fun writeByte(kotlin/Byte) // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Writer.writeByte|writeByte(kotlin.Byte){}[0]
+        open fun writeBytes(kotlin/ByteArray) // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Writer.writeBytes|writeBytes(kotlin.ByteArray){}[0]
+    }
+
+    final object Companion { // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Companion|null[0]
+        final const val FIRST_ENCODER_ID // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Companion.FIRST_ENCODER_ID|{}FIRST_ENCODER_ID[0]
+            final fun <get-FIRST_ENCODER_ID>(): kotlin/Int // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Companion.FIRST_ENCODER_ID.<get-FIRST_ENCODER_ID>|<get-FIRST_ENCODER_ID>(){}[0]
+        final const val LIST_ENCODER_ID // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Companion.LIST_ENCODER_ID|{}LIST_ENCODER_ID[0]
+            final fun <get-LIST_ENCODER_ID>(): kotlin/Int // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Companion.LIST_ENCODER_ID.<get-LIST_ENCODER_ID>|<get-LIST_ENCODER_ID>(){}[0]
+        final const val STRING_ENCODER_ID // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Companion.STRING_ENCODER_ID|{}STRING_ENCODER_ID[0]
+            final fun <get-STRING_ENCODER_ID>(): kotlin/Int // ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Companion.STRING_ENCODER_ID.<get-STRING_ENCODER_ID>|<get-STRING_ENCODER_ID>(){}[0]
+    }
+}
+
+final class <#A: kotlin/Any> ch.softappeal.yass2.remote/ServiceId { // ch.softappeal.yass2.remote/ServiceId|null[0]
+    constructor <init>(kotlin/String) // ch.softappeal.yass2.remote/ServiceId.<init>|<init>(kotlin.String){}[0]
+
+    final val id // ch.softappeal.yass2.remote/ServiceId.id|{}id[0]
+        final fun <get-id>(): kotlin/String // ch.softappeal.yass2.remote/ServiceId.id.<get-id>|<get-id>(){}[0]
+}
+
+final class <#A: kotlin/Any> ch.softappeal.yass2.serialize.utf8/ClassUtf8Encoder : ch.softappeal.yass2.serialize.utf8/Utf8Encoder<#A> { // ch.softappeal.yass2.serialize.utf8/ClassUtf8Encoder|null[0]
+    constructor <init>(kotlin.reflect/KClass<#A>, kotlin/Function2<ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Writer, #A, kotlin/Unit>, kotlin/Function1<ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader, #A>, kotlin/Array<out kotlin/Pair<kotlin/String, kotlin/Int>>...) // ch.softappeal.yass2.serialize.utf8/ClassUtf8Encoder.<init>|<init>(kotlin.reflect.KClass<1:0>;kotlin.Function2<ch.softappeal.yass2.serialize.utf8.Utf8Serializer.Utf8Writer,1:0,kotlin.Unit>;kotlin.Function1<ch.softappeal.yass2.serialize.utf8.Utf8Serializer.Utf8Reader,1:0>;kotlin.Array<out|kotlin.Pair<kotlin.String,kotlin.Int>>...){}[0]
+
+    final fun id(kotlin/String): kotlin/Int // ch.softappeal.yass2.serialize.utf8/ClassUtf8Encoder.id|id(kotlin.String){}[0]
+}
+
+final class <#A: kotlin/Enum<#A>> ch.softappeal.yass2.serialize.binary/EnumBinaryEncoder : ch.softappeal.yass2.serialize.binary/BinaryEncoder<#A> { // ch.softappeal.yass2.serialize.binary/EnumBinaryEncoder|null[0]
+    constructor <init>(kotlin.reflect/KClass<#A>, kotlin/Array<#A>) // ch.softappeal.yass2.serialize.binary/EnumBinaryEncoder.<init>|<init>(kotlin.reflect.KClass<1:0>;kotlin.Array<1:0>){}[0]
+}
+
+final class <#A: kotlin/Enum<#A>> ch.softappeal.yass2.serialize.utf8/EnumUtf8Encoder : ch.softappeal.yass2.serialize.utf8/Utf8Encoder<#A> { // ch.softappeal.yass2.serialize.utf8/EnumUtf8Encoder|null[0]
+    constructor <init>(kotlin.reflect/KClass<#A>, kotlin/Function1<kotlin/String, #A>) // ch.softappeal.yass2.serialize.utf8/EnumUtf8Encoder.<init>|<init>(kotlin.reflect.KClass<1:0>;kotlin.Function1<kotlin.String,1:0>){}[0]
+}
+
+final class ch.softappeal.yass2.remote/ExceptionReply : ch.softappeal.yass2.remote/Reply { // ch.softappeal.yass2.remote/ExceptionReply|null[0]
+    constructor <init>(kotlin/Exception) // ch.softappeal.yass2.remote/ExceptionReply.<init>|<init>(kotlin.Exception){}[0]
+
+    final val exception // ch.softappeal.yass2.remote/ExceptionReply.exception|{}exception[0]
+        final fun <get-exception>(): kotlin/Exception // ch.softappeal.yass2.remote/ExceptionReply.exception.<get-exception>|<get-exception>(){}[0]
+
+    final fun process(): kotlin/Nothing // ch.softappeal.yass2.remote/ExceptionReply.process|process(){}[0]
+}
+
+final class ch.softappeal.yass2.remote/Request : ch.softappeal.yass2.remote/Message { // ch.softappeal.yass2.remote/Request|null[0]
+    constructor <init>(kotlin/String, kotlin/String, kotlin.collections/List<kotlin/Any?>) // ch.softappeal.yass2.remote/Request.<init>|<init>(kotlin.String;kotlin.String;kotlin.collections.List<kotlin.Any?>){}[0]
+
+    final val function // ch.softappeal.yass2.remote/Request.function|{}function[0]
+        final fun <get-function>(): kotlin/String // ch.softappeal.yass2.remote/Request.function.<get-function>|<get-function>(){}[0]
+    final val parameters // ch.softappeal.yass2.remote/Request.parameters|{}parameters[0]
+        final fun <get-parameters>(): kotlin.collections/List<kotlin/Any?> // ch.softappeal.yass2.remote/Request.parameters.<get-parameters>|<get-parameters>(){}[0]
+    final val service // ch.softappeal.yass2.remote/Request.service|{}service[0]
+        final fun <get-service>(): kotlin/String // ch.softappeal.yass2.remote/Request.service.<get-service>|<get-service>(){}[0]
+}
+
+final class ch.softappeal.yass2.remote/Service { // ch.softappeal.yass2.remote/Service|null[0]
+    constructor <init>(kotlin/String, kotlin.coroutines/SuspendFunction2<kotlin/String, kotlin.collections/List<kotlin/Any?>, kotlin/Any?>) // ch.softappeal.yass2.remote/Service.<init>|<init>(kotlin.String;kotlin.coroutines.SuspendFunction2<kotlin.String,kotlin.collections.List<kotlin.Any?>,kotlin.Any?>){}[0]
+}
+
+final class ch.softappeal.yass2.remote/ValueReply : ch.softappeal.yass2.remote/Reply { // ch.softappeal.yass2.remote/ValueReply|null[0]
+    constructor <init>(kotlin/Any?) // ch.softappeal.yass2.remote/ValueReply.<init>|<init>(kotlin.Any?){}[0]
+
+    final val value // ch.softappeal.yass2.remote/ValueReply.value|{}value[0]
+        final fun <get-value>(): kotlin/Any? // ch.softappeal.yass2.remote/ValueReply.value.<get-value>|<get-value>(){}[0]
+
+    final fun process(): kotlin/Any? // ch.softappeal.yass2.remote/ValueReply.process|process(){}[0]
+}
+
+final class ch.softappeal.yass2.serialize.utf8/JsonSerializer : ch.softappeal.yass2.serialize.utf8/Utf8Serializer { // ch.softappeal.yass2.serialize.utf8/JsonSerializer|null[0]
+    constructor <init>(kotlin.collections/List<ch.softappeal.yass2.serialize.utf8/Utf8Encoder<*>>, kotlin/Boolean) // ch.softappeal.yass2.serialize.utf8/JsonSerializer.<init>|<init>(kotlin.collections.List<ch.softappeal.yass2.serialize.utf8.Utf8Encoder<*>>;kotlin.Boolean){}[0]
+
+    final fun read(ch.softappeal.yass2.serialize/Reader): kotlin/Any? // ch.softappeal.yass2.serialize.utf8/JsonSerializer.read|read(ch.softappeal.yass2.serialize.Reader){}[0]
+    final fun write(ch.softappeal.yass2.serialize/Writer, kotlin/Any?) // ch.softappeal.yass2.serialize.utf8/JsonSerializer.write|write(ch.softappeal.yass2.serialize.Writer;kotlin.Any?){}[0]
+}
+
+final class ch.softappeal.yass2.serialize.utf8/TextSerializer : ch.softappeal.yass2.serialize.utf8/Utf8Serializer { // ch.softappeal.yass2.serialize.utf8/TextSerializer|null[0]
+    constructor <init>(kotlin.collections/List<ch.softappeal.yass2.serialize.utf8/Utf8Encoder<*>>, kotlin/Boolean) // ch.softappeal.yass2.serialize.utf8/TextSerializer.<init>|<init>(kotlin.collections.List<ch.softappeal.yass2.serialize.utf8.Utf8Encoder<*>>;kotlin.Boolean){}[0]
+
+    final fun read(ch.softappeal.yass2.serialize/Reader): kotlin/Any? // ch.softappeal.yass2.serialize.utf8/TextSerializer.read|read(ch.softappeal.yass2.serialize.Reader){}[0]
+    final fun write(ch.softappeal.yass2.serialize/Writer, kotlin/Any?) // ch.softappeal.yass2.serialize.utf8/TextSerializer.write|write(ch.softappeal.yass2.serialize.Writer;kotlin.Any?){}[0]
+}
+
+final class ch.softappeal.yass2.serialize/BytesReader : ch.softappeal.yass2.serialize/Reader { // ch.softappeal.yass2.serialize/BytesReader|null[0]
+    constructor <init>(kotlin/ByteArray) // ch.softappeal.yass2.serialize/BytesReader.<init>|<init>(kotlin.ByteArray){}[0]
+
+    final val isDrained // ch.softappeal.yass2.serialize/BytesReader.isDrained|{}isDrained[0]
+        final fun <get-isDrained>(): kotlin/Boolean // ch.softappeal.yass2.serialize/BytesReader.isDrained.<get-isDrained>|<get-isDrained>(){}[0]
+
+    final var buffer // ch.softappeal.yass2.serialize/BytesReader.buffer|{}buffer[0]
+        final fun <get-buffer>(): kotlin/ByteArray // ch.softappeal.yass2.serialize/BytesReader.buffer.<get-buffer>|<get-buffer>(){}[0]
+        final fun <set-buffer>(kotlin/ByteArray) // ch.softappeal.yass2.serialize/BytesReader.buffer.<set-buffer>|<set-buffer>(kotlin.ByteArray){}[0]
+    final var current // ch.softappeal.yass2.serialize/BytesReader.current|{}current[0]
+        final fun <get-current>(): kotlin/Int // ch.softappeal.yass2.serialize/BytesReader.current.<get-current>|<get-current>(){}[0]
+        final fun <set-current>(kotlin/Int) // ch.softappeal.yass2.serialize/BytesReader.current.<set-current>|<set-current>(kotlin.Int){}[0]
+
+    final fun checkDrained() // ch.softappeal.yass2.serialize/BytesReader.checkDrained|checkDrained(){}[0]
+    final fun readByte(): kotlin/Byte // ch.softappeal.yass2.serialize/BytesReader.readByte|readByte(){}[0]
+    final fun readBytes(kotlin/Int): kotlin/ByteArray // ch.softappeal.yass2.serialize/BytesReader.readBytes|readBytes(kotlin.Int){}[0]
+}
+
+final class ch.softappeal.yass2.serialize/BytesWriter : ch.softappeal.yass2.serialize/Writer { // ch.softappeal.yass2.serialize/BytesWriter|null[0]
+    constructor <init>(kotlin/ByteArray) // ch.softappeal.yass2.serialize/BytesWriter.<init>|<init>(kotlin.ByteArray){}[0]
+    constructor <init>(kotlin/Int) // ch.softappeal.yass2.serialize/BytesWriter.<init>|<init>(kotlin.Int){}[0]
+
+    final var buffer // ch.softappeal.yass2.serialize/BytesWriter.buffer|{}buffer[0]
+        final fun <get-buffer>(): kotlin/ByteArray // ch.softappeal.yass2.serialize/BytesWriter.buffer.<get-buffer>|<get-buffer>(){}[0]
+        final fun <set-buffer>(kotlin/ByteArray) // ch.softappeal.yass2.serialize/BytesWriter.buffer.<set-buffer>|<set-buffer>(kotlin.ByteArray){}[0]
+    final var current // ch.softappeal.yass2.serialize/BytesWriter.current|{}current[0]
+        final fun <get-current>(): kotlin/Int // ch.softappeal.yass2.serialize/BytesWriter.current.<get-current>|<get-current>(){}[0]
+        final fun <set-current>(kotlin/Int) // ch.softappeal.yass2.serialize/BytesWriter.current.<set-current>|<set-current>(kotlin.Int){}[0]
+
+    final fun writeByte(kotlin/Byte) // ch.softappeal.yass2.serialize/BytesWriter.writeByte|writeByte(kotlin.Byte){}[0]
+    final fun writeBytes(kotlin/ByteArray) // ch.softappeal.yass2.serialize/BytesWriter.writeBytes|writeBytes(kotlin.ByteArray){}[0]
+}
+
+final class ch.softappeal.yass2.serialize/Transport : ch.softappeal.yass2.serialize/Serializer { // ch.softappeal.yass2.serialize/Transport|null[0]
+    constructor <init>(ch.softappeal.yass2.serialize/Serializer, kotlin/Int = ..., kotlin/Int = ...) // ch.softappeal.yass2.serialize/Transport.<init>|<init>(ch.softappeal.yass2.serialize.Serializer;kotlin.Int;kotlin.Int){}[0]
+
+    final fun createWriter(): ch.softappeal.yass2.serialize/BytesWriter // ch.softappeal.yass2.serialize/Transport.createWriter|createWriter(){}[0]
+    final fun read(ch.softappeal.yass2.serialize/Reader): kotlin/Any? // ch.softappeal.yass2.serialize/Transport.read|read(ch.softappeal.yass2.serialize.Reader){}[0]
+    final fun write(ch.softappeal.yass2.serialize/Writer, kotlin/Any?) // ch.softappeal.yass2.serialize/Transport.write|write(ch.softappeal.yass2.serialize.Writer;kotlin.Any?){}[0]
+    final suspend fun readBytes(kotlin/Int, kotlin.coroutines/SuspendFunction3<kotlin/ByteArray, kotlin/Int, kotlin/Int, kotlin/Unit>): kotlin/ByteArray // ch.softappeal.yass2.serialize/Transport.readBytes|readBytes(kotlin.Int;kotlin.coroutines.SuspendFunction3<kotlin.ByteArray,kotlin.Int,kotlin.Int,kotlin.Unit>){}[0]
+}
+
+open class <#A: kotlin/Any> ch.softappeal.yass2.serialize.binary/BinaryEncoder { // ch.softappeal.yass2.serialize.binary/BinaryEncoder|null[0]
+    constructor <init>(kotlin.reflect/KClass<#A>, kotlin/Function2<ch.softappeal.yass2.serialize/Writer, #A, kotlin/Unit>, kotlin/Function1<ch.softappeal.yass2.serialize/Reader, #A>) // ch.softappeal.yass2.serialize.binary/BinaryEncoder.<init>|<init>(kotlin.reflect.KClass<1:0>;kotlin.Function2<ch.softappeal.yass2.serialize.Writer,1:0,kotlin.Unit>;kotlin.Function1<ch.softappeal.yass2.serialize.Reader,1:0>){}[0]
+
+    final fun read(ch.softappeal.yass2.serialize/Reader): #A // ch.softappeal.yass2.serialize.binary/BinaryEncoder.read|read(ch.softappeal.yass2.serialize.Reader){}[0]
+    final fun write(ch.softappeal.yass2.serialize/Writer, kotlin/Any) // ch.softappeal.yass2.serialize.binary/BinaryEncoder.write|write(ch.softappeal.yass2.serialize.Writer;kotlin.Any){}[0]
+}
+
+open class <#A: kotlin/Any> ch.softappeal.yass2.serialize.utf8/Utf8Encoder { // ch.softappeal.yass2.serialize.utf8/Utf8Encoder|null[0]
+    constructor <init>(kotlin.reflect/KClass<#A>, kotlin/Function2<ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Writer, #A, kotlin/Unit>, kotlin/Function1<ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader, #A>) // ch.softappeal.yass2.serialize.utf8/Utf8Encoder.<init>|<init>(kotlin.reflect.KClass<1:0>;kotlin.Function2<ch.softappeal.yass2.serialize.utf8.Utf8Serializer.Utf8Writer,1:0,kotlin.Unit>;kotlin.Function1<ch.softappeal.yass2.serialize.utf8.Utf8Serializer.Utf8Reader,1:0>){}[0]
+
+    final val type // ch.softappeal.yass2.serialize.utf8/Utf8Encoder.type|{}type[0]
+        final fun <get-type>(): kotlin.reflect/KClass<#A> // ch.softappeal.yass2.serialize.utf8/Utf8Encoder.type.<get-type>|<get-type>(){}[0]
+
+    final fun read(ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Reader): #A // ch.softappeal.yass2.serialize.utf8/Utf8Encoder.read|read(ch.softappeal.yass2.serialize.utf8.Utf8Serializer.Utf8Reader){}[0]
+    final fun write(ch.softappeal.yass2.serialize.utf8/Utf8Serializer.Utf8Writer, kotlin/Any?) // ch.softappeal.yass2.serialize.utf8/Utf8Encoder.write|write(ch.softappeal.yass2.serialize.utf8.Utf8Serializer.Utf8Writer;kotlin.Any?){}[0]
+}
+
+sealed class ch.softappeal.yass2.remote/Message // ch.softappeal.yass2.remote/Message|null[0]
+
+sealed class ch.softappeal.yass2.remote/Reply : ch.softappeal.yass2.remote/Message { // ch.softappeal.yass2.remote/Reply|null[0]
+    abstract fun process(): kotlin/Any? // ch.softappeal.yass2.remote/Reply.process|process(){}[0]
+}
+
+final object ch.softappeal.yass2.serialize.binary/BooleanBinaryEncoder : ch.softappeal.yass2.serialize.binary/BinaryEncoder<kotlin/Boolean> // ch.softappeal.yass2.serialize.binary/BooleanBinaryEncoder|null[0]
+
+final object ch.softappeal.yass2.serialize.binary/ByteArrayBinaryEncoder : ch.softappeal.yass2.serialize.binary/BinaryEncoder<kotlin/ByteArray> // ch.softappeal.yass2.serialize.binary/ByteArrayBinaryEncoder|null[0]
+
+final object ch.softappeal.yass2.serialize.binary/DoubleBinaryEncoder : ch.softappeal.yass2.serialize.binary/BinaryEncoder<kotlin/Double> // ch.softappeal.yass2.serialize.binary/DoubleBinaryEncoder|null[0]
+
+final object ch.softappeal.yass2.serialize.binary/IntBinaryEncoder : ch.softappeal.yass2.serialize.binary/BinaryEncoder<kotlin/Int> // ch.softappeal.yass2.serialize.binary/IntBinaryEncoder|null[0]
+
+final object ch.softappeal.yass2.serialize.binary/LongBinaryEncoder : ch.softappeal.yass2.serialize.binary/BinaryEncoder<kotlin/Long> // ch.softappeal.yass2.serialize.binary/LongBinaryEncoder|null[0]
+
+final object ch.softappeal.yass2.serialize.binary/StringBinaryEncoder : ch.softappeal.yass2.serialize.binary/BinaryEncoder<kotlin/String> // ch.softappeal.yass2.serialize.binary/StringBinaryEncoder|null[0]
+
+final object ch.softappeal.yass2.serialize.utf8/BooleanUtf8Encoder : ch.softappeal.yass2.serialize.utf8/Utf8Encoder<kotlin/Boolean> // ch.softappeal.yass2.serialize.utf8/BooleanUtf8Encoder|null[0]
+
+final object ch.softappeal.yass2.serialize.utf8/ByteArrayUtf8Encoder : ch.softappeal.yass2.serialize.utf8/Utf8Encoder<kotlin/ByteArray> // ch.softappeal.yass2.serialize.utf8/ByteArrayUtf8Encoder|null[0]
+
+final object ch.softappeal.yass2.serialize.utf8/DoubleUtf8Encoder : ch.softappeal.yass2.serialize.utf8/Utf8Encoder<kotlin/Double> // ch.softappeal.yass2.serialize.utf8/DoubleUtf8Encoder|null[0]
+
+final object ch.softappeal.yass2.serialize.utf8/IntUtf8Encoder : ch.softappeal.yass2.serialize.utf8/Utf8Encoder<kotlin/Int> // ch.softappeal.yass2.serialize.utf8/IntUtf8Encoder|null[0]
+
+final object ch.softappeal.yass2.serialize.utf8/LongUtf8Encoder : ch.softappeal.yass2.serialize.utf8/Utf8Encoder<kotlin/Long> // ch.softappeal.yass2.serialize.utf8/LongUtf8Encoder|null[0]
+
+final const val ch.softappeal.yass2.serialize.utf8/COLON // ch.softappeal.yass2.serialize.utf8/COLON|{}COLON[0]
+    final fun <get-COLON>(): kotlin/Byte // ch.softappeal.yass2.serialize.utf8/COLON.<get-COLON>|<get-COLON>(){}[0]
+final const val ch.softappeal.yass2.serialize.utf8/COMMA // ch.softappeal.yass2.serialize.utf8/COMMA|{}COMMA[0]
+    final fun <get-COMMA>(): kotlin/Byte // ch.softappeal.yass2.serialize.utf8/COMMA.<get-COMMA>|<get-COMMA>(){}[0]
+final const val ch.softappeal.yass2.serialize.utf8/LBRACKET // ch.softappeal.yass2.serialize.utf8/LBRACKET|{}LBRACKET[0]
+    final fun <get-LBRACKET>(): kotlin/Byte // ch.softappeal.yass2.serialize.utf8/LBRACKET.<get-LBRACKET>|<get-LBRACKET>(){}[0]
+final const val ch.softappeal.yass2.serialize.utf8/NO_ENCODER_ID // ch.softappeal.yass2.serialize.utf8/NO_ENCODER_ID|{}NO_ENCODER_ID[0]
+    final fun <get-NO_ENCODER_ID>(): kotlin/Int // ch.softappeal.yass2.serialize.utf8/NO_ENCODER_ID.<get-NO_ENCODER_ID>|<get-NO_ENCODER_ID>(){}[0]
+final const val ch.softappeal.yass2.serialize.utf8/QUOTE // ch.softappeal.yass2.serialize.utf8/QUOTE|{}QUOTE[0]
+    final fun <get-QUOTE>(): kotlin/Byte // ch.softappeal.yass2.serialize.utf8/QUOTE.<get-QUOTE>|<get-QUOTE>(){}[0]
+final const val ch.softappeal.yass2.serialize.utf8/SP // ch.softappeal.yass2.serialize.utf8/SP|{}SP[0]
+    final fun <get-SP>(): kotlin/Byte // ch.softappeal.yass2.serialize.utf8/SP.<get-SP>|<get-SP>(){}[0]
+
+final fun (ch.softappeal.yass2.serialize.utf8/Utf8Serializer).ch.softappeal.yass2.serialize.utf8/readString(kotlin/String): kotlin/Any? // ch.softappeal.yass2.serialize.utf8/readString|readString@ch.softappeal.yass2.serialize.utf8.Utf8Serializer(kotlin.String){}[0]
+final fun (ch.softappeal.yass2.serialize.utf8/Utf8Serializer).ch.softappeal.yass2.serialize.utf8/writeString(kotlin/Any?): kotlin/String // ch.softappeal.yass2.serialize.utf8/writeString|writeString@ch.softappeal.yass2.serialize.utf8.Utf8Serializer(kotlin.Any?){}[0]
+final fun (ch.softappeal.yass2.serialize/Reader).ch.softappeal.yass2.serialize.binary/readBinaryBoolean(): kotlin/Boolean // ch.softappeal.yass2.serialize.binary/readBinaryBoolean|readBinaryBoolean@ch.softappeal.yass2.serialize.Reader(){}[0]
+final fun (ch.softappeal.yass2.serialize/Reader).ch.softappeal.yass2.serialize.binary/readBinaryInt(): kotlin/Int // ch.softappeal.yass2.serialize.binary/readBinaryInt|readBinaryInt@ch.softappeal.yass2.serialize.Reader(){}[0]
+final fun (ch.softappeal.yass2.serialize/Reader).ch.softappeal.yass2.serialize.binary/readBinaryLong(): kotlin/Long // ch.softappeal.yass2.serialize.binary/readBinaryLong|readBinaryLong@ch.softappeal.yass2.serialize.Reader(){}[0]
+final fun (ch.softappeal.yass2.serialize/Reader).ch.softappeal.yass2.serialize.binary/readVarInt(): kotlin/Int // ch.softappeal.yass2.serialize.binary/readVarInt|readVarInt@ch.softappeal.yass2.serialize.Reader(){}[0]
+final fun (ch.softappeal.yass2.serialize/Reader).ch.softappeal.yass2.serialize.binary/readVarLong(): kotlin/Long // ch.softappeal.yass2.serialize.binary/readVarLong|readVarLong@ch.softappeal.yass2.serialize.Reader(){}[0]
+final fun (ch.softappeal.yass2.serialize/Serializer).ch.softappeal.yass2.serialize/readBytes(kotlin/ByteArray): kotlin/Any? // ch.softappeal.yass2.serialize/readBytes|readBytes@ch.softappeal.yass2.serialize.Serializer(kotlin.ByteArray){}[0]
+final fun (ch.softappeal.yass2.serialize/Serializer).ch.softappeal.yass2.serialize/writeBytes(kotlin/Any?): kotlin/ByteArray // ch.softappeal.yass2.serialize/writeBytes|writeBytes@ch.softappeal.yass2.serialize.Serializer(kotlin.Any?){}[0]
+final fun (ch.softappeal.yass2.serialize/Writer).ch.softappeal.yass2.serialize.binary/writeBinaryBoolean(kotlin/Boolean) // ch.softappeal.yass2.serialize.binary/writeBinaryBoolean|writeBinaryBoolean@ch.softappeal.yass2.serialize.Writer(kotlin.Boolean){}[0]
+final fun (ch.softappeal.yass2.serialize/Writer).ch.softappeal.yass2.serialize.binary/writeBinaryInt(kotlin/Int) // ch.softappeal.yass2.serialize.binary/writeBinaryInt|writeBinaryInt@ch.softappeal.yass2.serialize.Writer(kotlin.Int){}[0]
+final fun (ch.softappeal.yass2.serialize/Writer).ch.softappeal.yass2.serialize.binary/writeBinaryLong(kotlin/Long) // ch.softappeal.yass2.serialize.binary/writeBinaryLong|writeBinaryLong@ch.softappeal.yass2.serialize.Writer(kotlin.Long){}[0]
+final fun (ch.softappeal.yass2.serialize/Writer).ch.softappeal.yass2.serialize.binary/writeVarInt(kotlin/Int) // ch.softappeal.yass2.serialize.binary/writeVarInt|writeVarInt@ch.softappeal.yass2.serialize.Writer(kotlin.Int){}[0]
+final fun (ch.softappeal.yass2.serialize/Writer).ch.softappeal.yass2.serialize.binary/writeVarLong(kotlin/Long) // ch.softappeal.yass2.serialize.binary/writeVarLong|writeVarLong@ch.softappeal.yass2.serialize.Writer(kotlin.Long){}[0]
+final fun (kotlin.coroutines/SuspendFunction3<kotlin/String, kotlin.collections/List<kotlin/Any?>, kotlin.coroutines/SuspendFunction0<kotlin/Any?>, kotlin/Any?>).ch.softappeal.yass2/plus(kotlin.coroutines/SuspendFunction3<kotlin/String, kotlin.collections/List<kotlin/Any?>, kotlin.coroutines/SuspendFunction0<kotlin/Any?>, kotlin/Any?>): kotlin.coroutines/SuspendFunction3<kotlin/String, kotlin.collections/List<kotlin/Any?>, kotlin.coroutines/SuspendFunction0<kotlin/Any?>, kotlin/Any?> // ch.softappeal.yass2/plus|plus@kotlin.coroutines.SuspendFunction3<kotlin.String,kotlin.collections.List<kotlin.Any?>,kotlin.coroutines.SuspendFunction0<kotlin.Any?>,kotlin.Any?>(kotlin.coroutines.SuspendFunction3<kotlin.String,kotlin.collections.List<kotlin.Any?>,kotlin.coroutines.SuspendFunction0<kotlin.Any?>,kotlin.Any?>){}[0]
+final fun (kotlin/Function3<kotlin/String, kotlin.collections/List<kotlin/Any?>, kotlin/Function0<kotlin/Any?>, kotlin/Any?>).ch.softappeal.yass2/plus(kotlin/Function3<kotlin/String, kotlin.collections/List<kotlin/Any?>, kotlin/Function0<kotlin/Any?>, kotlin/Any?>): kotlin/Function3<kotlin/String, kotlin.collections/List<kotlin/Any?>, kotlin/Function0<kotlin/Any?>, kotlin/Any?> // ch.softappeal.yass2/plus|plus@kotlin.Function3<kotlin.String,kotlin.collections.List<kotlin.Any?>,kotlin.Function0<kotlin.Any?>,kotlin.Any?>(kotlin.Function3<kotlin.String,kotlin.collections.List<kotlin.Any?>,kotlin.Function0<kotlin.Any?>,kotlin.Any?>){}[0]
+final fun (kotlin/Int).ch.softappeal.yass2.serialize.binary/fromZigZag(): kotlin/Int // ch.softappeal.yass2.serialize.binary/fromZigZag|fromZigZag@kotlin.Int(){}[0]
+final fun (kotlin/Int).ch.softappeal.yass2.serialize.binary/toZigZag(): kotlin/Int // ch.softappeal.yass2.serialize.binary/toZigZag|toZigZag@kotlin.Int(){}[0]
+final fun (kotlin/Long).ch.softappeal.yass2.serialize.binary/fromZigZag(): kotlin/Long // ch.softappeal.yass2.serialize.binary/fromZigZag|fromZigZag@kotlin.Long(){}[0]
+final fun (kotlin/Long).ch.softappeal.yass2.serialize.binary/toZigZag(): kotlin/Long // ch.softappeal.yass2.serialize.binary/toZigZag|toZigZag@kotlin.Long(){}[0]
+final fun <#A: kotlin/Any> (ch.softappeal.yass2.serialize/Reader).ch.softappeal.yass2.serialize.binary/readBinaryOptional(kotlin/Function1<ch.softappeal.yass2.serialize/Reader, #A>): #A? // ch.softappeal.yass2.serialize.binary/readBinaryOptional|readBinaryOptional@ch.softappeal.yass2.serialize.Reader(kotlin.Function1<ch.softappeal.yass2.serialize.Reader,0:0>){0§<kotlin.Any>}[0]
+final fun <#A: kotlin/Any> (ch.softappeal.yass2.serialize/Writer).ch.softappeal.yass2.serialize.binary/writeBinaryOptional(#A?, kotlin/Function2<ch.softappeal.yass2.serialize/Writer, #A, kotlin/Unit>) // ch.softappeal.yass2.serialize.binary/writeBinaryOptional|writeBinaryOptional@ch.softappeal.yass2.serialize.Writer(0:0?;kotlin.Function2<ch.softappeal.yass2.serialize.Writer,0:0,kotlin.Unit>){0§<kotlin.Any>}[0]
+final fun ch.softappeal.yass2.remote/tunnel(kotlin/Array<out ch.softappeal.yass2.remote/Service>...): kotlin.coroutines/SuspendFunction1<ch.softappeal.yass2.remote/Request, ch.softappeal.yass2.remote/Reply> // ch.softappeal.yass2.remote/tunnel|tunnel(kotlin.Array<out|ch.softappeal.yass2.remote.Service>...){}[0]
+final inline fun <#A: kotlin/Any?> ch.softappeal.yass2/tryCatch(kotlin/Function0<#A>, kotlin/Function0<kotlin/Unit>): #A // ch.softappeal.yass2/tryCatch|tryCatch(kotlin.Function0<0:0>;kotlin.Function0<kotlin.Unit>){0§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?> ch.softappeal.yass2/tryFinally(kotlin/Function0<#A>, kotlin/Function0<kotlin/Unit>): #A // ch.softappeal.yass2/tryFinally|tryFinally(kotlin.Function0<0:0>;kotlin.Function0<kotlin.Unit>){0§<kotlin.Any?>}[0]

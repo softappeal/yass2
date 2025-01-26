@@ -2,6 +2,7 @@
 
 @file:Suppress("SpellCheckingInspection")
 
+import kotlinx.validation.ExperimentalBCVApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import java.util.regex.Pattern
 
@@ -9,6 +10,12 @@ plugins {
     alias(libs.plugins.multiplatform)
     id("maven-publish")
     signing
+    alias(libs.plugins.binary.compatibility.validator)
+}
+
+apiValidation {
+    ignoredProjects.addAll(listOf("yass2", "tutorial", "test"))
+    @OptIn(ExperimentalBCVApi::class) klib { enabled = true }
 }
 
 val libraries = libs

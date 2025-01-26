@@ -1,0 +1,29 @@
+public final class ch/softappeal/yass2/generate/CodeWriter {
+	public fun <init> (Ljava/lang/Appendable;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/Appendable;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun write (Ljava/lang/String;)V
+	public final fun writeLine ()V
+	public final fun writeLine (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public final fun writeNested (Ljava/lang/String;)V
+	public final fun writeNestedLine (Ljava/lang/String;)V
+	public final fun writeNestedLine (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public final fun writeNestedLine (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+}
+
+public final class ch/softappeal/yass2/generate/GenerateKt {
+	public static final field GENERATED_BY_YASS Ljava/lang/String;
+	public static final fun duplicates (Ljava/util/List;)Ljava/util/List;
+	public static final fun generate (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static final fun generateProxies (Lch/softappeal/yass2/generate/CodeWriter;Ljava/util/List;)V
+	public static final fun hasNoDuplicates (Ljava/util/List;)Z
+}
+
+public final class ch/softappeal/yass2/generate/GenerateProxyKt {
+	public static final fun generateProxy (Lch/softappeal/yass2/generate/CodeWriter;Lkotlin/reflect/KClass;)V
+}
+
+public final class ch/softappeal/yass2/generate/GenerateSerializerKt {
+	public static final fun generateBinarySerializer (Lch/softappeal/yass2/generate/CodeWriter;Ljava/util/List;Ljava/util/List;)V
+	public static final fun generateUtf8Encoders (Lch/softappeal/yass2/generate/CodeWriter;Ljava/util/List;Ljava/util/List;)V
+}
+

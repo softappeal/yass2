@@ -1,0 +1,288 @@
+public final class ch/softappeal/yass2/CleanupKt {
+	public static final fun tryCatch (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public static final fun tryFinally (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+}
+
+public final class ch/softappeal/yass2/InterceptorKt {
+	public static final fun plus (Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;)Lkotlin/jvm/functions/Function3;
+	public static final fun plus (Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;)Lkotlin/jvm/functions/Function4;
+}
+
+public final class ch/softappeal/yass2/remote/ExceptionReply : ch/softappeal/yass2/remote/Reply {
+	public fun <init> (Ljava/lang/Exception;)V
+	public final fun getException ()Ljava/lang/Exception;
+	public synthetic fun process ()Ljava/lang/Object;
+	public fun process ()Ljava/lang/Void;
+}
+
+public abstract class ch/softappeal/yass2/remote/Message {
+}
+
+public final class ch/softappeal/yass2/remote/RemoteKt {
+	public static final fun tunnel ([Lch/softappeal/yass2/remote/Service;)Lkotlin/jvm/functions/Function2;
+}
+
+public abstract class ch/softappeal/yass2/remote/Reply : ch/softappeal/yass2/remote/Message {
+	public abstract fun process ()Ljava/lang/Object;
+}
+
+public final class ch/softappeal/yass2/remote/Request : ch/softappeal/yass2/remote/Message {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)V
+	public final fun getFunction ()Ljava/lang/String;
+	public final fun getParameters ()Ljava/util/List;
+	public final fun getService ()Ljava/lang/String;
+}
+
+public final class ch/softappeal/yass2/remote/Service {
+	public fun <init> (Ljava/lang/String;Lkotlin/jvm/functions/Function3;)V
+}
+
+public final class ch/softappeal/yass2/remote/ServiceId {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun getId ()Ljava/lang/String;
+}
+
+public final class ch/softappeal/yass2/remote/ValueReply : ch/softappeal/yass2/remote/Reply {
+	public fun <init> (Ljava/lang/Object;)V
+	public final fun getValue ()Ljava/lang/Object;
+	public fun process ()Ljava/lang/Object;
+}
+
+public final class ch/softappeal/yass2/serialize/BytesReader : ch/softappeal/yass2/serialize/Reader {
+	public fun <init> ([B)V
+	public final fun checkDrained ()V
+	public final fun getBuffer ()[B
+	public final fun getCurrent ()I
+	public final fun isDrained ()Z
+	public fun readByte ()B
+	public fun readBytes (I)[B
+	public final fun setBuffer ([B)V
+	public final fun setCurrent (I)V
+}
+
+public final class ch/softappeal/yass2/serialize/BytesWriter : ch/softappeal/yass2/serialize/Writer {
+	public fun <init> (I)V
+	public fun <init> ([B)V
+	public final fun getBuffer ()[B
+	public final fun getCurrent ()I
+	public final fun setBuffer ([B)V
+	public final fun setCurrent (I)V
+	public fun writeByte (B)V
+	public fun writeBytes ([B)V
+}
+
+public abstract interface class ch/softappeal/yass2/serialize/Reader {
+	public abstract fun readByte ()B
+	public abstract fun readBytes (I)[B
+}
+
+public abstract interface class ch/softappeal/yass2/serialize/Serializer {
+	public abstract fun read (Lch/softappeal/yass2/serialize/Reader;)Ljava/lang/Object;
+	public abstract fun write (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
+}
+
+public final class ch/softappeal/yass2/serialize/SerializerKt {
+	public static final fun readBytes (Lch/softappeal/yass2/serialize/Serializer;[B)Ljava/lang/Object;
+	public static final fun writeBytes (Lch/softappeal/yass2/serialize/Serializer;Ljava/lang/Object;)[B
+}
+
+public final class ch/softappeal/yass2/serialize/Transport : ch/softappeal/yass2/serialize/Serializer {
+	public fun <init> (Lch/softappeal/yass2/serialize/Serializer;II)V
+	public synthetic fun <init> (Lch/softappeal/yass2/serialize/Serializer;IIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun createWriter ()Lch/softappeal/yass2/serialize/BytesWriter;
+	public fun read (Lch/softappeal/yass2/serialize/Reader;)Ljava/lang/Object;
+	public final fun readBytes (ILkotlin/jvm/functions/Function4;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun write (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
+}
+
+public abstract interface class ch/softappeal/yass2/serialize/Writer {
+	public abstract fun writeByte (B)V
+	public abstract fun writeBytes ([B)V
+}
+
+public class ch/softappeal/yass2/serialize/binary/BinaryEncoder {
+	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;)V
+	public final fun read (Lch/softappeal/yass2/serialize/Reader;)Ljava/lang/Object;
+	public final fun write (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
+}
+
+public final class ch/softappeal/yass2/serialize/binary/BinaryEncodersKt {
+	public static final fun readBinaryOptional (Lch/softappeal/yass2/serialize/Reader;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public static final fun writeBinaryOptional (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;)V
+}
+
+public final class ch/softappeal/yass2/serialize/binary/BinaryIntKt {
+	public static final fun readBinaryBoolean (Lch/softappeal/yass2/serialize/Reader;)Z
+	public static final fun readBinaryInt (Lch/softappeal/yass2/serialize/Reader;)I
+	public static final fun readBinaryLong (Lch/softappeal/yass2/serialize/Reader;)J
+	public static final fun writeBinaryBoolean (Lch/softappeal/yass2/serialize/Writer;Z)V
+	public static final fun writeBinaryInt (Lch/softappeal/yass2/serialize/Writer;I)V
+	public static final fun writeBinaryLong (Lch/softappeal/yass2/serialize/Writer;J)V
+}
+
+public abstract class ch/softappeal/yass2/serialize/binary/BinarySerializer : ch/softappeal/yass2/serialize/Serializer {
+	public static final field Companion Lch/softappeal/yass2/serialize/binary/BinarySerializer$Companion;
+	public static final field FIRST_ENCODER_ID I
+	public static final field LIST_ENCODER_ID I
+	public fun <init> ()V
+	protected final fun initialize ([Lch/softappeal/yass2/serialize/binary/BinaryEncoder;)V
+	public fun read (Lch/softappeal/yass2/serialize/Reader;)Ljava/lang/Object;
+	protected final fun readNoIdOptional (Lch/softappeal/yass2/serialize/Reader;I)Ljava/lang/Object;
+	protected final fun readNoIdRequired (Lch/softappeal/yass2/serialize/Reader;I)Ljava/lang/Object;
+	protected final fun readWithId (Lch/softappeal/yass2/serialize/Reader;)Ljava/lang/Object;
+	public fun write (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
+	protected final fun writeNoIdOptional (Lch/softappeal/yass2/serialize/Writer;ILjava/lang/Object;)V
+	protected final fun writeNoIdRequired (Lch/softappeal/yass2/serialize/Writer;ILjava/lang/Object;)V
+	protected final fun writeWithId (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
+}
+
+public final class ch/softappeal/yass2/serialize/binary/BinarySerializer$Companion {
+}
+
+public final class ch/softappeal/yass2/serialize/binary/BinaryVarIntKt {
+	public static final fun fromZigZag (I)I
+	public static final fun fromZigZag (J)J
+	public static final fun readVarInt (Lch/softappeal/yass2/serialize/Reader;)I
+	public static final fun readVarLong (Lch/softappeal/yass2/serialize/Reader;)J
+	public static final fun toZigZag (I)I
+	public static final fun toZigZag (J)J
+	public static final fun writeVarInt (Lch/softappeal/yass2/serialize/Writer;I)V
+	public static final fun writeVarLong (Lch/softappeal/yass2/serialize/Writer;J)V
+}
+
+public final class ch/softappeal/yass2/serialize/binary/BooleanBinaryEncoder : ch/softappeal/yass2/serialize/binary/BinaryEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/serialize/binary/BooleanBinaryEncoder;
+}
+
+public final class ch/softappeal/yass2/serialize/binary/ByteArrayBinaryEncoder : ch/softappeal/yass2/serialize/binary/BinaryEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/serialize/binary/ByteArrayBinaryEncoder;
+}
+
+public final class ch/softappeal/yass2/serialize/binary/DoubleBinaryEncoder : ch/softappeal/yass2/serialize/binary/BinaryEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/serialize/binary/DoubleBinaryEncoder;
+}
+
+public final class ch/softappeal/yass2/serialize/binary/EnumBinaryEncoder : ch/softappeal/yass2/serialize/binary/BinaryEncoder {
+	public fun <init> (Lkotlin/reflect/KClass;[Ljava/lang/Enum;)V
+}
+
+public final class ch/softappeal/yass2/serialize/binary/IntBinaryEncoder : ch/softappeal/yass2/serialize/binary/BinaryEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/serialize/binary/IntBinaryEncoder;
+}
+
+public final class ch/softappeal/yass2/serialize/binary/LongBinaryEncoder : ch/softappeal/yass2/serialize/binary/BinaryEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/serialize/binary/LongBinaryEncoder;
+}
+
+public final class ch/softappeal/yass2/serialize/binary/StringBinaryEncoder : ch/softappeal/yass2/serialize/binary/BinaryEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/serialize/binary/StringBinaryEncoder;
+}
+
+public final class ch/softappeal/yass2/serialize/utf8/BooleanUtf8Encoder : ch/softappeal/yass2/serialize/utf8/Utf8Encoder {
+	public static final field INSTANCE Lch/softappeal/yass2/serialize/utf8/BooleanUtf8Encoder;
+}
+
+public final class ch/softappeal/yass2/serialize/utf8/ByteArrayUtf8Encoder : ch/softappeal/yass2/serialize/utf8/Utf8Encoder {
+	public static final field INSTANCE Lch/softappeal/yass2/serialize/utf8/ByteArrayUtf8Encoder;
+}
+
+public final class ch/softappeal/yass2/serialize/utf8/ClassUtf8Encoder : ch/softappeal/yass2/serialize/utf8/Utf8Encoder {
+	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;[Lkotlin/Pair;)V
+	public final fun id (Ljava/lang/String;)I
+}
+
+public final class ch/softappeal/yass2/serialize/utf8/DoubleUtf8Encoder : ch/softappeal/yass2/serialize/utf8/Utf8Encoder {
+	public static final field INSTANCE Lch/softappeal/yass2/serialize/utf8/DoubleUtf8Encoder;
+}
+
+public final class ch/softappeal/yass2/serialize/utf8/EnumUtf8Encoder : ch/softappeal/yass2/serialize/utf8/Utf8Encoder {
+	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;)V
+}
+
+public final class ch/softappeal/yass2/serialize/utf8/IntUtf8Encoder : ch/softappeal/yass2/serialize/utf8/Utf8Encoder {
+	public static final field INSTANCE Lch/softappeal/yass2/serialize/utf8/IntUtf8Encoder;
+}
+
+public final class ch/softappeal/yass2/serialize/utf8/JsonSerializer : ch/softappeal/yass2/serialize/utf8/Utf8Serializer {
+	public fun <init> (Ljava/util/List;Z)V
+	public fun read (Lch/softappeal/yass2/serialize/Reader;)Ljava/lang/Object;
+	public fun write (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
+}
+
+public final class ch/softappeal/yass2/serialize/utf8/LongUtf8Encoder : ch/softappeal/yass2/serialize/utf8/Utf8Encoder {
+	public static final field INSTANCE Lch/softappeal/yass2/serialize/utf8/LongUtf8Encoder;
+}
+
+public final class ch/softappeal/yass2/serialize/utf8/TextSerializer : ch/softappeal/yass2/serialize/utf8/Utf8Serializer {
+	public fun <init> (Ljava/util/List;Z)V
+	public fun read (Lch/softappeal/yass2/serialize/Reader;)Ljava/lang/Object;
+	public fun write (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
+}
+
+public class ch/softappeal/yass2/serialize/utf8/Utf8Encoder {
+	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;)V
+	public final fun getType ()Lkotlin/reflect/KClass;
+	public final fun read (Lch/softappeal/yass2/serialize/utf8/Utf8Serializer$Utf8Reader;)Ljava/lang/Object;
+	public final fun write (Lch/softappeal/yass2/serialize/utf8/Utf8Serializer$Utf8Writer;Ljava/lang/Object;)V
+}
+
+public abstract class ch/softappeal/yass2/serialize/utf8/Utf8Serializer : ch/softappeal/yass2/serialize/Serializer {
+	public static final field Companion Lch/softappeal/yass2/serialize/utf8/Utf8Serializer$Companion;
+	public static final field FIRST_ENCODER_ID I
+	public static final field LIST_ENCODER_ID I
+	public static final field STRING_ENCODER_ID I
+	public fun <init> (Ljava/util/List;ZZ)V
+	protected final fun encoder (I)Lch/softappeal/yass2/serialize/utf8/Utf8Encoder;
+	protected final fun encoder (Ljava/lang/String;)Lch/softappeal/yass2/serialize/utf8/Utf8Encoder;
+	protected final fun encoder (Lkotlin/reflect/KClass;)Lch/softappeal/yass2/serialize/utf8/Utf8Encoder;
+	protected final fun getListEncoder ()Lch/softappeal/yass2/serialize/utf8/Utf8Encoder;
+	protected final fun getMultilineWrite ()Z
+	protected final fun getStringEncoder ()Lch/softappeal/yass2/serialize/utf8/Utf8Encoder;
+}
+
+public final class ch/softappeal/yass2/serialize/utf8/Utf8Serializer$Companion {
+}
+
+public abstract class ch/softappeal/yass2/serialize/utf8/Utf8Serializer$Utf8Reader : ch/softappeal/yass2/serialize/Reader {
+	protected field properties Ljava/util/Map;
+	public fun <init> (Lch/softappeal/yass2/serialize/Reader;I)V
+	protected final fun addProperty (Lch/softappeal/yass2/serialize/utf8/Utf8Encoder;Ljava/lang/String;Ljava/lang/Object;)V
+	public final fun expectedCodePoint (B)Z
+	public final fun getNextCodePoint ()I
+	protected final fun getProperties ()Ljava/util/Map;
+	public final fun getProperty (Ljava/lang/String;)Ljava/lang/Object;
+	protected final fun isWhitespace ()Z
+	public fun readByte ()B
+	public fun readBytes (I)[B
+	public final fun readNextCodePoint ()V
+	public final fun readNextCodePointAndSkipWhitespace ()V
+	public abstract fun readString ()Ljava/lang/String;
+	public abstract fun readWithId ()Ljava/lang/Object;
+	protected final fun setProperties (Ljava/util/Map;)V
+	protected final fun skipWhitespace ()V
+}
+
+public abstract class ch/softappeal/yass2/serialize/utf8/Utf8Serializer$Utf8Writer : ch/softappeal/yass2/serialize/Writer {
+	public fun <init> (Lch/softappeal/yass2/serialize/utf8/Utf8Serializer;Lch/softappeal/yass2/serialize/Writer;)V
+	public final fun nested (Lkotlin/jvm/functions/Function0;)V
+	public fun writeByte (B)V
+	public fun writeBytes ([B)V
+	public final fun writeIndent ()V
+	public final fun writeNewLine ()V
+	public abstract fun writeNoId (Ljava/lang/String;ILjava/lang/Object;)V
+	public final fun writeString (Ljava/lang/String;)V
+	public abstract fun writeWithId (Ljava/lang/Object;)V
+	public abstract fun writeWithId (Ljava/lang/String;Ljava/lang/Object;)V
+}
+
+public final class ch/softappeal/yass2/serialize/utf8/Utf8SerializerKt {
+	public static final field COLON B
+	public static final field COMMA B
+	public static final field LBRACKET B
+	public static final field NO_ENCODER_ID I
+	public static final field QUOTE B
+	public static final field SP B
+	public static final fun readString (Lch/softappeal/yass2/serialize/utf8/Utf8Serializer;Ljava/lang/String;)Ljava/lang/Object;
+	public static final fun writeString (Lch/softappeal/yass2/serialize/utf8/Utf8Serializer;Ljava/lang/Object;)Ljava/lang/String;
+}
+
