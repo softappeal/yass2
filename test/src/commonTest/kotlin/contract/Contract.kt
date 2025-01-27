@@ -37,9 +37,6 @@ class Lists(
 open class A(open val a: Int)
 
 class B(override val a: Int, val b: Int) : A(123)
-// TODO: Is this really correct Kotlin code or is it a bug in the compiler?
-//       It looks like "a" will be initialized twice, in the constructors of "B" and "A".
-//       "B(1, 2)" seems to win over "A(123)".
 
 class Poly(
     val a: A,

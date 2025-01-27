@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.serialize.utf8 // TODO: replace with future Kotlin stdlib functions
+package ch.softappeal.yass2.serialize.utf8
 
 import ch.softappeal.yass2.serialize.Reader
 
