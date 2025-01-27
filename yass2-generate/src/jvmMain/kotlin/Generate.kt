@@ -2,6 +2,7 @@ package ch.softappeal.yass2.generate
 
 import java.nio.file.Files
 import kotlin.io.path.Path
+import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -9,7 +10,7 @@ import kotlin.reflect.KType
 internal const val CSY = "ch.softappeal.yass2"
 
 internal fun Appendable.appendPackage(packageName: String) {
-    appendLine("""
+    append("""
         @file:Suppress(
             "UNCHECKED_CAST",
             "USELESS_CAST",
@@ -25,12 +26,13 @@ internal fun Appendable.appendPackage(packageName: String) {
         )
     
         package $packageName
+
     """.trimIndent())
 }
 
-public fun <T> List<T>.hasNoDuplicates(): Boolean = size == toSet().size
+internal fun <T> List<T>.hasNoDuplicates(): Boolean = size == toSet().size
 
-public fun <T> List<T>.duplicates(): List<T> {
+internal fun <T> List<T>.duplicates(): List<T> {
     val seen = HashSet<T>()
     return filter { !seen.add(it) }
 }
@@ -40,7 +42,7 @@ internal fun KType.convert() = if (classifier is KClass<*> && classifier == Exce
 
 public class CodeWriter(private val appendable: Appendable, private val indent: String = "") {
     public fun writeLine() {
-        appendable.appendLine()
+        appendable.append('\n')
     }
 
     public fun write(s: String) {
@@ -84,13 +86,22 @@ public fun CodeWriter.generateProxies(services: List<KClass<*>>) {
 
 public const val GENERATED_BY_YASS: String = "GeneratedByYass.kt"
 
-public fun generate(sourceDir: String, packageName: String, write: CodeWriter.() -> Unit) {
+public enum class GenerateMode { Verify, Write }
+
+public fun generateFile(filePath: String, packageName: String, mode: GenerateMode, write: CodeWriter.() -> Unit) {
     val builder = StringBuilder()
     builder.appendPackage(packageName)
     CodeWriter(builder).write()
     val program = builder.toString()
-    val sourcePath = Path(sourceDir)
-    val file = sourcePath.resolve(GENERATED_BY_YASS)
-    Files.createDirectories(sourcePath)
-    file.writeText(program)
+    val file = Path(filePath)
+    when (mode) {
+        GenerateMode.Verify -> {
+            val existingCode = file.readText().replace("\r\n", "\n")
+            check(existingCode == program) { "existing code >>>$existingCode<<< should be >>>$program<<<" }
+        }
+        GenerateMode.Write -> {
+            Files.createDirectories(file.parent)
+            file.writeText(program)
+        }
+    }
 }
