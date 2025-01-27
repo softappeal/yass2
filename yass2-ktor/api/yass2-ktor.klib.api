@@ -7,16 +7,16 @@
 // - Show declarations: true
 
 // Library unique name: <ch.softappeal.yass2:yass2-ktor>
-final class ch.softappeal.yass2.ktor/WebSocketConnection : ch.softappeal.yass2.remote.coroutines/Connection { // ch.softappeal.yass2.ktor/WebSocketConnection|null[0]
+final class ch.softappeal.yass2.ktor/WebSocketConnection : ch.softappeal.yass2.coroutines/Connection { // ch.softappeal.yass2.ktor/WebSocketConnection|null[0]
     final val session // ch.softappeal.yass2.ktor/WebSocketConnection.session|{}session[0]
         final fun <get-session>(): io.ktor.websocket/WebSocketSession // ch.softappeal.yass2.ktor/WebSocketConnection.session.<get-session>|<get-session>(){}[0]
 
     final suspend fun closed() // ch.softappeal.yass2.ktor/WebSocketConnection.closed|closed(){}[0]
-    final suspend fun write(ch.softappeal.yass2.remote.coroutines/Packet?) // ch.softappeal.yass2.ktor/WebSocketConnection.write|write(ch.softappeal.yass2.remote.coroutines.Packet?){}[0]
+    final suspend fun write(ch.softappeal.yass2.coroutines/Packet?) // ch.softappeal.yass2.ktor/WebSocketConnection.write|write(ch.softappeal.yass2.coroutines.Packet?){}[0]
 }
 
 final fun (io.ktor.client/HttpClient).ch.softappeal.yass2.ktor/tunnel(ch.softappeal.yass2.serialize/Transport, kotlin/String, kotlin/Function0<io.ktor.http/Headers> = ...): kotlin.coroutines/SuspendFunction1<ch.softappeal.yass2.remote/Request, ch.softappeal.yass2.remote/Reply> // ch.softappeal.yass2.ktor/tunnel|tunnel@io.ktor.client.HttpClient(ch.softappeal.yass2.serialize.Transport;kotlin.String;kotlin.Function0<io.ktor.http.Headers>){}[0]
-final suspend fun (io.ktor.websocket/WebSocketSession).ch.softappeal.yass2.ktor/receiveLoop(ch.softappeal.yass2.serialize/Transport, kotlin/Function0<ch.softappeal.yass2.remote.coroutines/Session<ch.softappeal.yass2.ktor/WebSocketConnection>>) // ch.softappeal.yass2.ktor/receiveLoop|receiveLoop@io.ktor.websocket.WebSocketSession(ch.softappeal.yass2.serialize.Transport;kotlin.Function0<ch.softappeal.yass2.remote.coroutines.Session<ch.softappeal.yass2.ktor.WebSocketConnection>>){}[0]
+final suspend fun (io.ktor.websocket/WebSocketSession).ch.softappeal.yass2.ktor/receiveLoop(ch.softappeal.yass2.serialize/Transport, kotlin/Function0<ch.softappeal.yass2.coroutines/Session<ch.softappeal.yass2.ktor/WebSocketConnection>>) // ch.softappeal.yass2.ktor/receiveLoop|receiveLoop@io.ktor.websocket.WebSocketSession(ch.softappeal.yass2.serialize.Transport;kotlin.Function0<ch.softappeal.yass2.coroutines.Session<ch.softappeal.yass2.ktor.WebSocketConnection>>){}[0]
 
 // Targets: [native]
 final class ch.softappeal.yass2.ktor/CallCce : kotlin.coroutines/AbstractCoroutineContextElement { // ch.softappeal.yass2.ktor/CallCce|null[0]
@@ -39,12 +39,12 @@ final class ch.softappeal.yass2.ktor/SocketCce : kotlin.coroutines/AbstractCorou
 }
 
 // Targets: [native]
-final class ch.softappeal.yass2.ktor/SocketConnection : ch.softappeal.yass2.remote.coroutines/Connection { // ch.softappeal.yass2.ktor/SocketConnection|null[0]
+final class ch.softappeal.yass2.ktor/SocketConnection : ch.softappeal.yass2.coroutines/Connection { // ch.softappeal.yass2.ktor/SocketConnection|null[0]
     final val socket // ch.softappeal.yass2.ktor/SocketConnection.socket|{}socket[0]
         final fun <get-socket>(): io.ktor.network.sockets/Socket // ch.softappeal.yass2.ktor/SocketConnection.socket.<get-socket>|<get-socket>(){}[0]
 
     final suspend fun closed() // ch.softappeal.yass2.ktor/SocketConnection.closed|closed(){}[0]
-    final suspend fun write(ch.softappeal.yass2.remote.coroutines/Packet?) // ch.softappeal.yass2.ktor/SocketConnection.write|write(ch.softappeal.yass2.remote.coroutines.Packet?){}[0]
+    final suspend fun write(ch.softappeal.yass2.coroutines/Packet?) // ch.softappeal.yass2.ktor/SocketConnection.write|write(ch.softappeal.yass2.coroutines.Packet?){}[0]
 }
 
 // Targets: [native]
@@ -57,4 +57,4 @@ final fun (io.ktor.server.routing/Route).ch.softappeal.yass2.ktor/route(ch.softa
 final suspend fun (io.ktor.network.sockets/Socket).ch.softappeal.yass2.ktor/handleRequest(ch.softappeal.yass2.serialize/Transport, kotlin.coroutines/SuspendFunction1<ch.softappeal.yass2.remote/Request, ch.softappeal.yass2.remote/Reply>) // ch.softappeal.yass2.ktor/handleRequest|handleRequest@io.ktor.network.sockets.Socket(ch.softappeal.yass2.serialize.Transport;kotlin.coroutines.SuspendFunction1<ch.softappeal.yass2.remote.Request,ch.softappeal.yass2.remote.Reply>){}[0]
 
 // Targets: [native]
-final suspend fun (io.ktor.network.sockets/Socket).ch.softappeal.yass2.ktor/receiveLoop(ch.softappeal.yass2.serialize/Transport, kotlin/Function0<ch.softappeal.yass2.remote.coroutines/Session<ch.softappeal.yass2.ktor/SocketConnection>>) // ch.softappeal.yass2.ktor/receiveLoop|receiveLoop@io.ktor.network.sockets.Socket(ch.softappeal.yass2.serialize.Transport;kotlin.Function0<ch.softappeal.yass2.remote.coroutines.Session<ch.softappeal.yass2.ktor.SocketConnection>>){}[0]
+final suspend fun (io.ktor.network.sockets/Socket).ch.softappeal.yass2.ktor/receiveLoop(ch.softappeal.yass2.serialize/Transport, kotlin/Function0<ch.softappeal.yass2.coroutines/Session<ch.softappeal.yass2.ktor/SocketConnection>>) // ch.softappeal.yass2.ktor/receiveLoop|receiveLoop@io.ktor.network.sockets.Socket(ch.softappeal.yass2.serialize.Transport;kotlin.Function0<ch.softappeal.yass2.coroutines.Session<ch.softappeal.yass2.ktor.SocketConnection>>){}[0]

@@ -225,13 +225,13 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
         "exception" to -1,
     ),
     ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
-        ch.softappeal.yass2.remote.coroutines.Packet::class,
+        ch.softappeal.yass2.coroutines.Packet::class,
         { i ->
             writeNoId("requestNumber", 2, i.requestNumber)
             writeWithId("message", i.message)
         },
         {
-            val i = ch.softappeal.yass2.remote.coroutines.Packet(
+            val i = ch.softappeal.yass2.coroutines.Packet(
                 getProperty("requestNumber") as kotlin.Int,
                 getProperty("message") as ch.softappeal.yass2.remote.Message,
             )

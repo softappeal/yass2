@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.remote.coroutines
+package ch.softappeal.yass2.coroutines
 
 import ch.softappeal.yass2.Printer
 import ch.softappeal.yass2.assertSuspendFailsWith

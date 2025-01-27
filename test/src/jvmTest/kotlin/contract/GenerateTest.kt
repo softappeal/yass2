@@ -1,10 +1,10 @@
 package ch.softappeal.yass2.contract
 
+import ch.softappeal.yass2.coroutines.FlowService
 import ch.softappeal.yass2.generate.generate
 import ch.softappeal.yass2.generate.generateBinarySerializer
 import ch.softappeal.yass2.generate.generateProxy
 import ch.softappeal.yass2.generate.generateUtf8Encoders
-import ch.softappeal.yass2.remote.coroutines.FlowService
 import kotlin.test.Test
 
 class GenerateTest {

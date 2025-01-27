@@ -2,10 +2,10 @@ package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.contract.ContractTransport
 import ch.softappeal.yass2.contract.createUtf8Encoders
-import ch.softappeal.yass2.remote.coroutines.acceptorSessionFactory
-import ch.softappeal.yass2.remote.coroutines.initiatorSessionFactory
-import ch.softappeal.yass2.remote.coroutines.test
-import ch.softappeal.yass2.remote.coroutines.tunnel
+import ch.softappeal.yass2.coroutines.acceptorSessionFactory
+import ch.softappeal.yass2.coroutines.initiatorSessionFactory
+import ch.softappeal.yass2.coroutines.test
+import ch.softappeal.yass2.coroutines.tunnel
 import ch.softappeal.yass2.serialize.Transport
 import ch.softappeal.yass2.serialize.utf8.TextSerializer
 import io.ktor.network.selector.SelectorManager

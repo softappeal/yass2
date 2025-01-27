@@ -1,48 +1,48 @@
-public abstract interface class ch/softappeal/yass2/remote/coroutines/Connection {
+public abstract interface class ch/softappeal/yass2/coroutines/Connection {
 	public abstract fun closed (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun write (Lch/softappeal/yass2/remote/coroutines/Packet;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun write (Lch/softappeal/yass2/coroutines/Packet;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public abstract interface annotation class ch/softappeal/yass2/remote/coroutines/MustBeImplementedByAcceptor : java/lang/annotation/Annotation {
+public abstract interface annotation class ch/softappeal/yass2/coroutines/MustBeImplementedByAcceptor : java/lang/annotation/Annotation {
 }
 
-public abstract interface annotation class ch/softappeal/yass2/remote/coroutines/MustBeImplementedByInitiator : java/lang/annotation/Annotation {
+public abstract interface annotation class ch/softappeal/yass2/coroutines/MustBeImplementedByInitiator : java/lang/annotation/Annotation {
 }
 
-public final class ch/softappeal/yass2/remote/coroutines/Packet {
+public final class ch/softappeal/yass2/coroutines/Packet {
 	public fun <init> (ILch/softappeal/yass2/remote/Message;)V
 	public final fun getMessage ()Lch/softappeal/yass2/remote/Message;
 	public final fun getRequestNumber ()I
 }
 
-public abstract class ch/softappeal/yass2/remote/coroutines/Session {
-	public field internalConnection Lch/softappeal/yass2/remote/coroutines/Connection;
+public abstract class ch/softappeal/yass2/coroutines/Session {
+	public field internalConnection Lch/softappeal/yass2/coroutines/Connection;
 	public fun <init> ()V
 	public final fun close (Ljava/lang/Exception;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun close (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	protected fun closed (Ljava/lang/Exception;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	protected final fun getClientTunnel ()Lkotlin/jvm/functions/Function2;
-	public final fun getConnection ()Lch/softappeal/yass2/remote/coroutines/Connection;
-	public final fun getInternalConnection ()Lch/softappeal/yass2/remote/coroutines/Connection;
+	public final fun getConnection ()Lch/softappeal/yass2/coroutines/Connection;
+	public final fun getInternalConnection ()Lch/softappeal/yass2/coroutines/Connection;
 	protected fun getServerTunnel ()Lkotlin/jvm/functions/Function2;
-	public final fun implReceived (Lch/softappeal/yass2/remote/coroutines/Packet;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun implReceived (Lch/softappeal/yass2/coroutines/Packet;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun isClosed (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun opened ()V
-	public final fun setInternalConnection (Lch/softappeal/yass2/remote/coroutines/Connection;)V
+	public final fun setInternalConnection (Lch/softappeal/yass2/coroutines/Connection;)V
 }
 
-public final class ch/softappeal/yass2/remote/coroutines/SessionConnectorKt {
+public final class ch/softappeal/yass2/coroutines/SessionConnectorKt {
 	public static final fun connect (Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function0;JLkotlin/jvm/functions/Function2;)Lkotlinx/coroutines/Job;
 	public static synthetic fun connect$default (Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function0;JLkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lkotlinx/coroutines/Job;
 }
 
-public final class ch/softappeal/yass2/remote/coroutines/SessionKt {
-	public static final fun createSession (Lch/softappeal/yass2/remote/coroutines/Connection;Lkotlin/jvm/functions/Function0;)Lch/softappeal/yass2/remote/coroutines/Session;
-	public static final fun receiveLoop (Lch/softappeal/yass2/remote/coroutines/Connection;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+public final class ch/softappeal/yass2/coroutines/SessionKt {
+	public static final fun createSession (Lch/softappeal/yass2/coroutines/Connection;Lkotlin/jvm/functions/Function0;)Lch/softappeal/yass2/coroutines/Session;
+	public static final fun receiveLoop (Lch/softappeal/yass2/coroutines/Connection;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class ch/softappeal/yass2/remote/coroutines/SessionWatcherKt {
-	public static final fun watch (Lkotlinx/coroutines/CoroutineScope;Lch/softappeal/yass2/remote/coroutines/Session;JJLkotlin/jvm/functions/Function1;)Lkotlinx/coroutines/Job;
-	public static synthetic fun watch$default (Lkotlinx/coroutines/CoroutineScope;Lch/softappeal/yass2/remote/coroutines/Session;JJLkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/coroutines/Job;
+public final class ch/softappeal/yass2/coroutines/SessionWatcherKt {
+	public static final fun watch (Lkotlinx/coroutines/CoroutineScope;Lch/softappeal/yass2/coroutines/Session;JJLkotlin/jvm/functions/Function1;)Lkotlinx/coroutines/Job;
+	public static synthetic fun watch$default (Lkotlinx/coroutines/CoroutineScope;Lch/softappeal/yass2/coroutines/Session;JJLkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/coroutines/Job;
 }
 

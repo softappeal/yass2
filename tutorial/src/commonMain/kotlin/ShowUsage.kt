@@ -1,9 +1,9 @@
 package ch.softappeal.yass2.tutorial
 
+import ch.softappeal.yass2.coroutines.Connection
+import ch.softappeal.yass2.coroutines.Session
+import ch.softappeal.yass2.coroutines.SessionFactory
 import ch.softappeal.yass2.remote.Tunnel
-import ch.softappeal.yass2.remote.coroutines.Connection
-import ch.softappeal.yass2.remote.coroutines.Session
-import ch.softappeal.yass2.remote.coroutines.SessionFactory
 import ch.softappeal.yass2.remote.tunnel
 import ch.softappeal.yass2.serialize.BytesReader
 import ch.softappeal.yass2.serialize.BytesWriter

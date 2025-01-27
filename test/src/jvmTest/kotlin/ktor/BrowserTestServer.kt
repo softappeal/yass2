@@ -3,8 +3,8 @@
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.contract.ContractTransport
-import ch.softappeal.yass2.remote.coroutines.acceptorSessionFactory
-import ch.softappeal.yass2.remote.coroutines.tunnel
+import ch.softappeal.yass2.coroutines.acceptorSessionFactory
+import ch.softappeal.yass2.coroutines.tunnel
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.cio.CIO

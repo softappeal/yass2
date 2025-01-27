@@ -1,12 +1,12 @@
 package ch.softappeal.yass2.tutorial
 
+import ch.softappeal.yass2.coroutines.MustBeImplementedByAcceptor
+import ch.softappeal.yass2.coroutines.MustBeImplementedByInitiator
+import ch.softappeal.yass2.coroutines.Packet
 import ch.softappeal.yass2.remote.ExceptionReply
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.ValueReply
-import ch.softappeal.yass2.remote.coroutines.MustBeImplementedByAcceptor
-import ch.softappeal.yass2.remote.coroutines.MustBeImplementedByInitiator
-import ch.softappeal.yass2.remote.coroutines.Packet
 import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Transport
 import ch.softappeal.yass2.serialize.utf8.IntUtf8Encoder

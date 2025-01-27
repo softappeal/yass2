@@ -1,9 +1,9 @@
 package ch.softappeal.yass2.ktor
 
-import ch.softappeal.yass2.remote.coroutines.Connection
-import ch.softappeal.yass2.remote.coroutines.Packet
-import ch.softappeal.yass2.remote.coroutines.SessionFactory
-import ch.softappeal.yass2.remote.coroutines.receiveLoop
+import ch.softappeal.yass2.coroutines.Connection
+import ch.softappeal.yass2.coroutines.Packet
+import ch.softappeal.yass2.coroutines.SessionFactory
+import ch.softappeal.yass2.coroutines.receiveLoop
 import ch.softappeal.yass2.serialize.Transport
 import ch.softappeal.yass2.serialize.readBytes
 import io.ktor.websocket.Frame

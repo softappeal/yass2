@@ -1,10 +1,10 @@
 package ch.softappeal.yass2.js
 
 import ch.softappeal.yass2.contract.ContractTransport
+import ch.softappeal.yass2.coroutines.initiatorSessionFactory
+import ch.softappeal.yass2.coroutines.test
 import ch.softappeal.yass2.ktor.receiveLoop
 import ch.softappeal.yass2.ktor.tunnel
-import ch.softappeal.yass2.remote.coroutines.initiatorSessionFactory
-import ch.softappeal.yass2.remote.coroutines.test
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.js.JsClient
 import io.ktor.client.plugins.websocket.WebSockets.Plugin
