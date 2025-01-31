@@ -13,18 +13,15 @@ plugins {
     alias(libs.plugins.binary.compatibility.validator)
 }
 
+/** Only uses jvm target if `false`. Can be used for faster development. */
+val allTargets = true
+
 apiValidation {
     ignoredProjects.addAll(listOf("yass2", "tutorial", "test"))
-    @OptIn(ExperimentalBCVApi::class) klib { enabled = true }
+    if (allTargets) @OptIn(ExperimentalBCVApi::class) klib { enabled = true }
 }
 
 val libraries = libs
-
-fun hasTarget(@Suppress("UNUSED_PARAMETER") enabled: Boolean) = true // enabled
-val wasmJsTarget = hasTarget(false)
-val linuxX64Target = hasTarget(false)
-val linuxArm64Target = hasTarget(false)
-val macosArm64Target = hasTarget(false)
 
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
@@ -47,14 +44,17 @@ allprojects {
                 artifact(tasks["javadocJar"])
             }
         }
-        @OptIn(ExperimentalWasmDsl::class)
-        if (wasmJsTarget) wasmJs {
-            nodejs()
-            binaries.executable()
+        if (allTargets) {
+            @OptIn(ExperimentalWasmDsl::class)
+            wasmJs {
+                nodejs()
+                binaries.executable()
+            }
+            linuxX64()
+            linuxArm64()
+            macosArm64()
         }
-        if (linuxX64Target) linuxX64()
-        if (linuxArm64Target) linuxArm64()
-        if (macosArm64Target) macosArm64()
+
         explicitApi()
         compilerOptions {
             allWarningsAsErrors = true
@@ -120,15 +120,18 @@ val ktorProject = project(":yass2-ktor") {
             jvmMain {
                 dependsOn(jvmAndNixMain)
             }
-            if (linuxX64Target) linuxX64Main {
-                dependsOn(jvmAndNixMain)
+            if (allTargets) {
+                linuxX64Main {
+                    dependsOn(jvmAndNixMain)
+                }
+                linuxArm64Main {
+                    dependsOn(jvmAndNixMain)
+                }
+                macosArm64Main {
+                    dependsOn(jvmAndNixMain)
+                }
             }
-            if (linuxArm64Target) linuxArm64Main {
-                dependsOn(jvmAndNixMain)
-            }
-            if (macosArm64Target) macosArm64Main {
-                dependsOn(jvmAndNixMain)
-            }
+
         }
     }
 }
@@ -168,14 +171,16 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
                     implementation(generateProject)
                 }
             }
-            if (linuxX64Target) linuxX64Test {
-                dependsOn(jvmAndNixTest)
-            }
-            if (linuxArm64Target) linuxArm64Test {
-                dependsOn(jvmAndNixTest)
-            }
-            if (macosArm64Target) macosArm64Test {
-                dependsOn(jvmAndNixTest)
+            if (allTargets) {
+                linuxX64Test {
+                    dependsOn(jvmAndNixTest)
+                }
+                linuxArm64Test {
+                    dependsOn(jvmAndNixTest)
+                }
+                macosArm64Test {
+                    dependsOn(jvmAndNixTest)
+                }
             }
         }
     }
@@ -205,7 +210,7 @@ project(":tutorial") {
                     implementation(generateProject)
                 }
             }
-            if (wasmJsTarget) {
+            if (allTargets) {
                 wasmJsMain {
                     dependencies {
                         implementation(ktorProject)
