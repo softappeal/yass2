@@ -7,9 +7,9 @@ import kotlin.io.path.writeText
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
-internal const val CSY = "ch.softappeal.yass2"
+public const val CSY: String = "ch.softappeal.yass2"
 
-internal fun Appendable.appendPackage(packageName: String) {
+private fun Appendable.appendPackage(packageName: String) {
     append("""
         @file:Suppress(
             "UNCHECKED_CAST",
@@ -30,7 +30,7 @@ internal fun Appendable.appendPackage(packageName: String) {
     """.trimIndent())
 }
 
-internal fun <T> List<T>.hasNoDuplicates(): Boolean = size == toSet().size
+internal fun <T> List<T>.hasNoDuplicates() = size == toSet().size
 
 internal fun <T> List<T>.duplicates(): List<T> {
     val seen = HashSet<T>()
@@ -38,9 +38,12 @@ internal fun <T> List<T>.duplicates(): List<T> {
 }
 
 // fixes "kotlin.Exception /* = java.lang.Exception */"
-internal fun KType.convert() = if (classifier is KClass<*> && classifier == Exception::class) "kotlin.Exception" else toString()
+public fun KType.convert(): String =
+    if (classifier is KClass<*> && classifier == Exception::class) "kotlin.Exception" else toString()
 
-public class CodeWriter(private val appendable: Appendable, private val indent: String = "") {
+public class CodeWriter private constructor(private val appendable: Appendable, private val indent: String) {
+    public constructor(appendable: Appendable) : this(appendable, "")
+
     public fun writeLine() {
         appendable.append('\n')
     }

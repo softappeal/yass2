@@ -26,4 +26,4 @@ internal suspend fun ByteWriteChannel.write(transport: Transport, value: Any?) {
     writeFully(writer)
 }
 
-internal suspend fun ByteReadChannel.read(transport: Transport): Any? = read(transport, readInt())
+internal suspend fun ByteReadChannel.read(transport: Transport) = read(transport, readInt())

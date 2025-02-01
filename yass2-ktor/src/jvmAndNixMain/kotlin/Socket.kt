@@ -19,7 +19,7 @@ import kotlin.coroutines.CoroutineContext
 
 public typealias SocketConnector = suspend () -> Socket
 
-public fun Transport.socketTunnel(socketConnector: SocketConnector): Tunnel = { request ->
+public fun Transport.tunnel(socketConnector: SocketConnector): Tunnel = { request ->
     socketConnector().use { socket ->
         val writeChannel = socket.openWriteChannel()
         writeChannel.write(this, request)

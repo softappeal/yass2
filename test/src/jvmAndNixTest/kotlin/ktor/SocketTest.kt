@@ -53,7 +53,7 @@ private fun socketTest(transport: Transport) {
             }
         }
         try {
-            val clientTunnel = transport.socketTunnel { tcp.connect(serverSocket.localAddress) }
+            val clientTunnel = transport.tunnel { tcp.connect(serverSocket.localAddress) }
             clientTunnel.test(100)
         } finally {
             delay(100.milliseconds) // give some time to shut down

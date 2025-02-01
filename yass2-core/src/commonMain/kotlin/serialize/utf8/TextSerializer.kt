@@ -12,7 +12,7 @@ public class TextSerializer(
 ) : Utf8Serializer(encoders, multilineWrite, false) {
 
     private inner class TheWriter(writer: Writer) : Utf8Writer(writer) {
-        override fun writeWithId(value: Any?) {
+        override fun writeObject(value: Any?) {
             when (value) {
                 null -> writeByte(ASTERIX)
                 is String -> stringEncoder.write(this, value)
@@ -33,23 +33,23 @@ public class TextSerializer(
 
         private var firstProperty: Boolean = true
 
-        private fun writeProperty(property: String, value: Any?, writeValue: () -> Unit) {
+        private fun writeProperty(name: String, value: Any?, writeValue: () -> Unit) {
             if (value == null) return
             if (multilineWrite || firstProperty) firstProperty = false else writeByte(COMMA)
             writeIndent()
-            writeString(property)
+            writeString(name)
             writeByte(COLON)
             if (multilineWrite) writeByte(SP)
             writeValue()
             writeNewLine()
         }
 
-        override fun writeWithId(property: String, value: Any?) {
-            writeProperty(property, value) { TheWriter(this).writeWithId(value) }
+        override fun writeProperty(name: String, value: Any?) {
+            writeProperty(name, value) { TheWriter(this).writeObject(value) }
         }
 
-        override fun writeNoId(property: String, id: Int, value: Any?) {
-            writeProperty(property, value) { encoder(id).write(this, value) }
+        override fun writeProperty(name: String, value: Any?, encoderId: Int) {
+            writeProperty(name, value) { encoder(encoderId).write(this, value) }
         }
     }
 
@@ -66,7 +66,7 @@ public class TextSerializer(
 
         override fun readString() = readUntil { expectedCodePoint(RPAREN) || expectedCodePoint(COMMA) }
 
-        override fun readWithId(): Any? {
+        override fun readObject(): Any? {
             skipWhitespace()
             return when {
                 expectedCodePoint(ASTERIX) -> null
@@ -76,19 +76,19 @@ public class TextSerializer(
                     val className = readUntil(LPAREN)
                     readNextCodePointAndSkipWhitespace()
                     val encoder = encoder(className)
-                    if (encoder is ClassUtf8Encoder) readObject(encoder) else encoder.read(this)
+                    if (encoder is ClassUtf8Encoder) readClass(encoder) else encoder.read(this)
                 }
             }
         }
 
-        private fun readObject(encoder: ClassUtf8Encoder<*>): Any {
+        private fun readClass(encoder: ClassUtf8Encoder<*>): Any {
             properties = mutableMapOf()
             while (!expectedCodePoint(RPAREN)) {
                 val name = readUntil(COLON)
                 readNextCodePointAndSkipWhitespace()
-                val id = encoder.id(name)
-                val value = if (id != NO_ENCODER_ID) encoder(id).read(this) else {
-                    with(TheReader(this, nextCodePoint)) { readWithId() }.apply { readNextCodePoint() }
+                val encoderId = encoder.encoderId(name)
+                val value = if (encoderId != NO_ENCODER_ID) encoder(encoderId).read(this) else {
+                    with(TheReader(this, nextCodePoint)) { readObject() }.apply { readNextCodePoint() }
                 }
                 skipWhitespace()
                 encoder.addProperty(name, value)
@@ -98,6 +98,6 @@ public class TextSerializer(
         }
     }
 
-    override fun write(writer: Writer, value: Any?): Unit = TheWriter(writer).writeWithId(value)
-    override fun read(reader: Reader): Any? = TheReader(reader, reader.readCodePoint()).readWithId()
+    override fun write(writer: Writer, value: Any?): Unit = TheWriter(writer).writeObject(value)
+    override fun read(reader: Reader): Any? = TheReader(reader, reader.readCodePoint()).readObject()
 }

@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.coroutines
 
+import ch.softappeal.yass2.InternalApi
 import ch.softappeal.yass2.remote.Message
 import ch.softappeal.yass2.remote.Reply
 import ch.softappeal.yass2.remote.Request
@@ -51,8 +52,12 @@ public abstract class Session<C : Connection> {
 
     protected open val serverTunnel: Tunnel = { throw UnsupportedOperationException() }
 
-    public lateinit var internalConnection: C
-    public val connection: C get() = internalConnection
+    private lateinit var _connection: C
+    public var connection: C
+        get() = _connection
+        @InternalApi set(value) {
+            _connection = value
+        }
 
     private val closed = AtomicBoolean(false)
     private val nextRequestNumber = AtomicInteger(0)
@@ -85,11 +90,11 @@ public abstract class Session<C : Connection> {
 
 public typealias SessionFactory<C> = () -> Session<C>
 
-public fun <C : Connection> C.createSession(sessionFactory: SessionFactory<C>): Session<C> =
-    sessionFactory().apply { internalConnection = this@createSession }
-
 public suspend fun <C : Connection> C.receiveLoop(sessionFactory: SessionFactory<C>, receive: suspend () -> Packet?) {
-    val session = createSession(sessionFactory)
+    val session = sessionFactory().apply {
+        @OptIn(InternalApi::class)
+        connection = this@receiveLoop
+    }
     try {
         session.opened()
         while (true) {

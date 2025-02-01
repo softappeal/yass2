@@ -5,7 +5,7 @@ import ch.softappeal.yass2.serialize.Reader
 // see https://docs.oracle.com/javase/tutorial/i18n/text/unicode.html
 
 // see https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates
-internal fun StringBuilder.addCodePoint(codePoint: Int) {
+public fun StringBuilder.addCodePoint(codePoint: Int) {
     if (codePoint in 0..Char.MAX_VALUE.code) append(codePoint.toChar()) else {
         val cp = codePoint - (Char.MAX_VALUE.code + 1)
         append(((cp ushr 10) + Char.MIN_HIGH_SURROGATE.code).toChar())
@@ -14,7 +14,7 @@ internal fun StringBuilder.addCodePoint(codePoint: Int) {
 }
 
 // see https://en.wikipedia.org/wiki/UTF-8#Description
-internal fun Reader.readCodePoint(): Int { // TODO: doesn't check for illegal UTF-8 encoding
+public fun Reader.readCodePoint(): Int { // TODO: doesn't check for illegal UTF-8 encoding
     fun rb() = readByte().toInt()
     val first = rb()
     return when {

@@ -34,7 +34,7 @@ public final class ch/softappeal/yass2/ktor/SocketConnection : ch/softappeal/yas
 public final class ch/softappeal/yass2/ktor/SocketKt {
 	public static final fun handleRequest (Lio/ktor/network/sockets/Socket;Lch/softappeal/yass2/serialize/Transport;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static final fun receiveLoop (Lio/ktor/network/sockets/Socket;Lch/softappeal/yass2/serialize/Transport;Lkotlin/jvm/functions/Function0;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static final fun socketTunnel (Lch/softappeal/yass2/serialize/Transport;Lkotlin/jvm/functions/Function1;)Lkotlin/jvm/functions/Function2;
+	public static final fun tunnel (Lch/softappeal/yass2/serialize/Transport;Lkotlin/jvm/functions/Function1;)Lkotlin/jvm/functions/Function2;
 }
 
 public final class ch/softappeal/yass2/ktor/WebSocketConnection : ch/softappeal/yass2/coroutines/Connection {

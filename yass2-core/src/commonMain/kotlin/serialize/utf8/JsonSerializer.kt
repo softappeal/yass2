@@ -30,7 +30,7 @@ public class JsonSerializer(
             writeByte(QUOTE)
         }
 
-        override fun writeWithId(value: Any?) {
+        override fun writeObject(value: Any?) {
             when (value) {
                 null -> {
                     writeByte(LBRACE)
@@ -62,24 +62,24 @@ public class JsonSerializer(
             }
         }
 
-        private fun writeProperty(property: String, value: Any?, writeValue: () -> Unit) {
+        private fun writeProperty(name: String, value: Any?, writeValue: () -> Unit) {
             if (value == null) return
             writeByte(COMMA)
             writeNewLine()
-            writeKey(property)
+            writeKey(name)
             writeValue()
         }
 
-        override fun writeWithId(property: String, value: Any?) {
-            writeProperty(property, value) { writeWithId(value) }
+        override fun writeProperty(name: String, value: Any?) {
+            writeProperty(name, value) { writeObject(value) }
         }
 
-        override fun writeNoId(property: String, id: Int, value: Any?) {
-            writeProperty(property, value) {
-                when (id) {
+        override fun writeProperty(name: String, value: Any?, encoderId: Int) {
+            writeProperty(name, value) {
+                when (encoderId) {
                     STRING_ENCODER_ID -> stringEncoder.write(this, value)
                     LIST_ENCODER_ID -> listEncoder.write(this, value)
-                    else -> encoder(id).writeQuoted(value)
+                    else -> encoder(encoderId).writeQuoted(value)
                 }
             }
         }
@@ -107,7 +107,7 @@ public class JsonSerializer(
             return key
         }
 
-        override fun readWithId(): Any? {
+        override fun readObject(): Any? {
             skipWhitespace()
             return when {
                 expectedCodePoint(QUOTE) -> stringEncoder.read(this)
@@ -129,7 +129,7 @@ public class JsonSerializer(
                     } else {
                         val className = readString()
                         readNextCodePointAndSkipWhitespace()
-                        if (className.isNotEmpty()) readObject(encoder(className) as ClassUtf8Encoder) else {
+                        if (className.isNotEmpty()) readClass(encoder(className) as ClassUtf8Encoder) else {
                             check(expectedCodePoint(RBRACE)) { "'${RBRACE.toInt().toChar()}' expected" }
                             null
                         }
@@ -139,17 +139,17 @@ public class JsonSerializer(
             }
         }
 
-        private fun readObject(encoder: ClassUtf8Encoder<*>): Any {
+        private fun readClass(encoder: ClassUtf8Encoder<*>): Any {
             properties = mutableMapOf()
             while (!expectedCodePoint(RBRACE)) {
                 check(expectedCodePoint(COMMA)) { "'${COMMA.toInt().toChar()}' expected" }
                 val name = readKey()
                 readNextCodePointAndSkipWhitespace()
-                val id = encoder.id(name)
-                val value = if (id == NO_ENCODER_ID) with(TheReader(this, nextCodePoint)) { readWithId() } else {
+                val encoderId = encoder.encoderId(name)
+                val value = if (encoderId == NO_ENCODER_ID) with(TheReader(this, nextCodePoint)) { readObject() } else {
                     check(expectedCodePoint(QUOTE)) { "'${QUOTE.toInt().toChar()}' expected" }
                     readNextCodePoint()
-                    encoder(id).read(this)
+                    encoder(encoderId).read(this)
                 }
                 readNextCodePointAndSkipWhitespace()
                 encoder.addProperty(name, value)
@@ -158,6 +158,6 @@ public class JsonSerializer(
         }
     }
 
-    override fun write(writer: Writer, value: Any?): Unit = TheWriter(writer).writeWithId(value)
-    override fun read(reader: Reader): Any? = TheReader(reader, reader.readCodePoint()).readWithId()
+    override fun write(writer: Writer, value: Any?): Unit = TheWriter(writer).writeObject(value)
+    override fun read(reader: Reader): Any? = TheReader(reader, reader.readCodePoint()).readObject()
 }

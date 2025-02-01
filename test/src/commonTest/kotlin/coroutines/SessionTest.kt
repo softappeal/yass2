@@ -2,6 +2,7 @@ package ch.softappeal.yass2.coroutines
 
 import ch.softappeal.yass2.CalculatorImpl
 import ch.softappeal.yass2.EchoImpl
+import ch.softappeal.yass2.InternalApi
 import ch.softappeal.yass2.assertSuspendFailsWith
 import ch.softappeal.yass2.contract.CalculatorId
 import ch.softappeal.yass2.contract.EchoId
@@ -87,13 +88,14 @@ fun <C : Connection> CoroutineScope.initiatorSessionFactory(iterations: Int): Se
     }
 }
 
+@OptIn(InternalApi::class)
 private fun connect(session1: Session<Connection>, session2: Session<Connection>) {
     class LocalConnection(val session: Session<Connection>) : Connection {
         override suspend fun write(packet: Packet?) = session.implReceived(packet)
         override suspend fun closed() = session.close()
     }
-    session1.internalConnection = LocalConnection(session2)
-    session2.internalConnection = LocalConnection(session1)
+    session1.connection = LocalConnection(session2)
+    session2.connection = LocalConnection(session1)
     session1.opened()
     session2.opened()
 }

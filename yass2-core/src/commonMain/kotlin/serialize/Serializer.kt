@@ -1,5 +1,7 @@
 package ch.softappeal.yass2.serialize
 
+import kotlin.reflect.KProperty1
+
 public interface Writer {
     public fun writeByte(byte: Byte)
     public fun writeBytes(bytes: ByteArray)
@@ -23,3 +25,5 @@ public fun Serializer.writeBytes(value: Any?): ByteArray = with(BytesWriter(1000
 public fun Serializer.readBytes(byteArray: ByteArray): Any? = with(BytesReader(byteArray)) {
     read(this).apply { checkDrained() }
 }
+
+public abstract class Property(public val property: KProperty1<out Any, *>)

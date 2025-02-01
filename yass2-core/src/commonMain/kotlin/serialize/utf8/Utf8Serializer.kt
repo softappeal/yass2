@@ -1,21 +1,24 @@
 package ch.softappeal.yass2.serialize.utf8
 
+import ch.softappeal.yass2.InternalApi
+import ch.softappeal.yass2.serialize.Property
 import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Writer
 import ch.softappeal.yass2.serialize.readBytes
 import ch.softappeal.yass2.serialize.writeBytes
 import kotlin.reflect.KClass
+import kotlin.reflect.KProperty1
 
 public const val QUOTE: Byte = '"'.code.toByte()
 public const val LBRACKET: Byte = '['.code.toByte()
 public const val COMMA: Byte = ','.code.toByte()
 public const val SP: Byte = ' '.code.toByte()
 public const val COLON: Byte = ':'.code.toByte()
-internal const val BS = '\\'.code.toByte()
-internal const val NL = '\n'.code.toByte()
-internal const val CR = '\r'.code.toByte()
-internal const val TAB = '\t'.code.toByte()
+private const val BS = '\\'.code.toByte()
+private const val NL = '\n'.code.toByte()
+private const val CR = '\r'.code.toByte()
+private const val TAB = '\t'.code.toByte()
 private const val RBRACKET = ']'.code.toByte()
 
 private const val S_BS = BS.toInt().toChar().toString()
@@ -40,20 +43,18 @@ public open class Utf8Encoder<T : Any>(
     public fun read(reader: Utf8Serializer.Utf8Reader): T = reader.read()
 }
 
-public const val NO_ENCODER_ID: Int = -1
-
 public class ClassUtf8Encoder<T : Any>(
     type: KClass<T>,
     write: Utf8Serializer.Utf8Writer.(value: T) -> Unit,
     read: Utf8Serializer.Utf8Reader.() -> T,
     /** see [NO_ENCODER_ID] */
-    vararg propertyId: Pair<String, Int>,
+    vararg propertyEncoderIds: Pair<String, Int>,
 ) : Utf8Encoder<T>(type, write, read) {
-    private val property2id = propertyId.toMap()
-    public fun id(name: String): Int {
-        val id = property2id[name]
-        check(id != null) { "no property '${type.simpleName}.$name'" }
-        return id
+    private val property2encoderId = propertyEncoderIds.toMap()
+    public fun encoderId(property: String): Int {
+        val encoderId = property2encoderId[property]
+        check(encoderId != null) { "no property '${type.simpleName}.$property'" }
+        return encoderId
     }
 }
 
@@ -90,9 +91,9 @@ public abstract class Utf8Serializer(
             if (multilineWrite) writeByte(NL)
         }
 
-        public abstract fun writeWithId(property: String, value: Any?)
-        public abstract fun writeNoId(property: String, id: Int, value: Any?)
-        public abstract fun writeWithId(value: Any?)
+        public abstract fun writeProperty(name: String, value: Any?)
+        public abstract fun writeProperty(name: String, value: Any?, encoderId: Int)
+        public abstract fun writeObject(value: Any?)
     }
 
     public abstract class Utf8Reader(private val reader: Reader, private var _nextCodePoint: Int) : Reader by reader {
@@ -115,7 +116,7 @@ public abstract class Utf8Serializer(
         }
 
         public abstract fun readString(): String
-        public abstract fun readWithId(): Any?
+        public abstract fun readObject(): Any?
 
         protected lateinit var properties: MutableMap<String, Any>
 
@@ -172,7 +173,7 @@ public abstract class Utf8Serializer(
                     if ((!multilineWrite || strictListComma) && index != 0) writeByte(COMMA)
                     writeNewLine()
                     writeIndent()
-                    writeWithId(element)
+                    writeObject(element)
                 }
             }
             writeNewLine()
@@ -190,7 +191,7 @@ public abstract class Utf8Serializer(
                             readNextCodePointAndSkipWhitespace()
                         }
                     }
-                    add(readWithId())
+                    add(readObject())
                     readNextCodePointAndSkipWhitespace()
                     if (!strictListComma && expectedCodePoint(COMMA)) readNextCodePointAndSkipWhitespace()
                 }
@@ -198,16 +199,8 @@ public abstract class Utf8Serializer(
         }
     )
 
-    public companion object {
-        public const val STRING_ENCODER_ID: Int = 0
-        public const val LIST_ENCODER_ID: Int = 1
-        public const val FIRST_ENCODER_ID: Int = 2
-    }
-
-    private val encoders = (listOf(
-        stringEncoder,
-        listEncoder,
-    ) + utf8Encoders).toTypedArray()
+    /** See [STRING_ENCODER_ID] and [LIST_ENCODER_ID]. */
+    private val encoders = (listOf(stringEncoder, listEncoder) + utf8Encoders).toTypedArray()
     private val type2encoder = HashMap<KClass<*>, Utf8Encoder<*>>(encoders.size)
     private val className2encoder = HashMap<String, Utf8Encoder<*>>(encoders.size)
 
@@ -220,10 +213,32 @@ public abstract class Utf8Serializer(
         }
     }
 
-    protected fun encoder(index: Int): Utf8Encoder<*> = encoders[index]
+    protected fun encoder(encoderId: Int): Utf8Encoder<*> = encoders[encoderId]
     protected fun encoder(type: KClass<*>): Utf8Encoder<*> = type2encoder[type] ?: error("missing type '$type'")
     protected fun encoder(className: String): Utf8Encoder<*> =
         className2encoder[className] ?: error("missing encoder for class '$className'")
+}
+
+public const val NO_ENCODER_ID: Int = -1
+public const val STRING_ENCODER_ID: Int = 0
+public const val LIST_ENCODER_ID: Int = 1
+private const val FIRST_ENCODER_ID = 2
+
+@InternalApi
+public class Utf8Property(baseClasses: List<KClass<*>>, property: KProperty1<out Any, *>, type: KClass<*>) : Property(property) {
+    private val encoderId = when (type) {
+        String::class -> STRING_ENCODER_ID
+        List::class -> LIST_ENCODER_ID
+        else -> {
+            val baseClassIndex = baseClasses.indexOfFirst { it == type }
+            if (baseClassIndex >= 0) baseClassIndex + FIRST_ENCODER_ID else NO_ENCODER_ID
+        }
+    }
+
+    public fun encoderIdForWriteProperty(): String = if (encoderId == NO_ENCODER_ID) "" else ", $encoderId"
+    public fun encoderIdForPropertyEncoderIds(): Int = if (
+        encoderId != NO_ENCODER_ID && encoderId != STRING_ENCODER_ID && encoderId != LIST_ENCODER_ID
+    ) encoderId else NO_ENCODER_ID
 }
 
 public fun Utf8Serializer.writeString(value: Any?): String = writeBytes(value).decodeToString(throwOnInvalidSequence = true)

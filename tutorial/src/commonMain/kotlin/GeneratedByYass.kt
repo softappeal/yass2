@@ -118,8 +118,8 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
     ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
         ch.softappeal.yass2.tutorial.Address::class,
         { i ->
-            writeNoId("street", 0, i.street)
-            writeNoId("number", 2, i.number)
+            writeProperty("street", i.street, 0)
+            writeProperty("number", i.number, 2)
         },
         {
             val i = ch.softappeal.yass2.tutorial.Address(
@@ -134,10 +134,10 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
     ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
         ch.softappeal.yass2.tutorial.Person::class,
         { i ->
-            writeNoId("name", 0, i.name)
-            writeNoId("gender", 4, i.gender)
-            writeNoId("birthday", 3, i.birthday)
-            writeNoId("addresses", 1, i.addresses)
+            writeProperty("name", i.name, 0)
+            writeProperty("gender", i.gender, 4)
+            writeProperty("birthday", i.birthday, 3)
+            writeProperty("addresses", i.addresses, 1)
         },
         {
             val i = ch.softappeal.yass2.tutorial.Person(
@@ -166,8 +166,8 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
     ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
         ch.softappeal.yass2.tutorial.SubClass::class,
         { i ->
-            writeNoId("baseClassProperty", 0, i.baseClassProperty)
-            writeNoId("subClassProperty", 0, i.subClassProperty)
+            writeProperty("baseClassProperty", i.baseClassProperty, 0)
+            writeProperty("subClassProperty", i.subClassProperty, 0)
         },
         {
             val i = ch.softappeal.yass2.tutorial.SubClass(
@@ -182,9 +182,9 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
     ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
         ch.softappeal.yass2.remote.Request::class,
         { i ->
-            writeNoId("service", 0, i.service)
-            writeNoId("function", 0, i.function)
-            writeNoId("parameters", 1, i.parameters)
+            writeProperty("service", i.service, 0)
+            writeProperty("function", i.function, 0)
+            writeProperty("parameters", i.parameters, 1)
         },
         {
             val i = ch.softappeal.yass2.remote.Request(
@@ -201,7 +201,7 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
     ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
         ch.softappeal.yass2.remote.ValueReply::class,
         { i ->
-            writeWithId("value", i.value)
+            writeProperty("value", i.value)
         },
         {
             val i = ch.softappeal.yass2.remote.ValueReply(
@@ -214,7 +214,7 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
     ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
         ch.softappeal.yass2.remote.ExceptionReply::class,
         { i ->
-            writeWithId("exception", i.exception)
+            writeProperty("exception", i.exception)
         },
         {
             val i = ch.softappeal.yass2.remote.ExceptionReply(
@@ -227,8 +227,8 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
     ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
         ch.softappeal.yass2.coroutines.Packet::class,
         { i ->
-            writeNoId("requestNumber", 2, i.requestNumber)
-            writeWithId("message", i.message)
+            writeProperty("requestNumber", i.requestNumber, 2)
+            writeProperty("message", i.message)
         },
         {
             val i = ch.softappeal.yass2.coroutines.Packet(

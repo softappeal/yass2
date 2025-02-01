@@ -2,9 +2,11 @@
 
 @file:Suppress("SpellCheckingInspection")
 
-import kotlinx.validation.ExperimentalBCVApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import java.util.regex.Pattern
+
+/** Only uses jvm target if `false`. Can be used for faster development. */
+val allTargets = true
 
 plugins {
     alias(libs.plugins.multiplatform)
@@ -13,12 +15,9 @@ plugins {
     alias(libs.plugins.binary.compatibility.validator)
 }
 
-/** Only uses jvm target if `false`. Can be used for faster development. */
-val allTargets = true
-
 apiValidation {
     ignoredProjects.addAll(listOf("yass2", "tutorial", "test"))
-    if (allTargets) @OptIn(ExperimentalBCVApi::class) klib { enabled = true }
+    nonPublicMarkers.add("ch.softappeal.yass2.InternalApi")
 }
 
 val libraries = libs
@@ -45,6 +44,11 @@ allprojects {
             }
         }
         if (allTargets) {
+            js {
+                moduleName = project.name
+                nodejs()
+                binaries.executable()
+            }
             @OptIn(ExperimentalWasmDsl::class)
             wasmJs {
                 nodejs()
@@ -142,7 +146,7 @@ val generateProject = project(":yass2-generate") {
             jvmMain {
                 dependencies {
                     api(coreProject)
-                    implementation(kotlin("reflect"))
+                    api(kotlin("reflect"))
                 }
             }
         }

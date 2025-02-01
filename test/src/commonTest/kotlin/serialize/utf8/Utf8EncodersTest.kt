@@ -72,9 +72,9 @@ class Utf8EncodersTest {
         test(123L, "Long(123)")
         test(-123L, "Long(-123)")
 
-        test(0.0, "Double(0.0)")
-        test(123.0, "Double(123.0)")
-        test(-123.0, "Double(-123.0)")
+        test(0.1, "Double(0.1)")
+        test(123.1, "Double(123.1)")
+        test(-123.1, "Double(-123.1)")
         test(Double.POSITIVE_INFINITY, "Double(Infinity)")
         test(Double.NEGATIVE_INFINITY, "Double(-Infinity)")
         test(Double.NaN, "Double(NaN)")
