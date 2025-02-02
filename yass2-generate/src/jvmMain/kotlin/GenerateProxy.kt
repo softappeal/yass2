@@ -14,7 +14,7 @@ private fun KFunction<*>.hasResult() = returnType.classifier != Unit::class
 private fun CodeWriter.writeSignature(function: KFunction<*>) {
     writeNestedLine("override ${if (function.isSuspend) "suspend " else ""}fun ${function.name}(") {
         function.valueParameters.forEachIndexed { parameterIndex, parameter ->
-            writeNestedLine("p${parameterIndex + 1}: ${parameter.type.convert()},")
+            writeNestedLine("p${parameterIndex + 1}: ${parameter.type.toPrintable()},")
         }
     }
     writeNested(")")
@@ -49,14 +49,14 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
             if (functionIndex != 0) writeLine()
             val hasResult = function.hasResult()
             writeSignature(function)
-            if (hasResult) write(": ${function.returnType.convert()}")
+            if (hasResult) write(": ${function.returnType.toPrintable()}")
             writeLine(" {") {
                 writeNestedLine("${if (hasResult) "return " else ""}${if (function.isSuspend) "suspendIntercept" else "intercept"}(\"${function.name}\", listOf(${function.parameters()})) {") {
                     writeNestedLine("this@proxy.${function.name}(${function.parameters()})")
                 }
                 writeNested("}")
             }
-            if (hasResult) write(" as ${function.returnType.convert()}")
+            if (hasResult) write(" as ${function.returnType.toPrintable()}")
             writeLine()
             writeNestedLine("}")
         }
@@ -77,7 +77,7 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
                 writeLine(" ${if (hasResult) "=" else "{"}") {
                     writeNestedLine("tunnel(${Request::class.qualifiedName}(id, \"${function.name}\", listOf(${function.parameters()})))") {
                         writeNested(".process()")
-                        if (hasResult) write(" as ${function.returnType.convert()}") else writeLine()
+                        if (hasResult) write(" as ${function.returnType.toPrintable()}") else writeLine()
                     }
                 }
                 if (!hasResult) writeNested("}")
@@ -96,7 +96,7 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
                 functions.forEach { function ->
                     writeNestedLine("\"${function.name}\" -> implementation.${function.name}(", ")") {
                         function.valueParameters.forEachIndexed { parameterIndex, parameter ->
-                            writeNestedLine("parameters[$parameterIndex] as ${parameter.type.convert()},")
+                            writeNestedLine("parameters[$parameterIndex] as ${parameter.type.toPrintable()},")
                         }
                     }
                 }

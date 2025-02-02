@@ -7,6 +7,7 @@ import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Writer
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
+import kotlin.reflect.KType
 
 public open class BinaryEncoder<T : Any>(
     internal val type: KClass<T>,
@@ -89,17 +90,16 @@ private const val NULL_ENCODER_ID = 0
 
 @InternalApi
 public class BinaryProperty(
+    property: KProperty1<out Any, *>,
+    returnType: KType,
     baseClasses: List<KClass<*>>,
     concreteClasses: List<KClass<*>>,
-    property: KProperty1<out Any, *>,
-    type: KClass<*>,
-    private val nullable: Boolean,
     hasSuperClass: KClass<*>.(superClass: KClass<*>) -> Boolean,
-) : Property(property) {
-    private val encoderId = if (type == List::class) LIST_ENCODER_ID else {
-        val baseClassIndex = baseClasses.indexOfFirst { it == type }
+) : Property(property, returnType) {
+    private val encoderId = if (classifier == List::class) LIST_ENCODER_ID else {
+        val baseClassIndex = baseClasses.indexOfFirst { it == classifier }
         if (baseClassIndex >= 0) baseClassIndex + FIRST_ENCODER_ID else {
-            val concreteClassIndex = concreteClasses.indexOfFirst { it == type }
+            val concreteClassIndex = concreteClasses.indexOfFirst { it == classifier }
             if (
                 concreteClassIndex >= 0 && concreteClasses.none { it.hasSuperClass(concreteClasses[concreteClassIndex]) }
             ) concreteClassIndex + baseClasses.size + FIRST_ENCODER_ID else NO_ENCODER_ID

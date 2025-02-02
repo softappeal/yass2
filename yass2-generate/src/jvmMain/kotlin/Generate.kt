@@ -38,7 +38,7 @@ internal fun <T> List<T>.duplicates(): List<T> {
 }
 
 // fixes "kotlin.Exception /* = java.lang.Exception */"
-public fun KType.convert(): String =
+public fun KType.toPrintable(): String =
     if (classifier is KClass<*> && classifier == Exception::class) "kotlin.Exception" else toString()
 
 public class CodeWriter private constructor(private val appendable: Appendable, private val indent: String) {

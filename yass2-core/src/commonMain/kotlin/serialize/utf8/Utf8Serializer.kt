@@ -9,6 +9,7 @@ import ch.softappeal.yass2.serialize.readBytes
 import ch.softappeal.yass2.serialize.writeBytes
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
+import kotlin.reflect.KType
 
 public const val QUOTE: Byte = '"'.code.toByte()
 public const val LBRACKET: Byte = '['.code.toByte()
@@ -225,12 +226,16 @@ public const val LIST_ENCODER_ID: Int = 1
 private const val FIRST_ENCODER_ID = 2
 
 @InternalApi
-public class Utf8Property(baseClasses: List<KClass<*>>, property: KProperty1<out Any, *>, type: KClass<*>) : Property(property) {
-    private val encoderId = when (type) {
+public class Utf8Property(
+    property: KProperty1<out Any, *>,
+    returnType: KType,
+    baseClasses: List<KClass<*>>,
+) : Property(property, returnType) {
+    private val encoderId = when (classifier) {
         String::class -> STRING_ENCODER_ID
         List::class -> LIST_ENCODER_ID
         else -> {
-            val baseClassIndex = baseClasses.indexOfFirst { it == type }
+            val baseClassIndex = baseClasses.indexOfFirst { it == classifier }
             if (baseClassIndex >= 0) baseClassIndex + FIRST_ENCODER_ID else NO_ENCODER_ID
         }
     }

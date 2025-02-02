@@ -13,7 +13,6 @@ import ch.softappeal.yass2.serialize.utf8.EnumUtf8Encoder
 import ch.softappeal.yass2.serialize.utf8.Utf8Encoder
 import ch.softappeal.yass2.serialize.utf8.Utf8Property
 import kotlin.reflect.KClass
-import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
@@ -68,22 +67,20 @@ public class Properties<P : Property>(klass: KClass<*>, createProperty: (propert
             val primaryConstructor = klass.primaryConstructor ?: error(
                 "class ${klass.qualifiedName} must hava a primary constructor"
             )
-            val propertyNames = properties.map { it.property.name }
+            val propertyNames = properties.map { it.name }
             val parameterNames = primaryConstructor.valueParameters.map { it.name }
             parameterNames.forEach { parameterName ->
                 require(propertyNames.contains(parameterName)) {
                     "primary constructor parameter $parameterName of class ${klass.qualifiedName} must be a property"
                 }
-                add(properties.first { it.property.name == parameterName })
+                add(properties.first { it.name == parameterName })
             }
         }
         body = buildList {
             properties
                 .filter { it !in parameter }
                 .forEach { property ->
-                    require(property.property is KMutableProperty1<out Any, *>) {
-                        "body property ${property.property.name} of ${klass.qualifiedName} must be var"
-                    }
+                    require(property.mutable) { "body property ${property.name} of ${klass.qualifiedName} must be var" }
                     add(property)
                 }
         }
@@ -97,13 +94,8 @@ public fun CodeWriter.generateBinarySerializer(
     concreteAndEnumClasses: List<KClass<*>>,
 ) {
     val (baseClasses, enumClasses, concreteClasses) = getClasses(encoderObjects, concreteAndEnumClasses)
-    fun KProperty1<out Any, *>.property() = BinaryProperty(
-        baseClasses,
-        concreteClasses,
-        this,
-        returnType.classifier as KClass<*>,
-        returnType.isMarkedNullable,
-    ) { superClass -> superclasses.contains(superClass) }
+    fun KProperty1<out Any, *>.property() =
+        BinaryProperty(this, returnType, baseClasses, concreteClasses) { superClass -> superclasses.contains(superClass) }
     writeLine()
     writeNestedLine("/*", "*/") {
         writeNestedLine("$LIST_ENCODER_ID: ${List::class.qualifiedName}")
@@ -120,7 +112,7 @@ public fun CodeWriter.generateBinarySerializer(
         concreteClasses.forEach { type ->
             val properties = Properties(type) { it.property() }
             type.writeNestedLine {
-                properties.all.forEach { property -> writeNestedLine("${property.property.name}: ${property.meta()}") }
+                properties.all.forEach { property -> writeNestedLine("${property.name}: ${property.meta()}") }
             }
         }
     }
@@ -140,17 +132,17 @@ public fun CodeWriter.generateBinarySerializer(
                             val properties = Properties(type) { it.property() }
                             writeNestedLine("{ i ->", "},") {
                                 properties.all.forEach { property ->
-                                    writeNestedLine(property.writeObject("i.${property.property.name}"))
+                                    writeNestedLine(property.writeObject("i.${property.name}"))
                                 }
                             }
                             writeNestedLine("{", "}") {
                                 writeNestedLine("val i = ${type.qualifiedName}(", ")") {
                                     properties.parameter.forEach { property ->
-                                        writeNestedLine("${property.readObject()} as ${property.property.returnType.convert()},")
+                                        writeNestedLine("${property.readObject()} as ${property.returnType.toPrintable()},")
                                     }
                                 }
                                 properties.body.forEach { property ->
-                                    writeNestedLine("i.${property.property.name} = ${property.readObject()} as ${property.property.returnType.convert()}")
+                                    writeNestedLine("i.${property.name} = ${property.readObject()} as ${property.returnType.toPrintable()}")
                                 }
                                 writeNestedLine("i")
                             }
@@ -183,25 +175,25 @@ public fun CodeWriter.generateUtf8Encoders(
         concreteClasses.forEach { type ->
             writeNestedLine("${ClassUtf8Encoder::class.qualifiedName}(", "),") {
                 writeNestedLine("${type.qualifiedName}::class,")
-                val properties = Properties(type) { Utf8Property(baseClasses, it, it.returnType.classifier as KClass<*>) }
+                val properties = Properties(type) { Utf8Property(it, it.returnType, baseClasses) }
                 writeNestedLine("{ i ->", "},") {
                     properties.all.forEach { property ->
-                        writeNestedLine("writeProperty(\"${property.property.name}\", i.${property.property.name}${property.encoderIdForWriteProperty()})")
+                        writeNestedLine("writeProperty(\"${property.name}\", i.${property.name}${property.encoderIdForWriteProperty()})")
                     }
                 }
                 writeNestedLine("{", "},") {
                     writeNestedLine("val i = ${type.qualifiedName}(", ")") {
                         properties.parameter.forEach { property ->
-                            writeNestedLine("getProperty(\"${property.property.name}\") as ${property.property.returnType.convert()},")
+                            writeNestedLine("getProperty(\"${property.name}\") as ${property.returnType.toPrintable()},")
                         }
                     }
                     properties.body.forEach { property ->
-                        writeNestedLine("i.${property.property.name} = getProperty(\"${property.property.name}\") as ${property.property.returnType.convert()}")
+                        writeNestedLine("i.${property.name} = getProperty(\"${property.name}\") as ${property.returnType.toPrintable()}")
                     }
                     writeNestedLine("i")
                 }
                 properties.all.forEach { property ->
-                    writeNestedLine("\"${property.property.name}\" to ${property.encoderIdForPropertyEncoderIds()},")
+                    writeNestedLine("\"${property.name}\" to ${property.encoderIdForPropertyEncoderIds()},")
                 }
             }
         }

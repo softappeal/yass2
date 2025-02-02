@@ -75,8 +75,12 @@ public final class ch/softappeal/yass2/serialize/BytesWriter : ch/softappeal/yas
 }
 
 public abstract class ch/softappeal/yass2/serialize/Property {
-	public fun <init> (Lkotlin/reflect/KProperty1;)V
-	public final fun getProperty ()Lkotlin/reflect/KProperty1;
+	public fun <init> (Lkotlin/reflect/KProperty1;Lkotlin/reflect/KType;)V
+	public final fun getClassifier ()Lkotlin/reflect/KClassifier;
+	public final fun getMutable ()Z
+	public final fun getName ()Ljava/lang/String;
+	public final fun getNullable ()Z
+	public final fun getReturnType ()Lkotlin/reflect/KType;
 }
 
 public abstract interface class ch/softappeal/yass2/serialize/Reader {
