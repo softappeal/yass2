@@ -146,7 +146,7 @@ val generateProject = project(":yass2-generate") {
             jvmMain {
                 dependencies {
                     api(coreProject)
-                    api(kotlin("reflect"))
+                    implementation(kotlin("reflect"))
                 }
             }
         }

@@ -10,6 +10,7 @@
     "KotlinRedundantDiagnosticSuppress",
     "RedundantSuppression",
     "UNUSED_ANONYMOUS_PARAMETER",
+    "TrailingComma",
 )
 
 package ch.softappeal.yass2.contract
@@ -92,11 +93,11 @@ public fun ch.softappeal.yass2.contract.Echo.proxy(
     }
 
     override suspend fun echoException(
-        p1: kotlin.Exception,
-    ): kotlin.Exception {
+        p1: kotlin.Exception /* = java.lang.Exception */,
+    ): kotlin.Exception /* = java.lang.Exception */ {
         return suspendIntercept("echoException", listOf(p1)) {
             this@proxy.echoException(p1)
-        } as kotlin.Exception
+        } as kotlin.Exception /* = java.lang.Exception */
     }
 
     override suspend fun echoMonster(
@@ -144,10 +145,10 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Ech
                 .process() as kotlin.Any?
 
         override suspend fun echoException(
-            p1: kotlin.Exception,
+            p1: kotlin.Exception /* = java.lang.Exception */,
         ) =
             tunnel(ch.softappeal.yass2.remote.Request(id, "echoException", listOf(p1)))
-                .process() as kotlin.Exception
+                .process() as kotlin.Exception /* = java.lang.Exception */
 
         override suspend fun echoMonster(
             p1: kotlin.collections.List<*>,
@@ -183,7 +184,7 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Ech
                 parameters[0] as kotlin.Any?,
             )
             "echoException" -> implementation.echoException(
-                parameters[0] as kotlin.Exception,
+                parameters[0] as kotlin.Exception /* = java.lang.Exception */,
             )
             "echoMonster" -> implementation.echoMonster(
                 parameters[0] as kotlin.collections.List<*>,
@@ -570,7 +571,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                     },
                     {
                         val i = ch.softappeal.yass2.remote.ExceptionReply(
-                            readObject() as kotlin.Exception,
+                            readObject() as kotlin.Exception /* = java.lang.Exception */,
                         )
                         i
                     }
@@ -833,7 +834,7 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
         },
         {
             val i = ch.softappeal.yass2.remote.ExceptionReply(
-                getProperty("exception") as kotlin.Exception,
+                getProperty("exception") as kotlin.Exception /* = java.lang.Exception */,
             )
             i
         },

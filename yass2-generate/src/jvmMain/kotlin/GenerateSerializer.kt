@@ -138,11 +138,11 @@ public fun CodeWriter.generateBinarySerializer(
                             writeNestedLine("{", "}") {
                                 writeNestedLine("val i = ${type.qualifiedName}(", ")") {
                                     properties.parameter.forEach { property ->
-                                        writeNestedLine("${property.readObject()} as ${property.returnType.toPrintable()},")
+                                        writeNestedLine("${property.readObject()} as ${property.returnType},")
                                     }
                                 }
                                 properties.body.forEach { property ->
-                                    writeNestedLine("i.${property.name} = ${property.readObject()} as ${property.returnType.toPrintable()}")
+                                    writeNestedLine("i.${property.name} = ${property.readObject()} as ${property.returnType}")
                                 }
                                 writeNestedLine("i")
                             }
@@ -184,11 +184,11 @@ public fun CodeWriter.generateUtf8Encoders(
                 writeNestedLine("{", "},") {
                     writeNestedLine("val i = ${type.qualifiedName}(", ")") {
                         properties.parameter.forEach { property ->
-                            writeNestedLine("getProperty(\"${property.name}\") as ${property.returnType.toPrintable()},")
+                            writeNestedLine("getProperty(\"${property.name}\") as ${property.returnType},")
                         }
                     }
                     properties.body.forEach { property ->
-                        writeNestedLine("i.${property.name} = getProperty(\"${property.name}\") as ${property.returnType.toPrintable()}")
+                        writeNestedLine("i.${property.name} = getProperty(\"${property.name}\") as ${property.returnType}")
                     }
                     writeNestedLine("i")
                 }

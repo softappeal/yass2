@@ -10,6 +10,7 @@
     "KotlinRedundantDiagnosticSuppress",
     "RedundantSuppression",
     "UNUSED_ANONYMOUS_PARAMETER",
+    "TrailingComma",
 )
 
 package ch.softappeal.yass2.tutorial
@@ -218,7 +219,7 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
         },
         {
             val i = ch.softappeal.yass2.remote.ExceptionReply(
-                getProperty("exception") as kotlin.Exception,
+                getProperty("exception") as kotlin.Exception /* = java.lang.Exception */,
             )
             i
         },
