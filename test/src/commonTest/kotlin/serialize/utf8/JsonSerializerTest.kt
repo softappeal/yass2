@@ -43,8 +43,8 @@ class JsonSerializerTest {
     fun sl() {
         dumpSL(
             null,
-            """{"#":""}""",
-            """  {  "#"  :  ""  }""",
+            "{}",
+            "  {  }",
         )
         dumpSL(
             Gender.Male,
@@ -72,8 +72,8 @@ class JsonSerializerTest {
         )
         dumpSL(
             listOf(null, 123, A(1), mutableListOf(1, 2)),
-            """[{"#":""},{"#Int":"123"},{"#":"A","a":"1"},[{"#Int":"1"},{"#Int":"2"}]]""",
-            """  [  {"#":""}  ,  {"#Int":"123"}  ,  {"#":"A","a":"1"}  ,  [  {"#Int":"1"}  ,  {"#Int":"2"}  ]  ]""",
+            """[{},{"#Int":"123"},{"#":"A","a":"1"},[{"#Int":"1"},{"#Int":"2"}]]""",
+            """  [  {}  ,  {"#Int":"123"}  ,  {"#":"A","a":"1"}  ,  [  {"#Int":"1"}  ,  {"#Int":"2"}  ]  ]""",
         )
         dumpSL(
             Optionals(1, null, IntWrapper(3), null),
@@ -116,15 +116,15 @@ class JsonSerializerTest {
             """{"#":"DivideByZeroException"}""",
         )
         dumpSL(listOf<Int>(), "[]")
-        dumpSL(listOf(null), """[{"#":""}]""")
-        dumpSL(listOf(null, null), """[{"#":""},{"#":""}]""")
+        dumpSL(listOf(null), "[{}]")
+        dumpSL(listOf(null, null), "[{},{}]")
     }
 
     @Test
     fun ml() {
         dumpML(
             null,
-            """{"#":""}""",
+            "{}",
         )
         dumpML(
             Gender.Male,
@@ -138,7 +138,7 @@ class JsonSerializerTest {
             listOf(null, 123, A(1), mutableListOf(1, 2)),
             """
                 [
-                    {"#":""},
+                    {},
                     {"#Int":"123"},
                     {
                         "#": "A",
@@ -204,7 +204,7 @@ class JsonSerializerTest {
             listOf(null),
             """
                 [
-                    {"#":""}
+                    {}
                 ]
             """.trimIndent(),
         )
@@ -212,8 +212,8 @@ class JsonSerializerTest {
             listOf(null, null),
             """
                 [
-                    {"#":""},
-                    {"#":""}
+                    {},
+                    {}
                 ]
             """.trimIndent(),
         )
@@ -226,7 +226,7 @@ class JsonSerializerTest {
             SERIALIZER_SL.readString("""{"#":"Optionals","noSuchProperty":[]}""")
         }
         assertFailsMessage<IllegalStateException>("property 'Optionals.intWrapperOptional' must not be explicitly set to null") {
-            SERIALIZER_SL.readString("""{"#":"Optionals","intWrapperOptional":{"#":""}}""")
+            SERIALIZER_SL.readString("""{"#":"Optionals","intWrapperOptional":{}}""")
         }
         assertFailsMessage<IllegalStateException>("duplicated property 'Optionals.i'") {
             SERIALIZER_SL.readString("""{"#":"Optionals","i":"1","i":"1"}""")
@@ -279,13 +279,13 @@ class JsonSerializerTest {
         )
         dumpSL(
             big,
-            """[{"#":""},"hello","world","hello \" \t \\ \n world",{"#Int":"123"},[],[{"#ByteArray":"AQID"},{"#Gender":"Female"},{"#":""}],{"#":"Lists","list":[{"#Int":"1"},{"#Int":"2"}],"mutableList":[{"#Int":"3"},{"#Int":"4"}]},{"#":"Poly","a":{"#":"B","a":"1","b":"2"},"b":{"#":"B","a":"3","b":"4"}},{"#":"Optionals","i":"1","intWrapper":{"#":"IntWrapper","i":"3"}}]""",
+            """[{},"hello","world","hello \" \t \\ \n world",{"#Int":"123"},[],[{"#ByteArray":"AQID"},{"#Gender":"Female"},{}],{"#":"Lists","list":[{"#Int":"1"},{"#Int":"2"}],"mutableList":[{"#Int":"3"},{"#Int":"4"}]},{"#":"Poly","a":{"#":"B","a":"1","b":"2"},"b":{"#":"B","a":"3","b":"4"}},{"#":"Optionals","i":"1","intWrapper":{"#":"IntWrapper","i":"3"}}]""",
         )
         dumpML(
             big,
             """
                 [
-                    {"#":""},
+                    {},
                     "hello",
                     "world",
                     "hello \" \t \\ \n world",
@@ -295,7 +295,7 @@ class JsonSerializerTest {
                     [
                         {"#ByteArray":"AQID"},
                         {"#Gender":"Female"},
-                        {"#":""}
+                        {}
                     ],
                     {
                         "#": "Lists",

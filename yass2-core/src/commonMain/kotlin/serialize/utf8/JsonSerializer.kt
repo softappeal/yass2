@@ -34,8 +34,6 @@ public class JsonSerializer(
             when (value) {
                 null -> {
                     writeByte(LBRACE)
-                    writeKey("#", false)
-                    writeQuoted("")
                     writeByte(RBRACE)
                 }
                 is String -> stringEncoder.write(this, value)
@@ -93,14 +91,9 @@ public class JsonSerializer(
             }
         }
 
-        private fun skipQuote() {
-            readNextCodePointAndSkipWhitespace()
+        private fun readKey(): String {
             check(expectedCodePoint(QUOTE)) { "'${QUOTE.toInt().toChar()}' expected" }
             readNextCodePoint()
-        }
-
-        private fun readKey(): String {
-            skipQuote()
             val key = readString()
             readNextCodePointAndSkipWhitespace()
             check(expectedCodePoint(COLON)) { "'${COLON.toInt().toChar()}' expected" }
@@ -113,8 +106,12 @@ public class JsonSerializer(
                 expectedCodePoint(QUOTE) -> stringEncoder.read(this)
                 expectedCodePoint(LBRACKET) -> listEncoder.read(this)
                 expectedCodePoint(LBRACE) -> {
+                    readNextCodePointAndSkipWhitespace()
+                    if (expectedCodePoint(RBRACE)) return null
                     val type = readKey()
-                    skipQuote()
+                    readNextCodePointAndSkipWhitespace()
+                    check(expectedCodePoint(QUOTE)) { "'${QUOTE.toInt().toChar()}' expected" }
+                    readNextCodePoint()
                     check(type.isNotEmpty()) { "empty type" }
                     check(type[0] == '#') { "'#' expected" }
                     if (type.length > 1) {
@@ -129,10 +126,7 @@ public class JsonSerializer(
                     } else {
                         val className = readString()
                         readNextCodePointAndSkipWhitespace()
-                        if (className.isNotEmpty()) readClass(encoder(className) as ClassUtf8Encoder) else {
-                            check(expectedCodePoint(RBRACE)) { "'${RBRACE.toInt().toChar()}' expected" }
-                            null
-                        }
+                        readClass(encoder(className) as ClassUtf8Encoder)
                     }
                 }
                 else -> error("unexpected codePoint $nextCodePoint")
@@ -143,6 +137,7 @@ public class JsonSerializer(
             properties = mutableMapOf()
             while (!expectedCodePoint(RBRACE)) {
                 check(expectedCodePoint(COMMA)) { "'${COMMA.toInt().toChar()}' expected" }
+                readNextCodePointAndSkipWhitespace()
                 val name = readKey()
                 readNextCodePointAndSkipWhitespace()
                 val encoderId = encoder.encoderId(name)
