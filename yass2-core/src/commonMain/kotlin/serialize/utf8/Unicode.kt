@@ -6,7 +6,7 @@ import ch.softappeal.yass2.serialize.Reader
 
 // see https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates
 public fun StringBuilder.addCodePoint(codePoint: Int) {
-    if (codePoint in 0..Char.MAX_VALUE.code) append(codePoint.toChar()) else {
+    if (codePoint <= Char.MAX_VALUE.code) append(codePoint.toChar()) else {
         val cp = codePoint - (Char.MAX_VALUE.code + 1)
         append(((cp ushr 10) + Char.MIN_HIGH_SURROGATE.code).toChar())
         append(((cp and 0b11_1111_1111) + Char.MIN_LOW_SURROGATE.code).toChar())
