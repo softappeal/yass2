@@ -19,7 +19,10 @@ public object LongUtf8Encoder : Utf8Encoder<Long>(Long::class,
     { readString().toLong() }
 )
 
-/** NOTE: Must not be used on js target (doesn't work for whole numbers). */
+/**
+ * NOTE: Must not be used on js target (doesn't work for whole numbers).
+ * See [explanation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger).
+ */
 public object DoubleUtf8Encoder : Utf8Encoder<Double>(Double::class,
     { value -> writeString(value.toString()) },
     { readString().toDouble() }

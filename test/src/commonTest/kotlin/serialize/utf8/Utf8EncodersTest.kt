@@ -7,35 +7,35 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+private val SERIALIZER = TextSerializer(
+    listOf(
+        BooleanUtf8Encoder,
+        IntUtf8Encoder,
+        LongUtf8Encoder,
+        DoubleUtf8Encoder,
+        ByteArrayUtf8Encoder,
+        EnumUtf8Encoder(Gender::class, Gender::valueOf),
+    ),
+    false,
+)
+
+private fun test(value: Any?, result: String, hexResult: String? = null) {
+    assertEquals(result, SERIALIZER.writeString(value))
+    if (hexResult != null) {
+        with(BytesWriter(1000)) {
+            SERIALIZER.write(this, value)
+            @OptIn(ExperimentalStdlibApi::class)
+            assertEquals(hexResult, buffer.copyOf(current).toHexString())
+        }
+    }
+    val d = SERIALIZER.readString(result)
+    if (value is ByteArray) assertTrue(value contentEquals (d as ByteArray)) else assertEquals(value, d)
+}
+
 class Utf8EncodersTest {
     @Suppress("SpellCheckingInspection")
     @Test
     fun test() {
-        val serializer = TextSerializer(
-            listOf(
-                BooleanUtf8Encoder,
-                IntUtf8Encoder,
-                LongUtf8Encoder,
-                DoubleUtf8Encoder,
-                ByteArrayUtf8Encoder,
-                EnumUtf8Encoder(Gender::class, Gender::valueOf),
-            ),
-            false,
-        )
-
-        fun test(value: Any?, result: String, hexResult: String? = null) {
-            assertEquals(result, serializer.writeString(value))
-            if (hexResult != null) {
-                with(BytesWriter(1000)) {
-                    serializer.write(this, value)
-                    @OptIn(ExperimentalStdlibApi::class)
-                    assertEquals(hexResult, buffer.copyOf(current).toHexString())
-                }
-            }
-            val d = serializer.readString(result)
-            if (value is ByteArray) assertTrue(value contentEquals (d as ByteArray)) else assertEquals(value, d)
-        }
-
         test(null, "*")
 
         test("", "\"\"")
@@ -54,9 +54,9 @@ class Utf8EncodersTest {
         test("\ta", "\"\\ta\"", "225c746122")
         test("\na", "\"\\na\"", "225c6e6122")
         test("\ra", "\"\\ra\"", "225c726122")
-        println(serializer.readString("\"a\tb\""))
-        println(serializer.readString("\"c\nd\""))
-        assertFailsMessage<IllegalStateException>("illegal escape with codePoint 97") { serializer.readString("\"\\ab\"") }
+        println(SERIALIZER.readString("\"a\tb\""))
+        println(SERIALIZER.readString("\"c\nd\""))
+        assertFailsMessage<IllegalStateException>("illegal escape with codePoint 97") { SERIALIZER.readString("\"\\ab\"") }
 
         test(listOf<Int>(), "[]")
         test(listOf(null), "[*]")
@@ -87,5 +87,15 @@ class Utf8EncodersTest {
         test(byteArrayOf(0, 1), "ByteArray(AAE=)")
         test(byteArrayOf(0, 1, 2), "ByteArray(AAEC)")
         test(byteArrayOf(0, 1, 2, 3), "ByteArray(AAECAw==)")
+    }
+
+    /** see [DoubleUtf8Encoder] */
+    @Test
+    fun doesNotWorkOnJsTarget() {
+        try {
+            test(123.0, "Double(123.0)")
+        } catch (ignore: AssertionError) {
+            ignore.printStackTrace()
+        }
     }
 }
