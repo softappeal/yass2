@@ -45,7 +45,6 @@ allprojects {
         }
         if (allTargets) {
             js {
-                moduleName = project.name
                 nodejs()
                 binaries.executable()
             }
