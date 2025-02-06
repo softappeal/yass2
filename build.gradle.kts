@@ -45,11 +45,13 @@ allprojects {
         }
         if (allTargets) {
             js {
+                moduleName = project.name
                 nodejs()
                 binaries.executable()
             }
             @OptIn(ExperimentalWasmDsl::class)
             wasmJs {
+                moduleName = project.name + "-wasm"
                 nodejs()
                 binaries.executable()
             }
