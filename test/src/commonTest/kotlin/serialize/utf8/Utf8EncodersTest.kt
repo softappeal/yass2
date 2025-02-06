@@ -12,7 +12,6 @@ private val SERIALIZER = TextSerializer(
         BooleanUtf8Encoder,
         IntUtf8Encoder,
         LongUtf8Encoder,
-        DoubleUtf8Encoder,
         ByteArrayUtf8Encoder,
         EnumUtf8Encoder(Gender::class, Gender::valueOf),
     ),
@@ -66,18 +65,17 @@ class Utf8EncodersTest {
         test(false, "Boolean(false)")
         test(true, "Boolean(true)")
 
-        test(123, "Int(123)")
-        test(-123, "Int(-123)")
+        test(0, "Int(0)")
+        test(1, "Int(1)")
+        test(-1, "Int(-1)")
+        test(Int.MAX_VALUE, "Int(2147483647)")
+        test(Int.MIN_VALUE, "Int(-2147483648)")
 
-        test(123L, "Long(123)")
-        test(-123L, "Long(-123)")
-
-        test(0.1, "Double(0.1)")
-        test(123.1, "Double(123.1)")
-        test(-123.1, "Double(-123.1)")
-        test(Double.POSITIVE_INFINITY, "Double(Infinity)")
-        test(Double.NEGATIVE_INFINITY, "Double(-Infinity)")
-        test(Double.NaN, "Double(NaN)")
+        test(0L, "Long(0)")
+        test(1L, "Long(1)")
+        test(-1L, "Long(-1)")
+        test(Long.MAX_VALUE, "Long(9223372036854775807)")
+        test(Long.MIN_VALUE, "Long(-9223372036854775808)")
 
         test(Gender.Female, "Gender(Female)")
         test(Gender.Male, "Gender(Male)")
@@ -87,15 +85,5 @@ class Utf8EncodersTest {
         test(byteArrayOf(0, 1), "ByteArray(AAE=)")
         test(byteArrayOf(0, 1, 2), "ByteArray(AAEC)")
         test(byteArrayOf(0, 1, 2, 3), "ByteArray(AAECAw==)")
-    }
-
-    /** see [DoubleUtf8Encoder] */
-    @Test
-    fun doesNotWorkOnJsTarget() {
-        try {
-            test(123.0, "Double(123.0)")
-        } catch (ignore: AssertionError) {
-            ignore.printStackTrace()
-        }
     }
 }

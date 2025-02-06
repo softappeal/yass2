@@ -56,7 +56,14 @@ class BinaryEncodersTest {
             check(Long.MIN_VALUE, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1)
         }
         with(DoubleBinaryEncoder) {
+            check(0.0, 0, 0, 0, 0, 0, 0, 0, 0)
+            check(1.0, 63, -16, 0, 0, 0, 0, 0, 0)
+            check(-1.0, -65, -16, 0, 0, 0, 0, 0, 0)
             check(123.456, 64, 94, -35, 47, 26, -97, -66, 119)
+            check(9.87654321E123, 89, -83, -31, -112, 116, 106, 15, 77)
+            check(-9.87654321E-123, -90, -102, 29, -92, -128, -88, 27, 90)
+            check(Double.MAX_VALUE, 127, -17, -1, -1, -1, -1, -1, -1)
+            check(Double.MIN_VALUE, 0, 0, 0, 0, 0, 0, 0, 1)
             check(Double.POSITIVE_INFINITY, 127, -16, 0, 0, 0, 0, 0, 0)
             check(Double.NEGATIVE_INFINITY, -1, -16, 0, 0, 0, 0, 0, 0)
             check(Double.NaN, 127, -8, 0, 0, 0, 0, 0, 0)

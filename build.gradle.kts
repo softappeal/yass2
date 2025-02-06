@@ -91,7 +91,33 @@ allprojects {
     }
 }
 
-val coreProject = project(":yass2-core")
+val coreProject = project(":yass2-core") {
+    kotlin {
+        sourceSets {
+            val commonMain by getting
+            val notJsMain by creating {
+                dependsOn(commonMain)
+            }
+            jvmMain {
+                dependsOn(notJsMain)
+            }
+            if (allTargets) {
+                linuxX64Main {
+                    dependsOn(notJsMain)
+                }
+                linuxArm64Main {
+                    dependsOn(notJsMain)
+                }
+                macosArm64Main {
+                    dependsOn(notJsMain)
+                }
+                wasmJsMain {
+                    dependsOn(notJsMain)
+                }
+            }
+        }
+    }
+}
 
 val coroutinesProject = project(":yass2-coroutines") {
     kotlin {
@@ -136,7 +162,6 @@ val ktorProject = project(":yass2-ktor") {
                     dependsOn(jvmAndNixMain)
                 }
             }
-
         }
     }
 }
@@ -165,8 +190,11 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
                     implementation(libraries.kotlinx.coroutines.test)
                 }
             }
-            val jvmAndNixTest by creating {
+            val notJsTest by creating {
                 dependsOn(commonTest)
+            }
+            val jvmAndNixTest by creating {
+                dependsOn(notJsTest)
                 dependencies {
                     implementation(libraries.bundles.ktor.cio)
                 }
@@ -186,6 +214,9 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
                 }
                 macosArm64Test {
                     dependsOn(jvmAndNixTest)
+                }
+                wasmJsTest {
+                    dependsOn(notJsTest)
                 }
             }
         }
