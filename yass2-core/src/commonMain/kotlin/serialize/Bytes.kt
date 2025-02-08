@@ -19,6 +19,8 @@ public class BytesWriter(public var buffer: ByteArray) : Writer {
 }
 
 public class BytesReader(public var buffer: ByteArray) : Reader {
+    public constructor(vararg bytes: Int) : this(bytes.map { it.toByte() }.toByteArray())
+
     public var current: Int = 0
 
     public val isDrained: Boolean get() = current >= buffer.size

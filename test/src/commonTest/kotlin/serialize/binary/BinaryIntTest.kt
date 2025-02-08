@@ -5,6 +5,7 @@ import ch.softappeal.yass2.serialize.BytesWriter
 import ch.softappeal.yass2.serialize.checkTail
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -40,5 +41,6 @@ class BinaryIntTest {
             assertEquals(0x12_34_56_78_9A_BC_DE_F0, readBinaryLong())
             assertEquals(38, current)
         }
+        assertFails { BytesReader(2).readBinaryBoolean() }
     }
 }

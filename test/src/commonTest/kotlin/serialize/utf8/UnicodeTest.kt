@@ -6,7 +6,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 private fun readCodePoint(vararg bytes: Int): Int {
-    val reader = BytesReader(bytes.map { it.toByte() }.toByteArray())
+    val reader = BytesReader(*bytes)
     return reader.readCodePoint().apply {
         reader.checkDrained()
     }

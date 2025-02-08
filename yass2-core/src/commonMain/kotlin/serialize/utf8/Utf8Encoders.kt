@@ -6,7 +6,7 @@ import kotlin.reflect.KClass
 
 public object BooleanUtf8Encoder : Utf8Encoder<Boolean>(Boolean::class,
     { value -> writeString(value.toString()) },
-    { readString().toBoolean() }
+    { readString().toBooleanStrict() }
 )
 
 public object IntUtf8Encoder : Utf8Encoder<Int>(Int::class,

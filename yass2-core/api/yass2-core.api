@@ -53,6 +53,7 @@ public final class ch/softappeal/yass2/remote/ValueReply : ch/softappeal/yass2/r
 
 public final class ch/softappeal/yass2/serialize/BytesReader : ch/softappeal/yass2/serialize/Reader {
 	public fun <init> ([B)V
+	public fun <init> ([I)V
 	public final fun checkDrained ()V
 	public final fun getBuffer ()[B
 	public final fun getCurrent ()I

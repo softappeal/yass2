@@ -5,6 +5,7 @@ import ch.softappeal.yass2.serialize.BytesWriter
 import ch.softappeal.yass2.serialize.checkTail
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertNull
 
 private enum class Color { Red, Green }
@@ -79,7 +80,8 @@ class BinaryEncodersTest {
             check("\uFFFF", 3, -17, -65, -65)
             check("\uD800\uDC00", 4, -16, -112, -128, -128) // U+010000
             check("\uD800\uDC01", 4, -16, -112, -128, -127) // U+010001
-            check("\uDBFF\uDFFF", 4, -12, -113, -65, -65)   // U+1FFFFF
+            check("\uDBFF\uDFFF", 4, -12, -113, -65, -65)   // U+10FFFF
+            assertFails { read(BytesReader(1, 255)) }
         }
         with(ByteArrayBinaryEncoder) {
             check(byteArrayOf(), 0)
@@ -88,6 +90,7 @@ class BinaryEncodersTest {
         with(ColorEncoder) {
             check(Color.Red, 0)
             check(Color.Green, 1)
+            // assertFails { read(BytesReader(2)) } // test doesn't work for js and wasmJs targets
         }
     }
 

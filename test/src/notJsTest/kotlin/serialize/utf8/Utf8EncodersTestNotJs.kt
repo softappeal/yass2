@@ -2,6 +2,7 @@ package ch.softappeal.yass2.serialize.utf8
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertTrue
 
 private val SERIALIZER = TextSerializer(
@@ -70,5 +71,14 @@ class Utf8EncodersTestNotJs {
             "Double(-1E-300)",
             "Double(-1e-300)",
         )
+        listOf(
+            "invalidDouble",
+            "1.3e",
+            "++2",
+        ).forEach {
+            println(
+                assertFails { SERIALIZER.readString("Double($it)") }
+            )
+        }
     }
 }

@@ -5,6 +5,7 @@ import ch.softappeal.yass2.contract.Gender
 import ch.softappeal.yass2.serialize.BytesWriter
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertTrue
 
 private val SERIALIZER = TextSerializer(
@@ -85,5 +86,24 @@ class Utf8EncodersTest {
         test(byteArrayOf(0, 1), "ByteArray(AAE=)")
         test(byteArrayOf(0, 1, 2), "ByteArray(AAEC)")
         test(byteArrayOf(0, 1, 2, 3), "ByteArray(AAECAw==)")
+
+        listOf(
+            "invalid",
+            "\"a",
+            "Boolean(1",
+            "Boolean(True)",
+            "Gender(Unknown)",
+            "Int(Unknown)",
+            "Int(4123456789)",
+            "Long(Unknown)",
+            "Long(51515131515131515154)",
+            "ByteArray(AA==x)",
+            "ByteArray(*A==)",
+            "ByteArray(A*==)",
+        ).forEach {
+            println(
+                assertFails { SERIALIZER.readString(it) }
+            )
+        }
     }
 }
