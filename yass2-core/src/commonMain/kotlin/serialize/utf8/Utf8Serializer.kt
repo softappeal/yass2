@@ -223,7 +223,7 @@ public abstract class Utf8Serializer(
 public const val NO_ENCODER_ID: Int = -1
 public const val STRING_ENCODER_ID: Int = 0
 public const val LIST_ENCODER_ID: Int = 1
-private const val FIRST_ENCODER_ID = 2
+public const val FIRST_ENCODER_ID: Int = 2
 
 @InternalApi
 public class Utf8Property(
@@ -240,10 +240,14 @@ public class Utf8Property(
         }
     }
 
-    public fun encoderIdForWriteProperty(): String = if (encoderId == NO_ENCODER_ID) "" else ", $encoderId"
-    public fun encoderIdForPropertyEncoderIds(): Int = if (
-        encoderId != NO_ENCODER_ID && encoderId != STRING_ENCODER_ID && encoderId != LIST_ENCODER_ID
-    ) encoderId else NO_ENCODER_ID
+    public fun writeProperty(reference: String): String =
+        "writeProperty(\"$name\", $reference${if (encoderId == NO_ENCODER_ID) "" else ", $encoderId"})"
+
+    public fun propertyEncoderId(): String = "\"$name\" to ${
+        if (encoderId != NO_ENCODER_ID && encoderId != STRING_ENCODER_ID && encoderId != LIST_ENCODER_ID) encoderId else NO_ENCODER_ID
+    }"
+
+    public fun meta(): String = if (encoderId == NO_ENCODER_ID) "object" else encoderId.toString()
 }
 
 public fun Utf8Serializer.writeString(value: Any?): String = writeBytes(value).decodeToString(throwOnInvalidSequence = true)

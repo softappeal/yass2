@@ -5,6 +5,7 @@ import kotlin.io.path.Path
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
 import kotlin.test.assertEquals
 
 public const val CSY: String = "ch.softappeal.yass2"
@@ -37,6 +38,9 @@ internal fun <T> List<T>.duplicates(): List<T> {
     val seen = HashSet<T>()
     return filter { !seen.add(it) }
 }
+
+public fun KType.toType(): String = toString() // TODO: see KTypeToTypeTest
+    .replace("kotlin.Exception /* = java.lang.Exception */", "kotlin.Exception")
 
 public class CodeWriter private constructor(private val appendable: Appendable, private val indent: String) {
     public constructor(appendable: Appendable) : this(appendable, "")

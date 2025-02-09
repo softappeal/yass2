@@ -93,11 +93,11 @@ public fun ch.softappeal.yass2.contract.Echo.proxy(
     }
 
     override suspend fun echoException(
-        p1: kotlin.Exception /* = java.lang.Exception */,
-    ): kotlin.Exception /* = java.lang.Exception */ {
+        p1: kotlin.Exception,
+    ): kotlin.Exception {
         return suspendIntercept("echoException", listOf(p1)) {
             this@proxy.echoException(p1)
-        } as kotlin.Exception /* = java.lang.Exception */
+        } as kotlin.Exception
     }
 
     override suspend fun echoMonster(
@@ -145,10 +145,10 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Ech
                 .process() as kotlin.Any?
 
         override suspend fun echoException(
-            p1: kotlin.Exception /* = java.lang.Exception */,
+            p1: kotlin.Exception,
         ) =
             tunnel(ch.softappeal.yass2.remote.Request(id, "echoException", listOf(p1)))
-                .process() as kotlin.Exception /* = java.lang.Exception */
+                .process() as kotlin.Exception
 
         override suspend fun echoMonster(
             p1: kotlin.collections.List<*>,
@@ -184,7 +184,7 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Ech
                 parameters[0] as kotlin.Any?,
             )
             "echoException" -> implementation.echoException(
-                parameters[0] as kotlin.Exception /* = java.lang.Exception */,
+                parameters[0] as kotlin.Exception,
             )
             "echoMonster" -> implementation.echoMonster(
                 parameters[0] as kotlin.collections.List<*>,
@@ -302,36 +302,37 @@ public fun <F, I> ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.corou
     }
 
 /*
-    1: kotlin.collections.List
-    2: kotlin.Int
-    3: kotlin.String
-    4: kotlin.ByteArray
-    5: ch.softappeal.yass2.contract.Gender
+    0: null - built-in
+    1: [] - built-in
+    2: kotlin.Int - base
+    3: kotlin.String - base
+    4: kotlin.ByteArray - base
+    5: ch.softappeal.yass2.contract.Gender - enum
         0: Female
         1: Male
-    6: ch.softappeal.yass2.contract.IntException
+    6: ch.softappeal.yass2.contract.IntException - class
         i: required 2
-    7: ch.softappeal.yass2.contract.IntWrapper
+    7: ch.softappeal.yass2.contract.IntWrapper - class
         i: required 2
-    8: ch.softappeal.yass2.contract.Optionals
+    8: ch.softappeal.yass2.contract.Optionals - class
         i: required 2
         iOptional: optional 2
         intWrapper: required 7
         intWrapperOptional: optional 7
-    9: ch.softappeal.yass2.contract.Lists
+    9: ch.softappeal.yass2.contract.Lists - class
         list: required 1
         listOptional: optional 1
         mutableList: required 1
         mutableListOptional: optional 1
-    10: ch.softappeal.yass2.contract.A
+    10: ch.softappeal.yass2.contract.A - class
         a: required 2
-    11: ch.softappeal.yass2.contract.B
+    11: ch.softappeal.yass2.contract.B - class
         a: required 2
         b: required 2
-    12: ch.softappeal.yass2.contract.Poly
+    12: ch.softappeal.yass2.contract.Poly - class
         a: object
         b: required 11
-    13: ch.softappeal.yass2.contract.ManyProperties
+    13: ch.softappeal.yass2.contract.ManyProperties - class
         h: required 2
         d: required 2
         f: required 2
@@ -342,21 +343,21 @@ public fun <F, I> ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.corou
         e: required 2
         i: required 2
         j: required 2
-    14: ch.softappeal.yass2.contract.DivideByZeroException
-    15: ch.softappeal.yass2.contract.ThrowableFake
+    14: ch.softappeal.yass2.contract.DivideByZeroException - class
+    15: ch.softappeal.yass2.contract.ThrowableFake - class
         cause: optional 3
         message: required 3
-    16: ch.softappeal.yass2.contract.GenderWrapper
+    16: ch.softappeal.yass2.contract.GenderWrapper - class
         gender: required 5
-    17: ch.softappeal.yass2.remote.Request
+    17: ch.softappeal.yass2.remote.Request - class
         service: required 3
         function: required 3
         parameters: required 1
-    18: ch.softappeal.yass2.remote.ValueReply
+    18: ch.softappeal.yass2.remote.ValueReply - class
         value: object
-    19: ch.softappeal.yass2.remote.ExceptionReply
+    19: ch.softappeal.yass2.remote.ExceptionReply - class
         exception: object
-    20: ch.softappeal.yass2.coroutines.Packet
+    20: ch.softappeal.yass2.coroutines.Packet - class
         requestNumber: required 2
         message: object
 */
@@ -571,7 +572,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                     },
                     {
                         val i = ch.softappeal.yass2.remote.ExceptionReply(
-                            readObject() as kotlin.Exception /* = java.lang.Exception */,
+                            readObject() as kotlin.Exception,
                         )
                         i
                     }
@@ -594,6 +595,65 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
         }
     }
 
+/*
+    0: "" - built-in
+    1: [] - built-in
+    2: kotlin.Int - base
+    3: kotlin.ByteArray - base
+    4: ch.softappeal.yass2.contract.Gender - enum
+        Female
+        Male
+    5: ch.softappeal.yass2.contract.IntException - class
+        i: 2
+    6: ch.softappeal.yass2.contract.IntWrapper - class
+        i: 2
+    7: ch.softappeal.yass2.contract.Optionals - class
+        i: 2
+        iOptional: 2
+        intWrapper: object
+        intWrapperOptional: object
+    8: ch.softappeal.yass2.contract.Lists - class
+        list: 1
+        listOptional: 1
+        mutableList: 1
+        mutableListOptional: 1
+    9: ch.softappeal.yass2.contract.A - class
+        a: 2
+    10: ch.softappeal.yass2.contract.B - class
+        a: 2
+        b: 2
+    11: ch.softappeal.yass2.contract.Poly - class
+        a: object
+        b: object
+    12: ch.softappeal.yass2.contract.ManyProperties - class
+        h: 2
+        d: 2
+        f: 2
+        g: 2
+        b: 2
+        a: 2
+        c: 2
+        e: 2
+        i: 2
+        j: 2
+    13: ch.softappeal.yass2.contract.DivideByZeroException - class
+    14: ch.softappeal.yass2.contract.ThrowableFake - class
+        cause: 0
+        message: 0
+    15: ch.softappeal.yass2.contract.GenderWrapper - class
+        gender: 4
+    16: ch.softappeal.yass2.remote.Request - class
+        service: 0
+        function: 0
+        parameters: 1
+    17: ch.softappeal.yass2.remote.ValueReply - class
+        value: object
+    18: ch.softappeal.yass2.remote.ExceptionReply - class
+        exception: object
+    19: ch.softappeal.yass2.coroutines.Packet - class
+        requestNumber: 2
+        message: object
+*/
 public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.serialize.utf8.Utf8Encoder<*>> = listOf(
     ch.softappeal.yass2.serialize.utf8.IntUtf8Encoder,
     ch.softappeal.yass2.serialize.utf8.ByteArrayUtf8Encoder,
@@ -834,7 +894,7 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
         },
         {
             val i = ch.softappeal.yass2.remote.ExceptionReply(
-                getProperty("exception") as kotlin.Exception /* = java.lang.Exception */,
+                getProperty("exception") as kotlin.Exception,
             )
             i
         },

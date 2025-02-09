@@ -146,6 +146,12 @@ public abstract class ch/softappeal/yass2/serialize/binary/BinarySerializer : ch
 	protected final fun writeRequired (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;I)V
 }
 
+public final class ch/softappeal/yass2/serialize/binary/BinarySerializerKt {
+	public static final field FIRST_ENCODER_ID I
+	public static final field LIST_ENCODER_ID I
+	public static final field NULL_ENCODER_ID I
+}
+
 public final class ch/softappeal/yass2/serialize/binary/BinaryVarIntKt {
 	public static final fun fromZigZag (I)I
 	public static final fun fromZigZag (J)J
@@ -283,6 +289,7 @@ public abstract class ch/softappeal/yass2/serialize/utf8/Utf8Serializer$Utf8Writ
 public final class ch/softappeal/yass2/serialize/utf8/Utf8SerializerKt {
 	public static final field COLON B
 	public static final field COMMA B
+	public static final field FIRST_ENCODER_ID I
 	public static final field LBRACKET B
 	public static final field LIST_ENCODER_ID I
 	public static final field NO_ENCODER_ID I

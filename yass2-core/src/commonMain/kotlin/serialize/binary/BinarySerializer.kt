@@ -37,7 +37,7 @@ public abstract class BinarySerializer : Serializer {
         }
     }
 
-    private val listEncoderId = EncoderId(@OptIn(InternalApi::class) LIST_ENCODER_ID, BinaryEncoder(List::class,
+    private val listEncoderId = EncoderId(LIST_ENCODER_ID, BinaryEncoder(List::class,
         { list ->
             writeVarInt(list.size)
             for (element in list) writeObject(element)
@@ -84,9 +84,9 @@ public abstract class BinarySerializer : Serializer {
 }
 
 private const val NO_ENCODER_ID = -1
-private const val NULL_ENCODER_ID = 0
-@InternalApi public const val LIST_ENCODER_ID: Int = 1
-@InternalApi public const val FIRST_ENCODER_ID: Int = 2
+public const val NULL_ENCODER_ID: Int = 0
+public const val LIST_ENCODER_ID: Int = 1
+public const val FIRST_ENCODER_ID: Int = 2
 
 @InternalApi
 public class BinaryProperty(
@@ -108,8 +108,8 @@ public class BinaryProperty(
 
     private fun suffix() = if (encoderId == NO_ENCODER_ID) "Object" else if (nullable) "Optional" else "Required"
 
-    public fun writeObject(value: String): String =
-        "write${suffix()}($value${if (encoderId == NO_ENCODER_ID) "" else ", $encoderId"})"
+    public fun writeObject(reference: String): String =
+        "write${suffix()}($reference${if (encoderId == NO_ENCODER_ID) "" else ", $encoderId"})"
 
     public fun readObject(): String = "read${suffix()}(${if (encoderId == NO_ENCODER_ID) "" else encoderId})"
 

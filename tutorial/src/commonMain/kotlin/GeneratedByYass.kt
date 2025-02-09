@@ -109,6 +109,38 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.tutorial.New
         }
     }
 
+/*
+    0: "" - built-in
+    1: [] - built-in
+    2: kotlin.Int - base
+    3: ch.softappeal.yass2.tutorial.MyDate - base
+    4: ch.softappeal.yass2.tutorial.Gender - enum
+        Female
+        Male
+    5: ch.softappeal.yass2.tutorial.Address - class
+        street: 0
+        number: 2
+    6: ch.softappeal.yass2.tutorial.Person - class
+        name: 0
+        gender: 4
+        birthday: 3
+        addresses: 1
+    7: ch.softappeal.yass2.tutorial.DivideByZeroException - class
+    8: ch.softappeal.yass2.tutorial.SubClass - class
+        baseClassProperty: 0
+        subClassProperty: 0
+    9: ch.softappeal.yass2.remote.Request - class
+        service: 0
+        function: 0
+        parameters: 1
+    10: ch.softappeal.yass2.remote.ValueReply - class
+        value: object
+    11: ch.softappeal.yass2.remote.ExceptionReply - class
+        exception: object
+    12: ch.softappeal.yass2.coroutines.Packet - class
+        requestNumber: 2
+        message: object
+*/
 public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.serialize.utf8.Utf8Encoder<*>> = listOf(
     ch.softappeal.yass2.serialize.utf8.IntUtf8Encoder,
     ch.softappeal.yass2.tutorial.MyDateEncoder,
@@ -219,7 +251,7 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
         },
         {
             val i = ch.softappeal.yass2.remote.ExceptionReply(
-                getProperty("exception") as kotlin.Exception /* = java.lang.Exception */,
+                getProperty("exception") as kotlin.Exception,
             )
             i
         },

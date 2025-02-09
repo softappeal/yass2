@@ -6,8 +6,6 @@ import ch.softappeal.yass2.serialize.binary.BinaryEncoder
 import ch.softappeal.yass2.serialize.binary.BinaryProperty
 import ch.softappeal.yass2.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.serialize.binary.EnumBinaryEncoder
-import ch.softappeal.yass2.serialize.binary.FIRST_ENCODER_ID
-import ch.softappeal.yass2.serialize.binary.LIST_ENCODER_ID
 import ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder
 import ch.softappeal.yass2.serialize.utf8.EnumUtf8Encoder
 import ch.softappeal.yass2.serialize.utf8.Utf8Encoder
@@ -19,6 +17,12 @@ import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.superclasses
 import kotlin.reflect.full.valueParameters
+import ch.softappeal.yass2.serialize.binary.FIRST_ENCODER_ID as BINARY_FIRST_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.LIST_ENCODER_ID as BINARY_LIST_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.NULL_ENCODER_ID as BINARY_NULL_ENCODER_ID
+import ch.softappeal.yass2.serialize.utf8.FIRST_ENCODER_ID as UTF8_FIRST_ENCODER_ID
+import ch.softappeal.yass2.serialize.utf8.LIST_ENCODER_ID as UTF8_LIST_ENCODER_ID
+import ch.softappeal.yass2.serialize.utf8.STRING_ENCODER_ID as UTF8_STRING_ENCODER_ID
 
 public fun KClass<*>.isEnum(): Boolean = java.isEnum
 
@@ -94,15 +98,18 @@ public fun CodeWriter.generateBinarySerializer(
     concreteAndEnumClasses: List<KClass<*>>,
 ) {
     val (baseClasses, enumClasses, concreteClasses) = getClasses(encoderObjects, concreteAndEnumClasses)
-    fun KProperty1<out Any, *>.property() =
-        BinaryProperty(this, returnType, baseClasses, concreteClasses) { superClass -> superclasses.contains(superClass) }
+    fun properties(type: KClass<*>) = Properties(type) {
+        BinaryProperty(it, it.returnType, baseClasses, concreteClasses) { superClass -> superclasses.contains(superClass) }
+    }
     writeLine()
     writeNestedLine("/*", "*/") {
-        writeNestedLine("$LIST_ENCODER_ID: ${List::class.qualifiedName}")
-        var encoderId = FIRST_ENCODER_ID
-        fun KClass<*>.writeNestedLine(write: CodeWriter.() -> Unit) = writeNestedLine("${encoderId++}: $qualifiedName", write)
+        writeNestedLine("$BINARY_NULL_ENCODER_ID: null - built-in")
+        writeNestedLine("$BINARY_LIST_ENCODER_ID: [] - built-in")
+        var encoderId = BINARY_FIRST_ENCODER_ID
+        fun KClass<*>.writeType(suffix: String, write: CodeWriter.() -> Unit) =
+            writeNestedLine("${encoderId++}: $qualifiedName - $suffix", write)
         baseClasses.forEach { type ->
-            type.writeNestedLine {
+            type.writeType(if (type.isEnum()) "enum" else "base") {
                 if (type.isEnum()) {
                     @Suppress("unchecked_cast") val constants = (type as KClass<out Enum<*>>).java.enumConstants
                     constants.forEach { constant -> writeNestedLine("${constant.ordinal}: ${constant.name}") }
@@ -110,9 +117,8 @@ public fun CodeWriter.generateBinarySerializer(
             }
         }
         concreteClasses.forEach { type ->
-            val properties = Properties(type) { it.property() }
-            type.writeNestedLine {
-                properties.all.forEach { property -> writeNestedLine("${property.name}: ${property.meta()}") }
+            type.writeType("class") {
+                properties(type).all.forEach { property -> writeNestedLine("${property.name}: ${property.meta()}") }
             }
         }
     }
@@ -129,20 +135,21 @@ public fun CodeWriter.generateBinarySerializer(
                     concreteClasses.forEach { type ->
                         writeNestedLine("${BinaryEncoder::class.qualifiedName}(", "),") {
                             writeNestedLine("${type.qualifiedName}::class,")
-                            val properties = Properties(type) { it.property() }
+                            val properties = properties(type)
                             writeNestedLine("{ i ->", "},") {
                                 properties.all.forEach { property ->
                                     writeNestedLine(property.writeObject("i.${property.name}"))
                                 }
                             }
                             writeNestedLine("{", "}") {
+                                fun BinaryProperty.readObjectWithCast() = "${readObject()} as ${returnType.toType()}"
                                 writeNestedLine("val i = ${type.qualifiedName}(", ")") {
                                     properties.parameter.forEach { property ->
-                                        writeNestedLine("${property.readObject()} as ${property.returnType},")
+                                        writeNestedLine("${property.readObjectWithCast()},")
                                     }
                                 }
                                 properties.body.forEach { property ->
-                                    writeNestedLine("i.${property.name} = ${property.readObject()} as ${property.returnType}")
+                                    writeNestedLine("i.${property.name} = ${property.readObjectWithCast()}")
                                 }
                                 writeNestedLine("i")
                             }
@@ -160,7 +167,28 @@ public fun CodeWriter.generateUtf8Encoders(
     concreteAndEnumClasses: List<KClass<*>>,
 ) {
     val (baseClasses, enumClasses, concreteClasses) = getClasses(encoderObjects, concreteAndEnumClasses)
+    fun properties(type: KClass<*>) = Properties(type) { Utf8Property(it, it.returnType, baseClasses) }
     writeLine()
+    writeNestedLine("/*", "*/") {
+        writeNestedLine("$UTF8_STRING_ENCODER_ID: \"\" - built-in")
+        writeNestedLine("$UTF8_LIST_ENCODER_ID: [] - built-in")
+        var encoderId = UTF8_FIRST_ENCODER_ID
+        fun KClass<*>.writeType(suffix: String, write: CodeWriter.() -> Unit) =
+            writeNestedLine("${encoderId++}: $qualifiedName - $suffix", write)
+        baseClasses.forEach { type ->
+            type.writeType(if (type.isEnum()) "enum" else "base") {
+                if (type.isEnum()) {
+                    @Suppress("unchecked_cast") val constants = (type as KClass<out Enum<*>>).java.enumConstants
+                    constants.forEach { constant -> writeNestedLine(constant.name) }
+                }
+            }
+        }
+        concreteClasses.forEach { type ->
+            type.writeType("class") {
+                properties(type).all.forEach { property -> writeNestedLine("${property.name}: ${property.meta()}") }
+            }
+        }
+    }
     writeNestedLine(
         "public fun createUtf8Encoders(): ${List::class.qualifiedName}<${Utf8Encoder::class.qualifiedName}<*>> = listOf(",
         ")",
@@ -175,25 +203,26 @@ public fun CodeWriter.generateUtf8Encoders(
         concreteClasses.forEach { type ->
             writeNestedLine("${ClassUtf8Encoder::class.qualifiedName}(", "),") {
                 writeNestedLine("${type.qualifiedName}::class,")
-                val properties = Properties(type) { Utf8Property(it, it.returnType, baseClasses) }
+                val properties = properties(type)
                 writeNestedLine("{ i ->", "},") {
                     properties.all.forEach { property ->
-                        writeNestedLine("writeProperty(\"${property.name}\", i.${property.name}${property.encoderIdForWriteProperty()})")
+                        writeNestedLine(property.writeProperty("i.${property.name}"))
                     }
                 }
                 writeNestedLine("{", "},") {
+                    fun Utf8Property.getPropertyWithCast() = "getProperty(\"$name\") as ${returnType.toType()}"
                     writeNestedLine("val i = ${type.qualifiedName}(", ")") {
                         properties.parameter.forEach { property ->
-                            writeNestedLine("getProperty(\"${property.name}\") as ${property.returnType},")
+                            writeNestedLine("${property.getPropertyWithCast()},")
                         }
                     }
                     properties.body.forEach { property ->
-                        writeNestedLine("i.${property.name} = getProperty(\"${property.name}\") as ${property.returnType}")
+                        writeNestedLine("i.${property.name} = ${property.getPropertyWithCast()}")
                     }
                     writeNestedLine("i")
                 }
                 properties.all.forEach { property ->
-                    writeNestedLine("\"${property.name}\" to ${property.encoderIdForPropertyEncoderIds()},")
+                    writeNestedLine("${property.propertyEncoderId()},")
                 }
             }
         }
