@@ -14,10 +14,12 @@ import kotlin.test.assertEquals
  * Own "implementation" of [KType.toString].
  * It has the following problems:
  * - `typealias` isn't handled correctly (see [KTypeToTypeTest.exceptionTest]).
- *   There isn't yet a reflection API for `typealias` (see [kotlin.reflect.jvm.internal.KTypeImpl.convert]).
+ *   There isn't yet a reflection API for `typealias` (see [kotlin.reflect.jvm.internal.KTypeImpl.convert]
+ *   and [KT-21489](https://youtrack.jetbrains.com/issue/KT-21489/Support-type-aliases-in-reflection)).
  * - [MutableList] isn't handled correctly (see [KTypeToTypeTest.mutableListTest]).
  *   [KClass.qualifiedName] gives wrongly `kotlin.collections.List`.
  *   There isn't yet a reflection API for handling this.
+ *   See [KT-11754](https://youtrack.jetbrains.com/issue/KT-11754/Support-special-KClass-instances-for-mutable-collection-interfaces).
  */
 private fun KType.toType(): String {
     fun Appendable.appendGenerics() {
