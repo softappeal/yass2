@@ -39,11 +39,7 @@ internal fun <T> List<T>.duplicates(): List<T> {
     return filter { !seen.add(it) }
 }
 
-/**
- * TODO: Hack for fixing [KT-74925](https://youtrack.jetbrains.com/issue/KT-74925/kotlin.reflect.KType.toString-should-not-add-a-comment-for-Exception)
- * See KTypeToTypeTest.
- */
-public fun KType.toType(): String = toString()
+public fun KType.toType(): String = toString() // TODO: see file 'KTypeToTypeTest.kt'
     .replace("kotlin.Exception /* = java.lang.Exception */", "kotlin.Exception")
 
 public class CodeWriter private constructor(private val appendable: Appendable, private val indent: String) {

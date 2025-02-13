@@ -8,19 +8,14 @@ import kotlin.reflect.KVariance
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-// see https://youtrack.jetbrains.com/issue/KT-74925/kotlin.reflect.KType.toString-should-not-add-a-comment-for-Exception
+// Hack for: https://youtrack.jetbrains.com/issue/KT-11754/Support-special-KClass-instances-for-mutable-collection-interfaces -> create subinterfaces with subimplementation
+// There isn't yet a reflection API for handling this.
+interface MutableList<E> : kotlin.collections.MutableList<E>
 
-/**
- * Own "implementation" of [KType.toString].
- * It has the following problems:
- * - `typealias` isn't handled correctly (see [KTypeToTypeTest.exceptionTest]).
- *   There isn't yet a reflection API for `typealias` (see [kotlin.reflect.jvm.internal.KTypeImpl.convert]
- *   and [KT-21489](https://youtrack.jetbrains.com/issue/KT-21489/Support-type-aliases-in-reflection)).
- * - [MutableList] isn't handled correctly (see [KTypeToTypeTest.mutableListTest]).
- *   [KClass.qualifiedName] gives wrongly `kotlin.collections.List`.
- *   There isn't yet a reflection API for handling this.
- *   See [KT-11754](https://youtrack.jetbrains.com/issue/KT-11754/Support-special-KClass-instances-for-mutable-collection-interfaces).
- */
+/** Must be used in  [ch.softappeal.yass2.serialize.binary.BinarySerializer.listEncoderId] */
+class ArrayList<E>(initialCapacity: Int) : MutableList<E>, kotlin.collections.ArrayList<E>(initialCapacity)
+
+/** Own "implementation" of [KType.toString]. */
 private fun KType.toType(): String {
     fun Appendable.appendGenerics() {
         if (arguments.isEmpty()) return
@@ -39,7 +34,15 @@ private fun KType.toType(): String {
     }
     return buildString {
         when (val c = classifier) {
-            is KClass<*> -> append(c.qualifiedName).appendGenerics()
+            is KClass<*> -> append(
+                when (val qualifiedName = c.qualifiedName) {
+                    // Hack for: https://youtrack.jetbrains.com/issue/KT-21489/Support-type-aliases-in-reflection -> enumerate all relevant types.
+                    // There isn't yet a reflection API for `typealias` (see [kotlin.reflect.jvm.internal.KTypeImpl.convert]).
+                    // This fixes: https://youtrack.jetbrains.com/issue/KT-74925/kotlin.reflect.KType.toString-should-not-add-a-comment-for-Exception.
+                    "java.lang.Exception" -> "kotlin.Exception"
+                    else -> qualifiedName
+                }
+            ).appendGenerics()
             is KTypeParameter -> append(c.name)
             else -> error("unexpected classifier '$c'")
         }
@@ -54,11 +57,11 @@ class KTypeToTypeTest {
     fun mutableListTest() {
         assertEquals(
             "kotlin.collections.MutableList<kotlin.Int>",
-            ::mutableList.returnType.toString()
+            ::mutableList.returnType.toString(),
         )
         assertEquals(
             "kotlin.collections.List<kotlin.Int>", // WRONG
-            ::mutableList.returnType.toType()
+            ::mutableList.returnType.toType(),
         )
     }
 
@@ -68,11 +71,11 @@ class KTypeToTypeTest {
     fun exceptionTest() {
         assertEquals(
             "kotlin.Exception /* = java.lang.Exception */", // WRONG
-            ::exception.returnType.toString()
+            ::exception.returnType.toString(),
         )
         assertEquals(
-            "java.lang.Exception", // WRONG
-            ::exception.returnType.toType()
+            "kotlin.Exception",
+            ::exception.returnType.toType(),
         )
     }
 
@@ -84,6 +87,17 @@ class KTypeToTypeTest {
             "kotlin.collections.List<kotlin.Int>",
             ::list,
         )
+    }
+
+    private fun hackMutableList(): MutableList<Int> = ArrayList<Int>(1).apply { add(123) }
+
+    @Test
+    fun hackMutableListTest() {
+        assertType(
+            "ch.softappeal.yass2.generate.MutableList<kotlin.Int>",
+            ::hackMutableList,
+        )
+        assertEquals(listOf(123, 321), hackMutableList().apply { add(321) })
     }
 
     private class Complex<A, B> {

@@ -81,8 +81,20 @@ class BinarySerializerTest {
     fun list() {
         assertEquals(0, checkedCopy(listOf<Int>(), 1, 0).size)
         assertEquals(listOf<Any?>(null, 60), checkedCopy(listOf<Any?>(null, 60), 1, 2, 0, 2, 120))
-        assertEquals(listOf<Any?>(null, 60), checkedCopy(mutableListOf<Any?>(null, 60), 1, 2, 0, 2, 120))
-        checkedCopy(mutableListOf<Any>(), 1, 0).add(123)
+    }
+
+    @Test
+    fun mutableList() {
+        val list = TransportSerializer.copy(listOf(1, 2, 3))
+        val mutableList = TransportSerializer.copy(mutableListOf(1, 2, 3))
+        assertEquals(listOf(1, 2, 3), list)
+        assertEquals(mutableListOf(1, 2, 3), list)
+        assertEquals(listOf(1, 2, 3), mutableList)
+        assertEquals(mutableListOf(1, 2, 3), mutableList)
+        assertEquals(listOf(1, 2, 3, 4), mutableList.apply { add(4) })
+        assertEquals( // works because deserializes to MutableList, but of course downcast shouldn't be used
+            listOf(1, 2, 3, 4), (list as MutableList).apply { add(4) }
+        )
     }
 
     @Test
