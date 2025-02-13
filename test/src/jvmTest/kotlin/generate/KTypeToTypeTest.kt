@@ -10,10 +10,13 @@ import kotlin.test.assertEquals
 
 // Hack for: https://youtrack.jetbrains.com/issue/KT-11754/Support-special-KClass-instances-for-mutable-collection-interfaces -> create subinterfaces with subimplementation
 // There isn't yet a reflection API for handling this.
-interface MutableList<E> : kotlin.collections.MutableList<E>
+interface IMutableList<E> : MutableList<E>
 
 /** Must be used in  [ch.softappeal.yass2.serialize.binary.BinarySerializer.listEncoderId] */
-class ArrayList<E>(initialCapacity: Int) : MutableList<E>, kotlin.collections.ArrayList<E>(initialCapacity)
+class IArrayList<E>(initialCapacity: Int) : IMutableList<E>, ArrayList<E>(initialCapacity)
+
+/** Doesn't work (see [KTypeToTypeTest.tMutableListTest]). */
+typealias TMutableList<E> = MutableList<E>
 
 /** Own "implementation" of [KType.toString]. */
 private fun KType.toType(): String {
@@ -70,7 +73,7 @@ class KTypeToTypeTest {
     @Test
     fun exceptionTest() {
         assertEquals(
-            "kotlin.Exception /* = java.lang.Exception */", // WRONG
+            "kotlin.Exception /* = java.lang.Exception */",
             ::exception.returnType.toString(),
         )
         assertEquals(
@@ -89,15 +92,30 @@ class KTypeToTypeTest {
         )
     }
 
-    private fun hackMutableList(): MutableList<Int> = ArrayList<Int>(1).apply { add(123) }
+    private fun iMutableList(): IMutableList<Int> = IArrayList<Int>(1).apply { add(123) }
 
     @Test
-    fun hackMutableListTest() {
+    fun iMutableListTest() {
         assertType(
-            "ch.softappeal.yass2.generate.MutableList<kotlin.Int>",
-            ::hackMutableList,
+            "ch.softappeal.yass2.generate.IMutableList<kotlin.Int>",
+            ::iMutableList,
         )
-        assertEquals(listOf(123, 321), hackMutableList().apply { add(321) })
+        assertEquals(listOf(123, 321), iMutableList().apply { add(321) })
+    }
+
+    private fun tMutableList(): TMutableList<Int> = mutableListOf(123)
+
+    @Test
+    fun tMutableListTest() {
+        assertEquals(
+            "ch.softappeal.yass2.generate.TMutableList<kotlin.Int> /* = kotlin.collections.MutableList<kotlin.Int> */",
+            ::tMutableList.returnType.toString(),
+        )
+        assertEquals(
+            "kotlin.collections.List<kotlin.Int>", // WRONG
+            ::tMutableList.returnType.toType(),
+        )
+        assertEquals(listOf(123, 321), tMutableList().apply { add(321) })
     }
 
     private class Complex<A, B> {
