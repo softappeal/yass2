@@ -9,7 +9,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.js.JsClient
 import io.ktor.client.plugins.websocket.WebSockets.Plugin
 import io.ktor.client.plugins.websocket.ws
-import io.ktor.utils.io.core.use
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

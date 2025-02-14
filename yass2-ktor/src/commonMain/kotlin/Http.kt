@@ -2,6 +2,7 @@ package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.remote.Message
 import ch.softappeal.yass2.remote.Reply
+import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.Tunnel
 import ch.softappeal.yass2.serialize.Transport
 import io.ktor.client.HttpClient
@@ -12,9 +13,18 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpMethod
 import io.ktor.http.content.OutgoingContent
 import io.ktor.http.contentLength
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.request.receiveChannel
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.post
+import io.ktor.server.routing.route
 import io.ktor.utils.io.ByteWriteChannel
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.CoroutineContext
 
-internal fun Transport.write(message: Message): OutgoingContent.WriteChannelContent {
+private fun Transport.write(message: Message): OutgoingContent.WriteChannelContent {
     val writer = createWriter()
     write(writer, message)
     return object : OutgoingContent.WriteChannelContent() {
@@ -35,4 +45,20 @@ public fun HttpClient.tunnel(
     }
     val length = response.contentLength()!!.toInt()
     response.bodyAsChannel().read(transport, length) as Reply
+}
+
+public class CallCce(public val call: ApplicationCall) : AbstractCoroutineContextElement(CallCce) {
+    public companion object Key : CoroutineContext.Key<CallCce>
+}
+
+public fun Route.route(transport: Transport, path: String, tunnel: Tunnel) {
+    route(path) {
+        post {
+            withContext(CallCce(call)) {
+                val length = call.request.headers["Content-Length"]!!.toInt()
+                val reply = tunnel(call.receiveChannel().read(transport, length) as Request)
+                call.respond(transport.write(reply))
+            }
+        }
+    }
 }

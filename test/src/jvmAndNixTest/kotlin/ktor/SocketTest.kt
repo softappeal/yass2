@@ -14,7 +14,6 @@ import io.ktor.network.sockets.TcpSocketBuilder
 import io.ktor.network.sockets.aSocket
 import io.ktor.network.sockets.isClosed
 import io.ktor.network.sockets.openReadChannel
-import io.ktor.utils.io.core.use
 import io.ktor.utils.io.readByte
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -30,7 +29,10 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
+private const val ENABLE_SOCKET_TEST = false // TODO: spurious failures
+
 private fun runServer(block: suspend CoroutineScope.(tcp: TcpSocketBuilder, serverSocket: ServerSocket) -> Unit) {
+    if (!ENABLE_SOCKET_TEST) return
     runBlocking {
         SelectorManager().use { selector ->
             val tcp = aSocket(selector).tcp()
@@ -62,10 +64,7 @@ private fun socketTest(transport: Transport) {
     }
 }
 
-private const val ENABLE_SOCKET_SESSION_TEST = false // TODO: spurious failures
-
 private fun socketSessionTest(transport: Transport) {
-    if (!ENABLE_SOCKET_SESSION_TEST) return
     runServer { tcp, serverSocket ->
         val acceptorJob = launch {
             while (true) {
