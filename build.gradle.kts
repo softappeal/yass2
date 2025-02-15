@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import java.util.regex.Pattern
 
 /** Only uses jvm target if `false`. Can be used for faster development. */
-val allTargets = true
+val allTargets = false // FIXME
 
 plugins {
     alias(libs.plugins.multiplatform)

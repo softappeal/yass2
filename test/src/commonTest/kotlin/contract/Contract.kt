@@ -73,6 +73,10 @@ class ThrowableFake(
     val message: String,
 )
 
+class BodyProperty {
+    var body: Any? = null
+}
+
 interface AddCalculator {
     suspend fun add(a: Int, b: Int): Int
 }
@@ -116,6 +120,7 @@ internal val ConcreteClasses = listOf(
     Types::class,
     Request::class, ValueReply::class, ExceptionReply::class,
     Packet::class,
+    BodyProperty::class,
 )
 
 internal val BinaryEncoderObjects = listOf(

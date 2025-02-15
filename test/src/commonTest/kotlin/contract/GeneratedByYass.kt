@@ -365,6 +365,8 @@ public fun <F, I> ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.corou
     22: ch.softappeal.yass2.coroutines.Packet - class
         requestNumber: required 3
         message: object
+    23: ch.softappeal.yass2.contract.BodyProperty - class
+        body: object
 */
 public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.BinarySerializer =
     object : ch.softappeal.yass2.serialize.binary.BinarySerializer() {
@@ -604,6 +606,18 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         i
                     }
                 ),
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(
+                    ch.softappeal.yass2.contract.BodyProperty::class,
+                    { i ->
+                        writeObject(i.body)
+                    },
+                    {
+                        val i = ch.softappeal.yass2.contract.BodyProperty(
+                        )
+                        i.body = readObject() as kotlin.Any?
+                        i
+                    }
+                ),
             )
         }
     }
@@ -671,6 +685,8 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
     21: ch.softappeal.yass2.coroutines.Packet - class
         requestNumber: 3
         message: object
+    22: ch.softappeal.yass2.contract.BodyProperty - class
+        body: object
 */
 public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.serialize.utf8.Utf8Encoder<*>> = listOf(
     ch.softappeal.yass2.serialize.utf8.BooleanUtf8Encoder,
@@ -798,6 +814,7 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
             writeProperty("f", i.f, 3)
             writeProperty("g", i.g, 3)
             writeProperty("b", i.b, 3)
+            startBodyProperties()
             writeProperty("a", i.a, 3)
             writeProperty("c", i.c, 3)
             writeProperty("e", i.e, 3)
@@ -944,5 +961,19 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
         },
         "requestNumber" to 3,
         "message" to -1,
+    ),
+    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+        ch.softappeal.yass2.contract.BodyProperty::class,
+        { i ->
+            startBodyProperties()
+            writeProperty("body", i.body)
+        },
+        {
+            val i = ch.softappeal.yass2.contract.BodyProperty(
+            )
+            i.body = getProperty("body") as kotlin.Any?
+            i
+        },
+        "body" to -1,
     ),
 )

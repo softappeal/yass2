@@ -63,6 +63,10 @@ class TextSerializerTest {
             "  *",
         )
         dump(
+            "hello",
+            """"hello"""",
+        )
+        dump(
             listOf<Int>(),
             """
                 [

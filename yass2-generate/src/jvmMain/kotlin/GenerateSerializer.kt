@@ -206,9 +206,12 @@ public fun CodeWriter.generateUtf8Encoders(
                 writeNestedLine("${type.qualifiedName}::class,")
                 val properties = properties(type)
                 writeNestedLine("{ i ->", "},") {
-                    properties.all.forEach { property ->
+                    fun List<Utf8Property>.forEach() = forEach { property ->
                         writeNestedLine(property.writeProperty("i.${property.name}"))
                     }
+                    properties.parameter.forEach()
+                    if (properties.body.isNotEmpty()) writeNestedLine("startBodyProperties()")
+                    properties.body.forEach()
                 }
                 writeNestedLine("{", "},") {
                     fun Utf8Property.getPropertyWithCast() = "getProperty(\"$name\") as ${returnType.toType()}"

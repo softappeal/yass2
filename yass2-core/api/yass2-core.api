@@ -231,6 +231,21 @@ public final class ch/softappeal/yass2/serialize/utf8/JsonSerializer : ch/softap
 	public fun write (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
 }
 
+public final class ch/softappeal/yass2/serialize/utf8/KotlinSerializer : ch/softappeal/yass2/serialize/utf8/Utf8Serializer {
+	public fun <init> (Ljava/util/List;)V
+	public fun read (Lch/softappeal/yass2/serialize/Reader;)Ljava/lang/Object;
+	public fun write (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
+}
+
+public final class ch/softappeal/yass2/serialize/utf8/KotlinSerializerKt {
+	public static final fun Boolean (Ljava/lang/String;)Z
+	public static final fun ByteArray (Ljava/lang/String;)[B
+	public static final fun Double (Ljava/lang/String;)D
+	public static final fun Int (Ljava/lang/String;)I
+	public static final fun Long (Ljava/lang/String;)J
+	public static final fun Null ()Ljava/lang/Void;
+}
+
 public final class ch/softappeal/yass2/serialize/utf8/LongUtf8Encoder : ch/softappeal/yass2/serialize/utf8/BaseUtf8Encoder {
 	public static final field INSTANCE Lch/softappeal/yass2/serialize/utf8/LongUtf8Encoder;
 }
@@ -295,10 +310,12 @@ public abstract class ch/softappeal/yass2/serialize/utf8/Utf8Writer : ch/softapp
 	public abstract fun checkString (Ljava/lang/String;)V
 	protected final fun getIndent ()I
 	public abstract fun nested ()Lch/softappeal/yass2/serialize/utf8/Utf8Writer;
+	public fun startBodyProperties ()V
 	public fun writeByte (B)V
 	public final fun writeByte (I)V
 	public fun writeBytes ([B)V
 	public final fun writeIndent ()V
+	public final fun writeIndentMinus1 ()V
 	public final fun writeNewLine ()V
 	public abstract fun writeObject (Ljava/lang/Object;)V
 	public abstract fun writeProperty (Ljava/lang/String;Ljava/lang/Object;)V

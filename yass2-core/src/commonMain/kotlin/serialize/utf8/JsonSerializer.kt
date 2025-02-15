@@ -5,6 +5,7 @@ import ch.softappeal.yass2.serialize.Writer
 
 private const val COMMA = ','.code
 private const val COLON = ':'.code
+private const val HASH = '#' // type
 private const val LBRACKET = '['.code // list
 private const val RBRACKET = ']'.code // list
 private const val LBRACE = '{'.code // object
@@ -86,14 +87,14 @@ public class JsonSerializer(encoders: List<Utf8Encoder<*>>) : Utf8Serializer(
                     if (encoder is ClassUtf8Encoder) {
                         with(nested()) {
                             writeNewLine()
-                            writeKey("#")
+                            writeKey(HASH.toString())
                             writeQuoted(name)
                             encoder.write(this, value)
                             writeNewLine()
                         }
                         writeIndent()
                     } else {
-                        writeKey("#$name", false)
+                        writeKey("$HASH$name", false)
                         encoder.writeQuoted(value)
                     }
                     writeByte(RBRACE)
@@ -154,7 +155,7 @@ public class JsonSerializer(encoders: List<Utf8Encoder<*>>) : Utf8Serializer(
                     check(expectedCodePoint(QUOTE)) { "'${QUOTE.toChar()}' expected" }
                     readNextCodePoint()
                     check(type.isNotEmpty()) { "empty type" }
-                    check(type[0] == '#') { "'#' expected" }
+                    check(type[0] == HASH) { "'$HASH' expected" }
                     if (type.length > 1) {
                         val className = type.substring(1)
                         val encoder = encoder(className)

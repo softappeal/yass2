@@ -35,7 +35,10 @@ class JsonSerializerTest {
             "{}",
             "  {  }",
         )
-
+        dump(
+            "hello",
+            """"hello"""",
+        )
         dump(
             listOf<Int>(),
             """

@@ -48,12 +48,17 @@ public abstract class Utf8Writer(private val writer: Writer, protected val inden
         repeat(indent) { writeBytes(Tab) }
     }
 
+    public fun writeIndentMinus1() {
+        repeat(indent - 1) { writeBytes(Tab) }
+    }
+
     public abstract fun nested(): Utf8Writer
 
     public fun writeNewLine() {
         writeByte(NL)
     }
 
+    public open fun startBodyProperties() {}
     public abstract fun writeProperty(name: String, value: Any?)
     public abstract fun writeProperty(name: String, value: Any?, encoderId: Int)
     public abstract fun writeObject(value: Any?)

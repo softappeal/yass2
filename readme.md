@@ -36,7 +36,7 @@
 
 * generates code (works on any platform and is fast) with reflection
     * fast, compact and extendable binary serializer for high throughput and low latency
-    * extendable UTF-8 serializers (TextSerializer and JsonSerializer)
+    * extendable UTF-8 serializers: TextSerializer, JsonSerializer and KotlinSerializer (serializes Kotlin source code)
     * interceptor (around advice, aspect-oriented programming)
     * remoting (proxy and service)
 

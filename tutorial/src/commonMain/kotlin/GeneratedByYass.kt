@@ -152,6 +152,7 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
         ch.softappeal.yass2.tutorial.Address::class,
         { i ->
             writeProperty("street", i.street, 0)
+            startBodyProperties()
             writeProperty("number", i.number, 2)
         },
         {
