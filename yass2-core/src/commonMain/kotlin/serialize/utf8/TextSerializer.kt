@@ -3,15 +3,53 @@ package ch.softappeal.yass2.serialize.utf8
 import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Writer
 
-private const val LPAREN = '('.code.toByte()
-private const val RPAREN = ')'.code.toByte()
-private const val ASTERIX = '*'.code.toByte() // null
+private const val COMMA = ','.code
+private const val COLON = ':'.code
+private const val ASTERIX = '*'.code // null
+private const val LBRACKET = '['.code // list
+private const val RBRACKET = ']'.code // list
+private const val LPAREN = '('.code // object
+private const val RPAREN = ')'.code // object
 
-public class TextSerializer(
-    encoders: List<Utf8Encoder<*>>, multilineWrite: Boolean,
-) : Utf8Serializer(encoders, multilineWrite, false) {
+public class TextSerializer(encoders: List<Utf8Encoder<*>>) : Utf8Serializer(
+    Utf8Encoder(List::class,
+        { list ->
+            writeByte(LBRACKET)
+            with(nested()) {
+                list.forEach { element ->
+                    writeNewLine()
+                    writeIndent()
+                    writeObject(element)
+                }
+            }
+            writeNewLine()
+            writeIndent()
+            writeByte(RBRACKET)
+        },
+        {
+            ArrayList<Any?>(10).apply {
+                readNextCodePointAndSkipWhitespace()
+                while (!expectedCodePoint(RBRACKET)) {
+                    add(readObject())
+                    readNextCodePointAndSkipWhitespace()
+                    if (expectedCodePoint(COMMA)) readNextCodePointAndSkipWhitespace()
+                }
+            }
+        }
+    ),
+    encoders,
+) {
 
-    private inner class TheWriter(writer: Writer) : Utf8Writer(writer) {
+    private inner class TheWriter(writer: Writer, indent: Int) : Utf8Writer(writer, indent) {
+        /** See [TheReader.readString]. */
+        override fun checkString(string: String) {
+            check(string.indexOfFirst { it.code.isWhitespace() || it.code == COMMA || it.code == RPAREN } < 0) {
+                "'$string' must not contain whitespace, '${COMMA.toChar()}' or '${RPAREN.toChar()}'"
+            }
+        }
+
+        override fun nested() = TheWriter(this, indent + 1)
+
         override fun writeObject(value: Any?) {
             when (value) {
                 null -> writeByte(ASTERIX)
@@ -23,7 +61,7 @@ public class TextSerializer(
                     writeByte(LPAREN)
                     if (encoder !is ClassUtf8Encoder) encoder.write(this, value) else {
                         writeNewLine()
-                        nested { encoder.write(this, value) }
+                        encoder.write(nested(), value)
                         writeIndent()
                     }
                     writeByte(RPAREN)
@@ -31,21 +69,18 @@ public class TextSerializer(
             }
         }
 
-        private var firstProperty: Boolean = true
-
         private fun writeProperty(name: String, value: Any?, writeValue: () -> Unit) {
             if (value == null) return
-            if (multilineWrite || firstProperty) firstProperty = false else writeByte(COMMA)
             writeIndent()
             writeString(name)
             writeByte(COLON)
-            if (multilineWrite) writeByte(SP)
+            writeByte(SP)
             writeValue()
             writeNewLine()
         }
 
         override fun writeProperty(name: String, value: Any?) {
-            writeProperty(name, value) { TheWriter(this).writeObject(value) }
+            writeProperty(name, value) { writeObject(value) }
         }
 
         override fun writeProperty(name: String, value: Any?, encoderId: Int) {
@@ -62,9 +97,9 @@ public class TextSerializer(
             skipWhitespace()
         }
 
-        private fun readUntil(end: Byte) = readUntil { expectedCodePoint(end) }
+        private fun readUntil(end: Int) = readUntil { expectedCodePoint(end) }
 
-        override fun readString() = readUntil { expectedCodePoint(RPAREN) || expectedCodePoint(COMMA) }
+        override fun readString() = readUntil { expectedCodePoint(COMMA) || expectedCodePoint(RPAREN) }
 
         override fun readObject(): Any? {
             skipWhitespace()
@@ -82,7 +117,6 @@ public class TextSerializer(
         }
 
         private fun readClass(encoder: ClassUtf8Encoder<*>): Any {
-            properties = mutableMapOf()
             while (!expectedCodePoint(RPAREN)) {
                 val name = readUntil(COLON)
                 readNextCodePointAndSkipWhitespace()
@@ -98,6 +132,6 @@ public class TextSerializer(
         }
     }
 
-    override fun write(writer: Writer, value: Any?): Unit = TheWriter(writer).writeObject(value)
+    override fun write(writer: Writer, value: Any?): Unit = TheWriter(writer, 0).writeObject(value)
     override fun read(reader: Reader): Any? = TheReader(reader, reader.readCodePoint()).readObject()
 }

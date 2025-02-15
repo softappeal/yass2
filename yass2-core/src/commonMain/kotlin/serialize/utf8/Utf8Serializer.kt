@@ -11,43 +11,110 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 
-public const val QUOTE: Byte = '"'.code.toByte()
-public const val LBRACKET: Byte = '['.code.toByte()
-public const val COMMA: Byte = ','.code.toByte()
-public const val SP: Byte = ' '.code.toByte()
-public const val COLON: Byte = ':'.code.toByte()
-private const val BS = '\\'.code.toByte()
-private const val NL = '\n'.code.toByte()
-private const val CR = '\r'.code.toByte()
-private const val TAB = '\t'.code.toByte()
-private const val RBRACKET = ']'.code.toByte()
+public const val QUOTE: Int = '"'.code
+public const val SP: Int = ' '.code
+private const val BS = '\\'.code
+private const val NL = '\n'.code
+private const val CR = '\r'.code
+private const val TAB = '\t'.code
 
-private const val S_BS = BS.toInt().toChar().toString()
+public fun Int.isWhitespace(): Boolean = this == SP || this == TAB || this == NL || this == CR
+
+private const val S_BS = BS.toChar().toString()
 private const val S_BS_BS = S_BS + S_BS
-private const val S_QUOTE = QUOTE.toInt().toChar().toString()
+private const val S_QUOTE = QUOTE.toChar().toString()
 private const val S_BS_QUOTE = S_BS + S_QUOTE
-private const val S_NL = NL.toInt().toChar().toString()
+private const val S_NL = NL.toChar().toString()
 private const val S_BS_NL = S_BS + "n"
-private const val S_CR = CR.toInt().toChar().toString()
+private const val S_CR = CR.toChar().toString()
 private const val S_BS_CR = S_BS + "r"
-private const val S_TAB = TAB.toInt().toChar().toString()
+private const val S_TAB = TAB.toChar().toString()
 private const val S_BS_TAB = S_BS + "t"
 
-private val Tab = ByteArray(4) { SP }
+private val Tab = ByteArray(4) { SP.toByte() }
+
+public abstract class Utf8Writer(private val writer: Writer, protected val indent: Int) : Writer by writer {
+    public fun writeByte(asciiCodePoint: Int) {
+        writeByte(asciiCodePoint.toByte())
+    }
+
+    public abstract fun checkString(string: String)
+
+    public fun writeString(string: String) {
+        writeBytes(string.encodeToByteArray(throwOnInvalidSequence = true))
+    }
+
+    public fun writeIndent() {
+        repeat(indent) { writeBytes(Tab) }
+    }
+
+    public abstract fun nested(): Utf8Writer
+
+    public fun writeNewLine() {
+        writeByte(NL)
+    }
+
+    public abstract fun writeProperty(name: String, value: Any?)
+    public abstract fun writeProperty(name: String, value: Any?, encoderId: Int)
+    public abstract fun writeObject(value: Any?)
+}
+
+public abstract class Utf8Reader(private val reader: Reader, private var _nextCodePoint: Int) : Reader by reader {
+    public val nextCodePoint: Int get() = _nextCodePoint
+    public fun expectedCodePoint(codePoint: Int): Boolean = _nextCodePoint == codePoint
+    public fun readNextCodePoint() {
+        _nextCodePoint = readCodePoint()
+    }
+
+    protected fun isWhitespace(): Boolean = nextCodePoint.isWhitespace()
+
+    protected fun skipWhitespace() {
+        while (isWhitespace()) readNextCodePoint()
+    }
+
+    public fun readNextCodePointAndSkipWhitespace() {
+        readNextCodePoint()
+        skipWhitespace()
+    }
+
+    public abstract fun readString(): String
+
+    public abstract fun readObject(): Any?
+
+    private val properties = mutableMapOf<String, Any>()
+
+    protected fun Utf8Encoder<*>.addProperty(name: String, value: Any?) {
+        check(value != null) { "property '${type.simpleName}.$name' must not be explicitly set to null" }
+        check(properties.put(name, value) == null) { "duplicated property '${type.simpleName}.$name'" }
+    }
+
+    public fun getProperty(property: String): Any? = properties[property]
+}
 
 public open class Utf8Encoder<T : Any>(
     public val type: KClass<T>,
-    private val write: Utf8Serializer.Utf8Writer.(value: T) -> Unit,
-    private val read: Utf8Serializer.Utf8Reader.() -> T,
+    private val write: Utf8Writer.(value: T) -> Unit,
+    private val read: Utf8Reader.() -> T,
 ) {
-    public fun write(writer: Utf8Serializer.Utf8Writer, value: Any?): Unit = writer.write(@Suppress("UNCHECKED_CAST") (value as T))
-    public fun read(reader: Utf8Serializer.Utf8Reader): T = reader.read()
+    public fun write(writer: Utf8Writer, value: Any?): Unit = writer.write(@Suppress("UNCHECKED_CAST") (value as T))
+    public fun read(reader: Utf8Reader): T = reader.read()
+}
+
+public abstract class BaseUtf8Encoder<T : Any>(
+    type: KClass<T>,
+    public val write: (value: T) -> String,
+    private val read: String.() -> T,
+) : Utf8Encoder<T>(type,
+    { value -> writeString(write(value).apply { checkString(this) }) },
+    { readString().read() }
+) {
+    public fun read(string: String): T = string.read()
 }
 
 public class ClassUtf8Encoder<T : Any>(
     type: KClass<T>,
-    write: Utf8Serializer.Utf8Writer.(value: T) -> Unit,
-    read: Utf8Serializer.Utf8Reader.() -> T,
+    write: Utf8Writer.(value: T) -> Unit,
+    read: Utf8Reader.() -> T,
     /** see [NO_ENCODER_ID] */
     vararg propertyEncoderIds: Pair<String, Int>,
 ) : Utf8Encoder<T>(type, write, read) {
@@ -64,71 +131,9 @@ public class ClassUtf8Encoder<T : Any>(
  * Has built-in encoders for null, [String] and [List].
  */
 public abstract class Utf8Serializer(
+    protected val listEncoder: Utf8Encoder<List<*>>,
     utf8Encoders: List<Utf8Encoder<*>>,
-    protected val multilineWrite: Boolean,
-    private val strictListComma: Boolean,
 ) : Serializer {
-    private var indent: Int = 0
-
-    public abstract inner class Utf8Writer(private val writer: Writer) : Writer by writer {
-        public fun writeString(string: String) {
-            writeBytes(string.encodeToByteArray(throwOnInvalidSequence = true))
-        }
-
-        public fun writeIndent() {
-            if (multilineWrite) repeat(indent) { writeBytes(Tab) }
-        }
-
-        public fun nested(action: () -> Unit) {
-            indent++
-            try {
-                action()
-            } finally {
-                indent--
-            }
-        }
-
-        public fun writeNewLine() {
-            if (multilineWrite) writeByte(NL)
-        }
-
-        public abstract fun writeProperty(name: String, value: Any?)
-        public abstract fun writeProperty(name: String, value: Any?, encoderId: Int)
-        public abstract fun writeObject(value: Any?)
-    }
-
-    public abstract class Utf8Reader(private val reader: Reader, private var _nextCodePoint: Int) : Reader by reader {
-        public val nextCodePoint: Int get() = _nextCodePoint
-        public fun expectedCodePoint(codePoint: Byte): Boolean = _nextCodePoint == codePoint.toInt()
-        public fun readNextCodePoint() {
-            _nextCodePoint = readCodePoint()
-        }
-
-        protected fun isWhitespace(): Boolean =
-            expectedCodePoint(SP) || expectedCodePoint(TAB) || expectedCodePoint(NL) || expectedCodePoint(CR)
-
-        protected fun skipWhitespace() {
-            while (isWhitespace()) readNextCodePoint()
-        }
-
-        public fun readNextCodePointAndSkipWhitespace() {
-            readNextCodePoint()
-            skipWhitespace()
-        }
-
-        public abstract fun readString(): String
-        public abstract fun readObject(): Any?
-
-        protected lateinit var properties: MutableMap<String, Any>
-
-        protected fun Utf8Encoder<*>.addProperty(name: String, value: Any?) {
-            check(value != null) { "property '${type.simpleName}.$name' must not be explicitly set to null" }
-            check(properties.put(name, value) == null) { "duplicated property '${type.simpleName}.$name'" }
-        }
-
-        public fun getProperty(property: String): Any? = properties[property]
-    }
-
     protected val stringEncoder: Utf8Encoder<String> = Utf8Encoder(String::class,
         { string ->
             writeByte(QUOTE)
@@ -151,50 +156,16 @@ public abstract class Utf8Serializer(
                         expectedCodePoint(BS) -> {
                             readNextCodePoint()
                             when {
-                                expectedCodePoint(QUOTE) -> append(QUOTE.toInt().toChar())
-                                expectedCodePoint(BS) -> append(BS.toInt().toChar())
-                                expectedCodePoint('n'.code.toByte()) -> append(NL.toInt().toChar())
-                                expectedCodePoint('r'.code.toByte()) -> append(CR.toInt().toChar())
-                                expectedCodePoint('t'.code.toByte()) -> append(TAB.toInt().toChar())
+                                expectedCodePoint(QUOTE) -> append(QUOTE.toChar())
+                                expectedCodePoint(BS) -> append(BS.toChar())
+                                expectedCodePoint('n'.code) -> append(NL.toChar())
+                                expectedCodePoint('r'.code) -> append(CR.toChar())
+                                expectedCodePoint('t'.code) -> append(TAB.toChar())
                                 else -> error("illegal escape with codePoint $nextCodePoint")
                             }
                         }
                         else -> addCodePoint(nextCodePoint)
                     }
-                }
-            }
-        }
-    )
-
-    protected val listEncoder: Utf8Encoder<List<*>> = Utf8Encoder(List::class,
-        { list ->
-            writeByte(LBRACKET)
-            nested {
-                list.forEachIndexed { index, element ->
-                    if ((!multilineWrite || strictListComma) && index != 0) writeByte(COMMA)
-                    writeNewLine()
-                    writeIndent()
-                    writeObject(element)
-                }
-            }
-            writeNewLine()
-            writeIndent()
-            writeByte(RBRACKET)
-        },
-        {
-            ArrayList<Any?>(10).apply {
-                readNextCodePointAndSkipWhitespace()
-                var first = true
-                while (!expectedCodePoint(RBRACKET)) {
-                    if (strictListComma) {
-                        if (first) first = false else {
-                            check(expectedCodePoint(COMMA)) { "'${COMMA.toInt().toChar()}' expected" }
-                            readNextCodePointAndSkipWhitespace()
-                        }
-                    }
-                    add(readObject())
-                    readNextCodePointAndSkipWhitespace()
-                    if (!strictListComma && expectedCodePoint(COMMA)) readNextCodePointAndSkipWhitespace()
                 }
             }
         }

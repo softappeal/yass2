@@ -71,6 +71,31 @@ private fun ManyProperties.assertManyProperties() {
     )
 }
 
+fun Serializer.mutableListTest() {
+    val list = copy(listOf(1, 2, 3))
+    val mutableList = copy(mutableListOf(1, 2, 3))
+    assertEquals(listOf(1, 2, 3), list)
+    assertEquals(mutableListOf(1, 2, 3), list)
+    assertEquals(listOf(1, 2, 3), mutableList)
+    assertEquals(mutableListOf(1, 2, 3), mutableList)
+    assertEquals(listOf(1, 2, 3, 4), mutableList.apply { add(4) })
+    assertEquals( // works because deserializes to MutableList, but of course downcast shouldn't be used
+        listOf(1, 2, 3, 4), (list as MutableList).apply { add(4) }
+    )
+    val lists = copy(Lists(
+        listOf(10),
+        listOf(20),
+        mutableListOf(30),
+        mutableListOf(40),
+    ))
+    assertEquals(listOf(10), lists.list)
+    assertEquals(listOf(20), lists.listOptional)
+    assertEquals(listOf(30), lists.mutableList)
+    assertEquals(listOf(30, 99), lists.mutableList.apply { add(99) })
+    assertEquals(listOf(40), lists.mutableListOptional!!)
+    assertEquals(listOf(40, 88), lists.mutableListOptional.apply { add(88) })
+}
+
 class BinarySerializerTest {
     @Test
     fun testNull() {
@@ -85,16 +110,7 @@ class BinarySerializerTest {
 
     @Test
     fun mutableList() {
-        val list = TransportSerializer.copy(listOf(1, 2, 3))
-        val mutableList = TransportSerializer.copy(mutableListOf(1, 2, 3))
-        assertEquals(listOf(1, 2, 3), list)
-        assertEquals(mutableListOf(1, 2, 3), list)
-        assertEquals(listOf(1, 2, 3), mutableList)
-        assertEquals(mutableListOf(1, 2, 3), mutableList)
-        assertEquals(listOf(1, 2, 3, 4), mutableList.apply { add(4) })
-        assertEquals( // works because deserializes to MutableList, but of course downcast shouldn't be used
-            listOf(1, 2, 3, 4), (list as MutableList).apply { add(4) }
-        )
+        TransportSerializer.mutableListTest()
     }
 
     @Test
@@ -233,9 +249,7 @@ class BinarySerializerTest {
             assertEquals(listOf(10), list)
             assertEquals(listOf(20), listOptional)
             assertEquals(listOf(30), mutableList)
-            mutableList.add(99)
             assertEquals(listOf(40), mutableListOptional!!)
-            mutableListOptional.add(99)
         }
         with(checkedCopy(
             Lists(
@@ -253,7 +267,6 @@ class BinarySerializerTest {
             assertEquals(listOf(10), list)
             assertNull(listOptional)
             assertEquals(listOf(30), mutableList)
-            mutableList.add(99)
             assertNull(mutableListOptional)
         }
     }

@@ -91,33 +91,7 @@ allprojects {
     }
 }
 
-val coreProject = project(":yass2-core") {
-    kotlin {
-        sourceSets {
-            val commonMain by getting
-            val notJsMain by creating {
-                dependsOn(commonMain)
-            }
-            jvmMain {
-                dependsOn(notJsMain)
-            }
-            if (allTargets) {
-                linuxX64Main {
-                    dependsOn(notJsMain)
-                }
-                linuxArm64Main {
-                    dependsOn(notJsMain)
-                }
-                macosArm64Main {
-                    dependsOn(notJsMain)
-                }
-                wasmJsMain {
-                    dependsOn(notJsMain)
-                }
-            }
-        }
-    }
-}
+val coreProject = project(":yass2-core")
 
 val coroutinesProject = project(":yass2-coroutines") {
     kotlin {

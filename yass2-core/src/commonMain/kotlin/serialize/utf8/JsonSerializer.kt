@@ -3,14 +3,55 @@ package ch.softappeal.yass2.serialize.utf8
 import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Writer
 
-private const val LBRACE = '{'.code.toByte()
-private const val RBRACE = '}'.code.toByte()
+private const val COMMA = ','.code
+private const val COLON = ':'.code
+private const val LBRACKET = '['.code // list
+private const val RBRACKET = ']'.code // list
+private const val LBRACE = '{'.code // object
+private const val RBRACE = '}'.code // object
 
-public class JsonSerializer(
-    encoders: List<Utf8Encoder<*>>, multilineWrite: Boolean,
-) : Utf8Serializer(encoders, multilineWrite, true) {
+public class JsonSerializer(encoders: List<Utf8Encoder<*>>) : Utf8Serializer(
+    Utf8Encoder(List::class,
+        { list ->
+            writeByte(LBRACKET)
+            with(nested()) {
+                list.forEachIndexed { index, element ->
+                    if (index != 0) writeByte(COMMA)
+                    writeNewLine()
+                    writeIndent()
+                    writeObject(element)
+                }
+            }
+            writeNewLine()
+            writeIndent()
+            writeByte(RBRACKET)
+        },
+        {
+            ArrayList<Any?>(10).apply {
+                readNextCodePointAndSkipWhitespace()
+                var first = true
+                while (!expectedCodePoint(RBRACKET)) {
+                    if (first) first = false else {
+                        check(expectedCodePoint(COMMA)) { "'${COMMA.toChar()}' expected" }
+                        readNextCodePointAndSkipWhitespace()
+                    }
+                    add(readObject())
+                    readNextCodePointAndSkipWhitespace()
+                }
+            }
+        }
+    ),
+    encoders,
+) {
 
-    private inner class TheWriter(writer: Writer) : Utf8Writer(writer) {
+    private inner class TheWriter(writer: Writer, indent: Int) : Utf8Writer(writer, indent) {
+        /** See [TheReader.readString]. */
+        override fun checkString(string: String) {
+            check(!string.contains(QUOTE.toChar())) { "'$string' must not contain '${QUOTE.toChar()}'" }
+        }
+
+        override fun nested() = TheWriter(this, indent + 1)
+
         private fun writeQuoted(string: String) {
             writeByte(QUOTE)
             writeString(string)
@@ -21,7 +62,7 @@ public class JsonSerializer(
             if (expanded) writeIndent()
             writeQuoted(key)
             writeByte(COLON)
-            if (expanded && multilineWrite) writeByte(SP)
+            if (expanded) writeByte(SP)
         }
 
         private fun Utf8Encoder<*>.writeQuoted(value: Any?) {
@@ -43,7 +84,7 @@ public class JsonSerializer(
                     val encoder = encoder(value::class)
                     val name = encoder.type.simpleName!!
                     if (encoder is ClassUtf8Encoder) {
-                        nested {
+                        with(nested()) {
                             writeNewLine()
                             writeKey("#")
                             writeQuoted(name)
@@ -92,11 +133,11 @@ public class JsonSerializer(
         }
 
         private fun readKey(): String {
-            check(expectedCodePoint(QUOTE)) { "'${QUOTE.toInt().toChar()}' expected" }
+            check(expectedCodePoint(QUOTE)) { "'${QUOTE.toChar()}' expected" }
             readNextCodePoint()
             val key = readString()
             readNextCodePointAndSkipWhitespace()
-            check(expectedCodePoint(COLON)) { "'${COLON.toInt().toChar()}' expected" }
+            check(expectedCodePoint(COLON)) { "'${COLON.toChar()}' expected" }
             return key
         }
 
@@ -110,7 +151,7 @@ public class JsonSerializer(
                     if (expectedCodePoint(RBRACE)) return null
                     val type = readKey()
                     readNextCodePointAndSkipWhitespace()
-                    check(expectedCodePoint(QUOTE)) { "'${QUOTE.toInt().toChar()}' expected" }
+                    check(expectedCodePoint(QUOTE)) { "'${QUOTE.toChar()}' expected" }
                     readNextCodePoint()
                     check(type.isNotEmpty()) { "empty type" }
                     check(type[0] == '#') { "'#' expected" }
@@ -119,9 +160,9 @@ public class JsonSerializer(
                         val encoder = encoder(className)
                         check(encoder !is ClassUtf8Encoder) { "is ClassUtf8Encoder" }
                         val value = encoder.read(this)
-                        check(expectedCodePoint(QUOTE)) { "'${QUOTE.toInt().toChar()}' expected" }
+                        check(expectedCodePoint(QUOTE)) { "'${QUOTE.toChar()}' expected" }
                         readNextCodePointAndSkipWhitespace()
-                        check(expectedCodePoint(RBRACE)) { "'${RBRACE.toInt().toChar()}' expected" }
+                        check(expectedCodePoint(RBRACE)) { "'${RBRACE.toChar()}' expected" }
                         value
                     } else {
                         val className = readString()
@@ -134,15 +175,14 @@ public class JsonSerializer(
         }
 
         private fun readClass(encoder: ClassUtf8Encoder<*>): Any {
-            properties = mutableMapOf()
             while (!expectedCodePoint(RBRACE)) {
-                check(expectedCodePoint(COMMA)) { "'${COMMA.toInt().toChar()}' expected" }
+                check(expectedCodePoint(COMMA)) { "'${COMMA.toChar()}' expected" }
                 readNextCodePointAndSkipWhitespace()
                 val name = readKey()
                 readNextCodePointAndSkipWhitespace()
                 val encoderId = encoder.encoderId(name)
                 val value = if (encoderId == NO_ENCODER_ID) with(TheReader(this, nextCodePoint)) { readObject() } else {
-                    check(expectedCodePoint(QUOTE)) { "'${QUOTE.toInt().toChar()}' expected" }
+                    check(expectedCodePoint(QUOTE)) { "'${QUOTE.toChar()}' expected" }
                     readNextCodePoint()
                     encoder(encoderId).read(this)
                 }
@@ -153,6 +193,6 @@ public class JsonSerializer(
         }
     }
 
-    override fun write(writer: Writer, value: Any?): Unit = TheWriter(writer).writeObject(value)
+    override fun write(writer: Writer, value: Any?): Unit = TheWriter(writer, 0).writeObject(value)
     override fun read(reader: Reader): Any? = TheReader(reader, reader.readCodePoint()).readObject()
 }

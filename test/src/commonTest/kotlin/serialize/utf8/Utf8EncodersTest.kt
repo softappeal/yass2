@@ -2,42 +2,90 @@ package ch.softappeal.yass2.serialize.utf8
 
 import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.contract.Gender
-import ch.softappeal.yass2.serialize.BytesWriter
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertTrue
 
-private val SERIALIZER = TextSerializer(
-    listOf(
-        BooleanUtf8Encoder,
-        IntUtf8Encoder,
-        LongUtf8Encoder,
-        ByteArrayUtf8Encoder,
-        EnumUtf8Encoder(Gender::class, Gender::valueOf),
-    ),
-    false,
-)
-
-private fun test(value: Any?, result: String, hexResult: String? = null) {
-    assertEquals(result, SERIALIZER.writeString(value))
-    if (hexResult != null) {
-        with(BytesWriter(1000)) {
-            SERIALIZER.write(this, value)
-            @OptIn(ExperimentalStdlibApi::class)
-            assertEquals(hexResult, buffer.copyOf(current).toHexString())
-        }
-    }
-    val d = SERIALIZER.readString(result)
-    if (value is ByteArray) assertTrue(value contentEquals (d as ByteArray)) else assertEquals(value, d)
+fun <T : Any> BaseUtf8Encoder<T>.test(value: T, vararg results: String) {
+    results.forEach { assertEquals(value, read(it)) }
+    assertTrue(results.any { it == write(value) })
 }
 
 class Utf8EncodersTest {
+    @Test
+    fun gender() {
+        with(EnumUtf8Encoder(Gender::class, Gender::valueOf)) {
+            test(Gender.Female, "Female")
+            test(Gender.Male, "Male")
+            assertFails { read("Unknown") }
+        }
+    }
+
+    @Test
+    fun boolean() {
+        with(BooleanUtf8Encoder) {
+            test(false, "false")
+            test(true, "true")
+            assertFails { read("True") }
+        }
+    }
+
+    @Test
+    fun int() {
+        with(IntUtf8Encoder) {
+            test(0, "0")
+            test(1, "1")
+            test(-1, "-1")
+            test(Int.MAX_VALUE, "2147483647")
+            test(Int.MIN_VALUE, "-2147483648")
+            assertFails { read("Unknown") }
+            assertFails { read("4123456789") }
+        }
+    }
+
+    @Test
+    fun long() {
+        with(LongUtf8Encoder) {
+            test(0L, "0")
+            test(1L, "1")
+            test(-1L, "-1")
+            test(Long.MAX_VALUE, "9223372036854775807")
+            test(Long.MIN_VALUE, "-9223372036854775808")
+            assertFails { read("Unknown") }
+            assertFails { read("51515131515131515154") }
+        }
+    }
+
     @Suppress("SpellCheckingInspection")
     @Test
-    fun test() {
-        test(null, "*")
+    fun byteArray() {
+        fun test(value: ByteArray, result: String) {
+            assertEquals(result, ByteArrayUtf8Encoder.write(value))
+            assertTrue(value contentEquals ByteArrayUtf8Encoder.read(result))
+        }
+        test(byteArrayOf(), "")
+        test(byteArrayOf(0), "AA==")
+        test(byteArrayOf(0, 1), "AAE=")
+        test(byteArrayOf(0, 1, 2), "AAEC")
+        test(byteArrayOf(0, 1, 2, 3), "AAECAw==")
+        assertFails { ByteArrayUtf8Encoder.read("AA==x") }
+        assertFails { ByteArrayUtf8Encoder.read("*A==") }
+        assertFails { ByteArrayUtf8Encoder.read("A*==") }
+    }
 
+    @Suppress("SpellCheckingInspection")
+    @Test
+    fun string() {
+        println("\t\r\n\\\"")
+        val serializer = TextSerializer(listOf())
+        fun test(value: String, result: String, hexResult: String? = null) {
+            val r = serializer.writeString(value)
+            assertEquals(result, r)
+            @OptIn(ExperimentalStdlibApi::class)
+            if (hexResult != null) assertEquals(hexResult, r.encodeToByteArray(throwOnInvalidSequence = true).toHexString())
+            assertEquals(value, serializer.readString(result))
+        }
         test("", "\"\"")
         test(" hello world ", "\" hello world \"")
         test("\u0000\u0001\u007F", "\"\u0000\u0001\u007F\"", "2200017f22")
@@ -54,56 +102,10 @@ class Utf8EncodersTest {
         test("\ta", "\"\\ta\"", "225c746122")
         test("\na", "\"\\na\"", "225c6e6122")
         test("\ra", "\"\\ra\"", "225c726122")
-        println(SERIALIZER.readString("\"a\tb\""))
-        println(SERIALIZER.readString("\"c\nd\""))
-        assertFailsMessage<IllegalStateException>("illegal escape with codePoint 97") { SERIALIZER.readString("\"\\ab\"") }
-
-        test(listOf<Int>(), "[]")
-        test(listOf(null), "[*]")
-        test(listOf(null, null), "[*,*]")
-        test(listOf(null, listOf("")), "[*,[\"\"]]")
-
-        test(false, "Boolean(false)")
-        test(true, "Boolean(true)")
-
-        test(0, "Int(0)")
-        test(1, "Int(1)")
-        test(-1, "Int(-1)")
-        test(Int.MAX_VALUE, "Int(2147483647)")
-        test(Int.MIN_VALUE, "Int(-2147483648)")
-
-        test(0L, "Long(0)")
-        test(1L, "Long(1)")
-        test(-1L, "Long(-1)")
-        test(Long.MAX_VALUE, "Long(9223372036854775807)")
-        test(Long.MIN_VALUE, "Long(-9223372036854775808)")
-
-        test(Gender.Female, "Gender(Female)")
-        test(Gender.Male, "Gender(Male)")
-
-        test(byteArrayOf(), "ByteArray()")
-        test(byteArrayOf(0), "ByteArray(AA==)")
-        test(byteArrayOf(0, 1), "ByteArray(AAE=)")
-        test(byteArrayOf(0, 1, 2), "ByteArray(AAEC)")
-        test(byteArrayOf(0, 1, 2, 3), "ByteArray(AAECAw==)")
-
-        listOf(
-            "invalid",
-            "\"a",
-            "Boolean(1",
-            "Boolean(True)",
-            "Gender(Unknown)",
-            "Int(Unknown)",
-            "Int(4123456789)",
-            "Long(Unknown)",
-            "Long(51515131515131515154)",
-            "ByteArray(AA==x)",
-            "ByteArray(*A==)",
-            "ByteArray(A*==)",
-        ).forEach {
-            println(
-                assertFails { SERIALIZER.readString(it) }
-            )
-        }
+        println(serializer.readString("\"a\tb\""))
+        println(serializer.readString("\"c\nd\""))
+        assertFailsMessage<IllegalStateException>("illegal escape with codePoint 97") { serializer.readString("\"\\a\"") }
+        println(assertFails { serializer.readString("invalid") })
+        println(assertFails { serializer.readString("\"a") })
     }
 }

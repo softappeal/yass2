@@ -41,7 +41,7 @@ private fun runServer(block: suspend CoroutineScope.(tcp: TcpSocketBuilder, serv
     }
 }
 
-private val TextTransport = Transport(TextSerializer(createUtf8Encoders(), true))
+private val TextTransport = Transport(TextSerializer(createUtf8Encoders()))
 
 private fun socketTest(transport: Transport) {
     runServer { tcp, serverSocket ->
