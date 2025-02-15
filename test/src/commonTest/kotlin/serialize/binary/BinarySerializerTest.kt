@@ -71,23 +71,6 @@ private fun ManyProperties.assertManyProperties() {
     )
 }
 
-fun Serializer.typesTest() {
-    with(copy(Types(
-        true,
-        1,
-        2,
-        "hello",
-        byteArrayOf(1, 2, 3),
-        Gender.Female,
-    ))) {
-        assertTrue(boolean)
-        assertEquals(1, int)
-        assertEquals(2, long)
-        assertEquals("hello", string)
-        assertEquals(Gender.Female, gender)
-    }
-}
-
 class BinarySerializerTest {
     @Test
     fun testNull() {
@@ -122,8 +105,21 @@ class BinarySerializerTest {
     }
 
     @Test
-    fun typesTest() {
-        TransportSerializer.typesTest()
+    fun types() {
+        with(TransportSerializer.copy(Types(
+            true,
+            1,
+            2,
+            "hello",
+            byteArrayOf(1, 2, 3),
+            Gender.Female,
+        ))) {
+            assertTrue(boolean)
+            assertEquals(1, int)
+            assertEquals(2, long)
+            assertEquals("hello", string)
+            assertEquals(Gender.Female, gender)
+        }
     }
 
     @Test

@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.serialize.utf8
+package ch.softappeal.yass2.serialize.string
 
 import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.serialize.BytesReader

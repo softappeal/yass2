@@ -15,6 +15,7 @@ public final class ch/softappeal/yass2/generate/Classes {
 
 public final class ch/softappeal/yass2/generate/CodeWriter {
 	public fun <init> (Ljava/lang/Appendable;)V
+	public final fun nested (Lkotlin/jvm/functions/Function1;)V
 	public final fun write (Ljava/lang/String;)V
 	public final fun writeLine ()V
 	public final fun writeLine (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
@@ -46,7 +47,7 @@ public final class ch/softappeal/yass2/generate/GenerateProxyKt {
 
 public final class ch/softappeal/yass2/generate/GenerateSerializerKt {
 	public static final fun generateBinarySerializer (Lch/softappeal/yass2/generate/CodeWriter;Ljava/util/List;Ljava/util/List;)V
-	public static final fun generateUtf8Encoders (Lch/softappeal/yass2/generate/CodeWriter;Ljava/util/List;Ljava/util/List;)V
+	public static final fun generateStringEncoders (Lch/softappeal/yass2/generate/CodeWriter;Ljava/util/List;Ljava/util/List;)V
 	public static final fun getClasses (Ljava/util/List;Ljava/util/List;)Lch/softappeal/yass2/generate/Classes;
 	public static final fun isEnum (Lkotlin/reflect/KClass;)Z
 }

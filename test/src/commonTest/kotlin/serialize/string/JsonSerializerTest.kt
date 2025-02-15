@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.serialize.utf8
+package ch.softappeal.yass2.serialize.string
 
 import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.contract.A
@@ -11,13 +11,12 @@ import ch.softappeal.yass2.contract.Lists
 import ch.softappeal.yass2.contract.Optionals
 import ch.softappeal.yass2.contract.Poly
 import ch.softappeal.yass2.contract.ThrowableFake
-import ch.softappeal.yass2.contract.createUtf8Encoders
+import ch.softappeal.yass2.contract.createStringEncoders
 import ch.softappeal.yass2.serialize.binary.ManyPropertiesConst
-import ch.softappeal.yass2.serialize.binary.typesTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 
-private val SERIALIZER = JsonSerializer(createUtf8Encoders())
+private val SERIALIZER = JsonSerializer(createStringEncoders())
 
 private fun dump(value: Any?, serialized: String, vararg others: String) = SERIALIZER.dump(value, serialized, *others)
 
@@ -35,7 +34,10 @@ class JsonSerializerTest {
             "{}",
             "  {  }",
         )
-
+        dump(
+            "hello",
+            """"hello"""",
+        )
         dump(
             listOf<Int>(),
             """
@@ -271,5 +273,10 @@ class JsonSerializerTest {
         println(assertFailsWith<Exception> { // wrong typ of property intWrapper
             SERIALIZER.readString("""{"#":"Optionals","i":"1","intWrapper":[]}""")
         })
+    }
+
+    @Test
+    fun everything() {
+        SERIALIZER.everythingTest()
     }
 }

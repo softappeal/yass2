@@ -1,14 +1,14 @@
-package ch.softappeal.yass2.serialize.utf8
+package ch.softappeal.yass2.serialize.string
 
 import ch.softappeal.yass2.NotJs
 import kotlin.test.Test
 import kotlin.test.assertFails
 
-class Utf8EncodersTestNotJs {
+class StringEncodersTestNotJs {
     @Test
     fun double() {
         @OptIn(NotJs::class)
-        with(DoubleUtf8Encoder) {
+        with(DoubleStringEncoder) {
             test(0.0, "0.0")
             test(1.0, "1.0")
             test(-1.0, "-1.0")

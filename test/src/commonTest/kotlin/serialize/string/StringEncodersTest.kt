@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.serialize.utf8
+package ch.softappeal.yass2.serialize.string
 
 import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.contract.Gender
@@ -7,15 +7,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertTrue
 
-fun <T : Any> BaseUtf8Encoder<T>.test(value: T, vararg results: String) {
+fun <T : Any> BaseStringEncoder<T>.test(value: T, vararg results: String) {
     results.forEach { assertEquals(value, read(it)) }
     assertTrue(results.any { it == write(value) })
 }
 
-class Utf8EncodersTest {
+class StringEncodersTest {
     @Test
     fun gender() {
-        with(EnumUtf8Encoder(Gender::class, Gender::valueOf)) {
+        with(EnumStringEncoder(Gender::class, Gender::valueOf)) {
             test(Gender.Female, "Female")
             test(Gender.Male, "Male")
             assertFails { read("Unknown") }
@@ -24,7 +24,7 @@ class Utf8EncodersTest {
 
     @Test
     fun boolean() {
-        with(BooleanUtf8Encoder) {
+        with(BooleanStringEncoder) {
             test(false, "false")
             test(true, "true")
             assertFails { read("True") }
@@ -33,7 +33,7 @@ class Utf8EncodersTest {
 
     @Test
     fun int() {
-        with(IntUtf8Encoder) {
+        with(IntStringEncoder) {
             test(0, "0")
             test(1, "1")
             test(-1, "-1")
@@ -46,7 +46,7 @@ class Utf8EncodersTest {
 
     @Test
     fun long() {
-        with(LongUtf8Encoder) {
+        with(LongStringEncoder) {
             test(0L, "0")
             test(1L, "1")
             test(-1L, "-1")
@@ -61,17 +61,17 @@ class Utf8EncodersTest {
     @Test
     fun byteArray() {
         fun test(value: ByteArray, result: String) {
-            assertEquals(result, ByteArrayUtf8Encoder.write(value))
-            assertTrue(value contentEquals ByteArrayUtf8Encoder.read(result))
+            assertEquals(result, ByteArrayStringEncoder.write(value))
+            assertTrue(value contentEquals ByteArrayStringEncoder.read(result))
         }
         test(byteArrayOf(), "")
         test(byteArrayOf(0), "AA==")
         test(byteArrayOf(0, 1), "AAE=")
         test(byteArrayOf(0, 1, 2), "AAEC")
         test(byteArrayOf(0, 1, 2, 3), "AAECAw==")
-        assertFails { ByteArrayUtf8Encoder.read("AA==x") }
-        assertFails { ByteArrayUtf8Encoder.read("*A==") }
-        assertFails { ByteArrayUtf8Encoder.read("A*==") }
+        assertFails { ByteArrayStringEncoder.read("AA==x") }
+        assertFails { ByteArrayStringEncoder.read("*A==") }
+        assertFails { ByteArrayStringEncoder.read("A*==") }
     }
 
     @Suppress("SpellCheckingInspection")

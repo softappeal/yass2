@@ -53,7 +53,7 @@ public class CodeWriter private constructor(private val appendable: Appendable, 
         appendable.append(s)
     }
 
-    private fun nested(write: CodeWriter.() -> Unit) {
+    public fun nested(write: CodeWriter.() -> Unit) {
         CodeWriter(appendable, "$indent    ").write()
     }
 

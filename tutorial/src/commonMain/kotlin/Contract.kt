@@ -9,16 +9,16 @@ import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.ValueReply
 import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Transport
-import ch.softappeal.yass2.serialize.utf8.BaseUtf8Encoder
-import ch.softappeal.yass2.serialize.utf8.IntUtf8Encoder
-import ch.softappeal.yass2.serialize.utf8.TextSerializer
+import ch.softappeal.yass2.serialize.string.BaseStringEncoder
+import ch.softappeal.yass2.serialize.string.IntStringEncoder
+import ch.softappeal.yass2.serialize.string.TextSerializer
 
 /**
  * Shows how to implement an own base type.
  * In contrast to regular classes, own base types could implement a more efficient serializing.
  */
 public data class MyDate(public val currentTimeMillis: Long)
-internal object MyDateEncoder : BaseUtf8Encoder<MyDate>(MyDate::class,
+internal object MyDateEncoder : BaseStringEncoder<MyDate>(MyDate::class,
     { value -> value.currentTimeMillis.toString() },
     { MyDate(toLong()) }
 )
@@ -101,10 +101,10 @@ internal val ConcreteClasses = listOf(
 // Define all the additional base encoders needed by the contract (including own base types).
 internal val EncoderObjects = listOf(
     // String is built-in
-    IntUtf8Encoder::class,
+    IntStringEncoder::class,
     MyDateEncoder::class,
 )
 
-public val TransportSerializer: Serializer = TextSerializer(createUtf8Encoders())
+public val TransportSerializer: Serializer = TextSerializer(createStringEncoders())
 
 public val ContractTransport: Transport = Transport(TransportSerializer)

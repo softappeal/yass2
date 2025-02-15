@@ -1,13 +1,13 @@
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.contract.ContractTransport
-import ch.softappeal.yass2.contract.createUtf8Encoders
+import ch.softappeal.yass2.contract.createStringEncoders
 import ch.softappeal.yass2.coroutines.acceptorSessionFactory
 import ch.softappeal.yass2.coroutines.initiatorSessionFactory
 import ch.softappeal.yass2.coroutines.test
 import ch.softappeal.yass2.coroutines.tunnel
 import ch.softappeal.yass2.serialize.Transport
-import ch.softappeal.yass2.serialize.utf8.TextSerializer
+import ch.softappeal.yass2.serialize.string.TextSerializer
 import io.ktor.network.selector.SelectorManager
 import io.ktor.network.sockets.ServerSocket
 import io.ktor.network.sockets.TcpSocketBuilder
@@ -41,7 +41,7 @@ private fun runServer(block: suspend CoroutineScope.(tcp: TcpSocketBuilder, serv
     }
 }
 
-private val TextTransport = Transport(TextSerializer(createUtf8Encoders()))
+private val TextTransport = Transport(TextSerializer(createStringEncoders()))
 
 private fun socketTest(transport: Transport) {
     runServer { tcp, serverSocket ->

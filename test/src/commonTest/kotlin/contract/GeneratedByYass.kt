@@ -365,6 +365,8 @@ public fun <F, I> ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.corou
     22: ch.softappeal.yass2.coroutines.Packet - class
         requestNumber: required 3
         message: object
+    23: ch.softappeal.yass2.contract.BodyProperty - class
+        body: object
 */
 public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.BinarySerializer =
     object : ch.softappeal.yass2.serialize.binary.BinarySerializer() {
@@ -384,10 +386,9 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         writeRequired(i.i, 3)
                     },
                     {
-                        val i = ch.softappeal.yass2.contract.IntException(
+                        ch.softappeal.yass2.contract.IntException(
                             readRequired(3) as kotlin.Int,
                         )
-                        i
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
@@ -396,10 +397,9 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         writeRequired(i.i, 3)
                     },
                     {
-                        val i = ch.softappeal.yass2.contract.IntWrapper(
+                        ch.softappeal.yass2.contract.IntWrapper(
                             readRequired(3) as kotlin.Int,
                         )
-                        i
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
@@ -411,13 +411,12 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         writeOptional(i.intWrapperOptional, 9)
                     },
                     {
-                        val i = ch.softappeal.yass2.contract.Optionals(
+                        ch.softappeal.yass2.contract.Optionals(
                             readRequired(3) as kotlin.Int,
                             readOptional(3) as kotlin.Int?,
                             readRequired(9) as ch.softappeal.yass2.contract.IntWrapper,
                             readOptional(9) as ch.softappeal.yass2.contract.IntWrapper?,
                         )
-                        i
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
@@ -427,11 +426,10 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         writeOptional(i.listOptional, 1)
                     },
                     {
-                        val i = ch.softappeal.yass2.contract.Lists(
+                        ch.softappeal.yass2.contract.Lists(
                             readRequired(1) as kotlin.collections.List<kotlin.Int>,
                             readOptional(1) as kotlin.collections.List<kotlin.Int>?,
                         )
-                        i
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
@@ -440,10 +438,9 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         writeRequired(i.a, 3)
                     },
                     {
-                        val i = ch.softappeal.yass2.contract.A(
+                        ch.softappeal.yass2.contract.A(
                             readRequired(3) as kotlin.Int,
                         )
-                        i
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
@@ -453,11 +450,10 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         writeRequired(i.b, 3)
                     },
                     {
-                        val i = ch.softappeal.yass2.contract.B(
+                        ch.softappeal.yass2.contract.B(
                             readRequired(3) as kotlin.Int,
                             readRequired(3) as kotlin.Int,
                         )
-                        i
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
@@ -467,11 +463,10 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         writeRequired(i.b, 13)
                     },
                     {
-                        val i = ch.softappeal.yass2.contract.Poly(
+                        ch.softappeal.yass2.contract.Poly(
                             readObject() as ch.softappeal.yass2.contract.A,
                             readRequired(13) as ch.softappeal.yass2.contract.B,
                         )
-                        i
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
@@ -489,19 +484,19 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         writeRequired(i.j, 3)
                     },
                     {
-                        val i = ch.softappeal.yass2.contract.ManyProperties(
+                        ch.softappeal.yass2.contract.ManyProperties(
                             readRequired(3) as kotlin.Int,
                             readRequired(3) as kotlin.Int,
                             readRequired(3) as kotlin.Int,
                             readRequired(3) as kotlin.Int,
                             readRequired(3) as kotlin.Int,
-                        )
-                        i.a = readRequired(3) as kotlin.Int
-                        i.c = readRequired(3) as kotlin.Int
-                        i.e = readRequired(3) as kotlin.Int
-                        i.i = readRequired(3) as kotlin.Int
-                        i.j = readRequired(3) as kotlin.Int
-                        i
+                        ).apply {
+                            a = readRequired(3) as kotlin.Int
+                            c = readRequired(3) as kotlin.Int
+                            e = readRequired(3) as kotlin.Int
+                            i = readRequired(3) as kotlin.Int
+                            j = readRequired(3) as kotlin.Int
+                        }
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
@@ -509,9 +504,8 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                     { i ->
                     },
                     {
-                        val i = ch.softappeal.yass2.contract.DivideByZeroException(
+                        ch.softappeal.yass2.contract.DivideByZeroException(
                         )
-                        i
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
@@ -521,11 +515,10 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         writeRequired(i.message, 5)
                     },
                     {
-                        val i = ch.softappeal.yass2.contract.ThrowableFake(
+                        ch.softappeal.yass2.contract.ThrowableFake(
                             readOptional(5) as kotlin.String?,
                             readRequired(5) as kotlin.String,
                         )
-                        i
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
@@ -539,7 +532,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         writeRequired(i.gender, 7)
                     },
                     {
-                        val i = ch.softappeal.yass2.contract.Types(
+                        ch.softappeal.yass2.contract.Types(
                             readRequired(2) as kotlin.Boolean,
                             readRequired(3) as kotlin.Int,
                             readRequired(4) as kotlin.Long,
@@ -547,7 +540,6 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                             readRequired(6) as kotlin.ByteArray,
                             readRequired(7) as ch.softappeal.yass2.contract.Gender,
                         )
-                        i
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
@@ -558,12 +550,11 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         writeRequired(i.parameters, 1)
                     },
                     {
-                        val i = ch.softappeal.yass2.remote.Request(
+                        ch.softappeal.yass2.remote.Request(
                             readRequired(5) as kotlin.String,
                             readRequired(5) as kotlin.String,
                             readRequired(1) as kotlin.collections.List<kotlin.Any?>,
                         )
-                        i
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
@@ -572,10 +563,9 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         writeObject(i.value)
                     },
                     {
-                        val i = ch.softappeal.yass2.remote.ValueReply(
+                        ch.softappeal.yass2.remote.ValueReply(
                             readObject() as kotlin.Any?,
                         )
-                        i
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
@@ -584,10 +574,9 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         writeObject(i.exception)
                     },
                     {
-                        val i = ch.softappeal.yass2.remote.ExceptionReply(
+                        ch.softappeal.yass2.remote.ExceptionReply(
                             readObject() as kotlin.Exception,
                         )
-                        i
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
@@ -597,11 +586,22 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                         writeObject(i.message)
                     },
                     {
-                        val i = ch.softappeal.yass2.coroutines.Packet(
+                        ch.softappeal.yass2.coroutines.Packet(
                             readRequired(3) as kotlin.Int,
                             readObject() as ch.softappeal.yass2.remote.Message,
                         )
-                        i
+                    }
+                ),
+                ch.softappeal.yass2.serialize.binary.BinaryEncoder(
+                    ch.softappeal.yass2.contract.BodyProperty::class,
+                    { i ->
+                        writeObject(i.body)
+                    },
+                    {
+                        ch.softappeal.yass2.contract.BodyProperty(
+                        ).apply {
+                            body = readObject() as kotlin.Any?
+                        }
                     }
                 ),
             )
@@ -671,43 +671,43 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
     21: ch.softappeal.yass2.coroutines.Packet - class
         requestNumber: 3
         message: object
+    22: ch.softappeal.yass2.contract.BodyProperty - class
+        body: object
 */
-public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.serialize.utf8.Utf8Encoder<*>> = listOf(
-    ch.softappeal.yass2.serialize.utf8.BooleanUtf8Encoder,
-    ch.softappeal.yass2.serialize.utf8.IntUtf8Encoder,
-    ch.softappeal.yass2.serialize.utf8.LongUtf8Encoder,
-    ch.softappeal.yass2.serialize.utf8.ByteArrayUtf8Encoder,
-    ch.softappeal.yass2.serialize.utf8.EnumUtf8Encoder(
+public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.serialize.string.StringEncoder<*>> = listOf(
+    ch.softappeal.yass2.serialize.string.BooleanStringEncoder,
+    ch.softappeal.yass2.serialize.string.IntStringEncoder,
+    ch.softappeal.yass2.serialize.string.LongStringEncoder,
+    ch.softappeal.yass2.serialize.string.ByteArrayStringEncoder,
+    ch.softappeal.yass2.serialize.string.EnumStringEncoder(
         ch.softappeal.yass2.contract.Gender::class,
         ch.softappeal.yass2.contract.Gender::valueOf,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.contract.IntException::class,
         { i ->
             writeProperty("i", i.i, 3)
         },
         {
-            val i = ch.softappeal.yass2.contract.IntException(
+            ch.softappeal.yass2.contract.IntException(
                 getProperty("i") as kotlin.Int,
             )
-            i
         },
         "i" to 3,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.contract.IntWrapper::class,
         { i ->
             writeProperty("i", i.i, 3)
         },
         {
-            val i = ch.softappeal.yass2.contract.IntWrapper(
+            ch.softappeal.yass2.contract.IntWrapper(
                 getProperty("i") as kotlin.Int,
             )
-            i
         },
         "i" to 3,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.contract.Optionals::class,
         { i ->
             writeProperty("i", i.i, 3)
@@ -716,81 +716,76 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
             writeProperty("intWrapperOptional", i.intWrapperOptional)
         },
         {
-            val i = ch.softappeal.yass2.contract.Optionals(
+            ch.softappeal.yass2.contract.Optionals(
                 getProperty("i") as kotlin.Int,
                 getProperty("iOptional") as kotlin.Int?,
                 getProperty("intWrapper") as ch.softappeal.yass2.contract.IntWrapper,
                 getProperty("intWrapperOptional") as ch.softappeal.yass2.contract.IntWrapper?,
             )
-            i
         },
         "i" to 3,
         "iOptional" to 3,
         "intWrapper" to -1,
         "intWrapperOptional" to -1,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.contract.Lists::class,
         { i ->
             writeProperty("list", i.list, 1)
             writeProperty("listOptional", i.listOptional, 1)
         },
         {
-            val i = ch.softappeal.yass2.contract.Lists(
+            ch.softappeal.yass2.contract.Lists(
                 getProperty("list") as kotlin.collections.List<kotlin.Int>,
                 getProperty("listOptional") as kotlin.collections.List<kotlin.Int>?,
             )
-            i
         },
         "list" to -1,
         "listOptional" to -1,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.contract.A::class,
         { i ->
             writeProperty("a", i.a, 3)
         },
         {
-            val i = ch.softappeal.yass2.contract.A(
+            ch.softappeal.yass2.contract.A(
                 getProperty("a") as kotlin.Int,
             )
-            i
         },
         "a" to 3,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.contract.B::class,
         { i ->
             writeProperty("a", i.a, 3)
             writeProperty("b", i.b, 3)
         },
         {
-            val i = ch.softappeal.yass2.contract.B(
+            ch.softappeal.yass2.contract.B(
                 getProperty("a") as kotlin.Int,
                 getProperty("b") as kotlin.Int,
             )
-            i
         },
         "a" to 3,
         "b" to 3,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.contract.Poly::class,
         { i ->
             writeProperty("a", i.a)
             writeProperty("b", i.b)
         },
         {
-            val i = ch.softappeal.yass2.contract.Poly(
+            ch.softappeal.yass2.contract.Poly(
                 getProperty("a") as ch.softappeal.yass2.contract.A,
                 getProperty("b") as ch.softappeal.yass2.contract.B,
             )
-            i
         },
         "a" to -1,
         "b" to -1,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.contract.ManyProperties::class,
         { i ->
             writeProperty("h", i.h, 3)
@@ -805,19 +800,19 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
             writeProperty("j", i.j, 3)
         },
         {
-            val i = ch.softappeal.yass2.contract.ManyProperties(
+            ch.softappeal.yass2.contract.ManyProperties(
                 getProperty("h") as kotlin.Int,
                 getProperty("d") as kotlin.Int,
                 getProperty("f") as kotlin.Int,
                 getProperty("g") as kotlin.Int,
                 getProperty("b") as kotlin.Int,
-            )
-            i.a = getProperty("a") as kotlin.Int
-            i.c = getProperty("c") as kotlin.Int
-            i.e = getProperty("e") as kotlin.Int
-            i.i = getProperty("i") as kotlin.Int
-            i.j = getProperty("j") as kotlin.Int
-            i
+            ).apply {
+                a = getProperty("a") as kotlin.Int
+                c = getProperty("c") as kotlin.Int
+                e = getProperty("e") as kotlin.Int
+                i = getProperty("i") as kotlin.Int
+                j = getProperty("j") as kotlin.Int
+            }
         },
         "h" to 3,
         "d" to 3,
@@ -830,33 +825,31 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
         "i" to 3,
         "j" to 3,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.contract.DivideByZeroException::class,
         { i ->
         },
         {
-            val i = ch.softappeal.yass2.contract.DivideByZeroException(
+            ch.softappeal.yass2.contract.DivideByZeroException(
             )
-            i
         },
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.contract.ThrowableFake::class,
         { i ->
             writeProperty("cause", i.cause, 0)
             writeProperty("message", i.message, 0)
         },
         {
-            val i = ch.softappeal.yass2.contract.ThrowableFake(
+            ch.softappeal.yass2.contract.ThrowableFake(
                 getProperty("cause") as kotlin.String?,
                 getProperty("message") as kotlin.String,
             )
-            i
         },
         "cause" to -1,
         "message" to -1,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.contract.Types::class,
         { i ->
             writeProperty("boolean", i.boolean, 2)
@@ -867,7 +860,7 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
             writeProperty("gender", i.gender, 6)
         },
         {
-            val i = ch.softappeal.yass2.contract.Types(
+            ch.softappeal.yass2.contract.Types(
                 getProperty("boolean") as kotlin.Boolean,
                 getProperty("int") as kotlin.Int,
                 getProperty("long") as kotlin.Long,
@@ -875,7 +868,6 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
                 getProperty("bytes") as kotlin.ByteArray,
                 getProperty("gender") as ch.softappeal.yass2.contract.Gender,
             )
-            i
         },
         "boolean" to 2,
         "int" to 3,
@@ -884,7 +876,7 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
         "bytes" to 5,
         "gender" to 6,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.remote.Request::class,
         { i ->
             writeProperty("service", i.service, 0)
@@ -892,57 +884,66 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
             writeProperty("parameters", i.parameters, 1)
         },
         {
-            val i = ch.softappeal.yass2.remote.Request(
+            ch.softappeal.yass2.remote.Request(
                 getProperty("service") as kotlin.String,
                 getProperty("function") as kotlin.String,
                 getProperty("parameters") as kotlin.collections.List<kotlin.Any?>,
             )
-            i
         },
         "service" to -1,
         "function" to -1,
         "parameters" to -1,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.remote.ValueReply::class,
         { i ->
             writeProperty("value", i.value)
         },
         {
-            val i = ch.softappeal.yass2.remote.ValueReply(
+            ch.softappeal.yass2.remote.ValueReply(
                 getProperty("value") as kotlin.Any?,
             )
-            i
         },
         "value" to -1,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.remote.ExceptionReply::class,
         { i ->
             writeProperty("exception", i.exception)
         },
         {
-            val i = ch.softappeal.yass2.remote.ExceptionReply(
+            ch.softappeal.yass2.remote.ExceptionReply(
                 getProperty("exception") as kotlin.Exception,
             )
-            i
         },
         "exception" to -1,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.coroutines.Packet::class,
         { i ->
             writeProperty("requestNumber", i.requestNumber, 3)
             writeProperty("message", i.message)
         },
         {
-            val i = ch.softappeal.yass2.coroutines.Packet(
+            ch.softappeal.yass2.coroutines.Packet(
                 getProperty("requestNumber") as kotlin.Int,
                 getProperty("message") as ch.softappeal.yass2.remote.Message,
             )
-            i
         },
         "requestNumber" to 3,
         "message" to -1,
+    ),
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
+        ch.softappeal.yass2.contract.BodyProperty::class,
+        { i ->
+            writeProperty("body", i.body)
+        },
+        {
+            ch.softappeal.yass2.contract.BodyProperty(
+            ).apply {
+                body = getProperty("body") as kotlin.Any?
+            }
+        },
+        "body" to -1,
     ),
 )

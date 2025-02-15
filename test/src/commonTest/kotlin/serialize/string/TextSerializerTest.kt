@@ -1,27 +1,30 @@
-package ch.softappeal.yass2.serialize.utf8
+package ch.softappeal.yass2.serialize.string
 
 import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.contract.A
 import ch.softappeal.yass2.contract.B
+import ch.softappeal.yass2.contract.BodyProperty
 import ch.softappeal.yass2.contract.DivideByZeroException
 import ch.softappeal.yass2.contract.Gender
 import ch.softappeal.yass2.contract.IntException
 import ch.softappeal.yass2.contract.IntWrapper
 import ch.softappeal.yass2.contract.Lists
+import ch.softappeal.yass2.contract.ManyProperties
 import ch.softappeal.yass2.contract.Optionals
 import ch.softappeal.yass2.contract.Poly
 import ch.softappeal.yass2.contract.ThrowableFake
-import ch.softappeal.yass2.contract.createUtf8Encoders
+import ch.softappeal.yass2.contract.Types
+import ch.softappeal.yass2.contract.createStringEncoders
+import ch.softappeal.yass2.remote.ValueReply
 import ch.softappeal.yass2.serialize.BytesWriter
 import ch.softappeal.yass2.serialize.binary.ManyPropertiesConst
-import ch.softappeal.yass2.serialize.binary.typesTest
 import ch.softappeal.yass2.serialize.writeBytes
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
-fun Utf8Serializer.dump(value: Any?, serialized: String, vararg others: String) {
+fun StringSerializer.dump(value: Any?, serialized: String, vararg others: String) {
     fun write(data: Any?) {
         assertEquals(serialized, writeString(data))
     }
@@ -30,9 +33,9 @@ fun Utf8Serializer.dump(value: Any?, serialized: String, vararg others: String) 
     others.forEach { write(readString(it)) }
 }
 
-fun checkString(string: String, message: String, createSerializer: (encoders: List<Utf8Encoder<*>>) -> Utf8Serializer) {
+fun checkString(string: String, message: String, createSerializer: (encoders: List<StringEncoder<*>>) -> StringSerializer) {
     assertFailsMessage<IllegalStateException>(message) {
-        createSerializer(listOf(object : BaseUtf8Encoder<Boolean>(Boolean::class,
+        createSerializer(listOf(object : BaseStringEncoder<Boolean>(Boolean::class,
             { string },
             { false }
         ) {})).writeBytes(false)
@@ -40,11 +43,96 @@ fun checkString(string: String, message: String, createSerializer: (encoders: Li
 }
 
 private class Int
-private object MyIntEncoder : Utf8Encoder<Int>(Int::class, {}, { Int() })
+private object MyIntEncoder : StringEncoder<Int>(Int::class, {}, { Int() })
 
-private val SERIALIZER = TextSerializer(createUtf8Encoders())
+private val SERIALIZER = TextSerializer(createStringEncoders())
 
 private fun dump(value: Any?, serialized: String, vararg others: String) = SERIALIZER.dump(value, serialized, *others)
+
+fun StringSerializer.typesTest() {
+    val serialized = writeString(Types(
+        true,
+        1,
+        2,
+        "hello",
+        byteArrayOf(1, 2, 3),
+        Gender.Female,
+    ))
+    println(serialized)
+    assertEquals(serialized, writeString(readString(serialized)))
+}
+
+@Suppress("SpellCheckingInspection")
+fun StringSerializer.everythingTest() {
+    val everything =
+        listOf(
+            null(),
+            Boolean("true"),
+            Int("1"),
+            Long("2"),
+            "hello",
+            ByteArray("AAEC"),
+            Gender.Female(),
+            Types(
+                boolean = true,
+                int = 1,
+                long = 2,
+                string = "hello",
+                bytes = ByteArray("AAEC"),
+                gender = Gender.Female(),
+            ),
+            listOf(
+                Int("1"),
+            ),
+            DivideByZeroException(
+            ),
+            BodyProperty(
+            ).apply {
+                body = BodyProperty(
+                ).apply {
+                    body = BodyProperty(
+                    ).apply {
+                        body = null()
+                    }
+                }
+            },
+            Poly(
+                a = B(
+                    a = 10,
+                    b = 20,
+                ),
+                b = B(
+                    a = 1,
+                    b = 2,
+                ),
+            ),
+            ManyProperties(
+                h = 8,
+                d = 4,
+                f = 6,
+                g = 7,
+                b = 2,
+            ).apply {
+                a = 1
+                c = 3
+                e = 5
+                i = 9
+                j = 10
+            },
+            Lists(
+                list = listOf(
+                    Int("1"),
+                ),
+                listOptional = null(),
+            ),
+            ValueReply(
+                value = ByteArray("AAEC"),
+            ),
+        )
+    val serialized = writeString(everything)
+    println(serialized)
+    assertEquals(serialized, writeString(readString(serialized)))
+}
 
 class TextSerializerTest {
     @Test
@@ -61,6 +149,10 @@ class TextSerializerTest {
             null,
             "*",
             "  *",
+        )
+        dump(
+            "hello",
+            """"hello"""",
         )
         dump(
             listOf<Int>(),
@@ -299,7 +391,7 @@ class TextSerializerTest {
     @Test
     fun duplicatedType() {
         val message = assertFailsWith<IllegalArgumentException> {
-            TextSerializer(listOf(IntUtf8Encoder, IntUtf8Encoder))
+            TextSerializer(listOf(IntStringEncoder, IntStringEncoder))
         }.message!!
         assertTrue(message.startsWith("duplicated type 'class "))
         assertTrue(message.endsWith("Int'"))
@@ -308,7 +400,7 @@ class TextSerializerTest {
     @Test
     fun duplicatedClassName() {
         assertFailsMessage<IllegalArgumentException>("duplicated className 'Int'") {
-            TextSerializer(listOf(IntUtf8Encoder, MyIntEncoder))
+            TextSerializer(listOf(IntStringEncoder, MyIntEncoder))
         }
     }
 
@@ -326,5 +418,10 @@ class TextSerializerTest {
         assertFailsMessage<IllegalStateException>("missing encoder for class 'X'") {
             SERIALIZER.readString("X()")
         }
+    }
+
+    @Test
+    fun everything() {
+        SERIALIZER.everythingTest()
     }
 }

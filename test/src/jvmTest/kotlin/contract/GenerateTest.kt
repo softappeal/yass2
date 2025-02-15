@@ -6,7 +6,7 @@ import ch.softappeal.yass2.generate.GenerateMode
 import ch.softappeal.yass2.generate.generateBinarySerializer
 import ch.softappeal.yass2.generate.generateFile
 import ch.softappeal.yass2.generate.generateProxy
-import ch.softappeal.yass2.generate.generateUtf8Encoders
+import ch.softappeal.yass2.generate.generateStringEncoders
 import kotlin.test.Test
 
 class GenerateTest {
@@ -19,7 +19,7 @@ class GenerateTest {
         ) {
             listOf(Calculator::class, Echo::class, Mixed::class, FlowService::class).forEach(::generateProxy)
             generateBinarySerializer(BinaryEncoderObjects, ConcreteClasses)
-            generateUtf8Encoders(Utf8EncoderObjects, ConcreteClasses)
+            generateStringEncoders(StringEncoderObjects, ConcreteClasses)
         }
     }
 }

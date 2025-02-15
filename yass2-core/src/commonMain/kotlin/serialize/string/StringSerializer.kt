@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.serialize.utf8
+package ch.softappeal.yass2.serialize.string
 
 import ch.softappeal.yass2.InternalApi
 import ch.softappeal.yass2.serialize.Property
@@ -33,7 +33,9 @@ private const val S_BS_TAB = S_BS + "t"
 
 private val Tab = ByteArray(4) { SP.toByte() }
 
-public abstract class Utf8Writer(private val writer: Writer, protected val indent: Int) : Writer by writer {
+public abstract class StringWriter(private val writer: Writer, protected val indent: Int) : Writer by writer {
+    public abstract fun writeList(list: List<*>)
+
     public fun writeByte(asciiCodePoint: Int) {
         writeByte(asciiCodePoint.toByte())
     }
@@ -48,27 +50,30 @@ public abstract class Utf8Writer(private val writer: Writer, protected val inden
         repeat(indent) { writeBytes(Tab) }
     }
 
-    public abstract fun nested(): Utf8Writer
-
     public fun writeNewLine() {
         writeByte(NL)
     }
 
     public abstract fun writeProperty(name: String, value: Any?)
     public abstract fun writeProperty(name: String, value: Any?, encoderId: Int)
-    public abstract fun writeObject(value: Any?)
 }
 
-public abstract class Utf8Reader(private val reader: Reader, private var _nextCodePoint: Int) : Reader by reader {
+public abstract class StringReader(private val reader: Reader, private var _nextCodePoint: Int) : Reader by reader {
+    public abstract fun readList(): List<*>
+
     public val nextCodePoint: Int get() = _nextCodePoint
     public fun expectedCodePoint(codePoint: Int): Boolean = _nextCodePoint == codePoint
     public fun readNextCodePoint() {
         _nextCodePoint = readCodePoint()
     }
 
+    public fun checkExpectedCodePoint(codePoint: Int) {
+        check(expectedCodePoint(codePoint)) { "'${codePoint.toChar()}' expected instead of '${nextCodePoint.toChar()}'" }
+    }
+
     protected fun isWhitespace(): Boolean = nextCodePoint.isWhitespace()
 
-    protected fun skipWhitespace() {
+    public fun skipWhitespace() {
         while (isWhitespace()) readNextCodePoint()
     }
 
@@ -79,11 +84,9 @@ public abstract class Utf8Reader(private val reader: Reader, private var _nextCo
 
     public abstract fun readString(): String
 
-    public abstract fun readObject(): Any?
-
     private val properties = mutableMapOf<String, Any>()
 
-    protected fun ClassUtf8Encoder<*>.addProperty(name: String, value: Any?) {
+    protected fun ClassStringEncoder<*>.addProperty(name: String, value: Any?) {
         check(value != null) { "property '${type.simpleName}.$name' must not be explicitly set to null" }
         check(properties.put(name, value) == null) { "duplicated property '${type.simpleName}.$name'" }
     }
@@ -91,33 +94,33 @@ public abstract class Utf8Reader(private val reader: Reader, private var _nextCo
     public fun getProperty(property: String): Any? = properties[property]
 }
 
-public open class Utf8Encoder<T : Any>(
+public open class StringEncoder<T : Any>(
     public val type: KClass<T>,
-    private val write: Utf8Writer.(value: T) -> Unit,
-    private val read: Utf8Reader.() -> T,
+    private val write: StringWriter.(value: T) -> Unit,
+    private val read: StringReader.() -> T,
 ) {
-    public fun write(writer: Utf8Writer, value: Any?): Unit = writer.write(@Suppress("UNCHECKED_CAST") (value as T))
-    public fun read(reader: Utf8Reader): T = reader.read()
+    public fun write(writer: StringWriter, value: Any?): Unit = writer.write(@Suppress("UNCHECKED_CAST") (value as T))
+    public fun read(reader: StringReader): T = reader.read()
 }
 
-public abstract class BaseUtf8Encoder<T : Any>(
+public abstract class BaseStringEncoder<T : Any>(
     type: KClass<T>,
     public val write: (value: T) -> String,
     private val read: String.() -> T,
-) : Utf8Encoder<T>(type,
+) : StringEncoder<T>(type,
     { value -> writeString(write(value).apply { checkString(this) }) },
     { readString().read() }
 ) {
     public fun read(string: String): T = string.read()
 }
 
-public class ClassUtf8Encoder<T : Any>(
+public class ClassStringEncoder<T : Any>(
     type: KClass<T>,
-    write: Utf8Writer.(value: T) -> Unit,
-    read: Utf8Reader.() -> T,
+    write: StringWriter.(value: T) -> Unit,
+    read: StringReader.() -> T,
     /** see [NO_ENCODER_ID] */
     vararg propertyEncoderIds: Pair<String, Int>,
-) : Utf8Encoder<T>(type, write, read) {
+) : StringEncoder<T>(type, write, read) {
     private val property2encoderId = propertyEncoderIds.toMap()
     public fun encoderId(property: String): Int {
         val encoderId = property2encoderId[property]
@@ -130,11 +133,8 @@ public class ClassUtf8Encoder<T : Any>(
  * It reads/writes UTF-8 encoded strings.
  * Has built-in encoders for null, [String] and [List].
  */
-public abstract class Utf8Serializer(
-    protected val listEncoder: Utf8Encoder<List<*>>,
-    utf8Encoders: List<Utf8Encoder<*>>,
-) : Serializer {
-    protected val stringEncoder: Utf8Encoder<String> = Utf8Encoder(String::class,
+public abstract class StringSerializer(stringEncoders: List<StringEncoder<*>>) : Serializer {
+    protected val stringEncoder: StringEncoder<String> = StringEncoder(String::class,
         { string ->
             writeByte(QUOTE)
             writeString(
@@ -171,10 +171,15 @@ public abstract class Utf8Serializer(
         }
     )
 
+    protected val listEncoder: StringEncoder<List<*>> = StringEncoder(List::class,
+        { list -> writeList(list) },
+        { readList() }
+    )
+
     /** See [STRING_ENCODER_ID] and [LIST_ENCODER_ID]. */
-    private val encoders = (listOf(stringEncoder, listEncoder) + utf8Encoders).toTypedArray()
-    private val type2encoder = HashMap<KClass<*>, Utf8Encoder<*>>(encoders.size)
-    private val className2encoder = HashMap<String, Utf8Encoder<*>>(encoders.size)
+    private val encoders = (listOf(stringEncoder, listEncoder) + stringEncoders).toTypedArray()
+    private val type2encoder = HashMap<KClass<*>, StringEncoder<*>>(encoders.size)
+    private val className2encoder = HashMap<String, StringEncoder<*>>(encoders.size)
 
     init {
         encoders.forEach { encoder ->
@@ -185,9 +190,9 @@ public abstract class Utf8Serializer(
         }
     }
 
-    protected fun encoder(encoderId: Int): Utf8Encoder<*> = encoders[encoderId]
-    protected fun encoder(type: KClass<*>): Utf8Encoder<*> = type2encoder[type] ?: error("missing type '$type'")
-    protected fun encoder(className: String): Utf8Encoder<*> =
+    protected fun encoder(encoderId: Int): StringEncoder<*> = encoders[encoderId]
+    protected fun encoder(type: KClass<*>): StringEncoder<*> = type2encoder[type] ?: error("missing type '$type'")
+    protected fun encoder(className: String): StringEncoder<*> =
         className2encoder[className] ?: error("missing encoder for class '$className'")
 }
 
@@ -197,7 +202,7 @@ public const val LIST_ENCODER_ID: Int = 1
 public const val FIRST_ENCODER_ID: Int = 2
 
 @InternalApi
-public class Utf8Property(
+public class StringProperty(
     property: KProperty1<out Any, *>,
     returnType: KType,
     baseClasses: List<KClass<*>>,
@@ -221,5 +226,5 @@ public class Utf8Property(
     public fun meta(): String = if (encoderId == NO_ENCODER_ID) "object" else encoderId.toString()
 }
 
-public fun Utf8Serializer.writeString(value: Any?): String = writeBytes(value).decodeToString(throwOnInvalidSequence = true)
-public fun Utf8Serializer.readString(string: String): Any? = readBytes(string.encodeToByteArray(throwOnInvalidSequence = true))
+public fun StringSerializer.writeString(value: Any?): String = writeBytes(value).decodeToString(throwOnInvalidSequence = true)
+public fun StringSerializer.readString(string: String): Any? = readBytes(string.encodeToByteArray(throwOnInvalidSequence = true))

@@ -4,7 +4,7 @@ import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import ch.softappeal.yass2.generate.GenerateMode
 import ch.softappeal.yass2.generate.generateFile
 import ch.softappeal.yass2.generate.generateProxies
-import ch.softappeal.yass2.generate.generateUtf8Encoders
+import ch.softappeal.yass2.generate.generateStringEncoders
 import kotlin.test.Test
 
 class GenerateTest {
@@ -16,7 +16,7 @@ class GenerateTest {
             GenerateMode.Verify,
         ) {
             generateProxies(Services)
-            generateUtf8Encoders(EncoderObjects, ConcreteClasses)
+            generateStringEncoders(EncoderObjects, ConcreteClasses)
         }
     }
 }

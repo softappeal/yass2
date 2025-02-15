@@ -11,10 +11,10 @@ import ch.softappeal.yass2.serialize.binary.ByteArrayBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.LongBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.StringBinaryEncoder
-import ch.softappeal.yass2.serialize.utf8.BooleanUtf8Encoder
-import ch.softappeal.yass2.serialize.utf8.ByteArrayUtf8Encoder
-import ch.softappeal.yass2.serialize.utf8.IntUtf8Encoder
-import ch.softappeal.yass2.serialize.utf8.LongUtf8Encoder
+import ch.softappeal.yass2.serialize.string.BooleanStringEncoder
+import ch.softappeal.yass2.serialize.string.ByteArrayStringEncoder
+import ch.softappeal.yass2.serialize.string.IntStringEncoder
+import ch.softappeal.yass2.serialize.string.LongStringEncoder
 
 enum class Gender { Female, Male }
 
@@ -73,6 +73,10 @@ class ThrowableFake(
     val message: String,
 )
 
+class BodyProperty {
+    var body: Any? = null
+}
+
 interface AddCalculator {
     suspend fun add(a: Int, b: Int): Int
 }
@@ -116,6 +120,7 @@ internal val ConcreteClasses = listOf(
     Types::class,
     Request::class, ValueReply::class, ExceptionReply::class,
     Packet::class,
+    BodyProperty::class,
 )
 
 internal val BinaryEncoderObjects = listOf(
@@ -126,11 +131,11 @@ internal val BinaryEncoderObjects = listOf(
     ByteArrayBinaryEncoder::class,
 )
 
-internal val Utf8EncoderObjects = listOf(
-    BooleanUtf8Encoder::class,
-    IntUtf8Encoder::class,
-    LongUtf8Encoder::class,
-    ByteArrayUtf8Encoder::class,
+internal val StringEncoderObjects = listOf(
+    BooleanStringEncoder::class,
+    IntStringEncoder::class,
+    LongStringEncoder::class,
+    ByteArrayStringEncoder::class,
 )
 
 val TransportSerializer = createBinarySerializer()

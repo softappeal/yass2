@@ -141,30 +141,30 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.tutorial.New
         requestNumber: 2
         message: object
 */
-public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.serialize.utf8.Utf8Encoder<*>> = listOf(
-    ch.softappeal.yass2.serialize.utf8.IntUtf8Encoder,
+public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.serialize.string.StringEncoder<*>> = listOf(
+    ch.softappeal.yass2.serialize.string.IntStringEncoder,
     ch.softappeal.yass2.tutorial.MyDateEncoder,
-    ch.softappeal.yass2.serialize.utf8.EnumUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.EnumStringEncoder(
         ch.softappeal.yass2.tutorial.Gender::class,
         ch.softappeal.yass2.tutorial.Gender::valueOf,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.tutorial.Address::class,
         { i ->
             writeProperty("street", i.street, 0)
             writeProperty("number", i.number, 2)
         },
         {
-            val i = ch.softappeal.yass2.tutorial.Address(
+            ch.softappeal.yass2.tutorial.Address(
                 getProperty("street") as kotlin.String,
-            )
-            i.number = getProperty("number") as kotlin.Int?
-            i
+            ).apply {
+                number = getProperty("number") as kotlin.Int?
+            }
         },
         "street" to -1,
         "number" to 2,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.tutorial.Person::class,
         { i ->
             writeProperty("name", i.name, 0)
@@ -173,46 +173,43 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
             writeProperty("addresses", i.addresses, 1)
         },
         {
-            val i = ch.softappeal.yass2.tutorial.Person(
+            ch.softappeal.yass2.tutorial.Person(
                 getProperty("name") as kotlin.String,
                 getProperty("gender") as ch.softappeal.yass2.tutorial.Gender,
                 getProperty("birthday") as ch.softappeal.yass2.tutorial.MyDate,
                 getProperty("addresses") as kotlin.collections.List<ch.softappeal.yass2.tutorial.Address>,
             )
-            i
         },
         "name" to -1,
         "gender" to 4,
         "birthday" to 3,
         "addresses" to -1,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.tutorial.DivideByZeroException::class,
         { i ->
         },
         {
-            val i = ch.softappeal.yass2.tutorial.DivideByZeroException(
+            ch.softappeal.yass2.tutorial.DivideByZeroException(
             )
-            i
         },
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.tutorial.SubClass::class,
         { i ->
             writeProperty("baseClassProperty", i.baseClassProperty, 0)
             writeProperty("subClassProperty", i.subClassProperty, 0)
         },
         {
-            val i = ch.softappeal.yass2.tutorial.SubClass(
+            ch.softappeal.yass2.tutorial.SubClass(
                 getProperty("baseClassProperty") as kotlin.String,
                 getProperty("subClassProperty") as kotlin.String,
             )
-            i
         },
         "baseClassProperty" to -1,
         "subClassProperty" to -1,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.remote.Request::class,
         { i ->
             writeProperty("service", i.service, 0)
@@ -220,55 +217,51 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
             writeProperty("parameters", i.parameters, 1)
         },
         {
-            val i = ch.softappeal.yass2.remote.Request(
+            ch.softappeal.yass2.remote.Request(
                 getProperty("service") as kotlin.String,
                 getProperty("function") as kotlin.String,
                 getProperty("parameters") as kotlin.collections.List<kotlin.Any?>,
             )
-            i
         },
         "service" to -1,
         "function" to -1,
         "parameters" to -1,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.remote.ValueReply::class,
         { i ->
             writeProperty("value", i.value)
         },
         {
-            val i = ch.softappeal.yass2.remote.ValueReply(
+            ch.softappeal.yass2.remote.ValueReply(
                 getProperty("value") as kotlin.Any?,
             )
-            i
         },
         "value" to -1,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.remote.ExceptionReply::class,
         { i ->
             writeProperty("exception", i.exception)
         },
         {
-            val i = ch.softappeal.yass2.remote.ExceptionReply(
+            ch.softappeal.yass2.remote.ExceptionReply(
                 getProperty("exception") as kotlin.Exception,
             )
-            i
         },
         "exception" to -1,
     ),
-    ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
+    ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.coroutines.Packet::class,
         { i ->
             writeProperty("requestNumber", i.requestNumber, 2)
             writeProperty("message", i.message)
         },
         {
-            val i = ch.softappeal.yass2.coroutines.Packet(
+            ch.softappeal.yass2.coroutines.Packet(
                 getProperty("requestNumber") as kotlin.Int,
                 getProperty("message") as ch.softappeal.yass2.remote.Message,
             )
-            i
         },
         "requestNumber" to 2,
         "message" to -1,
