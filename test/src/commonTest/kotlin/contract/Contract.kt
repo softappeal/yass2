@@ -8,11 +8,13 @@ import ch.softappeal.yass2.remote.ValueReply
 import ch.softappeal.yass2.serialize.Transport
 import ch.softappeal.yass2.serialize.binary.BooleanBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.ByteArrayBinaryEncoder
+import ch.softappeal.yass2.serialize.binary.DoubleBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.LongBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.StringBinaryEncoder
 import ch.softappeal.yass2.serialize.string.BooleanStringEncoder
 import ch.softappeal.yass2.serialize.string.ByteArrayStringEncoder
+import ch.softappeal.yass2.serialize.string.DoubleStringEncoder
 import ch.softappeal.yass2.serialize.string.IntStringEncoder
 import ch.softappeal.yass2.serialize.string.LongStringEncoder
 
@@ -22,25 +24,21 @@ class Types(
     val boolean: Boolean,
     val int: Int,
     val long: Long,
+    val double: Double,
     val string: String,
     val bytes: ByteArray,
     val gender: Gender,
-)
-
-class IntException(val i: Int) : RuntimeException()
-
-class IntWrapper(val i: Int)
-
-class Optionals(
-    val i: Int,
-    val iOptional: Int?,
-    val intWrapper: IntWrapper,
-    val intWrapperOptional: IntWrapper?,
-)
-
-class Lists(
-    val list: List<Int>,
-    val listOptional: List<Int>?,
+    val list: List<Any?>,
+    val b: B,
+    val booleanOptional: Boolean?,
+    val intOptional: Int?,
+    val longOptional: Long?,
+    val doubleOptional: Double?,
+    val stringOptional: String?,
+    val bytesOptional: ByteArray?,
+    val genderOptional: Gender?,
+    val listOptional: List<Any?>?,
+    val bOptional: B?,
 )
 
 open class A(open val a: Int)
@@ -107,10 +105,6 @@ interface Mixed {
 
 internal val ConcreteClasses = listOf(
     Gender::class,
-    IntException::class,
-    IntWrapper::class,
-    Optionals::class,
-    Lists::class,
     A::class,
     B::class,
     Poly::class,
@@ -127,6 +121,7 @@ internal val BinaryEncoderObjects = listOf(
     BooleanBinaryEncoder::class,
     IntBinaryEncoder::class,
     LongBinaryEncoder::class,
+    DoubleBinaryEncoder::class,
     StringBinaryEncoder::class,
     ByteArrayBinaryEncoder::class,
 )
@@ -135,6 +130,7 @@ internal val StringEncoderObjects = listOf(
     BooleanStringEncoder::class,
     IntStringEncoder::class,
     LongStringEncoder::class,
+    DoubleStringEncoder::class,
     ByteArrayStringEncoder::class,
 )
 

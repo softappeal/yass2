@@ -149,9 +149,10 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
         ch.softappeal.yass2.tutorial.Gender::valueOf,
     ),
     ch.softappeal.yass2.serialize.string.ClassStringEncoder(
-        ch.softappeal.yass2.tutorial.Address::class,
+        ch.softappeal.yass2.tutorial.Address::class, true,
         { i ->
             writeProperty("street", i.street, 0)
+            startBodyProperties()
             writeProperty("number", i.number, 2)
         },
         {
@@ -165,7 +166,7 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
         "number" to 2,
     ),
     ch.softappeal.yass2.serialize.string.ClassStringEncoder(
-        ch.softappeal.yass2.tutorial.Person::class,
+        ch.softappeal.yass2.tutorial.Person::class, false,
         { i ->
             writeProperty("name", i.name, 0)
             writeProperty("gender", i.gender, 4)
@@ -186,7 +187,7 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
         "addresses" to -1,
     ),
     ch.softappeal.yass2.serialize.string.ClassStringEncoder(
-        ch.softappeal.yass2.tutorial.DivideByZeroException::class,
+        ch.softappeal.yass2.tutorial.DivideByZeroException::class, false,
         { i ->
         },
         {
@@ -195,7 +196,7 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
         },
     ),
     ch.softappeal.yass2.serialize.string.ClassStringEncoder(
-        ch.softappeal.yass2.tutorial.SubClass::class,
+        ch.softappeal.yass2.tutorial.SubClass::class, false,
         { i ->
             writeProperty("baseClassProperty", i.baseClassProperty, 0)
             writeProperty("subClassProperty", i.subClassProperty, 0)
@@ -210,7 +211,7 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
         "subClassProperty" to -1,
     ),
     ch.softappeal.yass2.serialize.string.ClassStringEncoder(
-        ch.softappeal.yass2.remote.Request::class,
+        ch.softappeal.yass2.remote.Request::class, false,
         { i ->
             writeProperty("service", i.service, 0)
             writeProperty("function", i.function, 0)
@@ -228,7 +229,7 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
         "parameters" to -1,
     ),
     ch.softappeal.yass2.serialize.string.ClassStringEncoder(
-        ch.softappeal.yass2.remote.ValueReply::class,
+        ch.softappeal.yass2.remote.ValueReply::class, false,
         { i ->
             writeProperty("value", i.value)
         },
@@ -240,7 +241,7 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
         "value" to -1,
     ),
     ch.softappeal.yass2.serialize.string.ClassStringEncoder(
-        ch.softappeal.yass2.remote.ExceptionReply::class,
+        ch.softappeal.yass2.remote.ExceptionReply::class, false,
         { i ->
             writeProperty("exception", i.exception)
         },
@@ -252,7 +253,7 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
         "exception" to -1,
     ),
     ch.softappeal.yass2.serialize.string.ClassStringEncoder(
-        ch.softappeal.yass2.coroutines.Packet::class,
+        ch.softappeal.yass2.coroutines.Packet::class, false,
         { i ->
             writeProperty("requestNumber", i.requestNumber, 2)
             writeProperty("message", i.message)

@@ -211,11 +211,14 @@ public fun CodeWriter.generateStringEncoders(
         concreteClasses.forEach { type ->
             writeNestedLine("${ClassStringEncoder::class.qualifiedName}(", "),") {
                 val properties = properties(type)
-                writeNestedLine("${type.qualifiedName}::class,")
+                writeNestedLine("${type.qualifiedName}::class, ${properties.body.isNotEmpty()},")
                 writeNestedLine("{ i ->", "},") {
-                    properties.all.forEach { property ->
+                    fun List<StringProperty>.forEach() = forEach { property ->
                         writeNestedLine(property.writeProperty("i.${property.name}"))
                     }
+                    properties.parameter.forEach()
+                    if (properties.body.isNotEmpty()) writeNestedLine("startBodyProperties()")
+                    properties.body.forEach()
                 }
                 writeNestedLine("{", "},") {
                     fun StringProperty.getPropertyWithCast() = "getProperty(\"$name\") as ${returnType.toType()}"

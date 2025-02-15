@@ -145,11 +145,8 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
                     implementation(libraries.kotlinx.coroutines.test)
                 }
             }
-            val notJsTest by creating {
-                dependsOn(commonTest)
-            }
             val jvmAndNixTest by creating {
-                dependsOn(notJsTest)
+                dependsOn(commonTest)
                 dependencies {
                     implementation(libraries.bundles.ktor.cio)
                 }
@@ -169,9 +166,6 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
                 }
                 macosArm64Test {
                     dependsOn(jvmAndNixTest)
-                }
-                wasmJsTest {
-                    dependsOn(notJsTest)
                 }
             }
         }

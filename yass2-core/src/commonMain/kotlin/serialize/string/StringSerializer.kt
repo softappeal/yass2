@@ -50,10 +50,15 @@ public abstract class StringWriter(private val writer: Writer, protected val ind
         repeat(indent) { writeBytes(Tab) }
     }
 
+    public fun writeIndentMinus1() {
+        repeat(indent - 1) { writeBytes(Tab) }
+    }
+
     public fun writeNewLine() {
         writeByte(NL)
     }
 
+    public open fun startBodyProperties() {}
     public abstract fun writeProperty(name: String, value: Any?)
     public abstract fun writeProperty(name: String, value: Any?, encoderId: Int)
 }
@@ -84,14 +89,23 @@ public abstract class StringReader(private val reader: Reader, private var _next
 
     public abstract fun readString(): String
 
-    private val properties = mutableMapOf<String, Any>()
+    private val properties = mutableMapOf<String, Any?>()
 
     protected fun ClassStringEncoder<*>.addProperty(name: String, value: Any?) {
         check(value != null) { "property '${type.simpleName}.$name' must not be explicitly set to null" }
         check(properties.put(name, value) == null) { "duplicated property '${type.simpleName}.$name'" }
     }
 
+    protected fun ClassStringEncoder<*>.addNullableProperty(name: String, value: Any?) {
+        check(!properties.containsKey(name)) { "duplicated property '${type.simpleName}.$name'" }
+        properties[name] = value
+    }
+
     public fun getProperty(property: String): Any? = properties[property]
+
+    protected fun ClassStringEncoder<*>.checkMissingProperties() {
+        checkMissingProperties(properties.keys)
+    }
 }
 
 public open class StringEncoder<T : Any>(
@@ -116,6 +130,7 @@ public abstract class BaseStringEncoder<T : Any>(
 
 public class ClassStringEncoder<T : Any>(
     type: KClass<T>,
+    public val hasBodyProperties: Boolean,
     write: StringWriter.(value: T) -> Unit,
     read: StringReader.() -> T,
     /** see [NO_ENCODER_ID] */
@@ -127,12 +142,14 @@ public class ClassStringEncoder<T : Any>(
         check(encoderId != null) { "no property '${type.simpleName}.$property'" }
         return encoderId
     }
+
+    internal fun checkMissingProperties(properties: Set<String>) {
+        val missingProperties = property2encoderId.keys - properties
+        check(missingProperties.isEmpty()) { "missing properties '${missingProperties.sorted()}' for '${type.simpleName}'" }
+    }
 }
 
-/**
- * It reads/writes UTF-8 encoded strings.
- * Has built-in encoders for null, [String] and [List].
- */
+/** It reads/writes UTF-8 encoded strings. */
 public abstract class StringSerializer(stringEncoders: List<StringEncoder<*>>) : Serializer {
     protected val stringEncoder: StringEncoder<String> = StringEncoder(String::class,
         { string ->

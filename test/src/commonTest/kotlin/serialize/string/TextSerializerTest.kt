@@ -1,27 +1,18 @@
 package ch.softappeal.yass2.serialize.string
 
 import ch.softappeal.yass2.assertFailsMessage
-import ch.softappeal.yass2.contract.A
 import ch.softappeal.yass2.contract.B
-import ch.softappeal.yass2.contract.BodyProperty
 import ch.softappeal.yass2.contract.DivideByZeroException
 import ch.softappeal.yass2.contract.Gender
-import ch.softappeal.yass2.contract.IntException
-import ch.softappeal.yass2.contract.IntWrapper
-import ch.softappeal.yass2.contract.Lists
-import ch.softappeal.yass2.contract.ManyProperties
-import ch.softappeal.yass2.contract.Optionals
 import ch.softappeal.yass2.contract.Poly
 import ch.softappeal.yass2.contract.ThrowableFake
-import ch.softappeal.yass2.contract.Types
 import ch.softappeal.yass2.contract.createStringEncoders
-import ch.softappeal.yass2.remote.ValueReply
 import ch.softappeal.yass2.serialize.BytesWriter
-import ch.softappeal.yass2.serialize.binary.ManyPropertiesConst
 import ch.softappeal.yass2.serialize.writeBytes
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 fun StringSerializer.dump(value: Any?, serialized: String, vararg others: String) {
@@ -49,91 +40,6 @@ private val SERIALIZER = TextSerializer(createStringEncoders())
 
 private fun dump(value: Any?, serialized: String, vararg others: String) = SERIALIZER.dump(value, serialized, *others)
 
-fun StringSerializer.typesTest() {
-    val serialized = writeString(Types(
-        true,
-        1,
-        2,
-        "hello",
-        byteArrayOf(1, 2, 3),
-        Gender.Female,
-    ))
-    println(serialized)
-    assertEquals(serialized, writeString(readString(serialized)))
-}
-
-@Suppress("SpellCheckingInspection")
-fun StringSerializer.everythingTest() {
-    val everything =
-        listOf(
-            null(),
-            Boolean("true"),
-            Int("1"),
-            Long("2"),
-            "hello",
-            ByteArray("AAEC"),
-            Gender.Female(),
-            Types(
-                boolean = true,
-                int = 1,
-                long = 2,
-                string = "hello",
-                bytes = ByteArray("AAEC"),
-                gender = Gender.Female(),
-            ),
-            listOf(
-                Int("1"),
-            ),
-            DivideByZeroException(
-            ),
-            BodyProperty(
-            ).apply {
-                body = BodyProperty(
-                ).apply {
-                    body = BodyProperty(
-                    ).apply {
-                        body = null()
-                    }
-                }
-            },
-            Poly(
-                a = B(
-                    a = 10,
-                    b = 20,
-                ),
-                b = B(
-                    a = 1,
-                    b = 2,
-                ),
-            ),
-            ManyProperties(
-                h = 8,
-                d = 4,
-                f = 6,
-                g = 7,
-                b = 2,
-            ).apply {
-                a = 1
-                c = 3
-                e = 5
-                i = 9
-                j = 10
-            },
-            Lists(
-                list = listOf(
-                    Int("1"),
-                ),
-                listOptional = null(),
-            ),
-            ValueReply(
-                value = ByteArray("AAEC"),
-            ),
-        )
-    val serialized = writeString(everything)
-    println(serialized)
-    assertEquals(serialized, writeString(readString(serialized)))
-}
-
 class TextSerializerTest {
     @Test
     fun checkString() {
@@ -141,6 +47,102 @@ class TextSerializerTest {
         checkString(" ", "' ' must not contain whitespace, ',' or ')'")
         checkString(")", "')' must not contain whitespace, ',' or ')'")
         checkString(",", "',' must not contain whitespace, ',' or ')'")
+    }
+
+    @Suppress("SpellCheckingInspection")
+    @Test
+    fun allBaseTypes() {
+        SERIALIZER.allBaseTypesTest("""
+            Types(
+                boolean: true
+                int: 1
+                long: 2
+                double: 123.456
+                string: "hello"
+                bytes: AAEC
+                gender: Female
+                list: [
+                    *
+                    Boolean(false)
+                    Int(1)
+                    Long(2)
+                    Double(123.456)
+                    "hello"
+                    ByteArray(AAEC)
+                    Gender(Male)
+                    [
+                        Int(1)
+                        [
+                            "hello"
+                            "world"
+                        ]
+                    ]
+                    Types(
+                        boolean: true
+                        int: 1
+                        long: 2
+                        double: 123.456
+                        string: "hello"
+                        bytes: AAEC
+                        gender: Female
+                        list: [
+                        ]
+                        b: B(
+                            a: 1
+                            b: 2
+                        )
+                    )
+                    DivideByZeroException(
+                    )
+                    BodyProperty(
+                        body: BodyProperty(
+                            body: BodyProperty(
+                            )
+                        )
+                    )
+                    Poly(
+                        a: B(
+                            a: 10
+                            b: 20
+                        )
+                        b: B(
+                            a: 1
+                            b: 2
+                        )
+                    )
+                    ManyProperties(
+                        h: 8
+                        d: 4
+                        f: 6
+                        g: 7
+                        b: 2
+                        a: 1
+                        c: 3
+                        e: 5
+                        i: 9
+                        j: 10
+                    )
+                ]
+                b: B(
+                    a: 10
+                    b: 20
+                )
+                booleanOptional: true
+                intOptional: 1
+                longOptional: 2
+                doubleOptional: 123.456
+                stringOptional: "hello"
+                bytesOptional: AAEC
+                genderOptional: Female
+                listOptional: [
+                    "hello"
+                ]
+                bOptional: B(
+                    a: 30
+                    b: 40
+                )
+            )
+        """.trimIndent())
     }
 
     @Test
@@ -172,31 +174,6 @@ class TextSerializerTest {
             "[*]",
         )
         dump(
-            listOf(null, null),
-            """
-                [
-                    *
-                    *
-                ]
-            """.trimIndent(),
-            "[**]",
-            "[* *]",
-            "[*,*]",
-            "[*,*,]",
-        )
-        dump(
-            listOf(null, listOf("")),
-            """
-                [
-                    *
-                    [
-                        ""
-                    ]
-                ]
-            """.trimIndent(),
-            "[*[\"\"]]",
-        )
-        dump(
             Gender.Male,
             "Gender(Male)",
             "  Gender  (  Male  )",
@@ -205,21 +182,6 @@ class TextSerializerTest {
             123,
             "Int(123)",
             "  Int  (  123  )",
-        )
-        SERIALIZER.typesTest()
-        dump(
-            IntWrapper(3),
-            """
-                IntWrapper(
-                    i: 3
-                )
-            """.trimIndent(),
-            """
-                IntWrapper(
-                    i : 3,
-                )
-            """.trimIndent(),
-            "IntWrapper(i:3)",
         )
         dump(
             Poly(B(1, 2), B(3, 4)),
@@ -240,78 +202,6 @@ class TextSerializerTest {
             "Poly(a:B(a:1,b:2)b:B(a:3,b:4))",
         )
         dump(
-            listOf(null, 123, A(1), listOf(1, 2)),
-            """
-                [
-                    *
-                    Int(123)
-                    A(
-                        a: 1
-                    )
-                    [
-                        Int(1)
-                        Int(2)
-                    ]
-                ]
-            """.trimIndent(),
-            "[*,Int(123),A(a:1),[Int(1),Int(2)]]",
-            "[*,Int(123),A(a:1,),[Int(1),Int(2),],]",
-            "[*Int(123)A(a:1)[Int(1)Int(2)]]",
-            "  \t \r \n [  *  Int  (  123  )  A  (  a  :  1  )  [  Int  (  1  )  Int  (  2  )  ]  ]",
-        )
-        dump(
-            Optionals(1, null, IntWrapper(3), null),
-            """
-                Optionals(
-                    i: 1
-                    intWrapper: IntWrapper(
-                        i: 3
-                    )
-                )
-            """.trimIndent(),
-        )
-        dump(
-            Optionals(1, 2, IntWrapper(3), IntWrapper(4)),
-            """
-                Optionals(
-                    i: 1
-                    iOptional: 2
-                    intWrapper: IntWrapper(
-                        i: 3
-                    )
-                    intWrapperOptional: IntWrapper(
-                        i: 4
-                    )
-                )
-            """.trimIndent(),
-        )
-        dump(
-            Lists(listOf(1, 2), listOf(3, 4)),
-            """
-                Lists(
-                    list: [
-                        Int(1)
-                        Int(2)
-                    ]
-                    listOptional: [
-                        Int(3)
-                        Int(4)
-                    ]
-                )
-            """.trimIndent(),
-        )
-        dump(
-            Lists(listOf(1, 2), null),
-            """
-                Lists(
-                    list: [
-                        Int(1)
-                        Int(2)
-                    ]
-                )
-            """.trimIndent(),
-        )
-        dump(
             ThrowableFake("hello", "world"),
             """
                 ThrowableFake(
@@ -329,31 +219,6 @@ class TextSerializerTest {
             """.trimIndent(),
         )
         dump(
-            ManyPropertiesConst,
-            """
-                ManyProperties(
-                    h: 8
-                    d: 4
-                    f: 6
-                    g: 7
-                    b: 2
-                    a: 1
-                    c: 3
-                    e: 5
-                    i: 9
-                    j: 10
-                )
-            """.trimIndent(),
-        )
-        dump(
-            IntException(10),
-            """
-                IntException(
-                    i: 10
-                )
-            """.trimIndent(),
-        )
-        dump(
             DivideByZeroException(),
             """
                 DivideByZeroException(
@@ -364,27 +229,18 @@ class TextSerializerTest {
 
     @Test
     fun properties() {
-        SERIALIZER.readString("Optionals(i:1,intWrapper:IntWrapper(i:3))") // implicit optional properties iOptional and intWrapperOptional
-        assertFailsMessage<IllegalStateException>("no property 'Optionals.noSuchProperty'") {
-            SERIALIZER.readString("Optionals(noSuchProperty:[])")
+        assertNull((SERIALIZER.readString("""ThrowableFake(message:"hello")""") as ThrowableFake).cause) // implicit null
+        assertFailsMessage<IllegalStateException>("no property 'A.noSuchProperty'") {
+            SERIALIZER.readString("A(noSuchProperty:[])")
         }
-        assertFailsMessage<IllegalStateException>("property 'Optionals.intWrapperOptional' must not be explicitly set to null") {
-            SERIALIZER.readString("Optionals(intWrapperOptional:*)")
+        assertFailsMessage<IllegalStateException>("property 'Types.bOptional' must not be explicitly set to null") {
+            SERIALIZER.readString("Types(bOptional:*)")
         }
-        assertFailsMessage<IllegalStateException>("duplicated property 'Optionals.i'") {
-            SERIALIZER.readString("Optionals(i:1,i:1)")
+        assertFailsMessage<IllegalStateException>("duplicated property 'A.a'") {
+            SERIALIZER.readString("A(a:1,a:1)")
         }
-        println(assertFailsWith<Exception> { // missing required property intWrapper
-            SERIALIZER.readString("Optionals(i:1)")
-        })
-        println(assertFailsWith<Exception> { // missing required property i
-            SERIALIZER.readString("Optionals(intWrapper:IntWrapper(i:3))")
-        })
-        println(assertFailsWith<Exception> { // wrong typ of property intWrapper
-            SERIALIZER.readString("Optionals(i:1,intWrapper:A(a:3))")
-        })
-        println(assertFailsWith<Exception> { // wrong typ of property intWrapper
-            SERIALIZER.readString("Optionals(i:1,intWrapper:[])")
+        println(assertFailsWith<Exception> { // missing required property
+            SERIALIZER.readString("A()")
         })
     }
 
@@ -407,10 +263,10 @@ class TextSerializerTest {
     @Test
     fun missingType() {
         val message = assertFailsWith<IllegalStateException> {
-            SERIALIZER.write(BytesWriter(1000), 1.2)
+            SERIALIZER.write(BytesWriter(1000), TextSerializerTest())
         }.message!!
         assertTrue(message.startsWith("missing type 'class "))
-        assertTrue(message.endsWith("Double'"))
+        assertTrue(message.endsWith("TextSerializerTest'"))
     }
 
     @Test
@@ -418,10 +274,5 @@ class TextSerializerTest {
         assertFailsMessage<IllegalStateException>("missing encoder for class 'X'") {
             SERIALIZER.readString("X()")
         }
-    }
-
-    @Test
-    fun everything() {
-        SERIALIZER.everythingTest()
     }
 }

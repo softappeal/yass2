@@ -11,9 +11,6 @@ public final class ch/softappeal/yass2/InterceptorKt {
 public abstract interface annotation class ch/softappeal/yass2/InternalApi : java/lang/annotation/Annotation {
 }
 
-public abstract interface annotation class ch/softappeal/yass2/NotJs : java/lang/annotation/Annotation {
-}
-
 public final class ch/softappeal/yass2/remote/ExceptionReply : ch/softappeal/yass2/remote/Reply {
 	public fun <init> (Ljava/lang/Exception;)V
 	public final fun getException ()Ljava/lang/Exception;
@@ -209,8 +206,9 @@ public final class ch/softappeal/yass2/serialize/string/ByteArrayStringEncoder :
 }
 
 public final class ch/softappeal/yass2/serialize/string/ClassStringEncoder : ch/softappeal/yass2/serialize/string/StringEncoder {
-	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;[Lkotlin/Pair;)V
+	public fun <init> (Lkotlin/reflect/KClass;ZLkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;[Lkotlin/Pair;)V
 	public final fun encoderId (Ljava/lang/String;)I
+	public final fun getHasBodyProperties ()Z
 }
 
 public final class ch/softappeal/yass2/serialize/string/DoubleStringEncoder : ch/softappeal/yass2/serialize/string/BaseStringEncoder {
@@ -231,6 +229,23 @@ public final class ch/softappeal/yass2/serialize/string/JsonSerializer : ch/soft
 	public fun write (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
 }
 
+public final class ch/softappeal/yass2/serialize/string/KotlinSerializer : ch/softappeal/yass2/serialize/string/StringSerializer {
+	public fun <init> (Ljava/util/List;)V
+	public fun read (Lch/softappeal/yass2/serialize/Reader;)Ljava/lang/Object;
+	public fun write (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
+}
+
+public final class ch/softappeal/yass2/serialize/string/KotlinSerializerKt {
+	public static final fun Boolean (Ljava/lang/String;)Z
+	public static final fun ByteArray (Ljava/lang/String;)[B
+	public static final fun Double (Ljava/lang/String;)D
+	public static final fun Int (Ljava/lang/String;)I
+	public static final fun Long (Ljava/lang/String;)J
+	public static final fun invoke (Ljava/lang/Enum;)Ljava/lang/Enum;
+	public static final fun invoke (Ljava/lang/Void;)Ljava/lang/Void;
+	public static final fun unaryPlus (Ljava/lang/Void;)Ljava/lang/Void;
+}
+
 public final class ch/softappeal/yass2/serialize/string/LongStringEncoder : ch/softappeal/yass2/serialize/string/BaseStringEncoder {
 	public static final field INSTANCE Lch/softappeal/yass2/serialize/string/LongStringEncoder;
 }
@@ -242,20 +257,12 @@ public class ch/softappeal/yass2/serialize/string/StringEncoder {
 	public final fun write (Lch/softappeal/yass2/serialize/string/StringWriter;Ljava/lang/Object;)V
 }
 
-public final class ch/softappeal/yass2/serialize/string/StringEncodersKt {
-	public static final fun Boolean (Ljava/lang/String;)Z
-	public static final fun ByteArray (Ljava/lang/String;)[B
-	public static final fun Double (Ljava/lang/String;)D
-	public static final fun Int (Ljava/lang/String;)I
-	public static final fun Long (Ljava/lang/String;)J
-	public static final fun invoke (Ljava/lang/Enum;)Ljava/lang/Enum;
-	public static final fun invoke (Ljava/lang/Void;)Ljava/lang/Void;
-}
-
 public abstract class ch/softappeal/yass2/serialize/string/StringReader : ch/softappeal/yass2/serialize/Reader {
 	public fun <init> (Lch/softappeal/yass2/serialize/Reader;I)V
+	protected final fun addNullableProperty (Lch/softappeal/yass2/serialize/string/ClassStringEncoder;Ljava/lang/String;Ljava/lang/Object;)V
 	protected final fun addProperty (Lch/softappeal/yass2/serialize/string/ClassStringEncoder;Ljava/lang/String;Ljava/lang/Object;)V
 	public final fun checkExpectedCodePoint (I)V
+	protected final fun checkMissingProperties (Lch/softappeal/yass2/serialize/string/ClassStringEncoder;)V
 	public final fun expectedCodePoint (I)Z
 	public final fun getNextCodePoint ()I
 	public final fun getProperty (Ljava/lang/String;)Ljava/lang/Object;
@@ -294,10 +301,12 @@ public abstract class ch/softappeal/yass2/serialize/string/StringWriter : ch/sof
 	public fun <init> (Lch/softappeal/yass2/serialize/Writer;I)V
 	public abstract fun checkString (Ljava/lang/String;)V
 	protected final fun getIndent ()I
+	public fun startBodyProperties ()V
 	public fun writeByte (B)V
 	public final fun writeByte (I)V
 	public fun writeBytes ([B)V
 	public final fun writeIndent ()V
+	public final fun writeIndentMinus1 ()V
 	public abstract fun writeList (Ljava/util/List;)V
 	public final fun writeNewLine ()V
 	public abstract fun writeProperty (Ljava/lang/String;Ljava/lang/Object;)V

@@ -3,11 +3,12 @@ package ch.softappeal.yass2.serialize.string
 import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.contract.Gender
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertTrue
 
-fun <T : Any> BaseStringEncoder<T>.test(value: T, vararg results: String) {
+private fun <T : Any> BaseStringEncoder<T>.test(value: T, vararg results: String) {
     results.forEach { assertEquals(value, read(it)) }
     assertTrue(results.any { it == write(value) })
 }
@@ -62,7 +63,7 @@ class StringEncodersTest {
     fun byteArray() {
         fun test(value: ByteArray, result: String) {
             assertEquals(result, ByteArrayStringEncoder.write(value))
-            assertTrue(value contentEquals ByteArrayStringEncoder.read(result))
+            assertContentEquals(value, ByteArrayStringEncoder.read(result))
         }
         test(byteArrayOf(), "")
         test(byteArrayOf(0), "AA==")
@@ -107,5 +108,75 @@ class StringEncodersTest {
         assertFailsMessage<IllegalStateException>("illegal escape with codePoint 97") { serializer.readString("\"\\a\"") }
         println(assertFails { serializer.readString("invalid") })
         println(assertFails { serializer.readString("\"a") })
+    }
+
+    @Test
+    fun double() {
+        with(DoubleStringEncoder) {
+            test(123.456, "123.456")
+            test(Double.POSITIVE_INFINITY, "Infinity")
+            test(Double.NEGATIVE_INFINITY, "-Infinity")
+            test(Double.NaN, "NaN")
+            test(
+                -9.87654321E-123,
+                "-9.87654321E-123",
+                "-9.87654321e-123",
+            )
+            test(
+                9.87654321E123,
+                "9.87654321E123",
+                "9.87654321e123",
+                "9.87654321E+123",
+                "9.87654321e+123",
+                "+9.87654321e+123",
+            )
+            test(
+                Double.MAX_VALUE,
+                "1.7976931348623157E308",
+                "1.7976931348623157e308",
+                "1.7976931348623157E+308",
+                "1.7976931348623157e+308",
+                "+1.7976931348623157e+308",
+            )
+            test(
+                -Double.MAX_VALUE,
+                "-1.7976931348623157E308",
+                "-1.7976931348623157e308",
+                "-1.7976931348623157E+308",
+                "-1.7976931348623157e+308",
+            )
+            test(
+                1E-300,
+                "1.0E-300",
+                "1.0e-300",
+                "1E-300",
+                "1e-300",
+                "+1e-300",
+            )
+            test(
+                -1E-300,
+                "-1.0E-300",
+                "-1.0e-300",
+                "-1E-300",
+                "-1e-300",
+            )
+            assertFails { read("invalidDouble") }
+            assertFails { read("1.3e") }
+            assertFails { read("++2") }
+        }
+    }
+
+    /** @see DoubleStringEncoder */
+    @Test
+    fun doubleNotJs() {
+        with(DoubleStringEncoder) {
+            try {
+                test(0.0, "0.0")
+                test(1.0, "1.0")
+                test(-1.0, "-1.0")
+            } catch (e: AssertionError) {
+                e.printStackTrace()
+            }
+        }
     }
 }

@@ -3,32 +3,26 @@ package ch.softappeal.yass2.serialize.binary
 import ch.softappeal.yass2.contract.A
 import ch.softappeal.yass2.contract.B
 import ch.softappeal.yass2.contract.Gender
-import ch.softappeal.yass2.contract.IntException
-import ch.softappeal.yass2.contract.IntWrapper
-import ch.softappeal.yass2.contract.Lists
-import ch.softappeal.yass2.contract.ManyProperties
-import ch.softappeal.yass2.contract.Optionals
 import ch.softappeal.yass2.contract.Poly
 import ch.softappeal.yass2.contract.ThrowableFake
 import ch.softappeal.yass2.contract.TransportSerializer
-import ch.softappeal.yass2.contract.Types
-import ch.softappeal.yass2.performance
 import ch.softappeal.yass2.serialize.BytesReader
 import ch.softappeal.yass2.serialize.BytesWriter
-import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Serializer
-import ch.softappeal.yass2.serialize.Writer
 import ch.softappeal.yass2.serialize.checkTail
 import ch.softappeal.yass2.serialize.readBytes
+import ch.softappeal.yass2.serialize.string.AllBaseTypes
+import ch.softappeal.yass2.serialize.string.allBaseTypesAssert
 import ch.softappeal.yass2.serialize.writeBytes
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-fun <T> Serializer.copy(value: T, check: BytesWriter.() -> Unit = {}): T {
+private fun <T> Serializer.copy(value: T, check: BytesWriter.() -> Unit = {}): T {
     val writer = BytesWriter(1000)
     val size: Int
     with(writer) {
@@ -48,30 +42,191 @@ private fun <T> checkedCopy(value: T, vararg bytes: Int): T = TransportSerialize
     checkTail(*bytes)
 }
 
-val ManyPropertiesConst = ManyProperties(8, 4, 6, 7, 2).apply {
-    a = 1
-    c = 3
-    e = 5
-    i = 9
-    j = 10
-}
-
-private fun ManyProperties.assertManyProperties() {
-    assertTrue(
-        a == 1 &&
-            b == 2 &&
-            c == 3 &&
-            d == 4 &&
-            e == 5 &&
-            f == 6 &&
-            g == 7 &&
-            h == 8 &&
-            i == 9 &&
-            j == 10
-    )
-}
-
 class BinarySerializerTest {
+    @Test
+    fun allBaseTypes() {
+        fun Serializer.allBaseTypesTest(serialized: ByteArray) {
+            assertContentEquals(serialized, writeBytes(AllBaseTypes))
+            allBaseTypesAssert(serialized)
+        }
+        TransportSerializer.allBaseTypesTest(byteArrayOf(
+            15,
+            1,
+            2,
+            4,
+            64,
+            94,
+            -35,
+            47,
+            26,
+            -97,
+            -66,
+            119,
+            5,
+            104,
+            101,
+            108,
+            108,
+            111,
+            3,
+            0,
+            1,
+            2,
+            0,
+            14,
+            0,
+            2,
+            0,
+            3,
+            2,
+            4,
+            4,
+            5,
+            64,
+            94,
+            -35,
+            47,
+            26,
+            -97,
+            -66,
+            119,
+            6,
+            5,
+            104,
+            101,
+            108,
+            108,
+            111,
+            7,
+            3,
+            0,
+            1,
+            2,
+            8,
+            1,
+            1,
+            2,
+            3,
+            2,
+            1,
+            2,
+            6,
+            5,
+            104,
+            101,
+            108,
+            108,
+            111,
+            6,
+            5,
+            119,
+            111,
+            114,
+            108,
+            100,
+            15,
+            1,
+            2,
+            4,
+            64,
+            94,
+            -35,
+            47,
+            26,
+            -97,
+            -66,
+            119,
+            5,
+            104,
+            101,
+            108,
+            108,
+            111,
+            3,
+            0,
+            1,
+            2,
+            0,
+            0,
+            2,
+            4,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            13,
+            20,
+            20,
+            20,
+            0,
+            11,
+            10,
+            20,
+            40,
+            2,
+            4,
+            12,
+            16,
+            8,
+            12,
+            14,
+            4,
+            2,
+            6,
+            10,
+            18,
+            20,
+            20,
+            40,
+            1,
+            1,
+            1,
+            2,
+            1,
+            4,
+            1,
+            64,
+            94,
+            -35,
+            47,
+            26,
+            -97,
+            -66,
+            119,
+            1,
+            5,
+            104,
+            101,
+            108,
+            108,
+            111,
+            1,
+            3,
+            0,
+            1,
+            2,
+            1,
+            0,
+            1,
+            1,
+            6,
+            5,
+            104,
+            101,
+            108,
+            108,
+            111,
+            1,
+            60,
+            80,
+        ))
+    }
+
     @Test
     fun testNull() {
         assertNull(checkedCopy(null, 0))
@@ -84,88 +239,20 @@ class BinarySerializerTest {
     }
 
     @Test
-    fun testInt() {
+    fun int() {
         assertEquals(60, checkedCopy(60, 3, 120))
     }
 
     @Test
-    fun testGender() {
-        assertEquals(Gender.Female, checkedCopy(Gender.Female, 7, 0))
-        assertEquals(Gender.Male, checkedCopy(Gender.Male, 7, 1))
-    }
-
-    @Test
-    fun intException() {
-        with(checkedCopy(IntException(10), 8, 20)) { assertEquals(10, i) }
-    }
-
-    @Test
-    fun intWrapper() {
-        with(checkedCopy(IntWrapper(10), 9, 20)) { assertEquals(10, i) }
-    }
-
-    @Test
-    fun types() {
-        with(TransportSerializer.copy(Types(
-            true,
-            1,
-            2,
-            "hello",
-            byteArrayOf(1, 2, 3),
-            Gender.Female,
-        ))) {
-            assertTrue(boolean)
-            assertEquals(1, int)
-            assertEquals(2, long)
-            assertEquals("hello", string)
-            assertEquals(Gender.Female, gender)
-        }
-    }
-
-    @Test
-    fun optionals() {
-        with(checkedCopy(
-            Optionals(
-                10,
-                20,
-                IntWrapper(30),
-                IntWrapper(40),
-            ),
-            10,
-            20,
-            1, 40,
-            60,
-            1, 80,
-        )) {
-            assertEquals(10, i)
-            assertEquals(20, iOptional)
-            assertEquals(30, intWrapper.i)
-            assertEquals(40, intWrapperOptional!!.i)
-        }
-        with(checkedCopy(
-            Optionals(
-                10,
-                null,
-                IntWrapper(30),
-                null,
-            ),
-            10,
-            20,
-            0,
-            60,
-            0,
-        )) {
-            assertEquals(10, i)
-            assertNull(iOptional)
-            assertEquals(30, intWrapper.i)
-            assertNull(intWrapperOptional)
-        }
+    fun gender() {
+        assertEquals(Gender.Female, checkedCopy(Gender.Female, 8, 0))
+        assertEquals(Gender.Male, checkedCopy(Gender.Male, 8, 1))
     }
 
     @Test
     fun a() {
         assertEquals(1, A(1).a)
-        with(checkedCopy(A(10), 12, 20)) {
+        with(checkedCopy(A(10), 9, 20)) {
             assertEquals(10, a)
         }
     }
@@ -176,7 +263,7 @@ class BinarySerializerTest {
             assertEquals(1, a)
             assertEquals(2, b)
         }
-        with(checkedCopy(B(10, 20), 13, 20, 40)) {
+        with(checkedCopy(B(10, 20), 10, 20, 40)) {
             assertEquals(10, a)
             assertEquals(20, b)
         }
@@ -189,8 +276,8 @@ class BinarySerializerTest {
                 A(10),
                 B(30, 40),
             ),
-            14,
-            12, 20,
+            11,
+            9, 20,
             60, 80,
         )) {
             assertEquals(10, a.a)
@@ -203,8 +290,8 @@ class BinarySerializerTest {
                 B(10, 20),
                 B(30, 40),
             ),
-            14,
-            13, 20, 40,
+            11,
+            10, 20, 40,
             60, 80,
         )) {
             assertEquals(10, a.a)
@@ -212,39 +299,6 @@ class BinarySerializerTest {
             assertEquals(30, b.a)
             assertEquals(40, b.b)
         }
-    }
-
-    @Test
-    fun lists() {
-        with(checkedCopy(
-            Lists(
-                listOf(10),
-                listOf(20),
-            ),
-            11,
-            1, 3, 20,
-            1, 1, 3, 40,
-        )) {
-            assertEquals(listOf(10), list)
-            assertEquals(listOf(20), listOptional)
-        }
-        with(checkedCopy(
-            Lists(
-                listOf(10),
-                null,
-            ),
-            11,
-            1, 3, 20,
-            0,
-        )) {
-            assertEquals(listOf(10), list)
-            assertNull(listOptional)
-        }
-    }
-
-    @Test
-    fun manyProperties() {
-        checkedCopy(ManyPropertiesConst, 15, 16, 8, 12, 14, 4, 2, 6, 10, 18, 20).assertManyProperties()
     }
 
     @Test
@@ -257,50 +311,12 @@ class BinarySerializerTest {
                 null,
                 "m",
             ),
-            17,
+            14,
             0,
             1, 109,
         )) {
             assertNull(cause)
             assertEquals("m", message)
-        }
-    }
-
-    @Test
-    fun performance() {
-        class WriterReader : Writer, Reader {
-            private val buffer = ByteArray(1000)
-            var current: Int = 0
-
-            override fun writeByte(byte: Byte) {
-                buffer[current++] = byte
-            }
-
-            override fun writeBytes(bytes: ByteArray) {
-                val newCurrent = current + bytes.size
-                bytes.copyInto(buffer, current)
-                current = newCurrent
-            }
-
-            override fun readByte(): Byte {
-                return buffer[current++]
-            }
-
-            override fun readBytes(length: Int): ByteArray {
-                val newCurrent = current + length
-                return ByteArray(length).apply {
-                    buffer.copyInto(this, 0, current, newCurrent)
-                    current = newCurrent
-                }
-            }
-        }
-
-        val writerReader = WriterReader()
-        performance(100_000) {
-            writerReader.current = 0
-            TransportSerializer.write(writerReader, ManyPropertiesConst)
-            writerReader.current = 0
-            (TransportSerializer.read(writerReader) as ManyProperties).assertManyProperties()
         }
     }
 
@@ -320,10 +336,10 @@ class BinarySerializerTest {
     @Test
     fun missingType() {
         val message = assertFailsWith<IllegalStateException> {
-            TransportSerializer.write(BytesWriter(1000), 1.2)
+            TransportSerializer.write(BytesWriter(1000), BinarySerializerTest())
         }.message!!
         assertTrue(message.startsWith("missing type 'class "))
-        assertTrue(message.endsWith("Double'"))
+        assertTrue(message.endsWith("BinarySerializerTest'"))
     }
 
     @Test
