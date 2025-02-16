@@ -44,6 +44,17 @@ public open class Utf8Encoder<T : Any>(
     public fun read(reader: Utf8Serializer.Utf8Reader): T = reader.read()
 }
 
+public abstract class BaseUtf8Encoder<T : Any>(
+    type: KClass<T>,
+    private val write: (value: T) -> String,
+    private val read: String.() -> T,
+) : Utf8Encoder<T>(type,
+    { value -> writeString(write(value)) },
+    { readString().read() }
+) {
+    public fun read(s: String): T = s.read()
+}
+
 public class ClassUtf8Encoder<T : Any>(
     type: KClass<T>,
     write: Utf8Serializer.Utf8Writer.(value: T) -> Unit,

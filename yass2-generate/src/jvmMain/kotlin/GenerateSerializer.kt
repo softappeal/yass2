@@ -6,6 +6,7 @@ import ch.softappeal.yass2.serialize.binary.BinaryEncoder
 import ch.softappeal.yass2.serialize.binary.BinaryProperty
 import ch.softappeal.yass2.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.serialize.binary.EnumBinaryEncoder
+import ch.softappeal.yass2.serialize.utf8.BaseUtf8Encoder
 import ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder
 import ch.softappeal.yass2.serialize.utf8.EnumUtf8Encoder
 import ch.softappeal.yass2.serialize.utf8.Utf8Encoder
@@ -163,7 +164,7 @@ public fun CodeWriter.generateBinarySerializer(
 
 @OptIn(InternalApi::class)
 public fun CodeWriter.generateUtf8Encoders(
-    encoderObjects: List<KClass<out Utf8Encoder<*>>>,
+    encoderObjects: List<KClass<out BaseUtf8Encoder<*>>>,
     concreteAndEnumClasses: List<KClass<*>>,
 ) {
     val (baseClasses, enumClasses, concreteClasses) = getClasses(encoderObjects, concreteAndEnumClasses)

@@ -191,11 +191,16 @@ public final class ch/softappeal/yass2/serialize/binary/StringBinaryEncoder : ch
 	public static final field INSTANCE Lch/softappeal/yass2/serialize/binary/StringBinaryEncoder;
 }
 
-public final class ch/softappeal/yass2/serialize/utf8/BooleanUtf8Encoder : ch/softappeal/yass2/serialize/utf8/Utf8Encoder {
+public abstract class ch/softappeal/yass2/serialize/utf8/BaseUtf8Encoder : ch/softappeal/yass2/serialize/utf8/Utf8Encoder {
+	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
+	public final fun read (Ljava/lang/String;)Ljava/lang/Object;
+}
+
+public final class ch/softappeal/yass2/serialize/utf8/BooleanUtf8Encoder : ch/softappeal/yass2/serialize/utf8/BaseUtf8Encoder {
 	public static final field INSTANCE Lch/softappeal/yass2/serialize/utf8/BooleanUtf8Encoder;
 }
 
-public final class ch/softappeal/yass2/serialize/utf8/ByteArrayUtf8Encoder : ch/softappeal/yass2/serialize/utf8/Utf8Encoder {
+public final class ch/softappeal/yass2/serialize/utf8/ByteArrayUtf8Encoder : ch/softappeal/yass2/serialize/utf8/BaseUtf8Encoder {
 	public static final field INSTANCE Lch/softappeal/yass2/serialize/utf8/ByteArrayUtf8Encoder;
 }
 
@@ -204,15 +209,15 @@ public final class ch/softappeal/yass2/serialize/utf8/ClassUtf8Encoder : ch/soft
 	public final fun encoderId (Ljava/lang/String;)I
 }
 
-public final class ch/softappeal/yass2/serialize/utf8/DoubleUtf8Encoder : ch/softappeal/yass2/serialize/utf8/Utf8Encoder {
+public final class ch/softappeal/yass2/serialize/utf8/DoubleUtf8Encoder : ch/softappeal/yass2/serialize/utf8/BaseUtf8Encoder {
 	public static final field INSTANCE Lch/softappeal/yass2/serialize/utf8/DoubleUtf8Encoder;
 }
 
-public final class ch/softappeal/yass2/serialize/utf8/EnumUtf8Encoder : ch/softappeal/yass2/serialize/utf8/Utf8Encoder {
+public final class ch/softappeal/yass2/serialize/utf8/EnumUtf8Encoder : ch/softappeal/yass2/serialize/utf8/BaseUtf8Encoder {
 	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;)V
 }
 
-public final class ch/softappeal/yass2/serialize/utf8/IntUtf8Encoder : ch/softappeal/yass2/serialize/utf8/Utf8Encoder {
+public final class ch/softappeal/yass2/serialize/utf8/IntUtf8Encoder : ch/softappeal/yass2/serialize/utf8/BaseUtf8Encoder {
 	public static final field INSTANCE Lch/softappeal/yass2/serialize/utf8/IntUtf8Encoder;
 }
 
@@ -222,7 +227,7 @@ public final class ch/softappeal/yass2/serialize/utf8/JsonSerializer : ch/softap
 	public fun write (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
 }
 
-public final class ch/softappeal/yass2/serialize/utf8/LongUtf8Encoder : ch/softappeal/yass2/serialize/utf8/Utf8Encoder {
+public final class ch/softappeal/yass2/serialize/utf8/LongUtf8Encoder : ch/softappeal/yass2/serialize/utf8/BaseUtf8Encoder {
 	public static final field INSTANCE Lch/softappeal/yass2/serialize/utf8/LongUtf8Encoder;
 }
 

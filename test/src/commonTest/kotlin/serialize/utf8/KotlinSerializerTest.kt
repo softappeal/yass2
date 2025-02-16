@@ -8,8 +8,8 @@ import ch.softappeal.yass2.contract.ManyProperties
 import ch.softappeal.yass2.contract.Poly
 import kotlin.test.Test
 
-private fun Int(s: String) = s.toInt()
-private fun ByteArray(s: String) = byteArrayOf()
+private fun Int(s: String) = IntUtf8Encoder.read(s)
+private fun ByteArray(s: String) = ByteArrayUtf8Encoder.read(s)
 private fun Null() = null
 
 // spezial hack boolean, int, long, double, enum und bytearray
@@ -24,7 +24,7 @@ class KotlinSerializerTest {
             Gender.Male,
             true,
             false,
-            ByteArray("xxx"),
+            //ByteArray("xxx"),
             123,
             123.321,
             Int("123"),

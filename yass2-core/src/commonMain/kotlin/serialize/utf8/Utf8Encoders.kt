@@ -4,31 +4,31 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.reflect.KClass
 
-public object BooleanUtf8Encoder : Utf8Encoder<Boolean>(Boolean::class,
-    { value -> writeString(value.toString()) },
-    { readString().toBooleanStrict() }
+public object BooleanUtf8Encoder : BaseUtf8Encoder<Boolean>(Boolean::class,
+    { value -> value.toString() },
+    { toBooleanStrict() }
 )
 
-public object IntUtf8Encoder : Utf8Encoder<Int>(Int::class,
-    { value -> writeString(value.toString()) },
-    { readString().toInt() }
+public object IntUtf8Encoder : BaseUtf8Encoder<Int>(Int::class,
+    { value -> value.toString() },
+    { toInt() }
 )
 
-public object LongUtf8Encoder : Utf8Encoder<Long>(Long::class,
-    { value -> writeString(value.toString()) },
-    { readString().toLong() }
+public object LongUtf8Encoder : BaseUtf8Encoder<Long>(Long::class,
+    { value -> value.toString() },
+    { toLong() }
 )
 
 @ExperimentalEncodingApi
 private val B64 = Base64.Default // uses A-Za-z0-9+/=
 
 @OptIn(ExperimentalEncodingApi::class)
-public object ByteArrayUtf8Encoder : Utf8Encoder<ByteArray>(ByteArray::class,
-    { value -> writeString(B64.encode(value)) },
-    { B64.decode(readString()) }
+public object ByteArrayUtf8Encoder : BaseUtf8Encoder<ByteArray>(ByteArray::class,
+    { value -> B64.encode(value) },
+    { B64.decode(this) }
 )
 
-public class EnumUtf8Encoder<T : Enum<T>>(type: KClass<T>, valueOf: (name: String) -> T) : Utf8Encoder<T>(type,
-    { value -> writeString(value.toString()) },
-    { valueOf(readString()) }
+public class EnumUtf8Encoder<T : Enum<T>>(type: KClass<T>, valueOf: (name: String) -> T) : BaseUtf8Encoder<T>(type,
+    { value -> value.toString() },
+    { valueOf(this) }
 )
