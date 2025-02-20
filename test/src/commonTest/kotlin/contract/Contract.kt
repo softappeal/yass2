@@ -30,8 +30,6 @@ class Optionals(
 class Lists(
     val list: List<Int>,
     val listOptional: List<Int>?,
-    val mutableList: MutableList<Int>,
-    val mutableListOptional: MutableList<Int>?,
 )
 
 open class A(open val a: Int)

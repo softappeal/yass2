@@ -83,7 +83,7 @@ public abstract class Utf8Reader(private val reader: Reader, private var _nextCo
 
     private val properties = mutableMapOf<String, Any>()
 
-    protected fun Utf8Encoder<*>.addProperty(name: String, value: Any?) {
+    protected fun ClassUtf8Encoder<*>.addProperty(name: String, value: Any?) {
         check(value != null) { "property '${type.simpleName}.$name' must not be explicitly set to null" }
         check(properties.put(name, value) == null) { "duplicated property '${type.simpleName}.$name'" }
     }

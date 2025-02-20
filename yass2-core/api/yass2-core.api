@@ -255,7 +255,7 @@ public class ch/softappeal/yass2/serialize/utf8/Utf8Encoder {
 
 public abstract class ch/softappeal/yass2/serialize/utf8/Utf8Reader : ch/softappeal/yass2/serialize/Reader {
 	public fun <init> (Lch/softappeal/yass2/serialize/Reader;I)V
-	protected final fun addProperty (Lch/softappeal/yass2/serialize/utf8/Utf8Encoder;Ljava/lang/String;Ljava/lang/Object;)V
+	protected final fun addProperty (Lch/softappeal/yass2/serialize/utf8/ClassUtf8Encoder;Ljava/lang/String;Ljava/lang/Object;)V
 	public final fun expectedCodePoint (I)Z
 	public final fun getNextCodePoint ()I
 	public final fun getProperty (Ljava/lang/String;)Ljava/lang/Object;

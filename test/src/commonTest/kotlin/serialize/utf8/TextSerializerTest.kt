@@ -15,7 +15,6 @@ import ch.softappeal.yass2.contract.ThrowableFake
 import ch.softappeal.yass2.contract.createUtf8Encoders
 import ch.softappeal.yass2.serialize.BytesWriter
 import ch.softappeal.yass2.serialize.binary.ManyPropertiesConst
-import ch.softappeal.yass2.serialize.binary.mutableListTest
 import ch.softappeal.yass2.serialize.writeBytes
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -162,7 +161,7 @@ class TextSerializerTest {
             "Poly(a:B(a:1,b:2)b:B(a:3,b:4))",
         )
         dump(
-            listOf(null, 123, A(1), mutableListOf(1, 2)),
+            listOf(null, 123, A(1), listOf(1, 2)),
             """
                 [
                     *
@@ -208,7 +207,7 @@ class TextSerializerTest {
             """.trimIndent(),
         )
         dump(
-            Lists(listOf(1, 2), listOf(3, 4), mutableListOf(5, 6), mutableListOf(7, 8)),
+            Lists(listOf(1, 2), listOf(3, 4)),
             """
                 Lists(
                     list: [
@@ -219,28 +218,16 @@ class TextSerializerTest {
                         Int(3)
                         Int(4)
                     ]
-                    mutableList: [
-                        Int(5)
-                        Int(6)
-                    ]
-                    mutableListOptional: [
-                        Int(7)
-                        Int(8)
-                    ]
                 )
             """.trimIndent(),
         )
         dump(
-            Lists(listOf(1, 2), null, mutableListOf(3, 4), null),
+            Lists(listOf(1, 2), null),
             """
                 Lists(
                     list: [
                         Int(1)
                         Int(2)
-                    ]
-                    mutableList: [
-                        Int(3)
-                        Int(4)
                     ]
                 )
             """.trimIndent(),
@@ -294,11 +281,6 @@ class TextSerializerTest {
                 )
             """.trimIndent(),
         )
-    }
-
-    @Test
-    fun mutableList() {
-        SERIALIZER.mutableListTest()
     }
 
     @Test

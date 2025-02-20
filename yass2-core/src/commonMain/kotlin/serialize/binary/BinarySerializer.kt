@@ -23,7 +23,7 @@ public abstract class BinarySerializer : Serializer {
     private data class EncoderId(val id: Int, val encoder: BinaryEncoder<*>)
 
     private lateinit var encoders: Array<BinaryEncoder<*>>
-    private lateinit var type2encoderId: MutableMap<KClass<*>, EncoderId>
+    private lateinit var type2encoderId: Map<KClass<*>, EncoderId>
 
     /** See [NULL_ENCODER_ID] and [LIST_ENCODER_ID]. */
     protected fun initialize(vararg binaryEncoders: BinaryEncoder<*>) {
@@ -31,9 +31,10 @@ public abstract class BinarySerializer : Serializer {
             BinaryEncoder(Unit::class, {}, {}), // placeholder for NULL_ENCODER_ID, methods are never called
             listEncoderId.encoder,
         ) + binaryEncoders).toTypedArray()
-        type2encoderId = HashMap(encoders.size)
-        encoders.forEachIndexed { encoderId, encoder ->
-            require(type2encoderId.put(encoder.type, EncoderId(encoderId, encoder)) == null) { "duplicated type '${encoder.type}'" }
+        type2encoderId = buildMap {
+            encoders.forEachIndexed { encoderId, encoder ->
+                require(put(encoder.type, EncoderId(encoderId, encoder)) == null) { "duplicated type '${encoder.type}'" }
+            }
         }
     }
 

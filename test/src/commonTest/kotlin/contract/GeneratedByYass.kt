@@ -322,8 +322,6 @@ public fun <F, I> ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.corou
     9: ch.softappeal.yass2.contract.Lists - class
         list: required 1
         listOptional: optional 1
-        mutableList: required 1
-        mutableListOptional: optional 1
     10: ch.softappeal.yass2.contract.A - class
         a: required 2
     11: ch.softappeal.yass2.contract.B - class
@@ -418,15 +416,11 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                     { i ->
                         writeRequired(i.list, 1)
                         writeOptional(i.listOptional, 1)
-                        writeRequired(i.mutableList, 1)
-                        writeOptional(i.mutableListOptional, 1)
                     },
                     {
                         val i = ch.softappeal.yass2.contract.Lists(
                             readRequired(1) as kotlin.collections.List<kotlin.Int>,
                             readOptional(1) as kotlin.collections.List<kotlin.Int>?,
-                            readRequired(1) as kotlin.collections.MutableList<kotlin.Int>,
-                            readOptional(1) as kotlin.collections.MutableList<kotlin.Int>?,
                         )
                         i
                     }
@@ -615,8 +609,6 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
     8: ch.softappeal.yass2.contract.Lists - class
         list: 1
         listOptional: 1
-        mutableList: 1
-        mutableListOptional: 1
     9: ch.softappeal.yass2.contract.A - class
         a: 2
     10: ch.softappeal.yass2.contract.B - class
@@ -714,22 +706,16 @@ public fun createUtf8Encoders(): kotlin.collections.List<ch.softappeal.yass2.ser
         { i ->
             writeProperty("list", i.list, 1)
             writeProperty("listOptional", i.listOptional, 1)
-            writeProperty("mutableList", i.mutableList, 1)
-            writeProperty("mutableListOptional", i.mutableListOptional, 1)
         },
         {
             val i = ch.softappeal.yass2.contract.Lists(
                 getProperty("list") as kotlin.collections.List<kotlin.Int>,
                 getProperty("listOptional") as kotlin.collections.List<kotlin.Int>?,
-                getProperty("mutableList") as kotlin.collections.MutableList<kotlin.Int>,
-                getProperty("mutableListOptional") as kotlin.collections.MutableList<kotlin.Int>?,
             )
             i
         },
         "list" to -1,
         "listOptional" to -1,
-        "mutableList" to -1,
-        "mutableListOptional" to -1,
     ),
     ch.softappeal.yass2.serialize.utf8.ClassUtf8Encoder(
         ch.softappeal.yass2.contract.A::class,
