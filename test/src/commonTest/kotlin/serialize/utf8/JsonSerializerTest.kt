@@ -5,7 +5,6 @@ import ch.softappeal.yass2.contract.A
 import ch.softappeal.yass2.contract.B
 import ch.softappeal.yass2.contract.DivideByZeroException
 import ch.softappeal.yass2.contract.Gender
-import ch.softappeal.yass2.contract.GenderWrapper
 import ch.softappeal.yass2.contract.IntException
 import ch.softappeal.yass2.contract.IntWrapper
 import ch.softappeal.yass2.contract.Lists
@@ -14,6 +13,7 @@ import ch.softappeal.yass2.contract.Poly
 import ch.softappeal.yass2.contract.ThrowableFake
 import ch.softappeal.yass2.contract.createUtf8Encoders
 import ch.softappeal.yass2.serialize.binary.ManyPropertiesConst
+import ch.softappeal.yass2.serialize.binary.typesTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 
@@ -85,16 +85,7 @@ class JsonSerializerTest {
             """{"#Int":"123"}""",
             """  {  "#Int"  :  "123"  }""",
         )
-        dump(
-            GenderWrapper(Gender.Male),
-            """
-                {
-                    "#": "GenderWrapper",
-                    "gender": "Male"
-                }
-            """.trimIndent(),
-            """  {  "#"  :  "GenderWrapper"  ,  "gender"  :  "Male"  }""",
-        )
+        SERIALIZER.typesTest()
         dump(
             IntWrapper(3),
             """

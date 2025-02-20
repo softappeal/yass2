@@ -5,7 +5,6 @@ import ch.softappeal.yass2.contract.A
 import ch.softappeal.yass2.contract.B
 import ch.softappeal.yass2.contract.DivideByZeroException
 import ch.softappeal.yass2.contract.Gender
-import ch.softappeal.yass2.contract.GenderWrapper
 import ch.softappeal.yass2.contract.IntException
 import ch.softappeal.yass2.contract.IntWrapper
 import ch.softappeal.yass2.contract.Lists
@@ -15,6 +14,7 @@ import ch.softappeal.yass2.contract.ThrowableFake
 import ch.softappeal.yass2.contract.createUtf8Encoders
 import ch.softappeal.yass2.serialize.BytesWriter
 import ch.softappeal.yass2.serialize.binary.ManyPropertiesConst
+import ch.softappeal.yass2.serialize.binary.typesTest
 import ch.softappeal.yass2.serialize.writeBytes
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -114,20 +114,7 @@ class TextSerializerTest {
             "Int(123)",
             "  Int  (  123  )",
         )
-        dump(
-            GenderWrapper(Gender.Male),
-            """
-                GenderWrapper(
-                    gender: Male
-                )
-            """.trimIndent(),
-            """
-                GenderWrapper(
-                    gender : Male,
-                )
-            """.trimIndent(),
-            "GenderWrapper(gender:Male)",
-        )
+        SERIALIZER.typesTest()
         dump(
             IntWrapper(3),
             """
@@ -328,10 +315,10 @@ class TextSerializerTest {
     @Test
     fun missingType() {
         val message = assertFailsWith<IllegalStateException> {
-            SERIALIZER.write(BytesWriter(1000), true)
+            SERIALIZER.write(BytesWriter(1000), 1.2)
         }.message!!
         assertTrue(message.startsWith("missing type 'class "))
-        assertTrue(message.endsWith("Boolean'"))
+        assertTrue(message.endsWith("Double'"))
     }
 
     @Test

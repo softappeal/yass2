@@ -6,15 +6,26 @@ import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.ValueReply
 import ch.softappeal.yass2.serialize.Transport
+import ch.softappeal.yass2.serialize.binary.BooleanBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.ByteArrayBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
+import ch.softappeal.yass2.serialize.binary.LongBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.StringBinaryEncoder
+import ch.softappeal.yass2.serialize.utf8.BooleanUtf8Encoder
 import ch.softappeal.yass2.serialize.utf8.ByteArrayUtf8Encoder
 import ch.softappeal.yass2.serialize.utf8.IntUtf8Encoder
+import ch.softappeal.yass2.serialize.utf8.LongUtf8Encoder
 
 enum class Gender { Female, Male }
 
-class GenderWrapper(val gender: Gender)
+class Types(
+    val boolean: Boolean,
+    val int: Int,
+    val long: Long,
+    val string: String,
+    val bytes: ByteArray,
+    val gender: Gender,
+)
 
 class IntException(val i: Int) : RuntimeException()
 
@@ -102,19 +113,23 @@ internal val ConcreteClasses = listOf(
     ManyProperties::class,
     DivideByZeroException::class,
     ThrowableFake::class,
-    GenderWrapper::class,
+    Types::class,
     Request::class, ValueReply::class, ExceptionReply::class,
     Packet::class,
 )
 
 internal val BinaryEncoderObjects = listOf(
+    BooleanBinaryEncoder::class,
     IntBinaryEncoder::class,
+    LongBinaryEncoder::class,
     StringBinaryEncoder::class,
     ByteArrayBinaryEncoder::class,
 )
 
 internal val Utf8EncoderObjects = listOf(
+    BooleanUtf8Encoder::class,
     IntUtf8Encoder::class,
+    LongUtf8Encoder::class,
     ByteArrayUtf8Encoder::class,
 )
 
