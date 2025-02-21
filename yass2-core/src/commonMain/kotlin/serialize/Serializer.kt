@@ -11,6 +11,7 @@ public interface Writer {
 }
 
 public interface Reader {
+    public val isDrained: Boolean
     public fun readByte(): Byte
     public fun readBytes(length: Int): ByteArray
 }

@@ -286,6 +286,8 @@ class BinarySerializerTest {
                 current = newCurrent
             }
 
+            override val isDrained: Boolean get() = error("isDrained")
+
             override fun readByte(): Byte {
                 return buffer[current++]
             }
