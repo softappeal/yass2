@@ -23,7 +23,7 @@ public class BytesReader(public var buffer: ByteArray) : Reader {
 
     public var current: Int = 0
 
-    override val isDrained: Boolean get() = current >= buffer.size
+    public val isDrained: Boolean get() = current >= buffer.size
     public fun checkDrained() {
         check(isDrained) { "buffer not drained" }
     }

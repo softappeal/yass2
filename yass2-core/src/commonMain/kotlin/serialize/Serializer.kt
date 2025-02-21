@@ -10,16 +10,7 @@ public interface Writer {
     public fun writeBytes(bytes: ByteArray)
 }
 
-@Suppress("SpellCheckingInspection")
-@Target(AnnotationTarget.CLASS)
-@MustBeDocumented
-/** See [Reader.isDrained]. */
-public annotation class Drainable
-
 public interface Reader {
-    @Suppress("SpellCheckingInspection")
-    /** A [Serializer] that uses this function must be marked with [Drainable]. */
-    public val isDrained: Boolean
     public fun readByte(): Byte
     public fun readBytes(length: Int): ByteArray
 }

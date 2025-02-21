@@ -1,7 +1,6 @@
 package ch.softappeal.yass2.serialize.utf8
 
 import ch.softappeal.yass2.NotJs
-import ch.softappeal.yass2.serialize.Drainable
 import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Writer
 
@@ -18,7 +17,6 @@ private val ASSIGN = "${SP.toChar()}${EQUALS.toChar()}${SP.toChar()}".encodeToBy
 private val APPLY =
     "${RPAREN.toChar()}${DOT.toChar()}apply${SP.toChar()}${LBRACE.toChar()}".encodeToByteArray(throwOnInvalidSequence = true)
 
-@Drainable
 public class KotlinSerializer(encoders: List<Utf8Encoder<*>>) : Utf8Serializer(
     Utf8Encoder(List::class,
         { list ->

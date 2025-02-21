@@ -60,7 +60,7 @@ public final class ch/softappeal/yass2/serialize/BytesReader : ch/softappeal/yas
 	public final fun checkDrained ()V
 	public final fun getBuffer ()[B
 	public final fun getCurrent ()I
-	public fun isDrained ()Z
+	public final fun isDrained ()Z
 	public fun readByte ()B
 	public fun readBytes (I)[B
 	public final fun setBuffer ([B)V
@@ -78,9 +78,6 @@ public final class ch/softappeal/yass2/serialize/BytesWriter : ch/softappeal/yas
 	public fun writeBytes ([B)V
 }
 
-public abstract interface annotation class ch/softappeal/yass2/serialize/Drainable : java/lang/annotation/Annotation {
-}
-
 public abstract class ch/softappeal/yass2/serialize/Property {
 	public fun <init> (Lkotlin/reflect/KProperty1;Lkotlin/reflect/KType;)V
 	public final fun getClassifier ()Lkotlin/reflect/KClassifier;
@@ -91,7 +88,6 @@ public abstract class ch/softappeal/yass2/serialize/Property {
 }
 
 public abstract interface class ch/softappeal/yass2/serialize/Reader {
-	public abstract fun isDrained ()Z
 	public abstract fun readByte ()B
 	public abstract fun readBytes (I)[B
 }
@@ -278,7 +274,6 @@ public abstract class ch/softappeal/yass2/serialize/utf8/Utf8Reader : ch/softapp
 	public final fun expectedCodePoint (I)Z
 	public final fun getNextCodePoint ()I
 	public final fun getProperty (Ljava/lang/String;)Ljava/lang/Object;
-	public fun isDrained ()Z
 	protected final fun isWhitespace ()Z
 	public fun readByte ()B
 	public fun readBytes (I)[B
