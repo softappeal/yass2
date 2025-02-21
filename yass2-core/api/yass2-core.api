@@ -78,6 +78,9 @@ public final class ch/softappeal/yass2/serialize/BytesWriter : ch/softappeal/yas
 	public fun writeBytes ([B)V
 }
 
+public abstract interface annotation class ch/softappeal/yass2/serialize/Drainable : java/lang/annotation/Annotation {
+}
+
 public abstract class ch/softappeal/yass2/serialize/Property {
 	public fun <init> (Lkotlin/reflect/KProperty1;Lkotlin/reflect/KType;)V
 	public final fun getClassifier ()Lkotlin/reflect/KClassifier;
