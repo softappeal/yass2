@@ -159,7 +159,7 @@ public class KotlinSerializer(encoders: List<Utf8Encoder<*>>) : Utf8Serializer(
             val encoder = encoder(className)
             if (expectedCodePoint(DOT)) {
                 readNextCodePointAndSkipWhitespace()
-                return 12
+                return (encoder as EnumUtf8Encoder).read(readString())
             }
             check(expectedCodePoint(LPAREN)) { "'${LPAREN.toChar()}' expected" }
             readNextCodePointAndSkipWhitespace()

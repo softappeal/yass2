@@ -5,6 +5,7 @@ import ch.softappeal.yass2.contract.B
 import ch.softappeal.yass2.contract.BodyProperty
 import ch.softappeal.yass2.contract.DivideByZeroException
 import ch.softappeal.yass2.contract.Gender
+import ch.softappeal.yass2.contract.Gender.Male
 import ch.softappeal.yass2.contract.Lists
 import ch.softappeal.yass2.contract.ManyProperties
 import ch.softappeal.yass2.contract.Poly
@@ -17,6 +18,8 @@ import kotlin.test.assertEquals
 private val SERIALIZER = KotlinSerializer(createUtf8Encoders())
 
 private fun dump(value: Any?, serialized: String, vararg others: String) = SERIALIZER.dump(value, serialized, *others)
+
+fun Gender(gender: Gender) = gender
 
 @Suppress("SpellCheckingInspection")
 class KotlinSerializerTest {
@@ -94,7 +97,7 @@ class KotlinSerializerTest {
         )
         /*
         dump(
-            Gender.Male,
+            Gender(Male),
             "Gender.Male",
             "  Gender  .  Male",
         )
