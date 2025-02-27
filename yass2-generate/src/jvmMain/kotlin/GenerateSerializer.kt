@@ -21,6 +21,7 @@ import kotlin.reflect.full.valueParameters
 import ch.softappeal.yass2.serialize.binary.FIRST_ENCODER_ID as BINARY_FIRST_ENCODER_ID
 import ch.softappeal.yass2.serialize.binary.LIST_ENCODER_ID as BINARY_LIST_ENCODER_ID
 import ch.softappeal.yass2.serialize.binary.NULL_ENCODER_ID as BINARY_NULL_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.BOOLEAN_ENCODER_ID as STRING_BOOLEAN_ENCODER_ID
 import ch.softappeal.yass2.serialize.string.FIRST_ENCODER_ID as STRING_FIRST_ENCODER_ID
 import ch.softappeal.yass2.serialize.string.LIST_ENCODER_ID as STRING_LIST_ENCODER_ID
 import ch.softappeal.yass2.serialize.string.STRING_ENCODER_ID as STRING_STRING_ENCODER_ID
@@ -179,6 +180,7 @@ public fun CodeWriter.generateStringEncoders(
     writeLine()
     writeNestedLine("/*", "*/") {
         writeNestedLine("$STRING_STRING_ENCODER_ID: \"\" - built-in")
+        writeNestedLine("$STRING_BOOLEAN_ENCODER_ID: true/false - built-in")
         writeNestedLine("$STRING_LIST_ENCODER_ID: [] - built-in")
         var encoderId = STRING_FIRST_ENCODER_ID
         fun KClass<*>.writeType(suffix: String, write: CodeWriter.() -> Unit) =

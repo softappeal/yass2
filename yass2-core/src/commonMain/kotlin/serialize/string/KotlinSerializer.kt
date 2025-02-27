@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.serialize.string // TODO: review
+package ch.softappeal.yass2.serialize.string
 
 import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Writer
@@ -6,12 +6,10 @@ import ch.softappeal.yass2.serialize.Writer
 private const val COMMA = ','.code
 private const val EQUALS = '='.code
 private const val DOT = '.'.code
-private const val PLUS = '+'.code
 private const val LPAREN = '('.code
 private const val RPAREN = ')'.code
 private const val LBRACE = '{'.code
 private const val RBRACE = '}'.code
-private const val NULL = "null"
 private const val LIST = "listOf"
 private const val APPLY = "apply"
 
@@ -35,8 +33,8 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
 
         /** See [TheReader.readString]. */
         override fun checkString(string: String) {
-            check(string.indexOfFirst { it.code.isWhitespace() || it.code == QUOTE || it.code == COMMA || it.code == LPAREN } < 0) {
-                "'$string' must not contain whitespace, '${QUOTE.toChar()}', '${COMMA.toChar()}' or '${LPAREN.toChar()}'"
+            check(string.indexOfFirst { it.code.isWhitespace() || it.code == QUOTE || it.code == COMMA } < 0) {
+                "'$string' must not contain whitespace, '${QUOTE.toChar()}' or '${COMMA.toChar()}'"
             }
         }
 
@@ -55,38 +53,28 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
         }
 
         fun writeObject(value: Any?) {
-            when (value) {
-                null -> {
-                    writeString(NULL)
-                    writeByte(LPAREN)
-                    writeByte(RPAREN)
-                }
-                is String -> stringEncoder.write(this, value)
-                is List<*> -> listEncoder.write(this, value)
-                else -> {
-                    val encoder = encoder(value::class)
-                    writeString(encoder.type.simpleName!!)
-                    if (value is Enum<*>) {
-                        writeByte(DOT)
-                        writeString(value.name)
-                        writeByte(LPAREN)
-                        writeByte(RPAREN)
-                    } else {
-                        writeByte(LPAREN)
-                        if (encoder is ClassStringEncoder) {
-                            writeNewLine()
-                            with(nested()) {
-                                encoder.write(this, value)
-                                writeIndentMinus1()
-                                writeByte(if (bodyProperties) RBRACE else RPAREN)
-                            }
-                        } else {
-                            writeByte(QUOTE)
-                            encoder.write(this, value)
-                            writeByte(QUOTE)
-                            writeByte(RPAREN)
-                        }
+            if (writeBuiltIn(value)) return
+            val encoder = encoder(value!!::class)
+            writeString(encoder.type.simpleName!!)
+            if (value is Enum<*>) {
+                writeByte(DOT)
+                writeString(value.name)
+                writeByte(LPAREN)
+                writeByte(RPAREN)
+            } else {
+                writeByte(LPAREN)
+                if (encoder is ClassStringEncoder) {
+                    writeNewLine()
+                    with(nested()) {
+                        encoder.write(this, value)
+                        writeIndentMinus1()
+                        writeByte(if (bodyProperties) RBRACE else RPAREN)
                     }
+                } else {
+                    writeByte(QUOTE)
+                    encoder.write(this, value)
+                    writeByte(QUOTE)
+                    writeByte(RPAREN)
                 }
             }
         }
@@ -109,22 +97,18 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
         override fun writeProperty(name: String, value: Any?, encoderId: Int) {
             writeProperty(name) {
                 when (value) {
-                    is Boolean,
                     is Int,
                     is Long,
                     is Double,
                         -> encoder(encoderId).write(this, value)
-                    else -> {
-                        if (value == null && encoderId != STRING_ENCODER_ID && encoderId != LIST_ENCODER_ID) writeByte(PLUS)
-                        writeObject(value)
-                    }
+                    else -> writeObject(value)
                 }
             }
         }
     }
 
     private inner class TheReader(reader: Reader, nextCodePoint: Int) : StringReader(reader, nextCodePoint) {
-        override fun readList() = buildList {
+        fun readList() = buildList {
             readNextCodePointAndSkipWhitespace()
             while (!expectedCodePoint(RPAREN)) {
                 add(readObject(this@TheReader, nextCodePoint))
@@ -134,42 +118,29 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
             }
         }
 
-        fun readUntil(isEnd: () -> Boolean) = buildString {
-            while (!isEnd() && !isWhitespace()) {
-                addCodePoint(nextCodePoint)
-                readNextCodePoint()
-            }
-            skipWhitespace()
-        }
-
-        private fun readUntil(end: Int) = readUntil { expectedCodePoint(end) }
-
-        override fun readString() = readUntil { expectedCodePoint(QUOTE) || expectedCodePoint(COMMA) || expectedCodePoint(LPAREN) }
+        override fun readString() = readUntil { expectedCodePoint(QUOTE) || expectedCodePoint(COMMA) }
 
         fun readClass(encoder: ClassStringEncoder<*>): Any {
             fun properties(apply: Boolean) {
                 while (!expectedCodePoint(if (apply) RBRACE else RPAREN)) {
-                    val name = readUntil(EQUALS)
+                    val name = readUntil { expectedCodePoint(EQUALS) }
                     readNextCodePointAndSkipWhitespace()
                     val encoderId = encoder.encoderId(name)
-                    var value: Any? = null
-                    if (expectedCodePoint(PLUS)) {
-                        readNextCodePointAndSkipWhitespace()
-                        val className = readUntil { expectedCodePoint(LPAREN) || expectedCodePoint(DOT) }
-                        check(className == NULL)
-                        checkExpectedCodePoint(LPAREN)
-                        readNextCodePointAndSkipWhitespace()
-                        checkExpectedCodePoint(RPAREN)
-                        readNextCodePoint()
-                    } else {
-                        value = when (val propertyEncoder = if (encoderId != NO_ENCODER_ID) encoder(encoderId) else null) {
-                            is BooleanStringEncoder,
-                            is IntStringEncoder,
-                            is LongStringEncoder,
-                            is DoubleStringEncoder,
-                                -> propertyEncoder.read(this)
-                            else -> readObject(this, nextCodePoint).apply { readNextCodePoint() }
-                        }
+                    val value = when (val propertyEncoder = if (encoderId != NO_ENCODER_ID) encoder(encoderId) else null) {
+                        is IntStringEncoder,
+                        is LongStringEncoder,
+                        is DoubleStringEncoder,
+                            -> if (expectedCodePoint('n'.code)) {
+                            readNextCodePoint()
+                            checkExpectedCodePoint('u'.code)
+                            readNextCodePoint()
+                            checkExpectedCodePoint('l'.code)
+                            readNextCodePoint()
+                            checkExpectedCodePoint('l'.code)
+                            readNextCodePoint()
+                            null
+                        } else propertyEncoder.read(this)
+                        else -> readObject(this, nextCodePoint).apply { readNextCodePoint() }
                     }
                     skipWhitespace()
                     encoder.addNullableProperty(name, value)
@@ -184,7 +155,7 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
                 readNextCodePointAndSkipWhitespace()
                 checkExpectedCodePoint(DOT)
                 readNextCodePointAndSkipWhitespace()
-                check(APPLY == readUntil(LBRACE)) { "'$APPLY' expected" }
+                check(APPLY == readUntil { expectedCodePoint(LBRACE) }) { "'$APPLY' expected" }
                 readNextCodePointAndSkipWhitespace()
                 properties(true)
             }
@@ -195,22 +166,17 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
 
     private fun readObject(reader: Reader, nextCodePoint: Int): Any? = with(TheReader(reader, nextCodePoint)) {
         skipWhitespace()
-        if (expectedCodePoint(QUOTE)) return stringEncoder.read(this)
-        val className = readUntil { expectedCodePoint(LPAREN) || expectedCodePoint(DOT) }
+        if (expectedCodePoint(QUOTE)) return readStringBuiltIn()
+        val (handled, result, className) = readUntilBuiltIn { expectedCodePoint(LPAREN) || expectedCodePoint(DOT) }
+        if (handled) return result
         if (className == LIST) {
             checkExpectedCodePoint(LPAREN)
-            return listEncoder.read(this)
-        }
-        if (className == NULL) {
-            checkExpectedCodePoint(LPAREN)
-            readNextCodePointAndSkipWhitespace()
-            checkExpectedCodePoint(RPAREN)
-            return null
+            return readList()
         }
         val encoder = encoder(className)
         if (expectedCodePoint(DOT)) {
             readNextCodePointAndSkipWhitespace()
-            return (encoder as EnumStringEncoder).read(readString()).apply {
+            return (encoder as EnumStringEncoder).read(readUntil { expectedCodePoint(LPAREN) }).apply {
                 checkExpectedCodePoint(LPAREN)
                 readNextCodePointAndSkipWhitespace()
                 checkExpectedCodePoint(RPAREN)
@@ -235,12 +201,9 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
 
 // NOTE: The functions below are needed for easy parsing of Kotlin source code.
 
-public fun Boolean(string: String): Boolean = BooleanStringEncoder.read(string)
 public fun Int(string: String): Int = IntStringEncoder.read(string)
 public fun Long(string: String): Long = LongStringEncoder.read(string)
 public fun Double(string: String): Double = DoubleStringEncoder.read(string)
 public fun ByteArray(string: String): ByteArray = ByteArrayStringEncoder.read(string)
 
 public operator fun <E : Enum<E>> E.invoke(): E = this
-public operator fun Nothing?.invoke(): Nothing? = null
-public operator fun Nothing?.unaryPlus(): Nothing? = null

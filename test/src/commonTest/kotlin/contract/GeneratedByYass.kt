@@ -584,8 +584,8 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
 
 /*
     0: "" - built-in
-    1: [] - built-in
-    2: kotlin.Boolean - base
+    1: true/false - built-in
+    2: [] - built-in
     3: kotlin.Int - base
     4: kotlin.Long - base
     5: kotlin.Double - base
@@ -617,28 +617,28 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
         cause: 0
         message: 0
     14: ch.softappeal.yass2.contract.Types - class
-        boolean: 2
+        boolean: 1
         int: 3
         long: 4
         double: 5
         string: 0
         bytes: 6
         gender: 7
-        list: 1
+        list: 2
         b: object
-        booleanOptional: 2
+        booleanOptional: 1
         intOptional: 3
         longOptional: 4
         doubleOptional: 5
         stringOptional: 0
         bytesOptional: 6
         genderOptional: 7
-        listOptional: 1
+        listOptional: 2
         bOptional: object
     15: ch.softappeal.yass2.remote.Request - class
         service: 0
         function: 0
-        parameters: 1
+        parameters: 2
     16: ch.softappeal.yass2.remote.ValueReply - class
         value: object
     17: ch.softappeal.yass2.remote.ExceptionReply - class
@@ -650,7 +650,6 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
         body: object
 */
 public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.serialize.string.StringEncoder<*>> = listOf(
-    ch.softappeal.yass2.serialize.string.BooleanStringEncoder,
     ch.softappeal.yass2.serialize.string.IntStringEncoder,
     ch.softappeal.yass2.serialize.string.LongStringEncoder,
     ch.softappeal.yass2.serialize.string.DoubleStringEncoder,
@@ -769,23 +768,23 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
     ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.contract.Types::class, false,
         { i ->
-            writeProperty("boolean", i.boolean, 2)
+            writeProperty("boolean", i.boolean, 1)
             writeProperty("int", i.int, 3)
             writeProperty("long", i.long, 4)
             writeProperty("double", i.double, 5)
             writeProperty("string", i.string, 0)
             writeProperty("bytes", i.bytes, 6)
             writeProperty("gender", i.gender, 7)
-            writeProperty("list", i.list, 1)
+            writeProperty("list", i.list, 2)
             writeProperty("b", i.b)
-            writeProperty("booleanOptional", i.booleanOptional, 2)
+            writeProperty("booleanOptional", i.booleanOptional, 1)
             writeProperty("intOptional", i.intOptional, 3)
             writeProperty("longOptional", i.longOptional, 4)
             writeProperty("doubleOptional", i.doubleOptional, 5)
             writeProperty("stringOptional", i.stringOptional, 0)
             writeProperty("bytesOptional", i.bytesOptional, 6)
             writeProperty("genderOptional", i.genderOptional, 7)
-            writeProperty("listOptional", i.listOptional, 1)
+            writeProperty("listOptional", i.listOptional, 2)
             writeProperty("bOptional", i.bOptional)
         },
         {
@@ -810,7 +809,7 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
                 getProperty("bOptional") as ch.softappeal.yass2.contract.B?,
             )
         },
-        "boolean" to 2,
+        "boolean" to -1,
         "int" to 3,
         "long" to 4,
         "double" to 5,
@@ -819,7 +818,7 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
         "gender" to 7,
         "list" to -1,
         "b" to -1,
-        "booleanOptional" to 2,
+        "booleanOptional" to -1,
         "intOptional" to 3,
         "longOptional" to 4,
         "doubleOptional" to 5,
@@ -834,7 +833,7 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
         { i ->
             writeProperty("service", i.service, 0)
             writeProperty("function", i.function, 0)
-            writeProperty("parameters", i.parameters, 1)
+            writeProperty("parameters", i.parameters, 2)
         },
         {
             ch.softappeal.yass2.remote.Request(

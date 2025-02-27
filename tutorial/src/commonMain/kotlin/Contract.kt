@@ -100,7 +100,7 @@ internal val ConcreteClasses = listOf(
 
 // Define all the additional base encoders needed by the contract (including own base types).
 internal val EncoderObjects = listOf(
-    // String is built-in
+    // String and Boolean is built-in
     IntStringEncoder::class,
     MyDateEncoder::class,
 )

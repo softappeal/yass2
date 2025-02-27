@@ -24,15 +24,6 @@ class StringEncodersTest {
     }
 
     @Test
-    fun boolean() {
-        with(BooleanStringEncoder) {
-            test(false, "false")
-            test(true, "true")
-            assertFails { read("True") }
-        }
-    }
-
-    @Test
     fun int() {
         with(IntStringEncoder) {
             test(0, "0")

@@ -12,7 +12,6 @@ import ch.softappeal.yass2.serialize.binary.DoubleBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.LongBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.StringBinaryEncoder
-import ch.softappeal.yass2.serialize.string.BooleanStringEncoder
 import ch.softappeal.yass2.serialize.string.ByteArrayStringEncoder
 import ch.softappeal.yass2.serialize.string.DoubleStringEncoder
 import ch.softappeal.yass2.serialize.string.IntStringEncoder
@@ -127,7 +126,6 @@ internal val BinaryEncoderObjects = listOf(
 )
 
 internal val StringEncoderObjects = listOf(
-    BooleanStringEncoder::class,
     IntStringEncoder::class,
     LongStringEncoder::class,
     DoubleStringEncoder::class,

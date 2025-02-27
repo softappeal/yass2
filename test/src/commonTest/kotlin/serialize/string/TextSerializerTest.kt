@@ -26,10 +26,10 @@ fun StringSerializer.dump(value: Any?, serialized: String, vararg others: String
 
 fun checkString(string: String, message: String, createSerializer: (encoders: List<StringEncoder<*>>) -> StringSerializer) {
     assertFailsMessage<IllegalStateException>(message) {
-        createSerializer(listOf(object : BaseStringEncoder<Boolean>(Boolean::class,
+        createSerializer(listOf(object : BaseStringEncoder<Long>(Long::class,
             { string },
-            { false }
-        ) {})).writeBytes(false)
+            { 0L }
+        ) {})).writeBytes(0L)
     }
 }
 
@@ -62,9 +62,10 @@ class TextSerializerTest {
                 bytes: AAEC
                 gender: Female
                 list: [
-                    *
-                    Boolean(false)
-                    Int(1)
+                    null
+                    false
+                    true
+                    Int(-1)
                     Long(2)
                     Double(123.456)
                     "hello"
@@ -79,8 +80,8 @@ class TextSerializerTest {
                     ]
                     Types(
                         boolean: true
-                        int: 1
-                        long: 2
+                        int: -123456
+                        long: 9223372036854775807
                         double: 123.456
                         string: "hello"
                         bytes: AAEC
@@ -149,12 +150,23 @@ class TextSerializerTest {
     fun test() {
         dump(
             null,
-            "*",
-            "  *",
+            "null",
+            "  null",
         )
         dump(
             "hello",
             """"hello"""",
+            """  "hello"""",
+        )
+        dump(
+            false,
+            "false",
+            "  false",
+        )
+        dump(
+            true,
+            "true",
+            "  true",
         )
         dump(
             listOf<Int>(),
@@ -168,10 +180,10 @@ class TextSerializerTest {
             listOf(null),
             """
                 [
-                    *
+                    null
                 ]
             """.trimIndent(),
-            "[*]",
+            "[null]",
         )
         dump(
             Gender.Male,
@@ -234,7 +246,7 @@ class TextSerializerTest {
             SERIALIZER.readString("A(noSuchProperty:[])")
         }
         assertFailsMessage<IllegalStateException>("property 'Types.bOptional' must not be explicitly set to null") {
-            SERIALIZER.readString("Types(bOptional:*)")
+            SERIALIZER.readString("Types(bOptional:null)")
         }
         assertFailsMessage<IllegalStateException>("duplicated property 'A.a'") {
             SERIALIZER.readString("A(a:1,a:1)")

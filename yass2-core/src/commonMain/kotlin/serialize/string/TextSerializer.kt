@@ -5,7 +5,6 @@ import ch.softappeal.yass2.serialize.Writer
 
 private const val COMMA = ','.code
 private const val COLON = ':'.code
-private const val ASTERIX = '*'.code // null
 private const val LBRACKET = '['.code // list
 private const val RBRACKET = ']'.code // list
 private const val LPAREN = '('.code // object
@@ -37,22 +36,16 @@ public class TextSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
         private fun nested() = TheWriter(this, indent + 1)
 
         fun writeObject(value: Any?) {
-            when (value) {
-                null -> writeByte(ASTERIX)
-                is String -> stringEncoder.write(this, value)
-                is List<*> -> listEncoder.write(this, value)
-                else -> {
-                    val encoder = encoder(value::class)
-                    writeString(encoder.type.simpleName!!)
-                    writeByte(LPAREN)
-                    if (encoder !is ClassStringEncoder) encoder.write(this, value) else {
-                        writeNewLine()
-                        encoder.write(nested(), value)
-                        writeIndent()
-                    }
-                    writeByte(RPAREN)
-                }
+            if (writeBuiltIn(value)) return
+            val encoder = encoder(value!!::class)
+            writeString(encoder.type.simpleName!!)
+            writeByte(LPAREN)
+            if (encoder !is ClassStringEncoder) encoder.write(this, value) else {
+                writeNewLine()
+                encoder.write(nested(), value)
+                writeIndent()
             }
+            writeByte(RPAREN)
         }
 
         private fun writeProperty(name: String, value: Any?, writeValue: () -> Unit) {
@@ -70,12 +63,14 @@ public class TextSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
         }
 
         override fun writeProperty(name: String, value: Any?, encoderId: Int) {
-            writeProperty(name, value) { encoder(encoderId).write(this, value) }
+            writeProperty(name, value) {
+                if (writePropertyBuiltIn(value, encoderId)) encoder(encoderId).write(this, value)
+            }
         }
     }
 
     private inner class TheReader(reader: Reader, nextCodePoint: Int) : StringReader(reader, nextCodePoint) {
-        override fun readList() = buildList {
+        fun readList() = buildList {
             readNextCodePointAndSkipWhitespace()
             while (!expectedCodePoint(RBRACKET)) {
                 add(readObject(this@TheReader, nextCodePoint))
@@ -84,21 +79,11 @@ public class TextSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
             }
         }
 
-        private fun readUntil(isEnd: () -> Boolean) = buildString {
-            while (!isEnd() && !isWhitespace()) {
-                addCodePoint(nextCodePoint)
-                readNextCodePoint()
-            }
-            skipWhitespace()
-        }
-
-        fun readUntil(end: Int) = readUntil { expectedCodePoint(end) }
-
         override fun readString() = readUntil { expectedCodePoint(COMMA) || expectedCodePoint(RPAREN) }
 
         fun readClass(encoder: ClassStringEncoder<*>): Any {
             while (!expectedCodePoint(RPAREN)) {
-                val name = readUntil(COLON)
+                val name = readUntil { expectedCodePoint(COLON) }
                 readNextCodePointAndSkipWhitespace()
                 val encoderId = encoder.encoderId(name)
                 val value = if (encoderId != NO_ENCODER_ID) encoder(encoderId).read(this) else {
@@ -112,19 +97,15 @@ public class TextSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
         }
     }
 
-    private fun readObject(reader: Reader, nextCodePoint: Int) = with(TheReader(reader, nextCodePoint)) {
+    private fun readObject(reader: Reader, nextCodePoint: Int): Any? = with(TheReader(reader, nextCodePoint)) {
         skipWhitespace()
-        when {
-            expectedCodePoint(ASTERIX) -> null
-            expectedCodePoint(QUOTE) -> stringEncoder.read(this)
-            expectedCodePoint(LBRACKET) -> listEncoder.read(this)
-            else -> {
-                val className = readUntil(LPAREN)
-                readNextCodePointAndSkipWhitespace()
-                val encoder = encoder(className)
-                if (encoder is ClassStringEncoder) readClass(encoder) else encoder.read(this)
-            }
-        }
+        if (expectedCodePoint(QUOTE)) return readStringBuiltIn()
+        if (expectedCodePoint(LBRACKET)) return readList()
+        val (handled, result, className) = readUntilBuiltIn { expectedCodePoint(LPAREN) }
+        if (handled) return result
+        readNextCodePointAndSkipWhitespace()
+        val encoder = encoder(className)
+        if (encoder is ClassStringEncoder) readClass(encoder) else encoder.read(this)
     }
 
     override fun write(writer: Writer, value: Any?): Unit = TheWriter(writer, 0).writeObject(value)

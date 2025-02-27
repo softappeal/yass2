@@ -111,34 +111,35 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.tutorial.New
 
 /*
     0: "" - built-in
-    1: [] - built-in
-    2: kotlin.Int - base
-    3: ch.softappeal.yass2.tutorial.MyDate - base
-    4: ch.softappeal.yass2.tutorial.Gender - enum
+    1: true/false - built-in
+    2: [] - built-in
+    3: kotlin.Int - base
+    4: ch.softappeal.yass2.tutorial.MyDate - base
+    5: ch.softappeal.yass2.tutorial.Gender - enum
         Female
         Male
-    5: ch.softappeal.yass2.tutorial.Address - class
+    6: ch.softappeal.yass2.tutorial.Address - class
         street: 0
-        number: 2
-    6: ch.softappeal.yass2.tutorial.Person - class
+        number: 3
+    7: ch.softappeal.yass2.tutorial.Person - class
         name: 0
-        gender: 4
-        birthday: 3
-        addresses: 1
-    7: ch.softappeal.yass2.tutorial.DivideByZeroException - class
-    8: ch.softappeal.yass2.tutorial.SubClass - class
+        gender: 5
+        birthday: 4
+        addresses: 2
+    8: ch.softappeal.yass2.tutorial.DivideByZeroException - class
+    9: ch.softappeal.yass2.tutorial.SubClass - class
         baseClassProperty: 0
         subClassProperty: 0
-    9: ch.softappeal.yass2.remote.Request - class
+    10: ch.softappeal.yass2.remote.Request - class
         service: 0
         function: 0
-        parameters: 1
-    10: ch.softappeal.yass2.remote.ValueReply - class
+        parameters: 2
+    11: ch.softappeal.yass2.remote.ValueReply - class
         value: object
-    11: ch.softappeal.yass2.remote.ExceptionReply - class
+    12: ch.softappeal.yass2.remote.ExceptionReply - class
         exception: object
-    12: ch.softappeal.yass2.coroutines.Packet - class
-        requestNumber: 2
+    13: ch.softappeal.yass2.coroutines.Packet - class
+        requestNumber: 3
         message: object
 */
 public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.serialize.string.StringEncoder<*>> = listOf(
@@ -153,7 +154,7 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
         { i ->
             writeProperty("street", i.street, 0)
             startBodyProperties()
-            writeProperty("number", i.number, 2)
+            writeProperty("number", i.number, 3)
         },
         {
             ch.softappeal.yass2.tutorial.Address(
@@ -163,15 +164,15 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
             }
         },
         "street" to -1,
-        "number" to 2,
+        "number" to 3,
     ),
     ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.tutorial.Person::class, false,
         { i ->
             writeProperty("name", i.name, 0)
-            writeProperty("gender", i.gender, 4)
-            writeProperty("birthday", i.birthday, 3)
-            writeProperty("addresses", i.addresses, 1)
+            writeProperty("gender", i.gender, 5)
+            writeProperty("birthday", i.birthday, 4)
+            writeProperty("addresses", i.addresses, 2)
         },
         {
             ch.softappeal.yass2.tutorial.Person(
@@ -182,8 +183,8 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
             )
         },
         "name" to -1,
-        "gender" to 4,
-        "birthday" to 3,
+        "gender" to 5,
+        "birthday" to 4,
         "addresses" to -1,
     ),
     ch.softappeal.yass2.serialize.string.ClassStringEncoder(
@@ -215,7 +216,7 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
         { i ->
             writeProperty("service", i.service, 0)
             writeProperty("function", i.function, 0)
-            writeProperty("parameters", i.parameters, 1)
+            writeProperty("parameters", i.parameters, 2)
         },
         {
             ch.softappeal.yass2.remote.Request(
@@ -255,7 +256,7 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
     ch.softappeal.yass2.serialize.string.ClassStringEncoder(
         ch.softappeal.yass2.coroutines.Packet::class, false,
         { i ->
-            writeProperty("requestNumber", i.requestNumber, 2)
+            writeProperty("requestNumber", i.requestNumber, 3)
             writeProperty("message", i.message)
         },
         {
@@ -264,7 +265,7 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
                 getProperty("message") as ch.softappeal.yass2.remote.Message,
             )
         },
-        "requestNumber" to 2,
+        "requestNumber" to 3,
         "message" to -1,
     ),
 )

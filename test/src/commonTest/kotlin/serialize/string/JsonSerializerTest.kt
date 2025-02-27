@@ -1,10 +1,8 @@
 package ch.softappeal.yass2.serialize.string
 
 import ch.softappeal.yass2.assertFailsMessage
-import ch.softappeal.yass2.contract.B
 import ch.softappeal.yass2.contract.DivideByZeroException
 import ch.softappeal.yass2.contract.Gender
-import ch.softappeal.yass2.contract.Poly
 import ch.softappeal.yass2.contract.ThrowableFake
 import ch.softappeal.yass2.contract.createStringEncoders
 import kotlin.test.Test
@@ -28,7 +26,7 @@ class JsonSerializerTest {
         SERIALIZER.allBaseTypesTest("""
             {
                 "#": "Types",
-                "boolean": "true",
+                "boolean": true,
                 "int": "1",
                 "long": "2",
                 "double": "123.456",
@@ -36,9 +34,10 @@ class JsonSerializerTest {
                 "bytes": "AAEC",
                 "gender": "Female",
                 "list": [
-                    {},
-                    {"#Boolean":"false"},
-                    {"#Int":"1"},
+                    null,
+                    false,
+                    true,
+                    {"#Int":"-1"},
                     {"#Long":"2"},
                     {"#Double":"123.456"},
                     "hello",
@@ -53,9 +52,9 @@ class JsonSerializerTest {
                     ],
                     {
                         "#": "Types",
-                        "boolean": "true",
-                        "int": "1",
-                        "long": "2",
+                        "boolean": true,
+                        "int": "-123456",
+                        "long": "9223372036854775807",
                         "double": "123.456",
                         "string": "hello",
                         "bytes": "AAEC",
@@ -112,7 +111,7 @@ class JsonSerializerTest {
                     "a": "10",
                     "b": "20"
                 },
-                "booleanOptional": "true",
+                "booleanOptional": true,
                 "intOptional": "1",
                 "longOptional": "2",
                 "doubleOptional": "123.456",
@@ -135,12 +134,23 @@ class JsonSerializerTest {
     fun test() {
         dump(
             null,
-            "{}",
-            "  {  }",
+            "null",
+            "  null",
         )
         dump(
             "hello",
             """"hello"""",
+            """  "hello"""",
+        )
+        dump(
+            false,
+            "false",
+            "  false",
+        )
+        dump(
+            true,
+            "true",
+            "  true",
         )
         dump(
             listOf<Int>(),
@@ -154,10 +164,9 @@ class JsonSerializerTest {
             listOf(null),
             """
                 [
-                    {}
+                    null
                 ]
             """.trimIndent(),
-            "  [  {  }  ]",
         )
         dump(
             Gender.Male,
@@ -168,25 +177,6 @@ class JsonSerializerTest {
             123,
             """{"#Int":"123"}""",
             """  {  "#Int"  :  "123"  }""",
-        )
-        dump(
-            Poly(B(1, 2), B(3, 4)),
-            """
-                {
-                    "#": "Poly",
-                    "a": {
-                        "#": "B",
-                        "a": "1",
-                        "b": "2"
-                    },
-                    "b": {
-                        "#": "B",
-                        "a": "3",
-                        "b": "4"
-                    }
-                }
-            """.trimIndent(),
-            """  {  "#"  :  "Poly"  ,  "a"  :  {  "#"  :  "B"  ,  "a"  :  "1"  ,  "b"  :  "2"  }  ,  "b"  :  {   "#"  :  "B"  ,  "a"  :  "3"  ,  "b"  :  "4"  }  }""",
         )
         dump(
             ThrowableFake("hello", "world"),
@@ -224,7 +214,7 @@ class JsonSerializerTest {
             SERIALIZER.readString("""{"#":"A","noSuchProperty":[]}""")
         }
         assertFailsMessage<IllegalStateException>("property 'Types.bOptional' must not be explicitly set to null") {
-            SERIALIZER.readString("""{"#":"Types","bOptional":{}}""")
+            SERIALIZER.readString("""{"#":"Types","bOptional":null}""")
         }
         assertFailsMessage<IllegalStateException>("duplicated property 'A.a'") {
             SERIALIZER.readString("""{"#":"A","a":"1","a":"1"}""")

@@ -4,11 +4,6 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.reflect.KClass
 
-public object BooleanStringEncoder : BaseStringEncoder<Boolean>(Boolean::class,
-    { value -> value.toString() },
-    { toBooleanStrict() }
-)
-
 public object IntStringEncoder : BaseStringEncoder<Int>(Int::class,
     { value -> value.toString() },
     { toInt() }

@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.serialize.string // TODO: review
+package ch.softappeal.yass2.serialize.string
 
 import ch.softappeal.yass2.assertFailsMessage
 import ch.softappeal.yass2.contract.B
@@ -7,6 +7,7 @@ import ch.softappeal.yass2.contract.DivideByZeroException
 import ch.softappeal.yass2.contract.Gender
 import ch.softappeal.yass2.contract.ManyProperties
 import ch.softappeal.yass2.contract.Poly
+import ch.softappeal.yass2.contract.ThrowableFake
 import ch.softappeal.yass2.contract.Types
 import ch.softappeal.yass2.contract.createStringEncoders
 import ch.softappeal.yass2.serialize.Serializer
@@ -31,9 +32,10 @@ val AllBaseTypes =
         bytes = ByteArray("AAEC"),
         gender = Gender.Female(),
         list = listOf(
-            null(),
-            Boolean("false"),
-            Int("1"),
+            null,
+            false,
+            true,
+            Int("-1"),
             Long("2"),
             Double("123.456"),
             "hello",
@@ -48,8 +50,8 @@ val AllBaseTypes =
             ),
             Types(
                 boolean = true,
-                int = 1,
-                long = 2,
+                int = -123456,
+                long = 9223372036854775807,
                 double = 123.456,
                 string = "hello",
                 bytes = ByteArray("AAEC"),
@@ -60,15 +62,15 @@ val AllBaseTypes =
                     a = 1,
                     b = 2,
                 ),
-                booleanOptional = +null(),
-                intOptional = +null(),
-                longOptional = +null(),
-                doubleOptional = +null(),
-                stringOptional = null(),
-                bytesOptional = +null(),
-                genderOptional = +null(),
-                listOptional = null(),
-                bOptional = null(),
+                booleanOptional = null,
+                intOptional = null,
+                longOptional = null,
+                doubleOptional = null,
+                stringOptional = null,
+                bytesOptional = null,
+                genderOptional = null,
+                listOptional = null,
+                bOptional = null,
             ),
             DivideByZeroException(
             ),
@@ -78,7 +80,7 @@ val AllBaseTypes =
                 ).apply {
                     body = BodyProperty(
                     ).apply {
-                        body = null()
+                        body = null
                     }
                 }
             },
@@ -137,9 +139,10 @@ private val AllBaseTypesSerialized = """
         bytes = ByteArray("AAEC"),
         gender = Gender.Female(),
         list = listOf(
-            null(),
-            Boolean("false"),
-            Int("1"),
+            null,
+            false,
+            true,
+            Int("-1"),
             Long("2"),
             Double("123.456"),
             "hello",
@@ -154,8 +157,8 @@ private val AllBaseTypesSerialized = """
             ),
             Types(
                 boolean = true,
-                int = 1,
-                long = 2,
+                int = -123456,
+                long = 9223372036854775807,
                 double = 123.456,
                 string = "hello",
                 bytes = ByteArray("AAEC"),
@@ -166,15 +169,15 @@ private val AllBaseTypesSerialized = """
                     a = 1,
                     b = 2,
                 ),
-                booleanOptional = +null(),
-                intOptional = +null(),
-                longOptional = +null(),
-                doubleOptional = +null(),
-                stringOptional = null(),
-                bytesOptional = +null(),
-                genderOptional = +null(),
-                listOptional = null(),
-                bOptional = null(),
+                booleanOptional = null,
+                intOptional = null,
+                longOptional = null,
+                doubleOptional = null,
+                stringOptional = null,
+                bytesOptional = null,
+                genderOptional = null,
+                listOptional = null,
+                bOptional = null,
             ),
             DivideByZeroException(
             ),
@@ -184,7 +187,7 @@ private val AllBaseTypesSerialized = """
                 ).apply {
                     body = BodyProperty(
                     ).apply {
-                        body = null()
+                        body = null
                     }
                 }
             },
@@ -234,7 +237,9 @@ private val AllBaseTypesSerialized = """
 """.trimIndent()
 
 fun Serializer.allBaseTypesAssert(serialized: ByteArray) {
-    assertContentEquals(serialized, writeBytes(readBytes(serialized)))
+    val allBaseTypes = readBytes(serialized) as Types
+    assertEquals(15, allBaseTypes.list.size)
+    assertContentEquals(serialized, writeBytes(allBaseTypes))
 }
 
 fun StringSerializer.allBaseTypesTest(serialized: String) {
@@ -246,10 +251,9 @@ class KotlinSerializerTest {
     @Test
     fun checkString() {
         fun checkString(string: String, message: String) = checkString(string, message) { KotlinSerializer(it) }
-        checkString(" ", "' ' must not contain whitespace, '\"', ',' or '('")
-        checkString("\"", "'\"' must not contain whitespace, '\"', ',' or '('")
-        checkString(",", "',' must not contain whitespace, '\"', ',' or '('")
-        checkString("(", "'(' must not contain whitespace, '\"', ',' or '('")
+        checkString(" ", "' ' must not contain whitespace, '\"' or ','")
+        checkString("\"", "'\"' must not contain whitespace, '\"' or ','")
+        checkString(",", "',' must not contain whitespace, '\"' or ','")
     }
 
     @Test
@@ -257,18 +261,27 @@ class KotlinSerializerTest {
         SERIALIZER.allBaseTypesTest(AllBaseTypesSerialized)
     }
 
-    @Suppress("SpellCheckingInspection")
     @Test
     fun test() {
         dump(
-            null(),
-            "null()",
-            "  null  (  )",
+            null,
+            "null",
+            "  null",
         )
         dump(
             "hello",
             """"hello"""",
             """  "hello"""",
+        )
+        dump(
+            false,
+            "false",
+            "  false",
+        )
+        dump(
+            true,
+            "true",
+            "  true",
         )
         dump(
             listOf<Int>(),
@@ -282,31 +295,10 @@ class KotlinSerializerTest {
             listOf(null),
             """
                 listOf(
-                    null(),
+                    null,
                 )
             """.trimIndent(),
-            "listOf(null(),)"
-        )
-        dump(
-            Boolean("true"),
-            """Boolean("true")""",
-            """  Boolean  (  "true"  )""",
-        )
-        dump(
-            Int("123"),
-            """Int("123")""",
-            """  Int  (  "123"  )""",
-        )
-        dump(
-            Long("123"),
-            """Long("123")""",
-            """  Long  (  "123"  )""",
-        )
-        assertEquals(123.456, Double("123.456")) // works on JS platform becaue 123.456 is a Double
-        dump(
-            ByteArray("AAEC"),
-            """ByteArray("AAEC")""",
-            """  ByteArray  (  "AAEC"  )""",
+            "listOf(null,)"
         )
         dump(
             Gender.Male(),
@@ -314,20 +306,34 @@ class KotlinSerializerTest {
             "  Gender  .  Male  (  )",
         )
         dump(
-            Poly(B(1, 2), B(3, 4)),
+            Int("123"),
+            """Int("123")""",
+            """  Int  (  "123"  )""",
+        )
+        dump(
+            ThrowableFake("hello", "world"),
             """
-                Poly(
-                    a = B(
-                        a = 1,
-                        b = 2,
-                    ),
-                    b = B(
-                        a = 3,
-                        b = 4,
-                    ),
+                ThrowableFake(
+                    cause = "hello",
+                    message = "world",
                 )
             """.trimIndent(),
-            "  Poly  (  a  =  B  (  a  =  1  ,  b  =  2  ,  )  ,  b  =  B  (  a  =  3  ,  b  =  4  ,  )  ,  )",
+        )
+        dump(
+            ThrowableFake(null, "m"),
+            """
+                ThrowableFake(
+                    cause = null,
+                    message = "m",
+                )
+            """.trimIndent(),
+        )
+        dump(
+            DivideByZeroException(),
+            """
+                DivideByZeroException(
+                )
+            """.trimIndent(),
         )
     }
 
@@ -343,7 +349,7 @@ class KotlinSerializerTest {
             SERIALIZER.readString("A(a=1,a=1,)")
         }
         assertFailsMessage<IllegalStateException>("duplicated property 'Types.stringOptional'") {
-            SERIALIZER.readString("Types(stringOptional=null(),stringOptional=null(),)")
+            SERIALIZER.readString("Types(stringOptional=null,stringOptional=null,)")
         }
     }
 }

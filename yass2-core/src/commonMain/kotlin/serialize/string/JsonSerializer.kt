@@ -55,33 +55,24 @@ public class JsonSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
         }
 
         fun writeObject(value: Any?) {
-            when (value) {
-                null -> {
-                    writeByte(LBRACE)
-                    writeByte(RBRACE)
+            if (writeBuiltIn(value)) return
+            writeByte(LBRACE)
+            val encoder = encoder(value!!::class)
+            val className = encoder.type.simpleName!!
+            if (encoder is ClassStringEncoder) {
+                with(nested()) {
+                    writeNewLine()
+                    writeKey(HASH.toString())
+                    writeQuoted(className)
+                    encoder.write(this, value)
+                    writeNewLine()
                 }
-                is String -> stringEncoder.write(this, value)
-                is List<*> -> listEncoder.write(this, value)
-                else -> {
-                    writeByte(LBRACE)
-                    val encoder = encoder(value::class)
-                    val name = encoder.type.simpleName!!
-                    if (encoder is ClassStringEncoder) {
-                        with(nested()) {
-                            writeNewLine()
-                            writeKey(HASH.toString())
-                            writeQuoted(name)
-                            encoder.write(this, value)
-                            writeNewLine()
-                        }
-                        writeIndent()
-                    } else {
-                        writeKey("$HASH$name", false)
-                        encoder.writeQuoted(value)
-                    }
-                    writeByte(RBRACE)
-                }
+                writeIndent()
+            } else {
+                writeKey("$HASH$className", false)
+                encoder.writeQuoted(value)
             }
+            writeByte(RBRACE)
         }
 
         private fun writeProperty(name: String, value: Any?, writeValue: () -> Unit) {
@@ -98,17 +89,13 @@ public class JsonSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
 
         override fun writeProperty(name: String, value: Any?, encoderId: Int) {
             writeProperty(name, value) {
-                when (encoderId) {
-                    STRING_ENCODER_ID -> stringEncoder.write(this, value)
-                    LIST_ENCODER_ID -> listEncoder.write(this, value)
-                    else -> encoder(encoderId).writeQuoted(value)
-                }
+                if (writePropertyBuiltIn(value, encoderId)) encoder(encoderId).writeQuoted(value)
             }
         }
     }
 
     private inner class TheReader(reader: Reader, nextCodePoint: Int) : StringReader(reader, nextCodePoint) {
-        override fun readList() = buildList {
+        fun readList(): List<*> = buildList {
             readNextCodePointAndSkipWhitespace()
             var first = true
             while (!expectedCodePoint(RBRACKET)) {
@@ -159,34 +146,36 @@ public class JsonSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
     private fun readObject(reader: Reader, nextCodePoint: Int) = with(TheReader(reader, nextCodePoint)) {
         skipWhitespace()
         when {
-            expectedCodePoint(QUOTE) -> stringEncoder.read(this)
-            expectedCodePoint(LBRACKET) -> listEncoder.read(this)
+            expectedCodePoint(QUOTE) -> readStringBuiltIn()
+            expectedCodePoint(LBRACKET) -> readList()
             expectedCodePoint(LBRACE) -> {
                 readNextCodePointAndSkipWhitespace()
-                if (expectedCodePoint(RBRACE)) null else {
-                    val type = readKey()
-                    readNextCodePointAndSkipWhitespace()
+                val type = readKey()
+                readNextCodePointAndSkipWhitespace()
+                checkExpectedCodePoint(QUOTE)
+                readNextCodePoint()
+                check(type.isNotEmpty()) { "empty type" }
+                check(type[0] == HASH) { "'$HASH' expected" }
+                if (type.length > 1) {
+                    val className = type.substring(1)
+                    val encoder = encoder(className)
+                    check(encoder !is ClassStringEncoder) { "is ClassStringEncoder" }
+                    val value = encoder.read(this)
                     checkExpectedCodePoint(QUOTE)
-                    readNextCodePoint()
-                    check(type.isNotEmpty()) { "empty type" }
-                    check(type[0] == HASH) { "'$HASH' expected" }
-                    if (type.length > 1) {
-                        val className = type.substring(1)
-                        val encoder = encoder(className)
-                        check(encoder !is ClassStringEncoder) { "is ClassStringEncoder" }
-                        val value = encoder.read(this)
-                        checkExpectedCodePoint(QUOTE)
-                        readNextCodePointAndSkipWhitespace()
-                        checkExpectedCodePoint(RBRACE)
-                        value
-                    } else {
-                        val className = readString()
-                        readNextCodePointAndSkipWhitespace()
-                        readClass(encoder(className) as ClassStringEncoder)
-                    }
+                    readNextCodePointAndSkipWhitespace()
+                    checkExpectedCodePoint(RBRACE)
+                    value
+                } else {
+                    val className = readString()
+                    readNextCodePointAndSkipWhitespace()
+                    readClass(encoder(className) as ClassStringEncoder)
                 }
             }
-            else -> error("unexpected codePoint $nextCodePoint")
+            else -> {
+                val (handled, result, _) = readUntilBuiltIn { false }
+                if (!handled) error("unexpected codePoint $nextCodePoint")
+                result
+            }
         }
     }
 

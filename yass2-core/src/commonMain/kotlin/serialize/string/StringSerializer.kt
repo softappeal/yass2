@@ -17,6 +17,9 @@ private const val BS = '\\'.code
 private const val NL = '\n'.code
 private const val CR = '\r'.code
 private const val TAB = '\t'.code
+private const val NULL = "null"
+private const val TRUE = "true"
+private const val FALSE = "false"
 
 public fun Int.isWhitespace(): Boolean = this == SP || this == TAB || this == NL || this == CR
 
@@ -34,7 +37,42 @@ private const val S_BS_TAB = S_BS + "t"
 private val Tab = ByteArray(4) { SP.toByte() }
 
 public abstract class StringWriter(private val writer: Writer, protected val indent: Int) : Writer by writer {
-    public abstract fun writeList(list: List<*>)
+    protected abstract fun writeList(list: List<*>)
+
+    private fun writeStringBuiltIn(string: String) {
+        writeByte(QUOTE)
+        writeString(
+            string
+                .replace(S_BS, S_BS_BS) // must be first!
+                .replace(S_QUOTE, S_BS_QUOTE)
+                .replace(S_NL, S_BS_NL)
+                .replace(S_CR, S_BS_CR)
+                .replace(S_TAB, S_BS_TAB)
+        )
+        writeByte(QUOTE)
+    }
+
+    protected fun writeBuiltIn(value: Any?): Boolean {
+        when (value) {
+            null -> writeString(NULL)
+            false -> writeString(FALSE)
+            true -> writeString(TRUE)
+            is String -> writeStringBuiltIn(value)
+            is List<*> -> writeList(value)
+            else -> return false
+        }
+        return true
+    }
+
+    protected fun writePropertyBuiltIn(value: Any?, encoderId: Int): Boolean {
+        when (encoderId) {
+            STRING_ENCODER_ID -> writeStringBuiltIn(value as String)
+            BOOLEAN_ENCODER_ID -> writeString(if (value as Boolean) TRUE else FALSE)
+            LIST_ENCODER_ID -> writeList(value as List<*>)
+            else -> return true
+        }
+        return false
+    }
 
     public fun writeByte(asciiCodePoint: Int) {
         writeByte(asciiCodePoint.toByte())
@@ -64,7 +102,26 @@ public abstract class StringWriter(private val writer: Writer, protected val ind
 }
 
 public abstract class StringReader(private val reader: Reader, private var _nextCodePoint: Int) : Reader by reader {
-    public abstract fun readList(): List<*>
+    public fun readStringBuiltIn(): String = buildString {
+        while (true) {
+            readNextCodePoint()
+            when {
+                expectedCodePoint(QUOTE) -> break
+                expectedCodePoint(BS) -> {
+                    readNextCodePoint()
+                    when {
+                        expectedCodePoint(QUOTE) -> append(QUOTE.toChar())
+                        expectedCodePoint(BS) -> append(BS.toChar())
+                        expectedCodePoint('n'.code) -> append(NL.toChar())
+                        expectedCodePoint('r'.code) -> append(CR.toChar())
+                        expectedCodePoint('t'.code) -> append(TAB.toChar())
+                        else -> error("illegal escape with codePoint $nextCodePoint")
+                    }
+                }
+                else -> addCodePoint(nextCodePoint)
+            }
+        }
+    }
 
     public val nextCodePoint: Int get() = _nextCodePoint
     public fun expectedCodePoint(codePoint: Int): Boolean = _nextCodePoint == codePoint
@@ -76,7 +133,7 @@ public abstract class StringReader(private val reader: Reader, private var _next
         check(expectedCodePoint(codePoint)) { "'${codePoint.toChar()}' expected instead of '${nextCodePoint.toChar()}'" }
     }
 
-    protected fun isWhitespace(): Boolean = nextCodePoint.isWhitespace()
+    private fun isWhitespace() = nextCodePoint.isWhitespace()
 
     public fun skipWhitespace() {
         while (isWhitespace()) readNextCodePoint()
@@ -88,6 +145,35 @@ public abstract class StringReader(private val reader: Reader, private var _next
     }
 
     public abstract fun readString(): String
+
+    public fun readUntil(isEnd: () -> Boolean): String = buildString {
+        while (!isEnd() && !isWhitespace()) {
+            addCodePoint(nextCodePoint)
+            readNextCodePoint()
+        }
+        skipWhitespace()
+    }
+
+    public data class ReadUntilBuiltInResult(val handled: Boolean, val result: Boolean?, val className: String)
+
+    public fun readUntilBuiltIn(isEnd: () -> Boolean): ReadUntilBuiltInResult {
+        val className = buildString {
+            while (!isEnd() && !isWhitespace()) {
+                addCodePoint(nextCodePoint)
+                val head = toString()
+                if (NULL == head || FALSE == head || TRUE == head) return@buildString
+                readNextCodePoint()
+            }
+            skipWhitespace()
+        }
+        @Suppress("BooleanLiteralArgument")
+        return when (className) {
+            NULL -> ReadUntilBuiltInResult(true, null, className)
+            FALSE -> ReadUntilBuiltInResult(true, false, className)
+            TRUE -> ReadUntilBuiltInResult(true, true, className)
+            else -> ReadUntilBuiltInResult(false, null, className)
+        }
+    }
 
     private val properties = mutableMapOf<String, Any?>()
 
@@ -151,50 +237,13 @@ public class ClassStringEncoder<T : Any>(
 
 /** It reads/writes UTF-8 encoded strings. */
 public abstract class StringSerializer(stringEncoders: List<StringEncoder<*>>) : Serializer {
-    protected val stringEncoder: StringEncoder<String> = StringEncoder(String::class,
-        { string ->
-            writeByte(QUOTE)
-            writeString(
-                string
-                    .replace(S_BS, S_BS_BS) // must be first!
-                    .replace(S_QUOTE, S_BS_QUOTE)
-                    .replace(S_NL, S_BS_NL)
-                    .replace(S_CR, S_BS_CR)
-                    .replace(S_TAB, S_BS_TAB)
-            )
-            writeByte(QUOTE)
-        },
-        {
-            buildString {
-                while (true) {
-                    readNextCodePoint()
-                    when {
-                        expectedCodePoint(QUOTE) -> break
-                        expectedCodePoint(BS) -> {
-                            readNextCodePoint()
-                            when {
-                                expectedCodePoint(QUOTE) -> append(QUOTE.toChar())
-                                expectedCodePoint(BS) -> append(BS.toChar())
-                                expectedCodePoint('n'.code) -> append(NL.toChar())
-                                expectedCodePoint('r'.code) -> append(CR.toChar())
-                                expectedCodePoint('t'.code) -> append(TAB.toChar())
-                                else -> error("illegal escape with codePoint $nextCodePoint")
-                            }
-                        }
-                        else -> addCodePoint(nextCodePoint)
-                    }
-                }
-            }
-        }
-    )
-
-    protected val listEncoder: StringEncoder<List<*>> = StringEncoder(List::class,
-        { list -> writeList(list) },
-        { readList() }
-    )
-
-    /** See [STRING_ENCODER_ID] and [LIST_ENCODER_ID]. */
-    private val encoders = (listOf(stringEncoder, listEncoder) + stringEncoders).toTypedArray()
+    /** See [STRING_ENCODER_ID], [BOOLEAN_ENCODER_ID] and [LIST_ENCODER_ID]. */
+    private val encoders = (listOf(
+        // placeholders, methods are never called
+        StringEncoder(String::class, {}, { "" }),
+        StringEncoder(Boolean::class, {}, { false }),
+        StringEncoder(List::class, {}, { listOf<Int>() }),
+    ) + stringEncoders).toTypedArray()
     private val type2encoder = HashMap<KClass<*>, StringEncoder<*>>(encoders.size)
     private val className2encoder = HashMap<String, StringEncoder<*>>(encoders.size)
 
@@ -215,8 +264,9 @@ public abstract class StringSerializer(stringEncoders: List<StringEncoder<*>>) :
 
 public const val NO_ENCODER_ID: Int = -1
 public const val STRING_ENCODER_ID: Int = 0
-public const val LIST_ENCODER_ID: Int = 1
-public const val FIRST_ENCODER_ID: Int = 2
+public const val BOOLEAN_ENCODER_ID: Int = 1
+public const val LIST_ENCODER_ID: Int = 2
+public const val FIRST_ENCODER_ID: Int = 3
 
 @InternalApi
 public class StringProperty(
@@ -226,6 +276,7 @@ public class StringProperty(
 ) : Property(property, returnType) {
     private val encoderId = when (classifier) {
         String::class -> STRING_ENCODER_ID
+        Boolean::class -> BOOLEAN_ENCODER_ID
         List::class -> LIST_ENCODER_ID
         else -> {
             val baseClassIndex = baseClasses.indexOfFirst { it == classifier }
@@ -237,7 +288,12 @@ public class StringProperty(
         "writeProperty(\"$name\", $reference${if (encoderId == NO_ENCODER_ID) "" else ", $encoderId"})"
 
     public fun propertyEncoderId(): String = "\"$name\" to ${
-        if (encoderId != NO_ENCODER_ID && encoderId != STRING_ENCODER_ID && encoderId != LIST_ENCODER_ID) encoderId else NO_ENCODER_ID
+        if (
+            encoderId != NO_ENCODER_ID &&
+            encoderId != STRING_ENCODER_ID &&
+            encoderId != BOOLEAN_ENCODER_ID &&
+            encoderId != LIST_ENCODER_ID
+        ) encoderId else NO_ENCODER_ID
     }"
 
     public fun meta(): String = if (encoderId == NO_ENCODER_ID) "object" else encoderId.toString()
