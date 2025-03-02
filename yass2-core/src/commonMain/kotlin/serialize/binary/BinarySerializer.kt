@@ -18,7 +18,7 @@ public open class BinaryEncoder<T : Any>(
     public fun read(reader: Reader): T = reader.read()
 }
 
-/** Has built-in encoders for null and [List]. */
+/** Has built-in encoders for `null` and [List]. */
 public abstract class BinarySerializer : Serializer {
     private data class EncoderId(val id: Int, val encoder: BinaryEncoder<*>)
 

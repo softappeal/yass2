@@ -12,6 +12,9 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 
 public const val QUOTE: Int = '"'.code
+public const val COMMA: Int = ','.code
+public const val LPAREN: Int = '('.code
+public const val RPAREN: Int = ')'.code
 public const val SP: Int = ' '.code
 private const val BS = '\\'.code
 private const val NL = '\n'.code
@@ -78,8 +81,6 @@ public abstract class StringWriter(private val writer: Writer, protected val ind
         writeByte(asciiCodePoint.toByte())
     }
 
-    public abstract fun checkString(string: String)
-
     public fun writeString(string: String) {
         writeBytes(string.encodeToByteArray(throwOnInvalidSequence = true))
     }
@@ -144,7 +145,9 @@ public abstract class StringReader(private val reader: Reader, private var _next
         skipWhitespace()
     }
 
-    public abstract fun readString(): String
+    /** @see BaseStringEncoder */
+    public fun readBaseString(): String =
+        readUntil { expectedCodePoint(QUOTE) || expectedCodePoint(COMMA) || expectedCodePoint(RPAREN) }
 
     public fun readUntil(isEnd: () -> Boolean): String = buildString {
         while (!isEnd() && !isWhitespace()) {
@@ -205,11 +208,21 @@ public open class StringEncoder<T : Any>(
 
 public abstract class BaseStringEncoder<T : Any>(
     type: KClass<T>,
+    /**
+     * Result string must not contain whitespace, `"`, `,` or `)`.
+     * @see StringReader.readBaseString
+     */
     public val write: (value: T) -> String,
     private val read: String.() -> T,
 ) : StringEncoder<T>(type,
-    { value -> writeString(write(value).apply { checkString(this) }) },
-    { readString().read() }
+    { value ->
+        writeString(write(value).apply {
+            check(indexOfFirst { it.code.isWhitespace() || it.code == QUOTE || it.code == COMMA || it.code == RPAREN } < 0) {
+                "'$this' must not contain whitespace, '${QUOTE.toChar()}', '${COMMA.toChar()}' or '${RPAREN.toChar()}'"
+            }
+        })
+    },
+    { readBaseString().read() }
 ) {
     public fun read(string: String): T = string.read()
 }
@@ -235,9 +248,11 @@ public class ClassStringEncoder<T : Any>(
     }
 }
 
-/** It reads/writes UTF-8 encoded strings. */
+/**
+ * It reads/writes UTF-8 encoded strings.
+ * It has built-in encoders for `null`, [String], [Boolean] and [List].
+ */
 public abstract class StringSerializer(stringEncoders: List<StringEncoder<*>>) : Serializer {
-    /** See [STRING_ENCODER_ID], [BOOLEAN_ENCODER_ID] and [LIST_ENCODER_ID]. */
     private val encoders = (listOf(
         // placeholders, methods are never called
         StringEncoder(String::class, {}, { "" }),

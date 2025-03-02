@@ -14,12 +14,6 @@ private val SERIALIZER = JsonSerializer(createStringEncoders())
 private fun dump(value: Any?, serialized: String, vararg others: String) = SERIALIZER.dump(value, serialized, *others)
 
 class JsonSerializerTest {
-    @Test
-    fun checkString() {
-        fun checkString(string: String, message: String) = checkString(string, message) { JsonSerializer(it) }
-        checkString("\"", "'\"' must not contain '\"'")
-    }
-
     @Suppress("SpellCheckingInspection")
     @Test
     fun allBaseTypes() {

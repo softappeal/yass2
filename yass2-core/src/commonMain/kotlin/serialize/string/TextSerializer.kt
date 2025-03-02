@@ -3,12 +3,9 @@ package ch.softappeal.yass2.serialize.string
 import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Writer
 
-private const val COMMA = ','.code
 private const val COLON = ':'.code
-private const val LBRACKET = '['.code // list
-private const val RBRACKET = ']'.code // list
-private const val LPAREN = '('.code // object
-private const val RPAREN = ')'.code // object
+private const val LBRACKET = '['.code
+private const val RBRACKET = ']'.code
 
 public class TextSerializer(encoders: List<StringEncoder<*>>) : StringSerializer(encoders) {
     private inner class TheWriter(writer: Writer, indent: Int) : StringWriter(writer, indent) {
@@ -24,13 +21,6 @@ public class TextSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
             writeNewLine()
             writeIndent()
             writeByte(RBRACKET)
-        }
-
-        /** See [TheReader.readString]. */
-        override fun checkString(string: String) {
-            check(string.indexOfFirst { it.code.isWhitespace() || it.code == COMMA || it.code == RPAREN } < 0) {
-                "'$string' must not contain whitespace, '${COMMA.toChar()}' or '${RPAREN.toChar()}'"
-            }
         }
 
         private fun nested() = TheWriter(this, indent + 1)
@@ -78,8 +68,6 @@ public class TextSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
                 if (expectedCodePoint(COMMA)) readNextCodePointAndSkipWhitespace()
             }
         }
-
-        override fun readString() = readUntil { expectedCodePoint(COMMA) || expectedCodePoint(RPAREN) }
 
         fun readClass(encoder: ClassStringEncoder<*>): Any {
             while (!expectedCodePoint(RPAREN)) {

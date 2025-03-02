@@ -259,11 +259,11 @@ public abstract class ch/softappeal/yass2/serialize/string/StringReader : ch/sof
 	public final fun expectedCodePoint (I)Z
 	public final fun getNextCodePoint ()I
 	public final fun getProperty (Ljava/lang/String;)Ljava/lang/Object;
+	public final fun readBaseString ()Ljava/lang/String;
 	public fun readByte ()B
 	public fun readBytes (I)[B
 	public final fun readNextCodePoint ()V
 	public final fun readNextCodePointAndSkipWhitespace ()V
-	public abstract fun readString ()Ljava/lang/String;
 	public final fun readStringBuiltIn ()Ljava/lang/String;
 	public final fun readUntil (Lkotlin/jvm/functions/Function0;)Ljava/lang/String;
 	public final fun readUntilBuiltIn (Lkotlin/jvm/functions/Function0;)Lch/softappeal/yass2/serialize/string/StringReader$ReadUntilBuiltInResult;
@@ -294,10 +294,13 @@ public abstract class ch/softappeal/yass2/serialize/string/StringSerializer : ch
 
 public final class ch/softappeal/yass2/serialize/string/StringSerializerKt {
 	public static final field BOOLEAN_ENCODER_ID I
+	public static final field COMMA I
 	public static final field FIRST_ENCODER_ID I
 	public static final field LIST_ENCODER_ID I
+	public static final field LPAREN I
 	public static final field NO_ENCODER_ID I
 	public static final field QUOTE I
+	public static final field RPAREN I
 	public static final field SP I
 	public static final field STRING_ENCODER_ID I
 	public static final fun isWhitespace (I)Z
@@ -307,7 +310,6 @@ public final class ch/softappeal/yass2/serialize/string/StringSerializerKt {
 
 public abstract class ch/softappeal/yass2/serialize/string/StringWriter : ch/softappeal/yass2/serialize/Writer {
 	public fun <init> (Lch/softappeal/yass2/serialize/Writer;I)V
-	public abstract fun checkString (Ljava/lang/String;)V
 	protected final fun getIndent ()I
 	public fun startBodyProperties ()V
 	protected final fun writeBuiltIn (Ljava/lang/Object;)Z

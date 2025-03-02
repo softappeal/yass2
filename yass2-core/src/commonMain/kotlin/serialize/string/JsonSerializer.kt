@@ -3,13 +3,12 @@ package ch.softappeal.yass2.serialize.string
 import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Writer
 
-private const val COMMA = ','.code
 private const val COLON = ':'.code
 private const val HASH = '#' // type
-private const val LBRACKET = '['.code // list
-private const val RBRACKET = ']'.code // list
-private const val LBRACE = '{'.code // object
-private const val RBRACE = '}'.code // object
+private const val LBRACKET = '['.code
+private const val RBRACKET = ']'.code
+private const val LBRACE = '{'.code
+private const val RBRACE = '}'.code
 
 public class JsonSerializer(encoders: List<StringEncoder<*>>) : StringSerializer(encoders) {
     private inner class TheWriter(writer: Writer, indent: Int) : StringWriter(writer, indent) {
@@ -26,11 +25,6 @@ public class JsonSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
             writeNewLine()
             writeIndent()
             writeByte(RBRACKET)
-        }
-
-        /** See [TheReader.readString]. */
-        override fun checkString(string: String) {
-            check(!string.contains(QUOTE.toChar())) { "'$string' must not contain '${QUOTE.toChar()}'" }
         }
 
         private fun nested() = TheWriter(this, indent + 1)
@@ -108,17 +102,10 @@ public class JsonSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
             }
         }
 
-        override fun readString() = buildString {
-            while (!expectedCodePoint(QUOTE)) {
-                addCodePoint(nextCodePoint)
-                readNextCodePoint()
-            }
-        }
-
         fun readKey(): String {
             checkExpectedCodePoint(QUOTE)
             readNextCodePoint()
-            val key = readString()
+            val key = readBaseString()
             readNextCodePointAndSkipWhitespace()
             checkExpectedCodePoint(COLON)
             return key
@@ -166,7 +153,7 @@ public class JsonSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
                     checkExpectedCodePoint(RBRACE)
                     value
                 } else {
-                    val className = readString()
+                    val className = readBaseString()
                     readNextCodePointAndSkipWhitespace()
                     readClass(encoder(className) as ClassStringEncoder)
                 }

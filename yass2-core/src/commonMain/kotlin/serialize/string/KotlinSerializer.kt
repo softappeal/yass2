@@ -3,11 +3,8 @@ package ch.softappeal.yass2.serialize.string
 import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Writer
 
-private const val COMMA = ','.code
 private const val EQUALS = '='.code
 private const val DOT = '.'.code
-private const val LPAREN = '('.code
-private const val RPAREN = ')'.code
 private const val LBRACE = '{'.code
 private const val RBRACE = '}'.code
 private const val LIST = "listOf"
@@ -29,13 +26,6 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
             writeNewLine()
             writeIndent()
             writeByte(RPAREN)
-        }
-
-        /** See [TheReader.readString]. */
-        override fun checkString(string: String) {
-            check(string.indexOfFirst { it.code.isWhitespace() || it.code == QUOTE || it.code == COMMA } < 0) {
-                "'$string' must not contain whitespace, '${QUOTE.toChar()}' or '${COMMA.toChar()}'"
-            }
         }
 
         private fun nested() = TheWriter(this, indent + 1)
@@ -118,8 +108,6 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
             }
         }
 
-        override fun readString() = readUntil { expectedCodePoint(QUOTE) || expectedCodePoint(COMMA) }
-
         fun readClass(encoder: ClassStringEncoder<*>): Any {
             fun properties(apply: Boolean) {
                 while (!expectedCodePoint(if (apply) RBRACE else RPAREN)) {
@@ -199,11 +187,10 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
     override fun read(reader: Reader): Any? = readObject(reader, reader.readCodePoint())
 }
 
-// NOTE: The functions below are needed for easy parsing of Kotlin source code.
+public operator fun <E : Enum<E>> E.invoke(): E = this // NOTE: needed for easy parsing of enums
 
+/** NOTE: Provide a `constructor` for each [BaseStringEncoder] (needed for easy parsing of base types). */
 public fun Int(string: String): Int = IntStringEncoder.read(string)
 public fun Long(string: String): Long = LongStringEncoder.read(string)
 public fun Double(string: String): Double = DoubleStringEncoder.read(string)
 public fun ByteArray(string: String): ByteArray = ByteArrayStringEncoder.read(string)
-
-public operator fun <E : Enum<E>> E.invoke(): E = this

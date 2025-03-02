@@ -24,15 +24,6 @@ fun StringSerializer.dump(value: Any?, serialized: String, vararg others: String
     others.forEach { write(readString(it)) }
 }
 
-fun checkString(string: String, message: String, createSerializer: (encoders: List<StringEncoder<*>>) -> StringSerializer) {
-    assertFailsMessage<IllegalStateException>(message) {
-        createSerializer(listOf(object : BaseStringEncoder<Long>(Long::class,
-            { string },
-            { 0L }
-        ) {})).writeBytes(0L)
-    }
-}
-
 private class Int
 private object MyIntEncoder : StringEncoder<Int>(Int::class, {}, { Int() })
 
@@ -42,11 +33,19 @@ private fun dump(value: Any?, serialized: String, vararg others: String) = SERIA
 
 class TextSerializerTest {
     @Test
-    fun checkString() {
-        fun checkString(string: String, message: String) = checkString(string, message) { TextSerializer(it) }
-        checkString(" ", "' ' must not contain whitespace, ',' or ')'")
-        checkString(")", "')' must not contain whitespace, ',' or ')'")
-        checkString(",", "',' must not contain whitespace, ',' or ')'")
+    fun checkBaseString() {
+        fun checkBaseString(string: String, message: String) {
+            assertFailsMessage<IllegalStateException>(message) {
+                TextSerializer(listOf(object : BaseStringEncoder<Long>(Long::class,
+                    { string },
+                    { 0L }
+                ) {})).writeBytes(0L)
+            }
+        }
+        checkBaseString(" ", "' ' must not contain whitespace, '\"', ',' or ')'")
+        checkBaseString("\"", "'\"' must not contain whitespace, '\"', ',' or ')'")
+        checkBaseString(",", "',' must not contain whitespace, '\"', ',' or ')'")
+        checkBaseString(")", "')' must not contain whitespace, '\"', ',' or ')'")
     }
 
     @Suppress("SpellCheckingInspection")

@@ -249,14 +249,6 @@ fun StringSerializer.allBaseTypesTest(serialized: String) {
 
 class KotlinSerializerTest {
     @Test
-    fun checkString() {
-        fun checkString(string: String, message: String) = checkString(string, message) { KotlinSerializer(it) }
-        checkString(" ", "' ' must not contain whitespace, '\"' or ','")
-        checkString("\"", "'\"' must not contain whitespace, '\"' or ','")
-        checkString(",", "',' must not contain whitespace, '\"' or ','")
-    }
-
-    @Test
     fun allBaseTypes() {
         SERIALIZER.allBaseTypesTest(AllBaseTypesSerialized)
     }
