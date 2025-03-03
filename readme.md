@@ -53,6 +53,8 @@ yass2-ktor --> Ktor
 
 * artifacts on [Maven Central](https://central.sonatype.com/search?q=g:ch.softappeal.yass2) (GroupId: ch.softappeal.yass2)
 
+* API doc on [javadoc.io](https://javadoc.io/doc/ch.softappeal.yass2/yass2-core-jvm/latest)
+
 * uses [Semantic Versioning](https://semver.org)
 
 * [Tutorial](tutorial/src)

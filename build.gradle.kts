@@ -2,6 +2,7 @@
 
 @file:Suppress("SpellCheckingInspection")
 
+import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import java.util.regex.Pattern
 
@@ -18,6 +19,7 @@ plugins {
     alias(libs.plugins.multiplatform)
     id("maven-publish")
     signing
+    alias(libs.plugins.dokka)
 }
 
 val libraries = libs
@@ -26,6 +28,7 @@ allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
     apply(plugin = "maven-publish")
     apply(plugin = "signing")
+    apply(plugin = "org.jetbrains.dokka")
 
     group = "ch.softappeal.yass2"
 
@@ -34,7 +37,9 @@ allprojects {
     }
 
     tasks.register<Jar>("javadocJar") {
+        dependsOn(rootProject.tasks.dokkaGenerate)
         archiveClassifier.set("javadoc")
+        from("$rootDir/build/dokka/html")
     }
 
     kotlin {
@@ -88,6 +93,17 @@ allprojects {
         }
         signing {
             sign(project.publishing.publications)
+        }
+    }
+
+    dokka {
+        dokkaPublications.html {
+            failOnWarning.set(true)
+        }
+        dokkaSourceSets {
+            configureEach {
+                documentedVisibilities(VisibilityModifier.Public, VisibilityModifier.Protected)
+            }
         }
     }
 }
@@ -170,6 +186,13 @@ project(":tutorial") {
             }
         }
     }
+}
+
+dependencies {
+    dokka(coreProject)
+    dokka(coroutinesProject)
+    dokka(ktorProject)
+    dokka(generateProject)
 }
 
 tasks.register("publishYass2") {
