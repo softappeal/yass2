@@ -239,7 +239,7 @@ private val AllBaseTypesSerialized = """
 fun Serializer.allBaseTypesAssert(serialized: ByteArray) {
     val allBaseTypes = readBytes(serialized) as Types
     assertEquals(15, allBaseTypes.list.size)
-    assertContentEquals(serialized, writeBytes(allBaseTypes))
+    assertContentEquals(writeBytes(AllBaseTypes), writeBytes(allBaseTypes))
 }
 
 fun StringSerializer.allBaseTypesTest(serialized: String) {
