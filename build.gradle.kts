@@ -19,6 +19,7 @@ plugins {
     id("maven-publish")
     signing
     alias(libs.plugins.binary.compatibility.validator)
+    alias(libs.plugins.dokka)
 }
 
 apiValidation {
@@ -32,6 +33,7 @@ allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
     apply(plugin = "maven-publish")
     apply(plugin = "signing")
+    apply(plugin = "org.jetbrains.dokka")
 
     group = "ch.softappeal.yass2"
 
@@ -178,6 +180,13 @@ project(":tutorial") {
             }
         }
     }
+}
+
+dependencies { // run task dokkaGenerate
+    dokka(coreProject)
+    dokka(coroutinesProject)
+    dokka(ktorProject)
+    dokka(generateProject)
 }
 
 tasks.register("publishYass2") {
