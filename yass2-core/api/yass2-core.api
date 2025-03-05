@@ -252,7 +252,6 @@ public class ch/softappeal/yass2/serialize/string/StringEncoder {
 
 public abstract class ch/softappeal/yass2/serialize/string/StringReader : ch/softappeal/yass2/serialize/Reader {
 	public fun <init> (Lch/softappeal/yass2/serialize/Reader;I)V
-	protected final fun addNullableProperty (Lch/softappeal/yass2/serialize/string/ClassStringEncoder;Ljava/lang/String;Ljava/lang/Object;)V
 	protected final fun addProperty (Lch/softappeal/yass2/serialize/string/ClassStringEncoder;Ljava/lang/String;Ljava/lang/Object;)V
 	public final fun checkExpectedCodePoint (I)V
 	protected final fun checkMissingProperties (Lch/softappeal/yass2/serialize/string/ClassStringEncoder;)V

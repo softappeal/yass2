@@ -131,7 +131,7 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
                         else -> readObject(this, nextCodePoint).apply { readNextCodePoint() }
                     }
                     skipWhitespace()
-                    encoder.addNullableProperty(name, value)
+                    encoder.addProperty(name, value)
                     if (!apply) {
                         checkExpectedCodePoint(COMMA)
                         readNextCodePointAndSkipWhitespace()

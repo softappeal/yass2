@@ -181,11 +181,6 @@ public abstract class StringReader(private val reader: Reader, private var _next
     private val properties = mutableMapOf<String, Any?>()
 
     protected fun ClassStringEncoder<*>.addProperty(name: String, value: Any?) {
-        check(value != null) { "property '${type.simpleName}.$name' must not be explicitly set to null" }
-        check(properties.put(name, value) == null) { "duplicated property '${type.simpleName}.$name'" }
-    }
-
-    protected fun ClassStringEncoder<*>.addNullableProperty(name: String, value: Any?) {
         check(!properties.containsKey(name)) { "duplicated property '${type.simpleName}.$name'" }
         properties[name] = value
     }
@@ -193,7 +188,8 @@ public abstract class StringReader(private val reader: Reader, private var _next
     public fun getProperty(property: String): Any? = properties[property]
 
     protected fun ClassStringEncoder<*>.checkMissingProperties() {
-        checkMissingProperties(properties.keys)
+        val missingProperties = property2encoderId.keys - properties.keys
+        check(missingProperties.isEmpty()) { "missing properties '${missingProperties.sorted()}' for '${type.simpleName}'" }
     }
 }
 
@@ -235,16 +231,11 @@ public class ClassStringEncoder<T : Any>(
     /** see [NO_ENCODER_ID] */
     vararg propertyEncoderIds: Pair<String, Int>,
 ) : StringEncoder<T>(type, write, read) {
-    private val property2encoderId = propertyEncoderIds.toMap()
+    internal val property2encoderId = propertyEncoderIds.toMap()
     public fun encoderId(property: String): Int {
         val encoderId = property2encoderId[property]
         check(encoderId != null) { "no property '${type.simpleName}.$property'" }
         return encoderId
-    }
-
-    internal fun checkMissingProperties(properties: Set<String>) {
-        val missingProperties = property2encoderId.keys - properties
-        check(missingProperties.isEmpty()) { "missing properties '${missingProperties.sorted()}' for '${type.simpleName}'" }
     }
 }
 

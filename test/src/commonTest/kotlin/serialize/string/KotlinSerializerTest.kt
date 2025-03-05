@@ -340,8 +340,5 @@ class KotlinSerializerTest {
         assertFailsMessage<IllegalStateException>("duplicated property 'A.a'") {
             SERIALIZER.readString("A(a=1,a=1,)")
         }
-        assertFailsMessage<IllegalStateException>("duplicated property 'Types.stringOptional'") {
-            SERIALIZER.readString("Types(stringOptional=null,stringOptional=null,)")
-        }
     }
 }

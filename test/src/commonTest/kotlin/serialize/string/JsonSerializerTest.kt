@@ -204,11 +204,9 @@ class JsonSerializerTest {
     @Test
     fun properties() {
         assertNull((SERIALIZER.readString("""{"#":"ThrowableFake","message":"hello"}""") as ThrowableFake).cause) // implicit null
+        assertNull((SERIALIZER.readString("""{"#":"ThrowableFake","message":"hello","cause":null}""") as ThrowableFake).cause) // explicit null
         assertFailsMessage<IllegalStateException>("no property 'A.noSuchProperty'") {
             SERIALIZER.readString("""{"#":"A","noSuchProperty":[]}""")
-        }
-        assertFailsMessage<IllegalStateException>("property 'Types.bOptional' must not be explicitly set to null") {
-            SERIALIZER.readString("""{"#":"Types","bOptional":null}""")
         }
         assertFailsMessage<IllegalStateException>("duplicated property 'A.a'") {
             SERIALIZER.readString("""{"#":"A","a":"1","a":"1"}""")
