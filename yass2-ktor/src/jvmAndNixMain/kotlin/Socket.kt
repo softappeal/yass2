@@ -11,6 +11,7 @@ import ch.softappeal.yass2.serialize.Transport
 import io.ktor.network.sockets.Socket
 import io.ktor.network.sockets.openReadChannel
 import io.ktor.network.sockets.openWriteChannel
+import io.ktor.utils.io.core.use
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.AbstractCoroutineContextElement
