@@ -5,9 +5,9 @@ import ch.softappeal.yass2.coroutines.Session
 import ch.softappeal.yass2.coroutines.SessionFactory
 import ch.softappeal.yass2.remote.Tunnel
 import ch.softappeal.yass2.remote.tunnel
-import ch.softappeal.yass2.serialize.BytesReader
-import ch.softappeal.yass2.serialize.BytesWriter
-import ch.softappeal.yass2.serialize.Serializer
+import ch.softappeal.yass2.serialize.string.StringSerializer
+import ch.softappeal.yass2.serialize.string.readString
+import ch.softappeal.yass2.serialize.string.writeString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -29,13 +29,11 @@ private suspend fun useCalculator(calculator: Calculator) {
 }
 
 public suspend fun showUsage() {
-    fun useSerializer(serializer: Serializer) {
+    fun useSerializer(serializer: StringSerializer) {
         println("*** useSerializer ***")
-        val writer = BytesWriter(100)
-        serializer.write(writer, MyDate(123456))
-        val reader = BytesReader(writer.buffer)
-        val value = serializer.read(reader)
-        println(value)
+        val serialized = serializer.writeString(MyDate(123456))
+        println(serialized)
+        println(serializer.readString(serialized))
     }
 
     suspend fun useInterceptor() {

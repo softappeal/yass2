@@ -1,13 +1,10 @@
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.contract.ContractTransport
-import ch.softappeal.yass2.contract.createStringEncoders
 import ch.softappeal.yass2.coroutines.acceptorSessionFactory
 import ch.softappeal.yass2.coroutines.initiatorSessionFactory
 import ch.softappeal.yass2.coroutines.test
 import ch.softappeal.yass2.coroutines.tunnel
-import ch.softappeal.yass2.serialize.Transport
-import ch.softappeal.yass2.serialize.string.TextSerializer
 import io.ktor.network.selector.SelectorManager
 import io.ktor.network.sockets.ServerSocket
 import io.ktor.network.sockets.TcpSocketBuilder
@@ -41,52 +38,6 @@ private fun runServer(block: suspend CoroutineScope.(tcp: TcpSocketBuilder, serv
     }
 }
 
-private val TextTransport = Transport(TextSerializer(createStringEncoders()))
-
-private fun socketTest(transport: Transport) {
-    runServer { tcp, serverSocket ->
-        val listenerJob = launch {
-            val serverTunnel = tunnel { currentCoroutineContext()[SocketCce]!!.socket.remoteAddress }
-            while (true) {
-                val socket = serverSocket.accept()
-                launch {
-                    socket.handleRequest(transport, serverTunnel)
-                }
-            }
-        }
-        try {
-            val clientTunnel = transport.tunnel { tcp.connect(serverSocket.localAddress) }
-            clientTunnel.test(100)
-        } finally {
-            delay(100.milliseconds) // give some time to shut down
-            listenerJob.cancel()
-        }
-    }
-}
-
-private fun socketSessionTest(transport: Transport) {
-    runServer { tcp, serverSocket ->
-        val acceptorJob = launch {
-            while (true) {
-                val socket = serverSocket.accept()
-                launch {
-                    socket.receiveLoop(
-                        transport,
-                        acceptorSessionFactory { connection.socket.remoteAddress }
-                    )
-                }
-            }
-        }
-        try {
-            tcp.connect(serverSocket.localAddress)
-                .receiveLoop(transport, initiatorSessionFactory(1000))
-        } finally {
-            delay(500.milliseconds) // give some time to shut down
-            acceptorJob.cancel()
-        }
-    }
-}
-
 class SocketTest {
     @Test
     fun closeSocket() {
@@ -107,21 +58,47 @@ class SocketTest {
 
     @Test
     fun socket() {
-        socketTest(ContractTransport)
-    }
-
-    @Test
-    fun textSocket() {
-        socketTest(TextTransport)
+        runServer { tcp, serverSocket ->
+            val listenerJob = launch {
+                val serverTunnel = tunnel { currentCoroutineContext()[SocketCce]!!.socket.remoteAddress }
+                while (true) {
+                    val socket = serverSocket.accept()
+                    launch {
+                        socket.handleRequest(ContractTransport, serverTunnel)
+                    }
+                }
+            }
+            try {
+                val clientTunnel = ContractTransport.tunnel { tcp.connect(serverSocket.localAddress) }
+                clientTunnel.test(100)
+            } finally {
+                delay(100.milliseconds) // give some time to shut down
+                listenerJob.cancel()
+            }
+        }
     }
 
     @Test
     fun socketSession() {
-        socketSessionTest(ContractTransport)
-    }
-
-    @Test
-    fun textSocketSession() {
-        socketSessionTest(TextTransport)
+        runServer { tcp, serverSocket ->
+            val acceptorJob = launch {
+                while (true) {
+                    val socket = serverSocket.accept()
+                    launch {
+                        socket.receiveLoop(
+                            ContractTransport,
+                            acceptorSessionFactory { connection.socket.remoteAddress }
+                        )
+                    }
+                }
+            }
+            try {
+                tcp.connect(serverSocket.localAddress)
+                    .receiveLoop(ContractTransport, initiatorSessionFactory(1000))
+            } finally {
+                delay(500.milliseconds) // give some time to shut down
+                acceptorJob.cancel()
+            }
+        }
     }
 }

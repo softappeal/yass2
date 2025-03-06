@@ -7,10 +7,10 @@ import ch.softappeal.yass2.remote.ExceptionReply
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.ValueReply
-import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Transport
 import ch.softappeal.yass2.serialize.string.BaseStringEncoder
 import ch.softappeal.yass2.serialize.string.IntStringEncoder
+import ch.softappeal.yass2.serialize.string.StringSerializer
 import ch.softappeal.yass2.serialize.string.TextSerializer
 
 /**
@@ -105,6 +105,6 @@ internal val EncoderObjects = listOf(
     MyDateEncoder::class,
 )
 
-public val TransportSerializer: Serializer = TextSerializer(createStringEncoders())
+public val TransportSerializer: StringSerializer = TextSerializer(createStringEncoders())
 
 public val ContractTransport: Transport = Transport(TransportSerializer)

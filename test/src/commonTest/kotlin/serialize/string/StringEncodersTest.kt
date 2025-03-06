@@ -165,8 +165,8 @@ class StringEncodersTest {
                 test(0.0, "0.0")
                 test(1.0, "1.0")
                 test(-1.0, "-1.0")
-            } catch (e: AssertionError) {
-                e.printStackTrace()
+            } catch (ignore: AssertionError) {
+                println(ignore)
             }
         }
     }

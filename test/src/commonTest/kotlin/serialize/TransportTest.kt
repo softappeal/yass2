@@ -1,6 +1,6 @@
 package ch.softappeal.yass2.serialize
 
-import ch.softappeal.yass2.contract.TransportSerializer
+import ch.softappeal.yass2.contract.createBinarySerializer
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -8,7 +8,7 @@ import kotlin.test.assertEquals
 class TransportTest {
     @Test
     fun testReadBytes() = runTest {
-        val transport = Transport(TransportSerializer, 50, 100)
+        val transport = Transport(createBinarySerializer(), 50, 100)
 
         assertEquals(50, transport.createWriter().buffer.size)
 

@@ -5,7 +5,7 @@ import ch.softappeal.yass2.contract.B
 import ch.softappeal.yass2.contract.Gender
 import ch.softappeal.yass2.contract.Poly
 import ch.softappeal.yass2.contract.ThrowableFake
-import ch.softappeal.yass2.contract.TransportSerializer
+import ch.softappeal.yass2.contract.createBinarySerializer
 import ch.softappeal.yass2.serialize.BytesReader
 import ch.softappeal.yass2.serialize.BytesWriter
 import ch.softappeal.yass2.serialize.Serializer
@@ -22,6 +22,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+private val SERIALIZER = createBinarySerializer()
+
 private fun <T> Serializer.copy(value: T, check: BytesWriter.() -> Unit = {}): T {
     val writer = BytesWriter(1000)
     val size: Int
@@ -37,7 +39,7 @@ private fun <T> Serializer.copy(value: T, check: BytesWriter.() -> Unit = {}): T
     }
 }
 
-private fun <T> checkedCopy(value: T, vararg bytes: Int): T = TransportSerializer.copy(value) {
+private fun <T> checkedCopy(value: T, vararg bytes: Int): T = SERIALIZER.copy(value) {
     assertEquals(current, bytes.size, "actual: ${buffer.copyOf(current).toList()}")
     checkTail(*bytes)
 }
@@ -49,7 +51,7 @@ class BinarySerializerTest {
             assertContentEquals(serialized, writeBytes(AllBaseTypes))
             allBaseTypesAssert(serialized)
         }
-        TransportSerializer.allBaseTypesTest(byteArrayOf(
+        SERIALIZER.allBaseTypesTest(byteArrayOf(
             15,
             1,
             2,
@@ -316,7 +318,7 @@ class BinarySerializerTest {
 
     @Test
     fun throwableFake() {
-        val throwableFake = TransportSerializer.copy(ThrowableFake("cause", "message"))
+        val throwableFake = SERIALIZER.copy(ThrowableFake("cause", "message"))
         assertEquals("cause", throwableFake.cause)
         assertEquals("message", throwableFake.message)
         with(checkedCopy(
@@ -349,7 +351,7 @@ class BinarySerializerTest {
     @Test
     fun missingType() {
         val message = assertFailsWith<IllegalStateException> {
-            TransportSerializer.write(BytesWriter(1000), BinarySerializerTest())
+            SERIALIZER.write(BytesWriter(1000), BinarySerializerTest())
         }.message!!
         assertTrue(message.startsWith("missing type 'class "))
         assertTrue(message.endsWith("BinarySerializerTest'"))
@@ -359,7 +361,7 @@ class BinarySerializerTest {
     fun bytes() {
         assertEquals(
             "hello",
-            with(TransportSerializer) { readBytes(writeBytes("hello")) }
+            with(SERIALIZER) { readBytes(writeBytes("hello")) }
         )
     }
 }

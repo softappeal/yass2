@@ -167,6 +167,15 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
                 macosArm64Test {
                     dependsOn(jvmAndNixTest)
                 }
+                val jsAndWasmTest by creating {
+                    dependsOn(commonTest)
+                }
+                jsTest {
+                    dependsOn(jsAndWasmTest)
+                }
+                wasmJsTest {
+                    dependsOn(jsAndWasmTest)
+                }
             }
         }
     }
@@ -193,13 +202,6 @@ project(":tutorial") {
             jvmTest {
                 dependencies {
                     implementation(generateProject)
-                }
-            }
-            if (allTargets) {
-                wasmJsTest {
-                    dependencies {
-                        implementation(libraries.kotlinx.coroutines.test)
-                    }
                 }
             }
         }

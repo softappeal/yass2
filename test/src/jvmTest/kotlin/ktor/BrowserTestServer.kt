@@ -3,6 +3,9 @@
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.contract.ContractTransport
+import ch.softappeal.yass2.contract.LOCAL_HOST
+import ch.softappeal.yass2.contract.PATH
+import ch.softappeal.yass2.contract.PORT
 import ch.softappeal.yass2.coroutines.acceptorSessionFactory
 import ch.softappeal.yass2.coroutines.tunnel
 import io.ktor.server.application.Application
@@ -21,9 +24,15 @@ import java.io.File
 private fun Application.theModule() {
     install(WebSockets)
     routing {
+        // wasm
         staticFiles("/", File("./build/js/packages/test-wasm-test/kotlin"))
-        staticFiles("/", File("./")) // needed for debugging (sources)
         staticFiles("/", File("./test/")) // needed for debugging (sources)
+
+        // js
+        staticFiles("/", File("./build/js/packages/test-test/kotlin"))
+
+        // both
+        staticFiles("/", File("./")) // needed for debugging (sources)
         route(
             ContractTransport,
             PATH,
@@ -39,7 +48,7 @@ private fun Application.theModule() {
 }
 
 fun main() {
-    val port = 28947
-    println("http://$LOCAL_HOST:$port")
-    embeddedServer(CIO, port, module = Application::theModule).start(wait = true)
+    println("http://$LOCAL_HOST:$PORT/index-js.html")
+    println("http://$LOCAL_HOST:$PORT/index-wasm.html")
+    embeddedServer(CIO, PORT, module = Application::theModule).start(wait = true)
 }

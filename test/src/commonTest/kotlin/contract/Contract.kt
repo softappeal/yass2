@@ -16,6 +16,7 @@ import ch.softappeal.yass2.serialize.string.ByteArrayStringEncoder
 import ch.softappeal.yass2.serialize.string.DoubleStringEncoder
 import ch.softappeal.yass2.serialize.string.IntStringEncoder
 import ch.softappeal.yass2.serialize.string.LongStringEncoder
+import ch.softappeal.yass2.serialize.string.TextSerializer
 
 enum class Gender { Female, Male }
 
@@ -132,8 +133,7 @@ internal val StringEncoderObjects = listOf(
     ByteArrayStringEncoder::class,
 )
 
-val TransportSerializer = createBinarySerializer()
-
+private val TransportSerializer = TextSerializer(createStringEncoders())
 val ContractTransport = Transport(TransportSerializer)
 
 val CalculatorId: ServiceId<Calculator> = ServiceId("calc")
@@ -141,3 +141,8 @@ val EchoId: ServiceId<Echo> = ServiceId("echo")
 
 const val DEMO_HEADER_KEY = "Demo-Header-Key"
 const val DEMO_HEADER_VALUE = "Demo-Header-Value"
+
+const val LOCAL_HOST = "localhost"
+const val PORT = 28947
+const val PATH = "/yass"
+const val WS_URL = "ws://$LOCAL_HOST:$PORT$PATH"

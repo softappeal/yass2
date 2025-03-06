@@ -10,25 +10,18 @@ import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.ws
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
-import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.embeddedServer
-import io.ktor.server.http.content.staticFiles
 import io.ktor.server.routing.routing
 import io.ktor.server.websocket.webSocket
 import kotlinx.coroutines.runBlocking
-import java.io.File
 
-public const val LOCAL_HOST: String = "localhost"
-public const val PORT: Int = 28947
+private const val LOCAL_HOST = "localhost"
+private const val PORT = 28947
 private const val PATH = "/yass"
 
 private fun Application.theModule() {
     install(io.ktor.server.websocket.WebSockets)
     routing {
-        staticFiles("/", File("./build/js/packages/tutorial-wasm/kotlin"))
-        staticFiles("/", File("./")) // needed for debugging (sources)
-        staticFiles("/", File("./tutorial/")) // needed for debugging (sources)
-
         // shows server-side unidirectional remoting with Http
         route(ContractTransport, PATH, tunnel(
             CalculatorId.service(CalculatorImpl),
@@ -39,11 +32,9 @@ private fun Application.theModule() {
     }
 }
 
-public fun createKtorServer(): EmbeddedServer<*, *> = embeddedServer(io.ktor.server.cio.CIO, PORT, module = Application::theModule)
-
 private suspend fun useKtorRemoting() {
     println("*** useKtorRemoting ***")
-    val server = createKtorServer()
+    val server = embeddedServer(io.ktor.server.cio.CIO, PORT, module = Application::theModule)
     server.start()
     try {
         HttpClient(io.ktor.client.engine.cio.CIO) {
