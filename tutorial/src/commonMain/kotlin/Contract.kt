@@ -82,11 +82,12 @@ public interface NewsListener {
 
 internal val Services = listOf(Calculator::class, NewsListener::class)
 
-@MustBeImplementedByAcceptor
-public val CalculatorId: ServiceId<Calculator> = ServiceId("calc")
-
-@MustBeImplementedByInitiator
-public val NewsListenerId: ServiceId<NewsListener> = ServiceId("news")
+// Define all the additional base encoders needed by the contract (including own base types and types used in services).
+internal val EncoderObjects = listOf(
+    // String and Boolean is built-in
+    IntStringEncoder::class,
+    MyDateEncoder::class,
+)
 
 internal val ConcreteClasses = listOf(
     Gender::class,
@@ -98,13 +99,11 @@ internal val ConcreteClasses = listOf(
     Packet::class, // needed by ch.softappeal.yass2.remote.coroutines (also needs Int)
 )
 
-// Define all the additional base encoders needed by the contract (including own base types).
-internal val EncoderObjects = listOf(
-    // String and Boolean is built-in
-    IntStringEncoder::class,
-    MyDateEncoder::class,
-)
+@MustBeImplementedByAcceptor
+public val CalculatorId: ServiceId<Calculator> = ServiceId("calc")
+
+@MustBeImplementedByInitiator
+public val NewsListenerId: ServiceId<NewsListener> = ServiceId("news")
 
 public val TransportSerializer: StringSerializer = TextSerializer(createStringEncoders())
-
 public val ContractTransport: Transport = Transport(TransportSerializer)

@@ -187,21 +187,13 @@ project(":tutorial") {
             commonMain {
                 dependencies {
                     implementation(ktorProject)
-                }
-            }
-            commonTest {
-                dependencies {
-                    implementation(kotlin("test"))
-                }
-            }
-            jvmMain {
-                dependencies {
                     implementation(libraries.bundles.ktor.cio)
                 }
             }
             jvmTest {
                 dependencies {
                     implementation(generateProject)
+                    implementation(kotlin("test"))
                 }
             }
         }
