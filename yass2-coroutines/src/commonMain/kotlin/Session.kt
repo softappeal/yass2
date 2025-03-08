@@ -55,7 +55,7 @@ public abstract class Session<C : Connection> {
     private lateinit var _connection: C
     public var connection: C
         get() = _connection
-        @InternalApi set(value) {
+        internal set(value) {
             _connection = value
         }
 
@@ -76,7 +76,7 @@ public abstract class Session<C : Connection> {
         }
     }
 
-    public suspend fun implReceived(packet: Packet?) {
+    internal suspend fun received(packet: Packet?) {
         if (packet == null) {
             close(false, null)
             return
@@ -88,18 +88,29 @@ public abstract class Session<C : Connection> {
     }
 }
 
+@InternalApi
+public fun connect(session1: Session<Connection>, session2: Session<Connection>) {
+    class LocalConnection(val session: Session<Connection>) : Connection {
+        override suspend fun write(packet: Packet?) = session.received(packet)
+        override suspend fun closed() = session.close()
+    }
+    session1.connection = LocalConnection(session2)
+    session2.connection = LocalConnection(session1)
+    session1.opened()
+    session2.opened()
+}
+
 public typealias SessionFactory<C> = () -> Session<C>
 
 public suspend fun <C : Connection> C.receiveLoop(sessionFactory: SessionFactory<C>, receive: suspend () -> Packet?) {
     val session = sessionFactory().apply {
-        @OptIn(InternalApi::class)
         connection = this@receiveLoop
     }
     try {
         session.opened()
         while (true) {
             val packet = receive()
-            session.implReceived(packet)
+            session.received(packet)
             if (packet == null) return
         }
     } catch (e: Exception) {

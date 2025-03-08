@@ -89,17 +89,6 @@ fun <C : Connection> CoroutineScope.initiatorSessionFactory(iterations: Int): Se
 }
 
 @OptIn(InternalApi::class)
-private fun connect(session1: Session<Connection>, session2: Session<Connection>) {
-    class LocalConnection(val session: Session<Connection>) : Connection {
-        override suspend fun write(packet: Packet?) = session.implReceived(packet)
-        override suspend fun closed() = session.close()
-    }
-    session1.connection = LocalConnection(session2)
-    session2.connection = LocalConnection(session1)
-    session1.opened()
-    session2.opened()
-}
-
 class SessionTest {
     @Test
     fun test() = runTest {
