@@ -99,15 +99,6 @@ public final class ch/softappeal/yass2/serialize/SerializerKt {
 	public static final fun writeBytes (Lch/softappeal/yass2/serialize/Serializer;Ljava/lang/Object;)[B
 }
 
-public final class ch/softappeal/yass2/serialize/Transport : ch/softappeal/yass2/serialize/Serializer {
-	public fun <init> (Lch/softappeal/yass2/serialize/Serializer;II)V
-	public synthetic fun <init> (Lch/softappeal/yass2/serialize/Serializer;IIILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun createWriter ()Lch/softappeal/yass2/serialize/BytesWriter;
-	public fun read (Lch/softappeal/yass2/serialize/Reader;)Ljava/lang/Object;
-	public final fun readBytes (ILkotlin/jvm/functions/Function4;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun write (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
-}
-
 public abstract interface class ch/softappeal/yass2/serialize/Writer {
 	public abstract fun writeByte (B)V
 	public abstract fun writeBytes ([B)V

@@ -1,4 +1,8 @@
-package ch.softappeal.yass2.serialize
+package ch.softappeal.yass2.ktor
+
+import ch.softappeal.yass2.InternalApi
+import ch.softappeal.yass2.serialize.BytesWriter
+import ch.softappeal.yass2.serialize.Serializer
 
 public class Transport(
     serializer: Serializer,
@@ -10,8 +14,10 @@ public class Transport(
         require(maxReadBytesInitialSize > 0)
     }
 
+    @InternalApi
     public fun createWriter(): BytesWriter = BytesWriter(initialWriterCapacity)
 
+    @InternalApi
     public suspend fun readBytes(
         length: Int, readBytes: suspend (bytes: ByteArray, offset: Int, length: Int) -> Unit,
     ): ByteArray {

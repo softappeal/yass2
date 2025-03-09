@@ -1,11 +1,11 @@
 package ch.softappeal.yass2.contract
 
 import ch.softappeal.yass2.coroutines.Packet
+import ch.softappeal.yass2.ktor.Transport
 import ch.softappeal.yass2.remote.ExceptionReply
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.ValueReply
-import ch.softappeal.yass2.serialize.Transport
 import ch.softappeal.yass2.serialize.binary.BooleanBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.ByteArrayBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.DoubleBinaryEncoder

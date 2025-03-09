@@ -1,7 +1,7 @@
 package ch.softappeal.yass2.ktor
 
+import ch.softappeal.yass2.InternalApi
 import ch.softappeal.yass2.serialize.BytesWriter
-import ch.softappeal.yass2.serialize.Transport
 import ch.softappeal.yass2.serialize.readBytes
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.ByteWriteChannel
@@ -15,12 +15,13 @@ internal suspend fun ByteWriteChannel.writeFully(writer: BytesWriter) {
 }
 
 internal suspend fun ByteReadChannel.read(transport: Transport, length: Int): Any? {
-    val buffer = transport.readBytes(length) { bytes, offset, size -> readFully(bytes, offset, offset + size) }
+    val buffer =
+        @OptIn(InternalApi::class) transport.readBytes(length) { bytes, offset, size -> readFully(bytes, offset, offset + size) }
     return transport.readBytes(buffer)
 }
 
 internal suspend fun ByteWriteChannel.write(transport: Transport, value: Any?) {
-    val writer = transport.createWriter()
+    @OptIn(InternalApi::class) val writer = transport.createWriter()
     transport.write(writer, value)
     writeInt(writer.current)
     writeFully(writer)

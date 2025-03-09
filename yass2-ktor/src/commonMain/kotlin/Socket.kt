@@ -7,7 +7,6 @@ import ch.softappeal.yass2.coroutines.receiveLoop
 import ch.softappeal.yass2.remote.Reply
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.Tunnel
-import ch.softappeal.yass2.serialize.Transport
 import io.ktor.network.sockets.Socket
 import io.ktor.network.sockets.openReadChannel
 import io.ktor.network.sockets.openWriteChannel

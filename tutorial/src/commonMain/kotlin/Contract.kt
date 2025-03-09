@@ -7,7 +7,6 @@ import ch.softappeal.yass2.remote.ExceptionReply
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.ValueReply
-import ch.softappeal.yass2.serialize.Transport
 import ch.softappeal.yass2.serialize.string.BaseStringEncoder
 import ch.softappeal.yass2.serialize.string.IntStringEncoder
 import ch.softappeal.yass2.serialize.string.StringSerializer
@@ -105,5 +104,4 @@ public val CalculatorId: ServiceId<Calculator> = ServiceId("calc")
 @MustBeImplementedByInitiator
 public val NewsListenerId: ServiceId<NewsListener> = ServiceId("news")
 
-public val TransportSerializer: StringSerializer = TextSerializer(createStringEncoders())
-public val ContractTransport: Transport = Transport(TransportSerializer)
+public val TutorialSerializer: StringSerializer = TextSerializer(createStringEncoders())

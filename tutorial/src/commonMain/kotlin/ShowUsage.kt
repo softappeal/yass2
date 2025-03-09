@@ -3,6 +3,7 @@ package ch.softappeal.yass2.tutorial
 import ch.softappeal.yass2.coroutines.Connection
 import ch.softappeal.yass2.coroutines.Session
 import ch.softappeal.yass2.coroutines.SessionFactory
+import ch.softappeal.yass2.ktor.Transport
 import ch.softappeal.yass2.ktor.receiveLoop
 import ch.softappeal.yass2.ktor.route
 import ch.softappeal.yass2.ktor.tunnel
@@ -54,7 +55,7 @@ private suspend fun showUsage() {
         }
         useCalculator(calculator)
     }
-    useSerializer(TransportSerializer)
+    useSerializer(TutorialSerializer)
     useInterceptor()
 }
 
@@ -103,6 +104,8 @@ private fun <C : Connection> CoroutineScope.acceptorSessionFactory(): SessionFac
     }
 }
 
+private val TutorialTransport = Transport(TutorialSerializer)
+
 private const val LOCAL_HOST = "localhost"
 private const val PORT = 28947
 private const val PATH = "/yass"
@@ -111,12 +114,12 @@ private fun Application.theModule() {
     install(io.ktor.server.websocket.WebSockets)
     routing {
         // shows server-side unidirectional remoting with Http
-        route(ContractTransport, PATH, tunnel(
+        route(TutorialTransport, PATH, tunnel(
             CalculatorId.service(CalculatorImpl),
         ))
 
         // shows server-side session based bidirectional remoting with WebSocket
-        webSocket(PATH) { receiveLoop(ContractTransport, acceptorSessionFactory()) }
+        webSocket(PATH) { receiveLoop(TutorialTransport, acceptorSessionFactory()) }
     }
 }
 
@@ -130,10 +133,10 @@ private suspend fun useKtorRemoting() {
         }.use { client ->
             // shows client-side unidirectional remoting with Http
             @Suppress("HttpUrlsUsage")
-            useServices(client.tunnel(ContractTransport, "http://$LOCAL_HOST:$PORT$PATH"))
+            useServices(client.tunnel(TutorialTransport, "http://$LOCAL_HOST:$PORT$PATH"))
 
             // shows client-side session based bidirectional remoting with WebSocket
-            client.ws("ws://$LOCAL_HOST:$PORT$PATH") { receiveLoop(ContractTransport, initiatorSessionFactory()) }
+            client.ws("ws://$LOCAL_HOST:$PORT$PATH") { receiveLoop(TutorialTransport, initiatorSessionFactory()) }
         }
     } finally {
         server.stop()

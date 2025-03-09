@@ -1,10 +1,10 @@
 package ch.softappeal.yass2.ktor
 
+import ch.softappeal.yass2.InternalApi
 import ch.softappeal.yass2.remote.Message
 import ch.softappeal.yass2.remote.Reply
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.Tunnel
-import ch.softappeal.yass2.serialize.Transport
 import io.ktor.client.HttpClient
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
@@ -25,7 +25,7 @@ import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
 private fun Transport.write(message: Message): OutgoingContent.WriteChannelContent {
-    val writer = createWriter()
+    @OptIn(InternalApi::class) val writer = createWriter()
     write(writer, message)
     return object : OutgoingContent.WriteChannelContent() {
         override suspend fun writeTo(channel: ByteWriteChannel) = channel.writeFully(writer)

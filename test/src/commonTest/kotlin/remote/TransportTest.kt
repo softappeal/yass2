@@ -1,11 +1,13 @@
-package ch.softappeal.yass2.serialize
+package ch.softappeal.yass2.ktor
 
+import ch.softappeal.yass2.InternalApi
 import ch.softappeal.yass2.contract.createBinarySerializer
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class TransportTest {
+    @OptIn(InternalApi::class)
     @Test
     fun testReadBytes() = runTest {
         val transport = Transport(createBinarySerializer(), 50, 100)

@@ -8,9 +8,9 @@ public final class ch/softappeal/yass2/ktor/CallCce$Key : kotlin/coroutines/Coro
 }
 
 public final class ch/softappeal/yass2/ktor/HttpKt {
-	public static final fun route (Lio/ktor/server/routing/Route;Lch/softappeal/yass2/serialize/Transport;Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
-	public static final fun tunnel (Lio/ktor/client/HttpClient;Lch/softappeal/yass2/serialize/Transport;Ljava/lang/String;Lkotlin/jvm/functions/Function0;)Lkotlin/jvm/functions/Function2;
-	public static synthetic fun tunnel$default (Lio/ktor/client/HttpClient;Lch/softappeal/yass2/serialize/Transport;Ljava/lang/String;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Lkotlin/jvm/functions/Function2;
+	public static final fun route (Lio/ktor/server/routing/Route;Lch/softappeal/yass2/ktor/Transport;Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
+	public static final fun tunnel (Lio/ktor/client/HttpClient;Lch/softappeal/yass2/ktor/Transport;Ljava/lang/String;Lkotlin/jvm/functions/Function0;)Lkotlin/jvm/functions/Function2;
+	public static synthetic fun tunnel$default (Lio/ktor/client/HttpClient;Lch/softappeal/yass2/ktor/Transport;Ljava/lang/String;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Lkotlin/jvm/functions/Function2;
 }
 
 public final class ch/softappeal/yass2/ktor/SocketCce : kotlin/coroutines/AbstractCoroutineContextElement {
@@ -29,9 +29,16 @@ public final class ch/softappeal/yass2/ktor/SocketConnection : ch/softappeal/yas
 }
 
 public final class ch/softappeal/yass2/ktor/SocketKt {
-	public static final fun handleRequest (Lio/ktor/network/sockets/Socket;Lch/softappeal/yass2/serialize/Transport;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static final fun receiveLoop (Lio/ktor/network/sockets/Socket;Lch/softappeal/yass2/serialize/Transport;Lkotlin/jvm/functions/Function0;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static final fun tunnel (Lch/softappeal/yass2/serialize/Transport;Lkotlin/jvm/functions/Function1;)Lkotlin/jvm/functions/Function2;
+	public static final fun handleRequest (Lio/ktor/network/sockets/Socket;Lch/softappeal/yass2/ktor/Transport;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun receiveLoop (Lio/ktor/network/sockets/Socket;Lch/softappeal/yass2/ktor/Transport;Lkotlin/jvm/functions/Function0;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun tunnel (Lch/softappeal/yass2/ktor/Transport;Lkotlin/jvm/functions/Function1;)Lkotlin/jvm/functions/Function2;
+}
+
+public final class ch/softappeal/yass2/ktor/Transport : ch/softappeal/yass2/serialize/Serializer {
+	public fun <init> (Lch/softappeal/yass2/serialize/Serializer;II)V
+	public synthetic fun <init> (Lch/softappeal/yass2/serialize/Serializer;IIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun read (Lch/softappeal/yass2/serialize/Reader;)Ljava/lang/Object;
+	public fun write (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
 }
 
 public final class ch/softappeal/yass2/ktor/WebSocketConnection : ch/softappeal/yass2/coroutines/Connection {
@@ -41,6 +48,6 @@ public final class ch/softappeal/yass2/ktor/WebSocketConnection : ch/softappeal/
 }
 
 public final class ch/softappeal/yass2/ktor/WebSocketKt {
-	public static final fun receiveLoop (Lio/ktor/websocket/WebSocketSession;Lch/softappeal/yass2/serialize/Transport;Lkotlin/jvm/functions/Function0;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun receiveLoop (Lio/ktor/websocket/WebSocketSession;Lch/softappeal/yass2/ktor/Transport;Lkotlin/jvm/functions/Function0;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
