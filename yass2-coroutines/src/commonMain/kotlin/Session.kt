@@ -42,6 +42,11 @@ public abstract class Session<C : Connection> {
                 try {
                     val requestNumber = nextRequestNumber.incrementAndGet()
                     requestNumber2continuation.put(requestNumber, continuation)
+                    continuation.invokeOnCancellation {
+                        launch {
+                            requestNumber2continuation.remove(requestNumber)
+                        }
+                    }
                     write(Packet(requestNumber, request))
                 } catch (e: Exception) {
                     close(e)

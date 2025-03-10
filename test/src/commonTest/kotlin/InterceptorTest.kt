@@ -6,16 +6,23 @@ import ch.softappeal.yass2.contract.Echo
 import ch.softappeal.yass2.contract.Mixed
 import ch.softappeal.yass2.contract.proxy
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
+import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
 val CalculatorImpl = object : Calculator {
@@ -78,6 +85,26 @@ suspend fun test(calculatorImpl: Calculator, echoImpl: Echo) {
     println(assertSuspendFailsWith<TimeoutCancellationException> {
         withTimeout(100.milliseconds) { echo.delay(200) }
     })
+    coroutineScope {
+        class AtomicBoolean {
+            private var value = false
+            private val mutex = Mutex()
+            suspend fun get() = mutex.withLock { value }
+            suspend fun set() = mutex.withLock { value = true }
+        }
+
+        val before = AtomicBoolean()
+        val after = AtomicBoolean()
+        val job = launch {
+            before.set()
+            echo.delay(200)
+            after.set()
+        }
+        delay(100)
+        assertTrue(before.get())
+        job.cancelAndJoin()
+        assertFalse(after.get())
+    }
 }
 
 class InterceptorTest {
