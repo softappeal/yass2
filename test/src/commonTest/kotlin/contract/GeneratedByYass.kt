@@ -652,7 +652,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
 public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.serialize.string.StringEncoder<*>> = listOf(
     ch.softappeal.yass2.serialize.string.IntStringEncoder,
     ch.softappeal.yass2.serialize.string.LongStringEncoder,
-    ch.softappeal.yass2.serialize.string.DoubleStringEncoder,
+    @kotlin.OptIn(ch.softappeal.yass2.NotJsPlatform::class) ch.softappeal.yass2.serialize.string.DoubleStringEncoder,
     ch.softappeal.yass2.serialize.string.ByteArrayStringEncoder,
     ch.softappeal.yass2.serialize.string.EnumStringEncoder(
         ch.softappeal.yass2.contract.Gender::class,
