@@ -68,6 +68,7 @@ public abstract class StringWriter(private val writer: Writer, protected val ind
     }
 
     protected fun writePropertyBuiltIn(value: Any?, encoderId: Int): Boolean {
+        @OptIn(InternalApi::class)
         when (encoderId) {
             STRING_ENCODER_ID -> writeStringBuiltIn(value as String)
             BOOLEAN_ENCODER_ID -> writeString(if (value as Boolean) TRUE else FALSE)
@@ -269,10 +270,10 @@ public abstract class StringSerializer(stringEncoders: List<StringEncoder<*>>) :
 }
 
 public const val NO_ENCODER_ID: Int = -1
-public const val STRING_ENCODER_ID: Int = 0
-public const val BOOLEAN_ENCODER_ID: Int = 1
-public const val LIST_ENCODER_ID: Int = 2
-public const val FIRST_ENCODER_ID: Int = 3
+@InternalApi public const val STRING_ENCODER_ID: Int = 0
+@InternalApi public const val BOOLEAN_ENCODER_ID: Int = 1
+@InternalApi public const val LIST_ENCODER_ID: Int = 2
+@InternalApi public const val FIRST_ENCODER_ID: Int = 3
 
 @InternalApi
 public class StringProperty(
