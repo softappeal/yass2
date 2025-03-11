@@ -26,10 +26,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
-private const val ENABLE_SOCKET_TEST = false // TODO: spurious failures
-
 private fun runServer(block: suspend CoroutineScope.(tcp: TcpSocketBuilder, serverSocket: ServerSocket) -> Unit) {
-    if (!ENABLE_SOCKET_TEST) return
     runBlocking {
         SelectorManager().use { selector ->
             val tcp = aSocket(selector).tcp()

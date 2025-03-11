@@ -5,8 +5,14 @@
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import java.util.regex.Pattern
 
-/** Only uses jvm target if `false`. Can be used for faster development. */
-val allTargets = true
+val os = System.getProperty("os.name").lowercase()
+
+val linuxPlatform = os.contains("linux")
+val webPlatform = linuxPlatform
+
+println("os: '$os'")
+println("linuxPlatform: $linuxPlatform")
+println("webPlatform: $webPlatform")
 
 plugins {
     alias(libs.plugins.multiplatform)
@@ -43,7 +49,7 @@ allprojects {
                 artifact(tasks["javadocJar"])
             }
         }
-        if (allTargets) {
+        if (webPlatform) {
             js {
                 outputModuleName.set(project.name)
                 nodejs()
@@ -55,11 +61,11 @@ allprojects {
                 nodejs()
                 binaries.executable()
             }
+        }
+        if (linuxPlatform) {
             linuxX64()
             linuxArm64()
-            macosArm64()
         }
-
         explicitApi()
         compilerOptions {
             allWarningsAsErrors.set(true)
@@ -145,37 +151,16 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
                     implementation(libraries.kotlinx.coroutines.test)
                 }
             }
-            val jvmAndNixTest by creating {
-                dependsOn(commonTest)
+            jvmTest {
                 dependencies {
                     implementation(libraries.bundles.ktor.cio)
-                }
-            }
-            jvmTest {
-                dependsOn(jvmAndNixTest)
-                dependencies {
                     implementation(generateProject)
                 }
             }
-            if (allTargets) {
-                linuxX64Test {
-                    dependsOn(jvmAndNixTest)
-                }
-                linuxArm64Test {
-                    dependsOn(jvmAndNixTest)
-                }
-                macosArm64Test {
-                    dependsOn(jvmAndNixTest)
-                }
-                val jsAndWasmTest by creating {
-                    dependsOn(commonTest)
-                }
-                jsTest {
-                    dependsOn(jsAndWasmTest)
-                }
-                wasmJsTest {
-                    dependsOn(jsAndWasmTest)
-                }
+            if (webPlatform) {
+                val jsAndWasmTest by creating { dependsOn(commonTest) }
+                jsTest { dependsOn(jsAndWasmTest) }
+                wasmJsTest { dependsOn(jsAndWasmTest) }
             }
         }
     }
