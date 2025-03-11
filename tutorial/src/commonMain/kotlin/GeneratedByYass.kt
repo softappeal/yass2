@@ -6,6 +6,7 @@
     "RemoveRedundantQualifierName",
     "SpellCheckingInspection",
     "RedundantVisibilityModifier",
+    "REDUNDANT_VISIBILITY_MODIFIER",
     "RedundantNullableReturnType",
     "KotlinRedundantDiagnosticSuppress",
     "RedundantSuppression",

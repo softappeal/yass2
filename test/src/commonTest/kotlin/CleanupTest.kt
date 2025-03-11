@@ -7,6 +7,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
+@Suppress("ASSIGNED_VALUE_IS_NEVER_READ")
 class CleanupTest {
     @Test
     fun noTryExceptionNoFinallyException() {

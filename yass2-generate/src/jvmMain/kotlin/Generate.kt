@@ -20,6 +20,7 @@ private fun Appendable.appendPackage(packageName: String) {
             "RemoveRedundantQualifierName",
             "SpellCheckingInspection",
             "RedundantVisibilityModifier",
+            "REDUNDANT_VISIBILITY_MODIFIER",
             "RedundantNullableReturnType",
             "KotlinRedundantDiagnosticSuppress",
             "RedundantSuppression",
