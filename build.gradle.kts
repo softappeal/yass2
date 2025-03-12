@@ -8,7 +8,7 @@ import java.util.regex.Pattern
 val os = System.getProperty("os.name").lowercase()
 
 val linuxPlatform = os.contains("linux")
-val webPlatform = linuxPlatform
+val webPlatform = true
 
 println("os: '$os'")
 println("linuxPlatform: $linuxPlatform")
@@ -156,11 +156,6 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
                     implementation(libraries.bundles.ktor.cio)
                     implementation(generateProject)
                 }
-            }
-            if (webPlatform) {
-                val jsAndWasmTest by creating { dependsOn(commonTest) }
-                jsTest { dependsOn(jsAndWasmTest) }
-                wasmJsTest { dependsOn(jsAndWasmTest) }
             }
         }
     }

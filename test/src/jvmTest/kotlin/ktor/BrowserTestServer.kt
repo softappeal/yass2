@@ -3,9 +3,6 @@
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.contract.ContractTransport
-import ch.softappeal.yass2.contract.LOCAL_HOST
-import ch.softappeal.yass2.contract.PATH
-import ch.softappeal.yass2.contract.PORT
 import ch.softappeal.yass2.coroutines.acceptorSessionFactory
 import ch.softappeal.yass2.coroutines.tunnel
 import io.ktor.server.application.Application

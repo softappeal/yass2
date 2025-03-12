@@ -3,10 +3,6 @@
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.contract.ContractTransport
-import ch.softappeal.yass2.contract.DEMO_HEADER_KEY
-import ch.softappeal.yass2.contract.DEMO_HEADER_VALUE
-import ch.softappeal.yass2.contract.LOCAL_HOST
-import ch.softappeal.yass2.contract.PATH
 import ch.softappeal.yass2.coroutines.acceptorSessionFactory
 import ch.softappeal.yass2.coroutines.initiatorSessionFactory
 import ch.softappeal.yass2.coroutines.test
@@ -24,6 +20,9 @@ import io.ktor.server.websocket.webSocket
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
+
+private const val DEMO_HEADER_KEY = "Demo-Header-Key"
+private const val DEMO_HEADER_VALUE = "Demo-Header-Value"
 
 private fun Application.httpModule() {
     routing {

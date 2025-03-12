@@ -139,11 +139,3 @@ val ContractTransport = Transport(TransportSerializer)
 
 val CalculatorId: ServiceId<Calculator> = ServiceId("calc")
 val EchoId: ServiceId<Echo> = ServiceId("echo")
-
-const val DEMO_HEADER_KEY = "Demo-Header-Key"
-const val DEMO_HEADER_VALUE = "Demo-Header-Value"
-
-const val LOCAL_HOST = "localhost"
-const val PORT = 28947
-const val PATH = "/yass"
-const val WS_URL = "ws://$LOCAL_HOST:$PORT$PATH"
