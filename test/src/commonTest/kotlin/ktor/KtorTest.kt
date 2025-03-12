@@ -7,23 +7,28 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.plugins.websocket.WebSockets.Plugin
 import io.ktor.client.plugins.websocket.ws
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import io.ktor.client.request.header
+import io.ktor.http.headersOf
+
+const val DEMO_HEADER_KEY = "Demo-Header-Key"
+const val DEMO_HEADER_VALUE = "Demo-Header-Value"
 
 const val LOCAL_HOST = "localhost"
 const val PORT = 28947
 const val PATH = "/yass"
 
-fun ktorClientTest(httpClientEngineFactory: HttpClientEngineFactory<*>) {
-    @OptIn(DelicateCoroutinesApi::class) GlobalScope.launch {
-        HttpClient(httpClientEngineFactory) {
-            install(Plugin)
-        }.use { client ->
-            client.tunnel(ContractTransport, PATH).test(1000)
-            client.ws("ws://$LOCAL_HOST:$PORT$PATH") {
-                receiveLoop(ContractTransport, initiatorSessionFactory(1000))
-            }
+suspend fun ktorClientTest(httpClientEngineFactory: HttpClientEngineFactory<*>) {
+    @Suppress("HttpUrlsUsage")
+    HttpClient(httpClientEngineFactory) {
+        install(Plugin)
+    }.use { client ->
+        client.tunnel(ContractTransport, "http://$LOCAL_HOST:$PORT$PATH") {
+            headersOf(DEMO_HEADER_KEY, DEMO_HEADER_VALUE)
+        }.test(1000)
+        client.ws("ws://$LOCAL_HOST:$PORT$PATH", {
+            header(DEMO_HEADER_KEY, DEMO_HEADER_VALUE)
+        }) {
+            receiveLoop(ContractTransport, initiatorSessionFactory(1000))
         }
     }
 }

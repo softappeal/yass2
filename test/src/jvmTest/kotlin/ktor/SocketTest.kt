@@ -30,7 +30,7 @@ private fun runServer(block: suspend CoroutineScope.(tcp: TcpSocketBuilder, serv
     runBlocking {
         SelectorManager().use { selector ->
             val tcp = aSocket(selector).tcp()
-            tcp.bind().use { serverSocket -> block(tcp, serverSocket) }
+            tcp.bind(LOCAL_HOST, PORT).use { serverSocket -> block(tcp, serverSocket) }
         }
     }
 }

@@ -14,7 +14,6 @@ import ch.softappeal.yass2.serialize.string.readString
 import ch.softappeal.yass2.serialize.string.writeString
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.ws
-import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.routing.routing
@@ -39,24 +38,20 @@ private suspend fun useCalculator(calculator: Calculator) {
     println("1 + 2 = ${calculator.add(1, 2)}")
 }
 
-private suspend fun showUsage() {
-    fun useSerializer(serializer: StringSerializer) {
-        println("*** useSerializer ***")
-        val serialized = serializer.writeString(MyDate(123456))
-        println(serialized)
-        println(serializer.readString(serialized))
-    }
+private fun useSerializer(serializer: StringSerializer) {
+    println("*** useSerializer ***")
+    val serialized = serializer.writeString(MyDate(123456))
+    println(serialized)
+    println(serializer.readString(serialized))
+}
 
-    suspend fun useInterceptor() {
-        println("*** useInterceptor ***")
-        val calculator = CalculatorImpl.proxy { function, _, invoke ->
-            println("calling function '$function'")
-            invoke()
-        }
-        useCalculator(calculator)
+private suspend fun useInterceptor() {
+    println("*** useInterceptor ***")
+    val calculator = CalculatorImpl.proxy { function, _, invoke ->
+        println("calling function '$function'")
+        invoke()
     }
-    useSerializer(TutorialSerializer)
-    useInterceptor()
+    useCalculator(calculator)
 }
 
 private suspend fun useServices(tunnel: Tunnel) {
@@ -104,39 +99,32 @@ private fun <C : Connection> CoroutineScope.acceptorSessionFactory(): SessionFac
     }
 }
 
-private val TutorialTransport = Transport(TutorialSerializer)
-
-private const val LOCAL_HOST = "localhost"
-private const val PORT = 28947
-private const val PATH = "/yass"
-
-private fun Application.theModule() {
-    install(io.ktor.server.websocket.WebSockets)
-    routing {
-        // shows server-side unidirectional remoting with Http
-        route(TutorialTransport, PATH, tunnel(
-            CalculatorId.service(CalculatorImpl),
-        ))
-
-        // shows server-side session based bidirectional remoting with WebSocket
-        webSocket(PATH) { receiveLoop(TutorialTransport, acceptorSessionFactory()) }
-    }
-}
-
 private suspend fun useKtorRemoting() {
     println("*** useKtorRemoting ***")
-    val server = embeddedServer(io.ktor.server.cio.CIO, PORT, module = Application::theModule)
+    val transport = Transport(TutorialSerializer)
+    val localHost = "localhost"
+    val port = 28947
+    val path = "/yass"
+    val server = embeddedServer(io.ktor.server.cio.CIO, port) {
+        install(io.ktor.server.websocket.WebSockets)
+        routing {
+            // shows server-side unidirectional remoting with Http
+            route(transport, path, tunnel(
+                CalculatorId.service(CalculatorImpl),
+            ))
+            // shows server-side session based bidirectional remoting with WebSocket
+            webSocket(path) { receiveLoop(transport, acceptorSessionFactory()) }
+        }
+    }
     server.start()
     try {
         HttpClient(io.ktor.client.engine.cio.CIO) {
             install(io.ktor.client.plugins.websocket.WebSockets)
         }.use { client ->
             // shows client-side unidirectional remoting with Http
-            @Suppress("HttpUrlsUsage")
-            useServices(client.tunnel(TutorialTransport, "http://$LOCAL_HOST:$PORT$PATH"))
-
+            @Suppress("HttpUrlsUsage") useServices(client.tunnel(transport, "http://$localHost:$port$path"))
             // shows client-side session based bidirectional remoting with WebSocket
-            client.ws("ws://$LOCAL_HOST:$PORT$PATH") { receiveLoop(TutorialTransport, initiatorSessionFactory()) }
+            client.ws("ws://$localHost:$port$path") { receiveLoop(transport, initiatorSessionFactory()) }
         }
     } finally {
         server.stop()
@@ -144,6 +132,7 @@ private suspend fun useKtorRemoting() {
 }
 
 public suspend fun main() {
-    showUsage()
+    useSerializer(TutorialSerializer)
+    useInterceptor()
     useKtorRemoting()
 }
