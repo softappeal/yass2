@@ -136,9 +136,8 @@ class SessionTest {
 
             override suspend fun closed(e: Exception?) = println("session1 closed: $e")
         }
-        val serverTunnel = tunnel(EchoId.service(EchoImpl))
         val session2 = object : Session<Connection>() {
-            override val serverTunnel = serverTunnel
+            override val serverTunnel = tunnel(EchoId.service(EchoImpl))
             override suspend fun closed(e: Exception?) = println("session2 closed: $e")
         }
         connect(session1, session2)

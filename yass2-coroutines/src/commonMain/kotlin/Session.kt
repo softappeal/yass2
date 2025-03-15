@@ -37,6 +37,7 @@ public abstract class Session<C : Connection> {
     public suspend fun isClosed(): Boolean = closed.get()
 
     protected val clientTunnel: Tunnel = { request ->
+        check(!isClosed()) { "session '$this' is closed" }
         suspendCancellableCoroutine { continuation ->
             CoroutineScope(continuation.context).launch {
                 try {
@@ -86,6 +87,7 @@ public abstract class Session<C : Connection> {
             close(false, null)
             return
         }
+        check(!isClosed()) { "session '$this' is closed" }
         when (val message = packet.message) {
             is Request -> write(Packet(packet.requestNumber, serverTunnel(message)))
             is Reply -> requestNumber2continuation.remove(packet.requestNumber)!!.resume(message)
@@ -113,11 +115,10 @@ public suspend fun <C : Connection> C.receiveLoop(sessionFactory: SessionFactory
     }
     try {
         session.opened()
-        while (true) {
+        do {
             val packet = receive()
             session.received(packet)
-            if (packet == null) return
-        }
+        } while (packet != null)
     } catch (e: Exception) {
         session.close(e)
     }
