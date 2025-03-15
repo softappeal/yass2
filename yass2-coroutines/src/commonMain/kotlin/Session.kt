@@ -41,12 +41,12 @@ public abstract class Session<C : Connection> {
             CoroutineScope(continuation.context).launch {
                 try {
                     val requestNumber = nextRequestNumber.incrementAndGet()
-                    requestNumber2continuation.put(requestNumber, continuation)
                     continuation.invokeOnCancellation {
                         launch {
                             requestNumber2continuation.remove(requestNumber)
                         }
                     }
+                    requestNumber2continuation.put(requestNumber, continuation)
                     write(Packet(requestNumber, request))
                 } catch (e: Exception) {
                     close(e)
