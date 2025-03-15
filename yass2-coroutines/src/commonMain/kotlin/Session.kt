@@ -45,6 +45,7 @@ public abstract class Session<C : Connection> {
                     continuation.invokeOnCancellation {
                         launch {
                             requestNumber2continuation.remove(requestNumber)
+                            continuation.cancel()
                         }
                     }
                     requestNumber2continuation.put(requestNumber, continuation)
