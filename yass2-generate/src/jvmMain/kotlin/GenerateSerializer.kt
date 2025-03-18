@@ -1,7 +1,6 @@
 package ch.softappeal.yass2.generate
 
 import ch.softappeal.yass2.InternalApi
-import ch.softappeal.yass2.NotJsPlatform
 import ch.softappeal.yass2.serialize.Property
 import ch.softappeal.yass2.serialize.binary.BinaryEncoder
 import ch.softappeal.yass2.serialize.binary.BinaryProperty
@@ -9,7 +8,6 @@ import ch.softappeal.yass2.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.serialize.binary.EnumBinaryEncoder
 import ch.softappeal.yass2.serialize.string.BaseStringEncoder
 import ch.softappeal.yass2.serialize.string.ClassStringEncoder
-import ch.softappeal.yass2.serialize.string.DoubleStringEncoder
 import ch.softappeal.yass2.serialize.string.EnumStringEncoder
 import ch.softappeal.yass2.serialize.string.StringEncoder
 import ch.softappeal.yass2.serialize.string.StringProperty
@@ -206,9 +204,7 @@ public fun CodeWriter.generateStringEncoders(
         ")",
     ) {
         encoderObjects.forEach { type ->
-            @OptIn(NotJsPlatform::class)
-            val optIn = if (type == DoubleStringEncoder::class) "@kotlin.OptIn($CSY.NotJsPlatform::class) " else ""
-            writeNestedLine("$optIn${type.qualifiedName},")
+            writeNestedLine("${type.qualifiedName},")
         }
         enumClasses.forEach { type ->
             writeNestedLine("${EnumStringEncoder::class.qualifiedName}(", "),") {

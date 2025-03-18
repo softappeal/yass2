@@ -67,7 +67,7 @@ class SocketTest {
             }
             try {
                 val clientTunnel = ContractTransport.tunnel { tcp.connect(serverSocket.localAddress) }
-                clientTunnel.test(100)
+                clientTunnel.test()
             } finally {
                 delay(100.milliseconds) // give some time to shut down
                 listenerJob.cancel()
@@ -91,7 +91,7 @@ class SocketTest {
             }
             try {
                 tcp.connect(serverSocket.localAddress)
-                    .receiveLoop(ContractTransport, initiatorSessionFactory(1000))
+                    .receiveLoop(ContractTransport, initiatorSessionFactory())
             } finally {
                 delay(500.milliseconds) // give some time to shut down
                 acceptorJob.cancel()

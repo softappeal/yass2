@@ -24,11 +24,11 @@ suspend fun ktorClientTest(httpClientEngineFactory: HttpClientEngineFactory<*>) 
     }.use { client ->
         client.tunnel(ContractTransport, "http://$LOCAL_HOST:$PORT$PATH") {
             headersOf(DEMO_HEADER_KEY, DEMO_HEADER_VALUE)
-        }.test(1000)
+        }.test()
         client.ws("ws://$LOCAL_HOST:$PORT$PATH", {
             header(DEMO_HEADER_KEY, DEMO_HEADER_VALUE)
         }) {
-            receiveLoop(ContractTransport, initiatorSessionFactory(1000))
+            receiveLoop(ContractTransport, initiatorSessionFactory())
         }
     }
 }

@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.serialize.string
 
-import ch.softappeal.yass2.NotJsPlatform
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.reflect.KClass
@@ -16,8 +15,7 @@ public object LongStringEncoder : BaseStringEncoder<Long>(Long::class,
 )
 
 // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger
-/** Doesn't work for whole numbers on JS platform. */
-@NotJsPlatform
+/** NOTE: [DoubleStringEncoder] doesn't work for whole numbers on JS platform. */
 public object DoubleStringEncoder : BaseStringEncoder<Double>(Double::class,
     { value -> value.toString() },
     { toDouble() }

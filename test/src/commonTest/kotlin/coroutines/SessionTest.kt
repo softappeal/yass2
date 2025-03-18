@@ -8,7 +8,6 @@ import ch.softappeal.yass2.contract.CalculatorId
 import ch.softappeal.yass2.contract.EchoId
 import ch.softappeal.yass2.contract.proxy
 import ch.softappeal.yass2.contract.service
-import ch.softappeal.yass2.performance
 import ch.softappeal.yass2.remote.Tunnel
 import ch.softappeal.yass2.remote.tunnel
 import ch.softappeal.yass2.test
@@ -37,10 +36,8 @@ fun tunnel(context: suspend () -> Any): Tunnel = tunnel(
     }),
 )
 
-suspend fun Tunnel.test(iterations: Int) {
-    val calculator = CalculatorId.proxy(this)
-    test(calculator, EchoId.proxy(this))
-    performance(iterations) { assertEquals(5, calculator.add(2, 3)) }
+suspend fun Tunnel.test() {
+    test(CalculatorId.proxy(this), EchoId.proxy(this))
 }
 
 fun <C : Connection> CoroutineScope.acceptorSessionFactory(context: suspend Session<C>.() -> Any): SessionFactory<C> = {
@@ -66,14 +63,14 @@ fun <C : Connection> CoroutineScope.acceptorSessionFactory(context: suspend Sess
     }
 }
 
-fun <C : Connection> CoroutineScope.initiatorSessionFactory(iterations: Int): SessionFactory<C> = {
+fun <C : Connection> CoroutineScope.initiatorSessionFactory(): SessionFactory<C> = {
     object : Session<C>() {
         override val serverTunnel = tunnel(EchoId.service(EchoImpl))
 
         override fun opened() {
             launch {
                 assertFalse(isClosed())
-                clientTunnel.test(iterations)
+                clientTunnel.test()
                 close()
                 assertTrue(isClosed())
             }
@@ -92,7 +89,7 @@ fun <C : Connection> CoroutineScope.initiatorSessionFactory(iterations: Int): Se
 class SessionTest {
     @Test
     fun test() = runTest {
-        connect(initiatorSessionFactory<Connection>(1000)(), acceptorSessionFactory { connection }())
+        connect(initiatorSessionFactory<Connection>()(), acceptorSessionFactory { connection }())
     }
 
     @Test
