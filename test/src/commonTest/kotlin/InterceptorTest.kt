@@ -81,30 +81,6 @@ suspend fun test(calculatorImpl: Calculator, echoImpl: Echo) {
     echo.noParametersNoResult()
     assertEquals("hello", echo.echo("hello"))
     assertEquals(3, (echo.echo(ByteArray(3)) as ByteArray).size)
-    withTimeout(200.milliseconds) { echo.delay(100) }
-    println(assertSuspendFailsWith<TimeoutCancellationException> {
-        withTimeout(100.milliseconds) { echo.delay(200) }
-    })
-    coroutineScope {
-        class AtomicBoolean {
-            private var value = false
-            private val mutex = Mutex()
-            suspend fun get() = mutex.withLock { value }
-            suspend fun set() = mutex.withLock { value = true }
-        }
-
-        val before = AtomicBoolean()
-        val after = AtomicBoolean()
-        val job = launch {
-            before.set()
-            echo.delay(200)
-            after.set()
-        }
-        delay(100)
-        assertTrue(before.get())
-        job.cancelAndJoin()
-        assertFalse(after.get())
-    }
 }
 
 class InterceptorTest {
@@ -191,6 +167,30 @@ class InterceptorTest {
     @Test
     fun suspendTest() = runTest {
         test(CalculatorImpl, EchoImpl)
+        withTimeout(200.milliseconds) { EchoImpl.delay(100) }
+        assertSuspendFailsWith<TimeoutCancellationException> {
+            withTimeout(100.milliseconds) { EchoImpl.delay(200) }
+        }
+        coroutineScope {
+            class AtomicBoolean {
+                private var value = false
+                private val mutex = Mutex()
+                suspend fun get() = mutex.withLock { value }
+                suspend fun set() = mutex.withLock { value = true }
+            }
+
+            val before = AtomicBoolean()
+            val after = AtomicBoolean()
+            val job = launch {
+                before.set()
+                EchoImpl.delay(200)
+                after.set()
+            }
+            delay(100)
+            assertTrue(before.get())
+            job.cancelAndJoin()
+            assertFalse(after.get())
+        }
     }
 
     @Test
