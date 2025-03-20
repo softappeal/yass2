@@ -14,6 +14,9 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlin.concurrent.atomics.AtomicInt
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.coroutines.coroutineContext
 
 interface FlowService<out F, I> {
@@ -37,13 +40,7 @@ fun <F, I> FlowService<F, I>.createFlow(flowId: I): Flow<F> =
         }
     }
 
-// copied from Sync
-private class AtomicInteger(private var value: Int) {
-    private val mutex = Mutex()
-    suspend fun incrementAndGet(): Int = mutex.withLock { ++value }
-}
-
-// copied from Sync
+// copied from Session.kt
 private class ThreadSafeMap<K, V>(initialCapacity: Int) {
     private val mutex = Mutex()
     private val map = HashMap<K, V>(initialCapacity)
@@ -54,12 +51,13 @@ private class ThreadSafeMap<K, V>(initialCapacity: Int) {
 
 typealias FlowFactory<F, I> = (flowId: I) -> Flow<F>
 
+@OptIn(ExperimentalAtomicApi::class)
 fun <F, I> flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I> {
-    val nextCollectId = AtomicInteger(0)
+    val nextCollectId = AtomicInt(0)
     val collectId2channel = ThreadSafeMap<Int, Channel<Reply?>>(16)
     return object : FlowService<F, I> {
         override suspend fun create(flowId: I): Int {
-            val collectId = nextCollectId.incrementAndGet()
+            val collectId = nextCollectId.incrementAndFetch()
             val channel = Channel<Reply?>()
             collectId2channel.put(collectId, channel)
             tryCatch({

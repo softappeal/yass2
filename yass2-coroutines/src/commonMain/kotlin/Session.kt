@@ -12,6 +12,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.AtomicInt
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
@@ -22,6 +26,14 @@ public interface Connection {
     public suspend fun closed()
 }
 
+private class ThreadSafeMap<K, V>(initialCapacity: Int) {
+    private val mutex = Mutex()
+    private val map = HashMap<K, V>(initialCapacity)
+    suspend fun put(key: K, value: V): Unit = mutex.withLock { map[key] = value }
+    suspend fun remove(key: K): V? = mutex.withLock { map.remove(key) }
+}
+
+@OptIn(ExperimentalAtomicApi::class) // TODO: might become binary incompatible with the future versions of the standard library
 public abstract class Session<C : Connection> {
     public open fun opened() {}
 
@@ -34,14 +46,14 @@ public abstract class Session<C : Connection> {
     /** Is idempotent. */
     public suspend fun close(e: Exception): Unit = close(false, e)
 
-    public suspend fun isClosed(): Boolean = closed.get()
+    public fun isClosed(): Boolean = closed.load()
 
     protected val clientTunnel: Tunnel = { request ->
         check(!isClosed()) { "session '$this' is closed" }
         suspendCancellableCoroutine { continuation ->
             CoroutineScope(continuation.context).launch {
                 try {
-                    val requestNumber = nextRequestNumber.incrementAndGet()
+                    val requestNumber = nextRequestNumber.incrementAndFetch()
                     continuation.invokeOnCancellation {
                         launch {
                             requestNumber2continuation.remove(requestNumber)
@@ -67,14 +79,14 @@ public abstract class Session<C : Connection> {
         }
 
     private val closed = AtomicBoolean(false)
-    private val nextRequestNumber = AtomicInteger(0)
+    private val nextRequestNumber = AtomicInt(0)
     private val requestNumber2continuation = ThreadSafeMap<Int, Continuation<Reply>>(16)
     private val writeMutex = Mutex()
 
     private suspend fun write(packet: Packet?): Unit = writeMutex.withLock { connection.write(packet) }
 
     private suspend fun close(sendEnd: Boolean, e: Exception?) {
-        if (closed.getAndSet(true)) return
+        if (closed.exchange(true)) return
         tryFinally({
             closed(e)
             if (sendEnd) write(null)

@@ -24,7 +24,7 @@ public object DoubleStringEncoder : BaseStringEncoder<Double>(Double::class,
 @ExperimentalEncodingApi
 private val B64 = Base64.Default // uses A-Za-z0-9+/=
 
-@OptIn(ExperimentalEncodingApi::class)
+@OptIn(ExperimentalEncodingApi::class) // TODO: might become binary incompatible with the future versions of the standard library
 public object ByteArrayStringEncoder : BaseStringEncoder<ByteArray>(ByteArray::class,
     { value -> B64.encode(value) },
     { B64.decode(this) }
