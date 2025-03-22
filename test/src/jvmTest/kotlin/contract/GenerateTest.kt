@@ -17,7 +17,7 @@ class GenerateTest {
             "ch.softappeal.yass2.contract",
             GenerateMode.Verify,
         ) {
-            listOf(Calculator::class, Echo::class, Mixed::class, FlowService::class).forEach(::generateProxy)
+            listOf(Calculator::class, Echo::class, FlowService::class).forEach(::generateProxy)
             generateBinarySerializer(BinaryEncoderObjects, ConcreteClasses)
             generateStringEncoders(StringEncoderObjects, ConcreteClasses)
         }

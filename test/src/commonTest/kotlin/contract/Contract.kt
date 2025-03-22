@@ -97,12 +97,6 @@ interface Echo {
     suspend fun echoException(value: Exception): Exception
 }
 
-interface Mixed {
-    fun divide(a: Int, b: Int): Int
-    suspend fun suspendDivide(a: Int, b: Int): Int
-    fun noParametersNoResult()
-}
-
 internal val ConcreteClasses = listOf(
     Gender::class,
     A::class,

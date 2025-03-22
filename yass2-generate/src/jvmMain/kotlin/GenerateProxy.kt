@@ -12,7 +12,7 @@ import kotlin.reflect.jvm.javaMethod
 private fun KFunction<*>.hasResult() = returnType.classifier != Unit::class
 
 private fun CodeWriter.writeSignature(function: KFunction<*>) {
-    writeNestedLine("override ${if (function.isSuspend) "suspend " else ""}fun ${function.name}(") {
+    writeNestedLine("override suspend fun ${function.name}(") {
         function.valueParameters.forEachIndexed { parameterIndex, parameter ->
             writeNestedLine("p${parameterIndex + 1}: ${parameter.type.toType()},")
         }
@@ -31,6 +31,9 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
 
     val functions = service.memberFunctions
         .filter { it.javaMethod!!.declaringClass != Any::class.java }
+        .onEach {
+            require(it.isSuspend) { "method ${service.qualifiedName}.${it.name} must be suspend" }
+        }
         .sortedBy { it.name }
         .apply {
             val methodNames = map { it.name }
@@ -41,8 +44,7 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
 
     writeLine()
     writeNestedLine("public fun${service.types} ${service.withTypes}.proxy(") {
-        if (functions.any { !it.isSuspend }) writeNestedLine("intercept: $CSY.Interceptor,")
-        if (functions.any { it.isSuspend }) writeNestedLine("suspendIntercept: $CSY.SuspendInterceptor,")
+        writeNestedLine("intercept: $CSY.Interceptor,")
     }
     writeNestedLine("): ${service.withTypes} = object : ${service.withTypes} {", "}") {
         functions.forEachIndexed { functionIndex, function ->
@@ -51,7 +53,7 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
             writeSignature(function)
             if (hasResult) write(": ${function.returnType.toType()}")
             writeLine(" {") {
-                writeNestedLine("${if (hasResult) "return " else ""}${if (function.isSuspend) "suspendIntercept" else "intercept"}(\"${function.name}\", listOf(${function.parameters()})) {") {
+                writeNestedLine("${if (hasResult) "return " else ""}intercept(\"${function.name}\", listOf(${function.parameters()})) {") {
                     writeNestedLine("this@proxy.${function.name}(${function.parameters()})")
                 }
                 writeNested("}")
@@ -61,8 +63,6 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
             writeNestedLine("}")
         }
     }
-
-    if (functions.any { !it.isSuspend }) return
 
     writeLine()
     writeNestedLine("public fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.proxy(") {

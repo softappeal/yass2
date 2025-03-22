@@ -17,13 +17,13 @@
 package ch.softappeal.yass2.tutorial
 
 public fun ch.softappeal.yass2.tutorial.Calculator.proxy(
-    suspendIntercept: ch.softappeal.yass2.SuspendInterceptor,
+    intercept: ch.softappeal.yass2.Interceptor,
 ): ch.softappeal.yass2.tutorial.Calculator = object : ch.softappeal.yass2.tutorial.Calculator {
     override suspend fun add(
         p1: kotlin.Int,
         p2: kotlin.Int,
     ): kotlin.Int {
-        return suspendIntercept("add", listOf(p1, p2)) {
+        return intercept("add", listOf(p1, p2)) {
             this@proxy.add(p1, p2)
         } as kotlin.Int
     }
@@ -32,7 +32,7 @@ public fun ch.softappeal.yass2.tutorial.Calculator.proxy(
         p1: kotlin.Int,
         p2: kotlin.Int,
     ): kotlin.Int {
-        return suspendIntercept("divide", listOf(p1, p2)) {
+        return intercept("divide", listOf(p1, p2)) {
             this@proxy.divide(p1, p2)
         } as kotlin.Int
     }
@@ -75,12 +75,12 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.tutorial.Cal
     }
 
 public fun ch.softappeal.yass2.tutorial.NewsListener.proxy(
-    suspendIntercept: ch.softappeal.yass2.SuspendInterceptor,
+    intercept: ch.softappeal.yass2.Interceptor,
 ): ch.softappeal.yass2.tutorial.NewsListener = object : ch.softappeal.yass2.tutorial.NewsListener {
     override suspend fun notify(
         p1: kotlin.String,
     ) {
-        suspendIntercept("notify", listOf(p1)) {
+        intercept("notify", listOf(p1)) {
             this@proxy.notify(p1)
         }
     }

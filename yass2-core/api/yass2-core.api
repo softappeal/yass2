@@ -4,7 +4,6 @@ public final class ch/softappeal/yass2/CleanupKt {
 }
 
 public final class ch/softappeal/yass2/InterceptorKt {
-	public static final fun plus (Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;)Lkotlin/jvm/functions/Function3;
 	public static final fun plus (Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;)Lkotlin/jvm/functions/Function4;
 }
 

@@ -17,13 +17,13 @@
 package ch.softappeal.yass2.contract
 
 public fun ch.softappeal.yass2.contract.Calculator.proxy(
-    suspendIntercept: ch.softappeal.yass2.SuspendInterceptor,
+    intercept: ch.softappeal.yass2.Interceptor,
 ): ch.softappeal.yass2.contract.Calculator = object : ch.softappeal.yass2.contract.Calculator {
     override suspend fun add(
         p1: kotlin.Int,
         p2: kotlin.Int,
     ): kotlin.Int {
-        return suspendIntercept("add", listOf(p1, p2)) {
+        return intercept("add", listOf(p1, p2)) {
             this@proxy.add(p1, p2)
         } as kotlin.Int
     }
@@ -32,7 +32,7 @@ public fun ch.softappeal.yass2.contract.Calculator.proxy(
         p1: kotlin.Int,
         p2: kotlin.Int,
     ): kotlin.Int {
-        return suspendIntercept("divide", listOf(p1, p2)) {
+        return intercept("divide", listOf(p1, p2)) {
             this@proxy.divide(p1, p2)
         } as kotlin.Int
     }
@@ -75,12 +75,12 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Cal
     }
 
 public fun ch.softappeal.yass2.contract.Echo.proxy(
-    suspendIntercept: ch.softappeal.yass2.SuspendInterceptor,
+    intercept: ch.softappeal.yass2.Interceptor,
 ): ch.softappeal.yass2.contract.Echo = object : ch.softappeal.yass2.contract.Echo {
     override suspend fun delay(
         p1: kotlin.Int,
     ) {
-        suspendIntercept("delay", listOf(p1)) {
+        intercept("delay", listOf(p1)) {
             this@proxy.delay(p1)
         }
     }
@@ -88,7 +88,7 @@ public fun ch.softappeal.yass2.contract.Echo.proxy(
     override suspend fun echo(
         p1: kotlin.Any?,
     ): kotlin.Any? {
-        return suspendIntercept("echo", listOf(p1)) {
+        return intercept("echo", listOf(p1)) {
             this@proxy.echo(p1)
         } as kotlin.Any?
     }
@@ -96,7 +96,7 @@ public fun ch.softappeal.yass2.contract.Echo.proxy(
     override suspend fun echoException(
         p1: kotlin.Exception,
     ): kotlin.Exception {
-        return suspendIntercept("echoException", listOf(p1)) {
+        return intercept("echoException", listOf(p1)) {
             this@proxy.echoException(p1)
         } as kotlin.Exception
     }
@@ -107,7 +107,7 @@ public fun ch.softappeal.yass2.contract.Echo.proxy(
         p3: kotlin.collections.Map<out kotlin.Int, kotlin.String>,
         p4: kotlin.Pair<*, *>,
     ): kotlin.collections.Map<in kotlin.Int, kotlin.String>? {
-        return suspendIntercept("echoMonster", listOf(p1, p2, p3, p4)) {
+        return intercept("echoMonster", listOf(p1, p2, p3, p4)) {
             this@proxy.echoMonster(p1, p2, p3, p4)
         } as kotlin.collections.Map<in kotlin.Int, kotlin.String>?
     }
@@ -115,14 +115,14 @@ public fun ch.softappeal.yass2.contract.Echo.proxy(
     override suspend fun echoRequired(
         p1: kotlin.Any,
     ): kotlin.Any {
-        return suspendIntercept("echoRequired", listOf(p1)) {
+        return intercept("echoRequired", listOf(p1)) {
             this@proxy.echoRequired(p1)
         } as kotlin.Any
     }
 
     override suspend fun noParametersNoResult(
     ) {
-        suspendIntercept("noParametersNoResult", listOf()) {
+        intercept("noParametersNoResult", listOf()) {
             this@proxy.noParametersNoResult()
         }
     }
@@ -202,43 +202,13 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Ech
         }
     }
 
-public fun ch.softappeal.yass2.contract.Mixed.proxy(
-    intercept: ch.softappeal.yass2.Interceptor,
-    suspendIntercept: ch.softappeal.yass2.SuspendInterceptor,
-): ch.softappeal.yass2.contract.Mixed = object : ch.softappeal.yass2.contract.Mixed {
-    override fun divide(
-        p1: kotlin.Int,
-        p2: kotlin.Int,
-    ): kotlin.Int {
-        return intercept("divide", listOf(p1, p2)) {
-            this@proxy.divide(p1, p2)
-        } as kotlin.Int
-    }
-
-    override fun noParametersNoResult(
-    ) {
-        intercept("noParametersNoResult", listOf()) {
-            this@proxy.noParametersNoResult()
-        }
-    }
-
-    override suspend fun suspendDivide(
-        p1: kotlin.Int,
-        p2: kotlin.Int,
-    ): kotlin.Int {
-        return suspendIntercept("suspendDivide", listOf(p1, p2)) {
-            this@proxy.suspendDivide(p1, p2)
-        } as kotlin.Int
-    }
-}
-
 public fun <F, I> ch.softappeal.yass2.coroutines.FlowService<F, I>.proxy(
-    suspendIntercept: ch.softappeal.yass2.SuspendInterceptor,
+    intercept: ch.softappeal.yass2.Interceptor,
 ): ch.softappeal.yass2.coroutines.FlowService<F, I> = object : ch.softappeal.yass2.coroutines.FlowService<F, I> {
     override suspend fun cancel(
         p1: kotlin.Int,
     ) {
-        suspendIntercept("cancel", listOf(p1)) {
+        intercept("cancel", listOf(p1)) {
             this@proxy.cancel(p1)
         }
     }
@@ -246,7 +216,7 @@ public fun <F, I> ch.softappeal.yass2.coroutines.FlowService<F, I>.proxy(
     override suspend fun create(
         p1: I,
     ): kotlin.Int {
-        return suspendIntercept("create", listOf(p1)) {
+        return intercept("create", listOf(p1)) {
             this@proxy.create(p1)
         } as kotlin.Int
     }
@@ -254,7 +224,7 @@ public fun <F, I> ch.softappeal.yass2.coroutines.FlowService<F, I>.proxy(
     override suspend fun next(
         p1: kotlin.Int,
     ): F? {
-        return suspendIntercept("next", listOf(p1)) {
+        return intercept("next", listOf(p1)) {
             this@proxy.next(p1)
         } as F?
     }

@@ -34,11 +34,10 @@
 
 * provides [Ktor](https://ktor.io) transport adaptors for Http, WebSocket and plain Socket
 
-* generates code (works on any platform and is fast) with reflection
+* generates code (works on any platform and is fast)
     * fast, compact and extendable binary serializer for high throughput and low latency
     * extendable string based serializers: TextSerializer, JsonSerializer and KotlinSerializer (serializes Kotlin source code)
     * interceptor (around advice, aspect-oriented programming)
-    * remoting (proxy and service)
 
 * yass2 has multiple modules with the following dependencies
 

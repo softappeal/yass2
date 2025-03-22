@@ -18,6 +18,11 @@ private interface Overloaded {
     suspend fun f(i: Int)
 }
 
+@Suppress("unused")
+private interface NoSuspend {
+    fun noSuspend()
+}
+
 private class BodyPropertyNotVar {
     @Suppress("unused") val x: Int = 0
 }
@@ -80,5 +85,8 @@ class GeneratorTest {
         assertFailsMessage<IllegalArgumentException>(
             "interface ch.softappeal.yass2.generate.Overloaded has overloaded methods [f]"
         ) { codeWriter().generateProxy(Overloaded::class) }
+        assertFailsMessage<IllegalArgumentException>(
+            "method ch.softappeal.yass2.generate.NoSuspend.noSuspend must be suspend"
+        ) { codeWriter().generateProxy(NoSuspend::class) }
     }
 }
