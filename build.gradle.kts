@@ -144,7 +144,7 @@ val generateProject = project(":yass2-generate") {
 project(":test") { // this project is needed due to https://youtrack.jetbrains.com/issue/KT-35073
     kotlin {
         sourceSets {
-            val commonTest by getting {
+            commonTest {
                 dependencies {
                     implementation(ktorProject)
                     implementation(kotlin("test"))

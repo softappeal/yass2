@@ -1,6 +1,6 @@
 package ch.softappeal.yass2.contract
 
-import ch.softappeal.yass2.coroutines.FlowService
+import ch.softappeal.yass2.flow.FlowService
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import ch.softappeal.yass2.generate.GenerateMode
 import ch.softappeal.yass2.generate.generateBinarySerializer

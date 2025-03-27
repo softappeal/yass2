@@ -139,7 +139,7 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.tutorial.New
         value: object
     12: ch.softappeal.yass2.remote.ExceptionReply - class
         exception: object
-    13: ch.softappeal.yass2.coroutines.Packet - class
+    13: ch.softappeal.yass2.session.Packet - class
         requestNumber: 3
         message: object
 */
@@ -255,13 +255,13 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
         "exception" to -1,
     ),
     ch.softappeal.yass2.serialize.string.ClassStringEncoder(
-        ch.softappeal.yass2.coroutines.Packet::class, false,
+        ch.softappeal.yass2.session.Packet::class, false,
         { i ->
             writeProperty("requestNumber", i.requestNumber, 3)
             writeProperty("message", i.message)
         },
         {
-            ch.softappeal.yass2.coroutines.Packet(
+            ch.softappeal.yass2.session.Packet(
                 getProperty("requestNumber") as kotlin.Int,
                 getProperty("message") as ch.softappeal.yass2.remote.Message,
             )

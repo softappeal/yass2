@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.contract
 
-import ch.softappeal.yass2.coroutines.Packet
 import ch.softappeal.yass2.ktor.Transport
 import ch.softappeal.yass2.remote.ExceptionReply
 import ch.softappeal.yass2.remote.Request
@@ -17,6 +16,7 @@ import ch.softappeal.yass2.serialize.string.DoubleStringEncoder
 import ch.softappeal.yass2.serialize.string.IntStringEncoder
 import ch.softappeal.yass2.serialize.string.LongStringEncoder
 import ch.softappeal.yass2.serialize.string.TextSerializer
+import ch.softappeal.yass2.session.Packet
 
 enum class Gender { Female, Male }
 

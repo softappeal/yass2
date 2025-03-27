@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.coroutines
+package ch.softappeal.yass2.session
 
 import ch.softappeal.yass2.InternalApi
 import ch.softappeal.yass2.remote.Message

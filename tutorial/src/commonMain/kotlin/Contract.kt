@@ -1,8 +1,5 @@
 package ch.softappeal.yass2.tutorial
 
-import ch.softappeal.yass2.coroutines.MustBeImplementedByAcceptor
-import ch.softappeal.yass2.coroutines.MustBeImplementedByInitiator
-import ch.softappeal.yass2.coroutines.Packet
 import ch.softappeal.yass2.remote.ExceptionReply
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.ServiceId
@@ -11,6 +8,9 @@ import ch.softappeal.yass2.serialize.string.BaseStringEncoder
 import ch.softappeal.yass2.serialize.string.IntStringEncoder
 import ch.softappeal.yass2.serialize.string.StringSerializer
 import ch.softappeal.yass2.serialize.string.TextSerializer
+import ch.softappeal.yass2.session.MustBeImplementedByAcceptor
+import ch.softappeal.yass2.session.MustBeImplementedByInitiator
+import ch.softappeal.yass2.session.Packet
 
 /**
  * Shows how to implement an own base type.

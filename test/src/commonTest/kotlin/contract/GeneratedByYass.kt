@@ -202,9 +202,9 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.contract.Ech
         }
     }
 
-public fun <F, I> ch.softappeal.yass2.coroutines.FlowService<F, I>.proxy(
+public fun <F, I> ch.softappeal.yass2.flow.FlowService<F, I>.proxy(
     intercept: ch.softappeal.yass2.Interceptor,
-): ch.softappeal.yass2.coroutines.FlowService<F, I> = object : ch.softappeal.yass2.coroutines.FlowService<F, I> {
+): ch.softappeal.yass2.flow.FlowService<F, I> = object : ch.softappeal.yass2.flow.FlowService<F, I> {
     override suspend fun cancel(
         p1: kotlin.Int,
     ) {
@@ -230,10 +230,10 @@ public fun <F, I> ch.softappeal.yass2.coroutines.FlowService<F, I>.proxy(
     }
 }
 
-public fun <F, I> ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.coroutines.FlowService<F, I>>.proxy(
+public fun <F, I> ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.flow.FlowService<F, I>>.proxy(
     tunnel: ch.softappeal.yass2.remote.Tunnel,
-): ch.softappeal.yass2.coroutines.FlowService<F, I> =
-    object : ch.softappeal.yass2.coroutines.FlowService<F, I> {
+): ch.softappeal.yass2.flow.FlowService<F, I> =
+    object : ch.softappeal.yass2.flow.FlowService<F, I> {
         override suspend fun cancel(
             p1: kotlin.Int,
         ) {
@@ -254,8 +254,8 @@ public fun <F, I> ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.corou
                 .process() as F?
     }
 
-public fun <F, I> ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.coroutines.FlowService<F, I>>.service(
-    implementation: ch.softappeal.yass2.coroutines.FlowService<F, I>,
+public fun <F, I> ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.flow.FlowService<F, I>>.service(
+    implementation: ch.softappeal.yass2.flow.FlowService<F, I>,
 ): ch.softappeal.yass2.remote.Service =
     ch.softappeal.yass2.remote.Service(id) { function, parameters ->
         when (function) {
@@ -334,7 +334,7 @@ public fun <F, I> ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.corou
         value: object
     18: ch.softappeal.yass2.remote.ExceptionReply - class
         exception: object
-    19: ch.softappeal.yass2.coroutines.Packet - class
+    19: ch.softappeal.yass2.session.Packet - class
         requestNumber: required 3
         message: object
     20: ch.softappeal.yass2.contract.BodyProperty - class
@@ -525,13 +525,13 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
-                    ch.softappeal.yass2.coroutines.Packet::class,
+                    ch.softappeal.yass2.session.Packet::class,
                     { i ->
                         writeRequired(i.requestNumber, 3)
                         writeObject(i.message)
                     },
                     {
-                        ch.softappeal.yass2.coroutines.Packet(
+                        ch.softappeal.yass2.session.Packet(
                             readRequired(3) as kotlin.Int,
                             readObject() as ch.softappeal.yass2.remote.Message,
                         )
@@ -614,7 +614,7 @@ public fun createBinarySerializer(): ch.softappeal.yass2.serialize.binary.Binary
         value: object
     17: ch.softappeal.yass2.remote.ExceptionReply - class
         exception: object
-    18: ch.softappeal.yass2.coroutines.Packet - class
+    18: ch.softappeal.yass2.session.Packet - class
         requestNumber: 3
         message: object
     19: ch.softappeal.yass2.contract.BodyProperty - class
@@ -842,13 +842,13 @@ public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.s
         "exception" to -1,
     ),
     ch.softappeal.yass2.serialize.string.ClassStringEncoder(
-        ch.softappeal.yass2.coroutines.Packet::class, false,
+        ch.softappeal.yass2.session.Packet::class, false,
         { i ->
             writeProperty("requestNumber", i.requestNumber, 3)
             writeProperty("message", i.message)
         },
         {
-            ch.softappeal.yass2.coroutines.Packet(
+            ch.softappeal.yass2.session.Packet(
                 getProperty("requestNumber") as kotlin.Int,
                 getProperty("message") as ch.softappeal.yass2.remote.Message,
             )

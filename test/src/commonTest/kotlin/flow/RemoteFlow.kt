@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.coroutines
+package ch.softappeal.yass2.flow
 
 import ch.softappeal.yass2.remote.ExceptionReply
 import ch.softappeal.yass2.remote.Reply

@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.coroutines
+package ch.softappeal.yass2.session
 
 import ch.softappeal.yass2.CalculatorImpl
 import ch.softappeal.yass2.EchoImpl

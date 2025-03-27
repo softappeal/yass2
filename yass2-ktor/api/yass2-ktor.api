@@ -22,10 +22,10 @@ public final class ch/softappeal/yass2/ktor/SocketCce : kotlin/coroutines/Abstra
 public final class ch/softappeal/yass2/ktor/SocketCce$Key : kotlin/coroutines/CoroutineContext$Key {
 }
 
-public final class ch/softappeal/yass2/ktor/SocketConnection : ch/softappeal/yass2/coroutines/Connection {
+public final class ch/softappeal/yass2/ktor/SocketConnection : ch/softappeal/yass2/session/Connection {
 	public fun closed (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun getSocket ()Lio/ktor/network/sockets/Socket;
-	public fun write (Lch/softappeal/yass2/coroutines/Packet;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun write (Lch/softappeal/yass2/session/Packet;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class ch/softappeal/yass2/ktor/SocketKt {
@@ -41,10 +41,10 @@ public final class ch/softappeal/yass2/ktor/Transport : ch/softappeal/yass2/seri
 	public fun write (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
 }
 
-public final class ch/softappeal/yass2/ktor/WebSocketConnection : ch/softappeal/yass2/coroutines/Connection {
+public final class ch/softappeal/yass2/ktor/WebSocketConnection : ch/softappeal/yass2/session/Connection {
 	public fun closed (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun getSession ()Lio/ktor/websocket/WebSocketSession;
-	public fun write (Lch/softappeal/yass2/coroutines/Packet;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun write (Lch/softappeal/yass2/session/Packet;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class ch/softappeal/yass2/ktor/WebSocketKt {

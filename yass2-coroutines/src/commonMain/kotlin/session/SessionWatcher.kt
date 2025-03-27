@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.coroutines
+package ch.softappeal.yass2.session
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

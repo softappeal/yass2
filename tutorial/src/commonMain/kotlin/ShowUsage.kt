@@ -1,8 +1,5 @@
 package ch.softappeal.yass2.tutorial
 
-import ch.softappeal.yass2.coroutines.Connection
-import ch.softappeal.yass2.coroutines.Session
-import ch.softappeal.yass2.coroutines.SessionFactory
 import ch.softappeal.yass2.ktor.Transport
 import ch.softappeal.yass2.ktor.receiveLoop
 import ch.softappeal.yass2.ktor.route
@@ -12,6 +9,9 @@ import ch.softappeal.yass2.remote.tunnel
 import ch.softappeal.yass2.serialize.string.StringSerializer
 import ch.softappeal.yass2.serialize.string.readString
 import ch.softappeal.yass2.serialize.string.writeString
+import ch.softappeal.yass2.session.Connection
+import ch.softappeal.yass2.session.Session
+import ch.softappeal.yass2.session.SessionFactory
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.ws
 import io.ktor.server.application.install
