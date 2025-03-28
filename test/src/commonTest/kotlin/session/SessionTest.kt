@@ -49,7 +49,7 @@ fun <C : Connection> CoroutineScope.acceptorSessionFactory(context: suspend Sess
                 val echo = EchoId.proxy(clientTunnel)
                 val value = "echo from acceptor"
                 val result = echo.echo(value)
-                print("<$result>")
+                println("<$result>")
                 assertEquals(value, result)
             }
         }

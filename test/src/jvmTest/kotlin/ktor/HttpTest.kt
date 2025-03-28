@@ -18,16 +18,6 @@ import kotlin.test.Test
 val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
     install(WebSockets)
     routing {
-        // wasm
-        staticFiles("/", File("./build/js/packages/test-wasm-test/kotlin"))
-        staticFiles("/", File("./test/")) // needed for debugging (sources)
-
-        // js
-        staticFiles("/", File("./build/js/packages/test-test/kotlin"))
-
-        // both
-        staticFiles("/", File("./")) // needed for debugging (sources)
-
         route(
             ContractTransport,
             PATH,
@@ -35,6 +25,7 @@ val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
                 currentCoroutineContext()[CallCce]!!.call.request.headers[DEMO_HEADER_KEY] ?: "no-header"
             }
         )
+
         webSocket(PATH) {
             receiveLoop(
                 ContractTransport,
@@ -43,6 +34,16 @@ val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
                 }
             )
         }
+
+        // wasm
+        staticFiles("/", File("./build/js/packages/yass2-test-wasm-js-test/kotlin"))
+        staticFiles("/", File("./test/")) // needed for debugging (sources)
+
+        // js
+        staticFiles("/", File("./build/js/packages/yass2-test-test/kotlin"))
+
+        // both
+        staticFiles("/", File("./")) // needed for debugging (sources)
     }
 }
 

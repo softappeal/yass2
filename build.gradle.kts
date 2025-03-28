@@ -1,4 +1,4 @@
-// https://kotlinlang.org/docs/multiplatform-get-started.html
+// https://kotlinlang.org/docs/multiplatform-intro.html
 
 @file:Suppress("SpellCheckingInspection")
 
@@ -18,12 +18,6 @@ plugins {
     alias(libs.plugins.multiplatform)
     id("maven-publish")
     signing
-    alias(libs.plugins.binary.compatibility.validator)
-}
-
-apiValidation {
-    ignoredProjects.addAll(listOf("yass2", "tutorial", "test"))
-    nonPublicMarkers.add("ch.softappeal.yass2.InternalApi")
 }
 
 val libraries = libs
@@ -51,13 +45,11 @@ allprojects {
         }
         if (webPlatform) {
             js {
-                outputModuleName.set(project.name)
                 nodejs()
                 binaries.executable()
             }
             @OptIn(ExperimentalWasmDsl::class)
             wasmJs {
-                outputModuleName.set(project.name + "-wasm")
                 nodejs()
                 binaries.executable()
             }
@@ -155,6 +147,7 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
                 dependencies {
                     implementation(libraries.bundles.ktor.cio)
                     implementation(generateProject)
+                    implementation(libraries.logback.classic)
                 }
             }
         }
