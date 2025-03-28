@@ -11,6 +11,7 @@ import io.ktor.network.sockets.TcpSocketBuilder
 import io.ktor.network.sockets.aSocket
 import io.ktor.network.sockets.isClosed
 import io.ktor.network.sockets.openReadChannel
+import io.ktor.utils.io.core.use
 import io.ktor.utils.io.readByte
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope

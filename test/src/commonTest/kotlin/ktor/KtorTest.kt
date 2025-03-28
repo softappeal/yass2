@@ -9,6 +9,7 @@ import io.ktor.client.plugins.websocket.WebSockets.Plugin
 import io.ktor.client.plugins.websocket.ws
 import io.ktor.client.request.header
 import io.ktor.http.headersOf
+import io.ktor.utils.io.core.use
 
 const val DEMO_HEADER_KEY = "Demo-Header-Key"
 const val DEMO_HEADER_VALUE = "Demo-Header-Value"

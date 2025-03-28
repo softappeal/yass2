@@ -107,13 +107,25 @@ val coroutinesProject = project(":yass2-coroutines") {
 val ktorProject = project(":yass2-ktor") {
     kotlin {
         sourceSets {
-            commonMain {
+            val commonMain by getting {
                 dependencies {
                     api(coroutinesProject)
                     api(libraries.ktor.client.core)
+                }
+            }
+            val jvmAndNixMain by creating {
+                dependsOn(commonMain)
+                dependencies {
                     api(libraries.ktor.server.core)
                     api(libraries.ktor.network)
                 }
+            }
+            jvmMain {
+                dependsOn(jvmAndNixMain)
+            }
+            if (linuxPlatform) {
+                linuxX64Main { dependsOn(jvmAndNixMain) }
+                linuxArm64Main { dependsOn(jvmAndNixMain) }
             }
         }
     }
@@ -160,7 +172,6 @@ project(":tutorial") {
             commonMain {
                 dependencies {
                     implementation(ktorProject)
-                    implementation(libraries.bundles.ktor.cio)
                 }
             }
             jvmTest {

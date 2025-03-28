@@ -2,7 +2,7 @@
 
 kotlin             = "2.1.20" # https://github.com/JetBrains/kotlin
 kotlinx-coroutines = "1.10.1" # https://github.com/Kotlin/kotlinx.coroutines
-ktor               = "3.1.0"  # https://github.com/ktorio/ktor               - TODO: js doesn't work with newer versions; wasm doesn't work with either; boths work with 3.0.3
+ktor               = "3.0.3"  # https://github.com/ktorio/ktor
 logback-classic    = "1.5.18" # https://github.com/qos-ch/logback            - only needed for tests
 
 [libraries]
