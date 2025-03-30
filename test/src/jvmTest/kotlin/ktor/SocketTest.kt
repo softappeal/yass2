@@ -1,10 +1,10 @@
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.contract.ContractTransport
+import ch.softappeal.yass2.remote.test
+import ch.softappeal.yass2.remote.tunnel
 import ch.softappeal.yass2.session.acceptorSessionFactory
 import ch.softappeal.yass2.session.initiatorSessionFactory
-import ch.softappeal.yass2.session.test
-import ch.softappeal.yass2.session.tunnel
 import io.ktor.network.selector.SelectorManager
 import io.ktor.network.sockets.ServerSocket
 import io.ktor.network.sockets.TcpSocketBuilder

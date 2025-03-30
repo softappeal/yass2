@@ -61,3 +61,15 @@ class RemoteTest {
         performance(100_000) { assertEquals(5, calculator.add(2, 3)) }
     }
 }
+
+fun tunnel(context: suspend () -> Any): Tunnel = tunnel(
+    CalculatorId.service(CalculatorImpl),
+    EchoId.service(EchoImpl.proxy { _, _, invoke ->
+        println("context<${context()}>")
+        invoke()
+    }),
+)
+
+suspend fun Tunnel.test() {
+    test(CalculatorId.proxy(this), EchoId.proxy(this))
+}

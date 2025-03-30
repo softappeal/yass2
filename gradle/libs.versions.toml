@@ -2,8 +2,7 @@
 
 kotlin             = "2.1.20" # https://github.com/JetBrains/kotlin
 kotlinx-coroutines = "1.10.1" # https://github.com/Kotlin/kotlinx.coroutines
-ktor               = "3.1.0"  # https://github.com/ktorio/ktor               - TODO: js doesn't work with newer versions; wasm doesn't work with either; boths work with 3.0.3
-logback-classic    = "1.5.18" # https://github.com/qos-ch/logback            - only needed for tests
+ktor               = "3.1.2"  # https://github.com/ktorio/ktor
 
 [libraries]
 
@@ -16,8 +15,6 @@ ktor-network           = { module = "io.ktor:ktor-network"          , version.re
 ktor-client-cio        = { module = "io.ktor:ktor-client-cio"       , version.ref = "ktor" }
 ktor-server-cio        = { module = "io.ktor:ktor-server-cio"       , version.ref = "ktor" }
 ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
-
-logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
 
 [bundles]
 

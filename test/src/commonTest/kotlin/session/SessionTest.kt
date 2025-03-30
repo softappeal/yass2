@@ -1,16 +1,13 @@
 package ch.softappeal.yass2.session
 
-import ch.softappeal.yass2.CalculatorImpl
 import ch.softappeal.yass2.EchoImpl
 import ch.softappeal.yass2.InternalApi
 import ch.softappeal.yass2.assertSuspendFailsWith
-import ch.softappeal.yass2.contract.CalculatorId
 import ch.softappeal.yass2.contract.EchoId
 import ch.softappeal.yass2.contract.proxy
 import ch.softappeal.yass2.contract.service
-import ch.softappeal.yass2.remote.Tunnel
+import ch.softappeal.yass2.remote.test
 import ch.softappeal.yass2.remote.tunnel
-import ch.softappeal.yass2.test
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
@@ -27,18 +24,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
-
-fun tunnel(context: suspend () -> Any): Tunnel = tunnel(
-    CalculatorId.service(CalculatorImpl),
-    EchoId.service(EchoImpl.proxy { _, _, invoke ->
-        println("context<${context()}>")
-        invoke()
-    }),
-)
-
-suspend fun Tunnel.test() {
-    test(CalculatorId.proxy(this), EchoId.proxy(this))
-}
 
 fun <C : Connection> CoroutineScope.acceptorSessionFactory(context: suspend Session<C>.() -> Any): SessionFactory<C> = {
     object : Session<C>() {

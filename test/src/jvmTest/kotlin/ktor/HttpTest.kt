@@ -1,8 +1,8 @@
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.contract.ContractTransport
+import ch.softappeal.yass2.remote.tunnel
 import ch.softappeal.yass2.session.acceptorSessionFactory
-import ch.softappeal.yass2.session.tunnel
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.http.content.staticFiles
@@ -25,7 +25,6 @@ val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
                 currentCoroutineContext()[CallCce]!!.call.request.headers[DEMO_HEADER_KEY] ?: "no-header"
             }
         )
-
         webSocket(PATH) {
             receiveLoop(
                 ContractTransport,
@@ -34,16 +33,13 @@ val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
                 }
             )
         }
-
-        // wasm
-        staticFiles("/", File("./build/js/packages/yass2-test-wasm-js-test/kotlin"))
-        staticFiles("/", File("./test/")) // needed for debugging (sources)
-
-        // js
-        staticFiles("/", File("./build/js/packages/yass2-test-test/kotlin"))
-
-        // both
-        staticFiles("/", File("./")) // needed for debugging (sources)
+        staticFiles("/js", File("./build/js/packages/yass2-test-test/kotlin"))
+        staticFiles("/wasm", File("./build/js/packages/yass2-test-wasm-js-test/kotlin"))
+        staticFiles("/test", File("./test"))                         // sources for js
+        staticFiles("/src", File("./test/src"))                      // sources for wasm
+        staticFiles("/yass2-core", File("./yass2-core"))             // sources for ja and wasm
+        staticFiles("/yass2-coroutines", File("./yass2-coroutines")) // sources for ja and wasm
+        staticFiles("/yass2-ktor", File("./yass2-ktor"))             // sources for ja and wasm
     }
 }
 
@@ -53,7 +49,7 @@ class HttpTest {
         Server.start()
         try {
             runBlocking {
-                ktorClientTest(io.ktor.client.engine.cio.CIO)
+                clientTest(io.ktor.client.engine.cio.CIO)
             }
         } finally {
             Server.stop()

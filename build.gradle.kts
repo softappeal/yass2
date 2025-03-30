@@ -147,7 +147,6 @@ project(":test") { // this project is needed due to https://youtrack.jetbrains.c
                 dependencies {
                     implementation(libraries.bundles.ktor.cio)
                     implementation(generateProject)
-                    implementation(libraries.logback.classic)
                 }
             }
         }
