@@ -22,7 +22,7 @@ public interface Serializer {
 
 public fun Serializer.writeBytes(value: Any?): ByteArray = with(BytesWriter(1000)) {
     write(this, value)
-    buffer.copyOf(current)
+    toyByteArray()
 }
 
 public fun Serializer.readBytes(byteArray: ByteArray): Any? = with(BytesReader(byteArray)) {

@@ -40,7 +40,7 @@ private fun <T> Serializer.copy(value: T, check: BytesWriter.() -> Unit = {}): T
 }
 
 private fun <T> checkedCopy(value: T, vararg bytes: Int): T = SERIALIZER.copy(value) {
-    assertEquals(current, bytes.size, "actual: ${buffer.copyOf(current).toList()}")
+    assertEquals(current, bytes.size, "actual: ${toyByteArray().toList()}")
     checkTail(*bytes)
 }
 

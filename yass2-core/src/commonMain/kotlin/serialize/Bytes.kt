@@ -16,6 +16,8 @@ public class BytesWriter(public var buffer: ByteArray) : Writer {
         bytes.copyInto(buffer, current)
         current = newCurrent
     }
+
+    public fun toyByteArray(): ByteArray = buffer.copyOf(current)
 }
 
 public class BytesReader(public var buffer: ByteArray) : Reader {

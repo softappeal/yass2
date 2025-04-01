@@ -5,32 +5,26 @@ import ch.softappeal.yass2.remote.Message
 import ch.softappeal.yass2.remote.Reply
 import ch.softappeal.yass2.remote.Request
 import ch.softappeal.yass2.remote.Tunnel
+import ch.softappeal.yass2.serialize.readBytes
 import io.ktor.client.HttpClient
-import io.ktor.client.request.request
+import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsChannel
+import io.ktor.client.statement.bodyAsBytes
 import io.ktor.http.Headers
-import io.ktor.http.HttpMethod
-import io.ktor.http.content.OutgoingContent
-import io.ktor.http.contentLength
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.request.receiveChannel
+import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
-import io.ktor.utils.io.ByteWriteChannel
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
-private fun Transport.write(message: Message): OutgoingContent.WriteChannelContent {
+private fun Transport.write(message: Message): ByteArray {
     @OptIn(InternalApi::class) val writer = createWriter()
     write(writer, message)
-    return object : OutgoingContent.WriteChannelContent() {
-        override suspend fun writeTo(channel: ByteWriteChannel) = channel.writeFully(writer)
-        override val contentLength get() = writer.current.toLong()
-    }
+    return writer.toyByteArray()
 }
 
 public fun HttpClient.tunnel(
@@ -38,13 +32,11 @@ public fun HttpClient.tunnel(
     url: String,
     headers: () -> Headers = { Headers.Empty },
 ): Tunnel = { request ->
-    val response = request(url) {
-        method = HttpMethod.Post
+    val response = post(url) {
         this.headers.appendAll(headers())
         setBody(transport.write(request))
     }
-    val length = response.contentLength()!!.toInt()
-    response.bodyAsChannel().read(transport, length) as Reply
+    transport.readBytes(response.bodyAsBytes()) as Reply
 }
 
 public class CallCce(public val call: ApplicationCall) : AbstractCoroutineContextElement(CallCce) {
@@ -55,8 +47,7 @@ public fun Route.route(transport: Transport, path: String, tunnel: Tunnel) {
     route(path) {
         post {
             withContext(CallCce(call)) {
-                val length = call.request.headers["Content-Length"]!!.toInt()
-                val reply = tunnel(call.receiveChannel().read(transport, length) as Request)
+                val reply = tunnel(transport.readBytes(call.receive(ByteArray::class)) as Request)
                 call.respond(transport.write(reply))
             }
         }
