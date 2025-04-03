@@ -2,10 +2,10 @@
 <!--suppress ALL -->
 <html>
 <head>
-    <script src="require.js"></script>
-    <script>
-        const test = require('./yass2-test-test.js');
-        test.ch.softappeal.yass2.ktor.clientTest();
+    <script type="module">
+        import {clientTest} from "./yass2-test-test.mjs"
+
+        clientTest();
     </script>
 </head>
 </html>

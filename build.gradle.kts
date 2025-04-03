@@ -47,6 +47,9 @@ allprojects {
             js {
                 nodejs()
                 binaries.executable()
+                compilerOptions {
+                    target.set("es2015")
+                }
             }
             @OptIn(ExperimentalWasmDsl::class)
             wasmJs {
