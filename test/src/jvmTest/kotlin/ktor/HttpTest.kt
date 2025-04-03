@@ -33,13 +33,14 @@ val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
                 }
             )
         }
+        // code
         staticFiles("/js", File("./build/js/packages/yass2-test-test/kotlin"))
         staticFiles("/wasm", File("./build/js/packages/yass2-test-wasm-js-test/kotlin"))
-        staticFiles("/test", File("./test"))                         // sources for js
-        staticFiles("/src", File("./test/src"))                      // sources for wasm
-        staticFiles("/yass2-core", File("./yass2-core"))             // sources for ja and wasm
-        staticFiles("/yass2-coroutines", File("./yass2-coroutines")) // sources for ja and wasm
-        staticFiles("/yass2-ktor", File("./yass2-ktor"))             // sources for ja and wasm
+        // sources
+        staticFiles("/src", File("./test/src"))
+        staticFiles("/yass2-core", File("./yass2-core"))
+        staticFiles("/yass2-coroutines", File("./yass2-coroutines"))
+        staticFiles("/yass2-ktor", File("./yass2-ktor"))
     }
 }
 
