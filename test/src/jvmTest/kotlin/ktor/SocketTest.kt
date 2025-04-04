@@ -17,14 +17,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.milliseconds
 
 private fun runServer(block: suspend CoroutineScope.(tcp: TcpSocketBuilder, serverSocket: ServerSocket) -> Unit) {
     runBlocking {
@@ -39,9 +37,10 @@ class SocketTest {
     @Test
     fun closeSocket() {
         runServer { tcp, serverSocket ->
-            val acceptedSocket = async { serverSocket.accept() }
+            val acceptedSocketDeferred = async { serverSocket.accept() }
             val clientSocket = tcp.connect(serverSocket.localAddress)
-            assertFalse(acceptedSocket.await().isClosed)
+            val acceptedSocket = acceptedSocketDeferred.await()
+            assertFalse(acceptedSocket.isClosed)
             val clientByte = async { clientSocket.openReadChannel().readByte() }
             assertTrue(clientByte.isActive)
             assertFalse(clientSocket.isClosed)
@@ -50,6 +49,8 @@ class SocketTest {
             clientSocket.cancel()
             assertFailsWith<CancellationException> { clientByte.await() }
             assertTrue(clientSocket.isClosed)
+            acceptedSocket.close()
+            assertTrue(acceptedSocket.isClosed)
         }
     }
 
@@ -69,7 +70,6 @@ class SocketTest {
                 val clientTunnel = ContractTransport.tunnel { tcp.connect(serverSocket.localAddress) }
                 clientTunnel.test()
             } finally {
-                delay(100.milliseconds) // give some time to shut down
                 listenerJob.cancel()
             }
         }
@@ -93,7 +93,6 @@ class SocketTest {
                 tcp.connect(serverSocket.localAddress)
                     .receiveLoop(ContractTransport, initiatorSessionFactory())
             } finally {
-                delay(500.milliseconds) // give some time to shut down
                 acceptorJob.cancel()
             }
         }
