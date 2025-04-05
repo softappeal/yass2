@@ -40,7 +40,7 @@ internal fun <T> List<T>.duplicates(): List<T> {
     return filter { !seen.add(it) }
 }
 
-public fun KType.toType(): String = toString() // NOTE: see file 'KTypeToTypeTest.kt'
+public fun KType.toType(): String = toString() // TODO: see file 'KTypeToTypeTest.kt'
     .replace("kotlin.Exception /* = java.lang.Exception */", "kotlin.Exception")
 
 public class CodeWriter private constructor(private val appendable: Appendable, private val indent: String) {

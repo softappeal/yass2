@@ -7,9 +7,10 @@ import ch.softappeal.yass2.contract.proxy
 import ch.softappeal.yass2.contract.service
 import ch.softappeal.yass2.remote.ServiceId
 import ch.softappeal.yass2.remote.tunnel
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
@@ -17,48 +18,62 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
+private val range1 = 1..3
+private val range2 = 11..12
+
+private val flowFactory: FlowFactory<Int, Int> = { flowId ->
+    when (flowId) {
+        1 -> range1.asFlow()
+        2 -> range2.asFlow()
+        3 -> flow { throw DivideByZeroException() }
+        else -> error("unexpected flowId $flowId")
+    }
+}
+
+private val flowService = flowService(flowFactory).proxy(Printer)
+
+private val flowServiceId = ServiceId<FlowService<Int, Int>>("flow")
+private val remoteFlowService = flowServiceId.proxy(tunnel(flowServiceId.service(flowService)))
+
+private val flow1 = remoteFlowService.createFlow(1)
+private val flow2 = remoteFlowService.createFlow(2)
+private val flow3 = remoteFlowService.createFlow(3)
+private val flow4 = remoteFlowService.createFlow(4)
+
 class RemoteFlowTest {
     @Test
-    fun test() = runTest {
-        val range1 = 1..10
-        val range2 = 2000..2020
-
-        val flowFactory: FlowFactory<Int, Int> = { flowId ->
-            when (flowId) {
-                1 -> range1.asFlow()
-                2 -> range2.asFlow()
-                3 -> flow { throw DivideByZeroException() }
-                else -> error("unexpected flowId $flowId")
-            }
-        }
-
-        val flowService = flowService(flowFactory).proxy(Printer)
-        val flowServiceId = ServiceId<FlowService<Int, Int>>("flow")
-        val remoteFlowService = flowServiceId.proxy(tunnel(flowServiceId.service(flowService)))
-
-        val flow1 = remoteFlowService.createFlow(1)
-        val flow2 = remoteFlowService.createFlow(2)
-        val flow3 = remoteFlowService.createFlow(3)
-        val flow4 = remoteFlowService.createFlow(4)
-
+    fun missingFlowId() = runTest {
         assertFailsWith<IllegalStateException> { flow4.toList() }
+    }
 
+    @Test
+    fun flowException() = runTest {
+        assertSuspendFailsWith<DivideByZeroException> { flow3.toList() }
+    }
+
+    @Test
+    fun collect() = runTest {
         assertEquals(range1.toList(), flow1.toList())
+    }
+
+    @Test
+    fun collectException() = runTest {
         class CollectException : RuntimeException()
         assertSuspendFailsWith<CollectException> {
             flow1.collect { throw CollectException() }
         }
+    }
 
-        assertSuspendFailsWith<DivideByZeroException> { flow3.toList() }
-
-        coroutineScope {
-            repeat(2) {
-                launch {
-                    assertEquals(range1.toList(), flow1.toList())
-                }
-                launch {
-                    assertEquals(range2.toList(), flow2.toList())
-                }
+    @Test
+    fun multiple() = runTest {
+        repeat(2) {
+            launch {
+                delay(1_000)
+                assertEquals(range1.toList(), flow1.onEach { delay(13_000) }.toList())
+            }
+            launch {
+                delay(3_000)
+                assertEquals(range2.toList(), flow2.onEach { delay(17_000) }.toList())
             }
         }
     }

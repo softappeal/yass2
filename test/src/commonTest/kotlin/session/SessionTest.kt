@@ -15,6 +15,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
+import kotlin.concurrent.atomics.AtomicInt
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.test.Test
@@ -75,6 +78,49 @@ class SessionTest {
     @Test
     fun test() = runTest {
         connect(initiatorSessionFactory<Connection>()(), acceptorSessionFactory { connection }())
+    }
+
+    @OptIn(ExperimentalAtomicApi::class)
+    @Test
+    fun cancel() = runTest {
+        val counter = AtomicInt(0)
+
+        abstract class MySession : Session<Connection>() {
+            override suspend fun closed(e: Exception?) {
+                assertNull(e)
+                counter.incrementAndFetch()
+                println("closed $this")
+            }
+        }
+
+        connect(
+            object : MySession() {
+                override fun opened() {
+                    val echo = EchoId.proxy(clientTunnel)
+                    launch {
+                        assertFailsWith<TimeoutCancellationException> {
+                            withTimeout(5_000) { echo.delay(10_000) }
+                        }
+                        close()
+                    }
+                }
+            },
+            object : MySession() {
+                override val serverTunnel = tunnel(EchoId.service(EchoImpl.proxy { _, _, invoke ->
+                    try {
+                        invoke()
+                    } catch (e: Exception) {
+                        assertTrue(e is TimeoutCancellationException)
+                        assertEquals(1, counter.incrementAndFetch())
+                        println(e)
+                        throw e
+                    }
+                }))
+            },
+        )
+
+        delay(20_000)
+        assertEquals(3, counter.load())
     }
 
     @Test

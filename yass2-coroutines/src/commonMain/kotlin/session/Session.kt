@@ -1,6 +1,7 @@
 package ch.softappeal.yass2.session
 
 import ch.softappeal.yass2.InternalApi
+import ch.softappeal.yass2.ThreadSafeMap
 import ch.softappeal.yass2.remote.Message
 import ch.softappeal.yass2.remote.Reply
 import ch.softappeal.yass2.remote.Request
@@ -9,7 +10,6 @@ import ch.softappeal.yass2.remote.Tunnel
 import ch.softappeal.yass2.tryFinally
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.concurrent.atomics.AtomicBoolean
@@ -18,6 +18,7 @@ import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 public class Packet(public val requestNumber: Int, public val message: Message)
 
@@ -26,14 +27,7 @@ public interface Connection {
     public suspend fun closed()
 }
 
-private class ThreadSafeMap<K, V>(initialCapacity: Int) {
-    private val mutex = Mutex()
-    private val map = HashMap<K, V>(initialCapacity)
-    suspend fun put(key: K, value: V): Unit = mutex.withLock { map[key] = value }
-    suspend fun remove(key: K): V? = mutex.withLock { map.remove(key) }
-}
-
-@OptIn(ExperimentalAtomicApi::class) // TODO: might become binary incompatible with the future versions of the standard library
+@OptIn(ExperimentalAtomicApi::class) // TODO: might become binary incompatible with future versions
 public abstract class Session<C : Connection> {
     public open fun opened() {}
 
@@ -50,16 +44,10 @@ public abstract class Session<C : Connection> {
 
     protected val clientTunnel: Tunnel = { request ->
         check(!isClosed()) { "session '$this' is closed" }
-        suspendCancellableCoroutine { continuation ->
+        val requestNumber = nextRequestNumber.incrementAndFetch()
+        suspendCoroutine { continuation ->
             CoroutineScope(continuation.context).launch {
                 try {
-                    val requestNumber = nextRequestNumber.incrementAndFetch()
-                    continuation.invokeOnCancellation {
-                        launch {
-                            requestNumber2continuation.remove(requestNumber)
-                            continuation.cancel()
-                        }
-                    }
                     requestNumber2continuation.put(requestNumber, continuation)
                     write(Packet(requestNumber, request))
                 } catch (e: Exception) {
