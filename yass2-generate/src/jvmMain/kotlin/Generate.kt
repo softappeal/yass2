@@ -16,16 +16,12 @@ private fun Appendable.appendPackage(packageName: String) {
             "UNCHECKED_CAST",
             "USELESS_CAST",
             "PARAMETER_NAME_CHANGED_ON_OVERRIDE",
-            "unused",
             "RemoveRedundantQualifierName",
             "SpellCheckingInspection",
             "RedundantVisibilityModifier",
             "REDUNDANT_VISIBILITY_MODIFIER",
-            "RedundantNullableReturnType",
-            "KotlinRedundantDiagnosticSuppress",
             "RedundantSuppression",
             "UNUSED_ANONYMOUS_PARAMETER",
-            "TrailingComma",
         )
     
         package $packageName

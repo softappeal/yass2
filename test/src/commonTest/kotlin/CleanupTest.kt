@@ -3,12 +3,34 @@ package ch.softappeal.yass2
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
-import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 @Suppress("ASSIGNED_VALUE_IS_NEVER_READ")
 class CleanupTest {
+    @Test
+    fun addSuppressedNoException() {
+        var called = false
+        val exception = Exception()
+        assertSame(
+            exception,
+            exception.addSuppressed { called = true },
+        )
+        assertTrue(called)
+        assertEquals(listOf(), exception.suppressedExceptions)
+    }
+
+    @Test
+    fun addSuppressedWithException() {
+        val exception = Exception()
+        val suppressed = Exception()
+        assertSame(
+            exception,
+            exception.addSuppressed { throw suppressed },
+        )
+        assertEquals(listOf(suppressed), exception.suppressedExceptions)
+    }
+
     @Test
     fun noTryExceptionNoFinallyException() {
         var tryCalled = false
@@ -87,65 +109,5 @@ class CleanupTest {
         assertTrue(tryCalled)
         assertTrue(finallyCalled)
         assertEquals(listOf(finallyException), tryException.suppressedExceptions)
-    }
-
-    @Test
-    fun noTryExceptionNoCatchException() {
-        var tryCalled = false
-        var catchCalled = false
-        assertEquals(
-            123,
-            tryCatch({
-                tryCalled = true
-                123
-            }) {
-                catchCalled = true
-            }
-        )
-        assertTrue(tryCalled)
-        assertFalse(catchCalled)
-    }
-
-    @Test
-    fun withTryExceptionNoCatchException() {
-        var tryCalled = false
-        val tryException = Exception()
-        var catchCalled = false
-        assertSame(
-            tryException,
-            assertFails {
-                tryCatch({
-                    tryCalled = true
-                    throw tryException
-                }) {
-                    catchCalled = true
-                }
-            }
-        )
-        assertTrue(tryCalled)
-        assertTrue(catchCalled)
-    }
-
-    @Test
-    fun withTryExceptionWithCatchException() {
-        var tryCalled = false
-        val tryException = Exception()
-        var catchCalled = false
-        val catchException = Exception()
-        assertSame(
-            tryException,
-            assertFails {
-                tryCatch({
-                    tryCalled = true
-                    throw tryException
-                }) {
-                    catchCalled = true
-                    throw catchException
-                }
-            }
-        )
-        assertTrue(tryCalled)
-        assertTrue(catchCalled)
-        assertEquals(listOf(catchException), tryException.suppressedExceptions)
     }
 }

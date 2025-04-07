@@ -1,7 +1,6 @@
 package ch.softappeal.yass2.flow
 
 import ch.softappeal.yass2.Printer
-import ch.softappeal.yass2.assertSuspendFailsWith
 import ch.softappeal.yass2.contract.DivideByZeroException
 import ch.softappeal.yass2.contract.proxy
 import ch.softappeal.yass2.contract.service
@@ -48,7 +47,7 @@ class RemoteFlowTest {
 
     @Test
     fun flowException() = runTest {
-        assertSuspendFailsWith<DivideByZeroException> { flow3.toList() }
+        assertFailsWith<DivideByZeroException> { flow3.toList() }
     }
 
     @Test
@@ -59,7 +58,7 @@ class RemoteFlowTest {
     @Test
     fun collectException() = runTest {
         class CollectException : RuntimeException()
-        assertSuspendFailsWith<CollectException> {
+        assertFailsWith<CollectException> {
             flow1.collect { throw CollectException() }
         }
     }

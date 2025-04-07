@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -67,7 +68,7 @@ suspend fun test(calculatorImpl: Calculator, echoImpl: Echo) {
     assertEquals(1, counter)
     assertEquals(3, calculator.divide(12, 4))
     assertEquals(2, counter)
-    assertSuspendFailsWith<DivideByZeroException> { calculator.divide(12, 0) }
+    assertFailsWith<DivideByZeroException> { calculator.divide(12, 0) }
     assertEquals(3, counter)
     echo.noParametersNoResult()
     assertEquals("hello", echo.echo("hello"))
@@ -101,7 +102,7 @@ class InterceptorTest {
     fun test() = runTest {
         test(CalculatorImpl, EchoImpl)
         withTimeout(200.milliseconds) { EchoImpl.delay(100) }
-        assertSuspendFailsWith<TimeoutCancellationException> {
+        assertFailsWith<TimeoutCancellationException> {
             withTimeout(100.milliseconds) { EchoImpl.delay(200) }
         }
         coroutineScope {

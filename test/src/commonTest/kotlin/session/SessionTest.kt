@@ -2,7 +2,6 @@ package ch.softappeal.yass2.session
 
 import ch.softappeal.yass2.EchoImpl
 import ch.softappeal.yass2.InternalApi
-import ch.softappeal.yass2.assertSuspendFailsWith
 import ch.softappeal.yass2.contract.EchoId
 import ch.softappeal.yass2.contract.proxy
 import ch.softappeal.yass2.contract.service
@@ -136,7 +135,7 @@ class SessionTest {
             continuation.resume("hello")
         }
         assertEquals("hello", getString())
-        assertSuspendFailsWith<TimeoutCancellationException> {
+        assertFailsWith<TimeoutCancellationException> {
             withTimeout(100) { getString() }
         }
         continuation.resume("first call after withTimeout")

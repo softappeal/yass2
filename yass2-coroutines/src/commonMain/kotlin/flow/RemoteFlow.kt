@@ -1,10 +1,10 @@
 package ch.softappeal.yass2.flow
 
 import ch.softappeal.yass2.ThreadSafeMap
+import ch.softappeal.yass2.addSuppressed
 import ch.softappeal.yass2.remote.ExceptionReply
 import ch.softappeal.yass2.remote.Reply
 import ch.softappeal.yass2.remote.ValueReply
-import ch.softappeal.yass2.tryCatch
 import ch.softappeal.yass2.tryFinally
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,13 +29,13 @@ public fun <F, I> FlowService<F, I>.createFlow(flowId: I): Flow<F> =
     object : AbstractFlow<F>() {
         override suspend fun collectSafely(collector: FlowCollector<F>) {
             val collectId = create(flowId)
-            tryCatch({
+            try {
                 while (true) {
                     val value = next(collectId) ?: return
                     collector.emit(value)
                 }
-            }) {
-                cancel(collectId)
+            } catch (e: Exception) {
+                throw e.addSuppressed { cancel(collectId) }
             }
         }
     }

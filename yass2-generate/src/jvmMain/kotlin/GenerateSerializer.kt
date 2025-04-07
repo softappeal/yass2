@@ -113,7 +113,7 @@ public fun CodeWriter.generateBinarySerializer(
         baseClasses.forEach { type ->
             type.writeType(if (type.isEnum()) "enum" else "base") {
                 if (type.isEnum()) {
-                    @Suppress("unchecked_cast") val constants = (type as KClass<out Enum<*>>).java.enumConstants
+                    @Suppress("UNCHECKED_CAST") val constants = (type as KClass<out Enum<*>>).java.enumConstants
                     constants.forEach { constant -> writeNestedLine("${constant.ordinal}: ${constant.name}") }
                 }
             }
@@ -188,7 +188,7 @@ public fun CodeWriter.generateStringEncoders(
         baseClasses.forEach { type ->
             type.writeType(if (type.isEnum()) "enum" else "base") {
                 if (type.isEnum()) {
-                    @Suppress("unchecked_cast") val constants = (type as KClass<out Enum<*>>).java.enumConstants
+                    @Suppress("UNCHECKED_CAST") val constants = (type as KClass<out Enum<*>>).java.enumConstants
                     constants.forEach { constant -> writeNestedLine(constant.name) }
                 }
             }
