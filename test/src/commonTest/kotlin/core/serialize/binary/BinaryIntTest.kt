@@ -1,8 +1,8 @@
-package ch.softappeal.yass2.serialize.binary
+package ch.softappeal.yass2.core.serialize.binary
 
-import ch.softappeal.yass2.serialize.BytesReader
-import ch.softappeal.yass2.serialize.BytesWriter
-import ch.softappeal.yass2.serialize.checkTail
+import ch.softappeal.yass2.core.serialize.BytesReader
+import ch.softappeal.yass2.core.serialize.BytesWriter
+import ch.softappeal.yass2.core.serialize.checkTail
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails

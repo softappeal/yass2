@@ -1,13 +1,13 @@
-package ch.softappeal.yass2.session
+package ch.softappeal.yass2.coroutines.session
 
-import ch.softappeal.yass2.InternalApi
-import ch.softappeal.yass2.ThreadSafeMap
-import ch.softappeal.yass2.remote.Message
-import ch.softappeal.yass2.remote.Reply
-import ch.softappeal.yass2.remote.Request
-import ch.softappeal.yass2.remote.ServiceId
-import ch.softappeal.yass2.remote.Tunnel
-import ch.softappeal.yass2.tryFinally
+import ch.softappeal.yass2.core.InternalApi
+import ch.softappeal.yass2.core.remote.Message
+import ch.softappeal.yass2.core.remote.Reply
+import ch.softappeal.yass2.core.remote.Request
+import ch.softappeal.yass2.core.remote.ServiceId
+import ch.softappeal.yass2.core.remote.Tunnel
+import ch.softappeal.yass2.core.tryFinally
+import ch.softappeal.yass2.coroutines.ThreadSafeMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex

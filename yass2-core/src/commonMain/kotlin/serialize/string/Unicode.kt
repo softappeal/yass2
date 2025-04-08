@@ -1,6 +1,6 @@
-package ch.softappeal.yass2.serialize.string
+package ch.softappeal.yass2.core.serialize.string
 
-import ch.softappeal.yass2.serialize.Reader
+import ch.softappeal.yass2.core.serialize.Reader
 
 // see https://docs.oracle.com/javase/tutorial/i18n/text/unicode.html
 

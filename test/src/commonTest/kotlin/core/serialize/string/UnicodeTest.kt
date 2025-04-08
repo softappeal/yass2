@@ -1,7 +1,7 @@
-package ch.softappeal.yass2.serialize.string
+package ch.softappeal.yass2.core.serialize.string
 
-import ch.softappeal.yass2.assertFailsMessage
-import ch.softappeal.yass2.serialize.BytesReader
+import ch.softappeal.yass2.core.assertFailsMessage
+import ch.softappeal.yass2.core.serialize.BytesReader
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -1,4 +1,4 @@
-package ch.softappeal.yass2
+package ch.softappeal.yass2.core
 
 @MustBeDocumented
 @Retention(AnnotationRetention.BINARY)

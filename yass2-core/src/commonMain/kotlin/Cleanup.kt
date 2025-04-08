@@ -1,4 +1,4 @@
-package ch.softappeal.yass2
+package ch.softappeal.yass2.core
 
 public inline fun <E : Exception> E.addSuppressed(block: () -> Unit): E {
     try {

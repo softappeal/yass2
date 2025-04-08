@@ -1,4 +1,4 @@
-package ch.softappeal.yass2
+package ch.softappeal.yass2.core
 
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

@@ -1,4 +1,4 @@
-package ch.softappeal.yass2
+package ch.softappeal.yass2.coroutines
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock

@@ -1,14 +1,14 @@
 package ch.softappeal.yass2.ktor
 
-import ch.softappeal.yass2.InternalApi
-import ch.softappeal.yass2.remote.Reply
-import ch.softappeal.yass2.remote.Request
-import ch.softappeal.yass2.remote.Tunnel
-import ch.softappeal.yass2.serialize.readBytes
-import ch.softappeal.yass2.session.Connection
-import ch.softappeal.yass2.session.Packet
-import ch.softappeal.yass2.session.SessionFactory
-import ch.softappeal.yass2.session.receiveLoop
+import ch.softappeal.yass2.core.InternalApi
+import ch.softappeal.yass2.core.remote.Reply
+import ch.softappeal.yass2.core.remote.Request
+import ch.softappeal.yass2.core.remote.Tunnel
+import ch.softappeal.yass2.core.serialize.readBytes
+import ch.softappeal.yass2.coroutines.session.Connection
+import ch.softappeal.yass2.coroutines.session.Packet
+import ch.softappeal.yass2.coroutines.session.SessionFactory
+import ch.softappeal.yass2.coroutines.session.receiveLoop
 import io.ktor.network.sockets.Socket
 import io.ktor.network.sockets.openReadChannel
 import io.ktor.network.sockets.openWriteChannel

@@ -1,8 +1,8 @@
 package ch.softappeal.yass2.generate
 
-import ch.softappeal.yass2.remote.Request
-import ch.softappeal.yass2.remote.Service
-import ch.softappeal.yass2.remote.ServiceId
+import ch.softappeal.yass2.core.remote.Request
+import ch.softappeal.yass2.core.remote.Service
+import ch.softappeal.yass2.core.remote.ServiceId
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.memberFunctions
@@ -44,7 +44,7 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
 
     writeLine()
     writeNestedLine("public fun${service.types} ${service.withTypes}.proxy(") {
-        writeNestedLine("intercept: $CSY.Interceptor,")
+        writeNestedLine("intercept: $CSY.core.Interceptor,")
     }
     writeNestedLine("): ${service.withTypes} = object : ${service.withTypes} {", "}") {
         functions.forEachIndexed { functionIndex, function ->
@@ -66,7 +66,7 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
 
     writeLine()
     writeNestedLine("public fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.proxy(") {
-        writeNestedLine("tunnel: $CSY.remote.Tunnel,")
+        writeNestedLine("tunnel: $CSY.core.remote.Tunnel,")
     }
     writeNestedLine("): ${service.withTypes} =") {
         writeNestedLine("object : ${service.withTypes} {", "}") {

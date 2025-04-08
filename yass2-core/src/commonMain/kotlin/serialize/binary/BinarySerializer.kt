@@ -1,10 +1,10 @@
-package ch.softappeal.yass2.serialize.binary
+package ch.softappeal.yass2.core.serialize.binary
 
-import ch.softappeal.yass2.InternalApi
-import ch.softappeal.yass2.serialize.Property
-import ch.softappeal.yass2.serialize.Reader
-import ch.softappeal.yass2.serialize.Serializer
-import ch.softappeal.yass2.serialize.Writer
+import ch.softappeal.yass2.core.InternalApi
+import ch.softappeal.yass2.core.serialize.Property
+import ch.softappeal.yass2.core.serialize.Reader
+import ch.softappeal.yass2.core.serialize.Serializer
+import ch.softappeal.yass2.core.serialize.Writer
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType

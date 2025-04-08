@@ -1,4 +1,4 @@
-package ch.softappeal.yass2
+package ch.softappeal.yass2.core
 
 // function is String (= function name) instead of KFunction because annotation reflection is not multiplatform.
 

@@ -1,8 +1,8 @@
 package ch.softappeal.yass2.ktor
 
-import ch.softappeal.yass2.InternalApi
-import ch.softappeal.yass2.serialize.BytesWriter
-import ch.softappeal.yass2.serialize.Serializer
+import ch.softappeal.yass2.core.InternalApi
+import ch.softappeal.yass2.core.serialize.BytesWriter
+import ch.softappeal.yass2.core.serialize.Serializer
 
 public class Transport(
     serializer: Serializer,

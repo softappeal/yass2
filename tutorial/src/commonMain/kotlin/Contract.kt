@@ -1,16 +1,16 @@
 package ch.softappeal.yass2.tutorial
 
-import ch.softappeal.yass2.remote.ExceptionReply
-import ch.softappeal.yass2.remote.Request
-import ch.softappeal.yass2.remote.ServiceId
-import ch.softappeal.yass2.remote.ValueReply
-import ch.softappeal.yass2.serialize.string.BaseStringEncoder
-import ch.softappeal.yass2.serialize.string.IntStringEncoder
-import ch.softappeal.yass2.serialize.string.StringSerializer
-import ch.softappeal.yass2.serialize.string.TextSerializer
-import ch.softappeal.yass2.session.MustBeImplementedByAcceptor
-import ch.softappeal.yass2.session.MustBeImplementedByInitiator
-import ch.softappeal.yass2.session.Packet
+import ch.softappeal.yass2.core.remote.ExceptionReply
+import ch.softappeal.yass2.core.remote.Request
+import ch.softappeal.yass2.core.remote.ServiceId
+import ch.softappeal.yass2.core.remote.ValueReply
+import ch.softappeal.yass2.core.serialize.string.BaseStringEncoder
+import ch.softappeal.yass2.core.serialize.string.IntStringEncoder
+import ch.softappeal.yass2.core.serialize.string.StringSerializer
+import ch.softappeal.yass2.core.serialize.string.TextSerializer
+import ch.softappeal.yass2.coroutines.session.MustBeImplementedByAcceptor
+import ch.softappeal.yass2.coroutines.session.MustBeImplementedByInitiator
+import ch.softappeal.yass2.coroutines.session.Packet
 
 /**
  * Shows how to implement an own base type.

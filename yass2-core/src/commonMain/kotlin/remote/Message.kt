@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.remote
+package ch.softappeal.yass2.core.remote
 
 public sealed class Message
 

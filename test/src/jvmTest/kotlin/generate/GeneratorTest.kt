@@ -1,8 +1,8 @@
 package ch.softappeal.yass2.generate
 
-import ch.softappeal.yass2.assertFailsMessage
-import ch.softappeal.yass2.serialize.binary.BinaryEncoder
-import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
+import ch.softappeal.yass2.core.assertFailsMessage
+import ch.softappeal.yass2.core.serialize.binary.BinaryEncoder
+import ch.softappeal.yass2.core.serialize.binary.IntBinaryEncoder
 import kotlin.IllegalArgumentException
 import kotlin.IllegalStateException
 import kotlin.Int

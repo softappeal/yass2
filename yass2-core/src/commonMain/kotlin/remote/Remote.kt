@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.remote
+package ch.softappeal.yass2.core.remote
 
 public class ServiceId<@Suppress("unused") S : Any>(public val id: String)
 

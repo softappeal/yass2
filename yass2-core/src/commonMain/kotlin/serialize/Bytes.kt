@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.serialize
+package ch.softappeal.yass2.core.serialize
 
 public class BytesWriter(public var buffer: ByteArray) : Writer {
     public constructor(initialCapacity: Int) : this(ByteArray(initialCapacity))

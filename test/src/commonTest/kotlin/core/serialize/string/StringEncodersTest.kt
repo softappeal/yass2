@@ -1,7 +1,7 @@
-package ch.softappeal.yass2.serialize.string
+package ch.softappeal.yass2.core.serialize.string
 
-import ch.softappeal.yass2.assertFailsMessage
-import ch.softappeal.yass2.contract.Gender
+import ch.softappeal.yass2.core.assertFailsMessage
+import ch.softappeal.yass2.core.contract.Gender
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals

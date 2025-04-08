@@ -1,11 +1,11 @@
-package ch.softappeal.yass2.flow
+package ch.softappeal.yass2.coroutines.flow
 
-import ch.softappeal.yass2.ThreadSafeMap
-import ch.softappeal.yass2.addSuppressed
-import ch.softappeal.yass2.remote.ExceptionReply
-import ch.softappeal.yass2.remote.Reply
-import ch.softappeal.yass2.remote.ValueReply
-import ch.softappeal.yass2.tryFinally
+import ch.softappeal.yass2.core.addSuppressed
+import ch.softappeal.yass2.core.remote.ExceptionReply
+import ch.softappeal.yass2.core.remote.Reply
+import ch.softappeal.yass2.core.remote.ValueReply
+import ch.softappeal.yass2.core.tryFinally
+import ch.softappeal.yass2.coroutines.ThreadSafeMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel

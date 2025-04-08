@@ -1,7 +1,7 @@
-package ch.softappeal.yass2.serialize.binary
+package ch.softappeal.yass2.core.serialize.binary
 
-import ch.softappeal.yass2.serialize.Reader
-import ch.softappeal.yass2.serialize.Writer
+import ch.softappeal.yass2.core.serialize.Reader
+import ch.softappeal.yass2.core.serialize.Writer
 import kotlin.reflect.KClass
 
 public object BooleanBinaryEncoder : BinaryEncoder<Boolean>(Boolean::class,

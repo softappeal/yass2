@@ -1,11 +1,11 @@
-package ch.softappeal.yass2.flow
+package ch.softappeal.yass2.coroutines.flow
 
-import ch.softappeal.yass2.Printer
-import ch.softappeal.yass2.contract.DivideByZeroException
-import ch.softappeal.yass2.contract.proxy
-import ch.softappeal.yass2.contract.service
-import ch.softappeal.yass2.remote.ServiceId
-import ch.softappeal.yass2.remote.tunnel
+import ch.softappeal.yass2.core.Printer
+import ch.softappeal.yass2.core.contract.DivideByZeroException
+import ch.softappeal.yass2.core.contract.proxy
+import ch.softappeal.yass2.core.contract.service
+import ch.softappeal.yass2.core.remote.ServiceId
+import ch.softappeal.yass2.core.remote.tunnel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow

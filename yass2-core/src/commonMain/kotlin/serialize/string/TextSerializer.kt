@@ -1,7 +1,7 @@
-package ch.softappeal.yass2.serialize.string
+package ch.softappeal.yass2.core.serialize.string
 
-import ch.softappeal.yass2.serialize.Reader
-import ch.softappeal.yass2.serialize.Writer
+import ch.softappeal.yass2.core.serialize.Reader
+import ch.softappeal.yass2.core.serialize.Writer
 
 private const val COLON = ':'.code
 private const val LBRACKET = '['.code

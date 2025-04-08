@@ -1,16 +1,16 @@
 package ch.softappeal.yass2.generate
 
-import ch.softappeal.yass2.InternalApi
-import ch.softappeal.yass2.serialize.Property
-import ch.softappeal.yass2.serialize.binary.BinaryEncoder
-import ch.softappeal.yass2.serialize.binary.BinaryProperty
-import ch.softappeal.yass2.serialize.binary.BinarySerializer
-import ch.softappeal.yass2.serialize.binary.EnumBinaryEncoder
-import ch.softappeal.yass2.serialize.string.BaseStringEncoder
-import ch.softappeal.yass2.serialize.string.ClassStringEncoder
-import ch.softappeal.yass2.serialize.string.EnumStringEncoder
-import ch.softappeal.yass2.serialize.string.StringEncoder
-import ch.softappeal.yass2.serialize.string.StringProperty
+import ch.softappeal.yass2.core.InternalApi
+import ch.softappeal.yass2.core.serialize.Property
+import ch.softappeal.yass2.core.serialize.binary.BinaryEncoder
+import ch.softappeal.yass2.core.serialize.binary.BinaryProperty
+import ch.softappeal.yass2.core.serialize.binary.BinarySerializer
+import ch.softappeal.yass2.core.serialize.binary.EnumBinaryEncoder
+import ch.softappeal.yass2.core.serialize.string.BaseStringEncoder
+import ch.softappeal.yass2.core.serialize.string.ClassStringEncoder
+import ch.softappeal.yass2.core.serialize.string.EnumStringEncoder
+import ch.softappeal.yass2.core.serialize.string.StringEncoder
+import ch.softappeal.yass2.core.serialize.string.StringProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.isSubclassOf
@@ -18,13 +18,13 @@ import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.superclasses
 import kotlin.reflect.full.valueParameters
-import ch.softappeal.yass2.serialize.binary.FIRST_ENCODER_ID as BINARY_FIRST_ENCODER_ID
-import ch.softappeal.yass2.serialize.binary.LIST_ENCODER_ID as BINARY_LIST_ENCODER_ID
-import ch.softappeal.yass2.serialize.binary.NULL_ENCODER_ID as BINARY_NULL_ENCODER_ID
-import ch.softappeal.yass2.serialize.string.BOOLEAN_ENCODER_ID as STRING_BOOLEAN_ENCODER_ID
-import ch.softappeal.yass2.serialize.string.FIRST_ENCODER_ID as STRING_FIRST_ENCODER_ID
-import ch.softappeal.yass2.serialize.string.LIST_ENCODER_ID as STRING_LIST_ENCODER_ID
-import ch.softappeal.yass2.serialize.string.STRING_ENCODER_ID as STRING_STRING_ENCODER_ID
+import ch.softappeal.yass2.core.serialize.binary.FIRST_ENCODER_ID as BINARY_FIRST_ENCODER_ID
+import ch.softappeal.yass2.core.serialize.binary.LIST_ENCODER_ID as BINARY_LIST_ENCODER_ID
+import ch.softappeal.yass2.core.serialize.binary.NULL_ENCODER_ID as BINARY_NULL_ENCODER_ID
+import ch.softappeal.yass2.core.serialize.string.BOOLEAN_ENCODER_ID as STRING_BOOLEAN_ENCODER_ID
+import ch.softappeal.yass2.core.serialize.string.FIRST_ENCODER_ID as STRING_FIRST_ENCODER_ID
+import ch.softappeal.yass2.core.serialize.string.LIST_ENCODER_ID as STRING_LIST_ENCODER_ID
+import ch.softappeal.yass2.core.serialize.string.STRING_ENCODER_ID as STRING_STRING_ENCODER_ID
 
 public fun KClass<*>.isEnum(): Boolean = java.isEnum
 

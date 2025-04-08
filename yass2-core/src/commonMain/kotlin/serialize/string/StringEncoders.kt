@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.serialize.string
+package ch.softappeal.yass2.core.serialize.string
 
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi

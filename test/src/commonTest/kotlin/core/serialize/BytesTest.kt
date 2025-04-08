@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.serialize
+package ch.softappeal.yass2.core.serialize
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

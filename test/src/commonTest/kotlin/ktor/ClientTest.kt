@@ -1,8 +1,8 @@
 package ch.softappeal.yass2.ktor
 
-import ch.softappeal.yass2.contract.ContractTransport
-import ch.softappeal.yass2.remote.test
-import ch.softappeal.yass2.session.initiatorSessionFactory
+import ch.softappeal.yass2.core.contract.ContractTransport
+import ch.softappeal.yass2.core.remote.test
+import ch.softappeal.yass2.coroutines.session.initiatorSessionFactory
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.plugins.websocket.WebSockets.Plugin
