@@ -14,8 +14,7 @@ public class Transport(
         require(maxReadBytesInitialSize > 0)
     }
 
-    @InternalApi
-    public fun createWriter(): BytesWriter = BytesWriter(initialWriterCapacity)
+    internal fun createWriter(): BytesWriter = BytesWriter(initialWriterCapacity)
 
     @InternalApi
     public suspend fun readBytes(

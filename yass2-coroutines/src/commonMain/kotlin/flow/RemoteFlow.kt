@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.coroutines.flow
 
+import ch.softappeal.yass2.core.ExperimentalApi
 import ch.softappeal.yass2.core.addSuppressed
 import ch.softappeal.yass2.core.remote.ExceptionReply
 import ch.softappeal.yass2.core.remote.Reply
@@ -24,6 +25,7 @@ public interface FlowService<out F, I> {
     public suspend fun cancel(collectId: Int)
 }
 
+@ExperimentalApi
 public fun <F, I> FlowService<F, I>.createFlow(flowId: I): Flow<F> =
     @OptIn(ExperimentalCoroutinesApi::class) // TODO: might become binary incompatible with future versions
     object : AbstractFlow<F>() {
@@ -42,6 +44,7 @@ public fun <F, I> FlowService<F, I>.createFlow(flowId: I): Flow<F> =
 
 public typealias FlowFactory<F, I> = (flowId: I) -> Flow<F>
 
+@ExperimentalApi
 @OptIn(ExperimentalAtomicApi::class) // TODO: might become binary incompatible with future versions
 public fun <F, I> flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I> {
     val nextCollectId = AtomicInt(0)

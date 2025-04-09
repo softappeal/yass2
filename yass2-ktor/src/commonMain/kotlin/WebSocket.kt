@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.ktor
 
-import ch.softappeal.yass2.core.InternalApi
 import ch.softappeal.yass2.core.serialize.readBytes
 import ch.softappeal.yass2.coroutines.session.Connection
 import ch.softappeal.yass2.coroutines.session.Packet
@@ -15,7 +14,7 @@ public class WebSocketConnection internal constructor(
     public val session: WebSocketSession,
 ) : Connection {
     override suspend fun write(packet: Packet?) {
-        @OptIn(InternalApi::class) val writer = transport.createWriter()
+        val writer = transport.createWriter()
         transport.write(writer, packet)
         session.outgoing.send(Frame.Binary(true, writer.toyByteArray()))
     }

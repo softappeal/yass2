@@ -1,7 +1,7 @@
 [versions]
 
 kotlin             = "2.1.20" # https://github.com/JetBrains/kotlin
-kotlinx-coroutines = "1.10.1" # https://github.com/Kotlin/kotlinx.coroutines
+kotlinx-coroutines = "1.10.2" # https://github.com/Kotlin/kotlinx.coroutines
 ktor               = "3.1.2"  # https://github.com/ktorio/ktor
 
 [libraries]

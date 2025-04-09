@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.ktor
 
-import ch.softappeal.yass2.core.InternalApi
 import ch.softappeal.yass2.core.remote.Message
 import ch.softappeal.yass2.core.remote.Reply
 import ch.softappeal.yass2.core.remote.Request
@@ -22,7 +21,7 @@ import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
 private fun Transport.write(message: Message): ByteArray {
-    @OptIn(InternalApi::class) val writer = createWriter()
+    val writer = createWriter()
     write(writer, message)
     return writer.toyByteArray()
 }

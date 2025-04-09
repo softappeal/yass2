@@ -24,14 +24,14 @@ import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
 private suspend fun ByteWriteChannel.write(transport: Transport, value: Any?) {
-    @OptIn(InternalApi::class) val writer = transport.createWriter()
+    val writer = transport.createWriter()
     transport.write(writer, value)
     writeInt(writer.current)
     writeFully(writer.buffer, 0, writer.current)
 }
 
 private suspend fun ByteReadChannel.read(transport: Transport): Any? {
-    @OptIn(InternalApi::class) val buffer = transport.readBytes(readInt()) { bytes, offset, size ->
+    val buffer = @OptIn(InternalApi::class) transport.readBytes(readInt()) { bytes, offset, size ->
         readFully(bytes, offset, offset + size)
     }
     return transport.readBytes(buffer)
