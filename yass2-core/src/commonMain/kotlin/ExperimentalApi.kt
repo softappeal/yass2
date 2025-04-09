@@ -1,9 +1,8 @@
 package ch.softappeal.yass2.core
 
 /**
- * This annotation marks an experimental API.
- *
- * > Beware using the annotated API especially if you're developing a library, since your library might become binary incompatible with  future versions.
+ * An experimental API may be changed or removed in future versions without any warnings and without providing any migration aids.
+ * > Beware using it especially if you're developing a library, since your library might become binary incompatible in future versions.
  */
 @MustBeDocumented
 @Retention(AnnotationRetention.BINARY)
