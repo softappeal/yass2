@@ -94,6 +94,20 @@ allprojects {
 
 val coreProject = project(":yass2-core")
 
+val generateProject = project(":yass2-generate") {
+    kotlin {
+        sourceSets {
+            jvmMain {
+                dependencies {
+                    api(coreProject)
+                    implementation(kotlin("reflect"))
+                    implementation(kotlin("test"))
+                }
+            }
+        }
+    }
+}
+
 val coroutinesProject = project(":yass2-coroutines") {
     kotlin {
         sourceSets {
@@ -118,38 +132,16 @@ val ktorProject = project(":yass2-ktor") {
                     api(libraries.ktor.network)
                 }
             }
-        }
-    }
-}
-
-val generateProject = project(":yass2-generate") {
-    kotlin {
-        sourceSets {
-            jvmMain {
-                dependencies {
-                    api(coreProject)
-                    implementation(kotlin("reflect"))
-                    implementation(kotlin("test"))
-                }
-            }
-        }
-    }
-}
-
-project(":test") { // this project is needed due to https://youtrack.jetbrains.com/issue/KT-35073
-    kotlin {
-        sourceSets {
             commonTest {
                 dependencies {
-                    implementation(ktorProject)
                     implementation(kotlin("test"))
                     implementation(libraries.kotlinx.coroutines.test)
                 }
             }
             jvmTest {
                 dependencies {
-                    implementation(libraries.bundles.ktor.cio)
                     implementation(generateProject)
+                    implementation(libraries.bundles.ktor.cio)
                 }
             }
         }
