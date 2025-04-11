@@ -1,6 +1,6 @@
 package ch.softappeal.yass2.ktor
 
-import ch.softappeal.yass2.core.contract.ContractTransport
+import ch.softappeal.yass2.contract.ContractTransport
 import ch.softappeal.yass2.core.remote.tunnel
 import ch.softappeal.yass2.coroutines.session.acceptorSessionFactory
 import io.ktor.server.application.install

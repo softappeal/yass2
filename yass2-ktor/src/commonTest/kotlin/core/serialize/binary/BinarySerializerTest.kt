@@ -1,11 +1,11 @@
 package ch.softappeal.yass2.core.serialize.binary
 
-import ch.softappeal.yass2.core.contract.A
-import ch.softappeal.yass2.core.contract.B
-import ch.softappeal.yass2.core.contract.Gender
-import ch.softappeal.yass2.core.contract.Poly
-import ch.softappeal.yass2.core.contract.ThrowableFake
-import ch.softappeal.yass2.core.contract.createBinarySerializer
+import ch.softappeal.yass2.contract.A
+import ch.softappeal.yass2.contract.B
+import ch.softappeal.yass2.contract.Gender
+import ch.softappeal.yass2.contract.Poly
+import ch.softappeal.yass2.contract.ThrowableFake
+import ch.softappeal.yass2.contract.createBinarySerializer
 import ch.softappeal.yass2.core.serialize.BytesReader
 import ch.softappeal.yass2.core.serialize.BytesWriter
 import ch.softappeal.yass2.core.serialize.Serializer

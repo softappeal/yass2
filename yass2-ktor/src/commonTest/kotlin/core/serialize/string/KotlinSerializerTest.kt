@@ -1,15 +1,15 @@
 package ch.softappeal.yass2.core.serialize.string
 
+import ch.softappeal.yass2.contract.B
+import ch.softappeal.yass2.contract.BodyProperty
+import ch.softappeal.yass2.contract.DivideByZeroException
+import ch.softappeal.yass2.contract.Gender
+import ch.softappeal.yass2.contract.ManyProperties
+import ch.softappeal.yass2.contract.Poly
+import ch.softappeal.yass2.contract.ThrowableFake
+import ch.softappeal.yass2.contract.Types
+import ch.softappeal.yass2.contract.createStringEncoders
 import ch.softappeal.yass2.core.assertFailsMessage
-import ch.softappeal.yass2.core.contract.B
-import ch.softappeal.yass2.core.contract.BodyProperty
-import ch.softappeal.yass2.core.contract.DivideByZeroException
-import ch.softappeal.yass2.core.contract.Gender
-import ch.softappeal.yass2.core.contract.ManyProperties
-import ch.softappeal.yass2.core.contract.Poly
-import ch.softappeal.yass2.core.contract.ThrowableFake
-import ch.softappeal.yass2.core.contract.Types
-import ch.softappeal.yass2.core.contract.createStringEncoders
 import ch.softappeal.yass2.core.serialize.Serializer
 import ch.softappeal.yass2.core.serialize.readBytes
 import ch.softappeal.yass2.core.serialize.writeBytes

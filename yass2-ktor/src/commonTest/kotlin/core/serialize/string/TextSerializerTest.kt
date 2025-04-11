@@ -1,12 +1,12 @@
 package ch.softappeal.yass2.core.serialize.string
 
+import ch.softappeal.yass2.contract.B
+import ch.softappeal.yass2.contract.DivideByZeroException
+import ch.softappeal.yass2.contract.Gender
+import ch.softappeal.yass2.contract.Poly
+import ch.softappeal.yass2.contract.ThrowableFake
+import ch.softappeal.yass2.contract.createStringEncoders
 import ch.softappeal.yass2.core.assertFailsMessage
-import ch.softappeal.yass2.core.contract.B
-import ch.softappeal.yass2.core.contract.DivideByZeroException
-import ch.softappeal.yass2.core.contract.Gender
-import ch.softappeal.yass2.core.contract.Poly
-import ch.softappeal.yass2.core.contract.ThrowableFake
-import ch.softappeal.yass2.core.contract.createStringEncoders
 import ch.softappeal.yass2.core.serialize.BytesWriter
 import ch.softappeal.yass2.core.serialize.writeBytes
 import kotlin.test.Test

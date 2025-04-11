@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.core.contract
+package ch.softappeal.yass2.contract
 
 import ch.softappeal.yass2.coroutines.flow.FlowService
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
@@ -13,8 +13,8 @@ class GenerateTest {
     @Test
     fun test() {
         generateFile(
-            "src/commonTest/kotlin/core/contract/$GENERATED_BY_YASS",
-            "ch.softappeal.yass2.core.contract",
+            "src/commonTest/kotlin/contract/$GENERATED_BY_YASS",
+            "ch.softappeal.yass2.contract",
             GenerateMode.Verify,
         ) {
             generateProxies(listOf(Calculator::class, Echo::class, FlowService::class))

@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.core.contract
+package ch.softappeal.yass2.contract
 
 import ch.softappeal.yass2.core.remote.ExceptionReply
 import ch.softappeal.yass2.core.remote.Request

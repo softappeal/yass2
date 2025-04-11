@@ -1,7 +1,7 @@
 package ch.softappeal.yass2.ktor
 
+import ch.softappeal.yass2.contract.createBinarySerializer
 import ch.softappeal.yass2.core.InternalApi
-import ch.softappeal.yass2.core.contract.createBinarySerializer
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
