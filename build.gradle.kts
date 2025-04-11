@@ -116,6 +116,12 @@ val coroutinesProject = project(":yass2-coroutines") {
                     api(libraries.kotlinx.coroutines.core)
                 }
             }
+            jvmTest {
+                dependencies {
+                    implementation(generateProject)
+                    implementation(kotlin("test"))
+                }
+            }
         }
     }
 }

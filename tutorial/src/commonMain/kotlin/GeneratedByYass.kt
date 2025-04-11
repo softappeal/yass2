@@ -8,6 +8,7 @@
     "REDUNDANT_VISIBILITY_MODIFIER",
     "RedundantSuppression",
     "UNUSED_ANONYMOUS_PARAMETER",
+    "KotlinRedundantDiagnosticSuppress",
 )
 
 package ch.softappeal.yass2.tutorial

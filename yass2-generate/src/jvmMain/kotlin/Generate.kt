@@ -20,6 +20,7 @@ private fun Appendable.appendPackage(packageName: String) {
             "REDUNDANT_VISIBILITY_MODIFIER",
             "RedundantSuppression",
             "UNUSED_ANONYMOUS_PARAMETER",
+            "KotlinRedundantDiagnosticSuppress",
         )
     
         package $packageName
