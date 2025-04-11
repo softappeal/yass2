@@ -2,11 +2,9 @@ package ch.softappeal.yass2.generate
 
 import java.nio.file.Files
 import kotlin.io.path.Path
-import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
-import kotlin.test.assertEquals
 
 public const val CSY: String = "ch.softappeal.yass2"
 
@@ -87,22 +85,11 @@ public fun CodeWriter.generateProxies(services: List<KClass<*>>) {
 
 public const val GENERATED_BY_YASS: String = "GeneratedByYass.kt"
 
-public enum class GenerateMode { Verify, Write }
-
-public fun generateFile(filePath: String, packageName: String, mode: GenerateMode, write: CodeWriter.() -> Unit) {
+public fun generateFile(filePath: String, packageName: String, write: CodeWriter.() -> Unit) {
     val builder = StringBuilder()
     builder.appendPackage(packageName)
     CodeWriter(builder).write()
-    val program = builder.toString()
     val file = Path(filePath)
-    when (mode) {
-        GenerateMode.Verify -> {
-            val existingCode = file.readText().replace("\r\n", "\n")
-            assertEquals(program, existingCode) // enables convenient diff in IntelliJ IDEA
-        }
-        GenerateMode.Write -> {
-            Files.createDirectories(file.parent)
-            file.writeText(program)
-        }
-    }
+    Files.createDirectories(file.parent)
+    file.writeText(builder.toString())
 }
