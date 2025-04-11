@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.ktor
 
-import ch.softappeal.yass2.core.InternalApi
 import ch.softappeal.yass2.core.remote.Reply
 import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.Tunnel
@@ -31,7 +30,7 @@ private suspend fun ByteWriteChannel.write(transport: Transport, value: Any?) {
 }
 
 private suspend fun ByteReadChannel.read(transport: Transport): Any? {
-    val buffer = @OptIn(InternalApi::class) transport.readBytes(readInt()) { bytes, offset, size ->
+    val buffer = transport.readBytes(readInt()) { bytes, offset, size ->
         readFully(bytes, offset, offset + size)
     }
     return transport.readBytes(buffer)
