@@ -2,6 +2,7 @@
 
 @file:Suppress("SpellCheckingInspection")
 
+import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import java.util.regex.Pattern
@@ -17,82 +18,47 @@ println("webPlatform: $webPlatform")
 
 plugins {
     alias(libs.plugins.multiplatform)
-    id("maven-publish")
-    signing
     alias(libs.plugins.dokka)
+    alias(libs.plugins.publish)
 }
 
 val libraries = libs
 
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
-    apply(plugin = "maven-publish")
-    apply(plugin = "signing")
     apply(plugin = "org.jetbrains.dokka")
-
-    group = "ch.softappeal.yass2"
+    apply(plugin = "com.vanniktech.maven.publish")
 
     repositories {
         mavenCentral()
     }
 
-    tasks.register<Jar>("javadocJar") {
-        dependsOn(rootProject.tasks.dokkaGenerate)
-        archiveClassifier.set("javadoc")
-        from("$rootDir/build/dokka/html")
-    }
-
     kotlin {
-        jvm {
-            mavenPublication {
-                artifact(tasks["javadocJar"])
-            }
-        }
-        if (webPlatform) {
-            js {
-                nodejs()
-                binaries.executable()
-                compilerOptions {
-                    target.set("es2015")
+        jvm()
+        if (project.name !in setOf("yass2", "yass2-generate")) {
+            if (webPlatform) {
+                js {
+                    nodejs()
+                    binaries.executable()
+                    compilerOptions {
+                        target.set("es2015")
+                    }
+                }
+                @OptIn(ExperimentalWasmDsl::class)
+                wasmJs {
+                    nodejs()
+                    binaries.executable()
                 }
             }
-            @OptIn(ExperimentalWasmDsl::class)
-            wasmJs {
-                nodejs()
-                binaries.executable()
+            if (linuxPlatform) {
+                linuxX64()
+                linuxArm64()
             }
-        }
-        if (linuxPlatform) {
-            linuxX64()
-            linuxArm64()
         }
         explicitApi()
         compilerOptions {
             allWarningsAsErrors.set(true)
             extraWarnings.set(true)
-        }
-        project.publishing {
-            publications.withType<MavenPublication>().onEach { publication ->
-                publication.pom {
-                    name.set(project.name)
-                    description.set("Yet Another Service Solution")
-                    url.set("https://github.com/softappeal/yass2")
-                    licenses { license { name.set("BSD-3-Clause") } }
-                    scm { url.set("https://github.com/softappeal/yass2") }
-                    organization { name.set("softappeal GmbH Switzerland") }
-                    developers { developer { name.set("Angelo Salvade") } }
-                }
-            }
-            repositories {
-                maven {
-                    name = "ossrh"
-                    credentials(PasswordCredentials::class)
-                    url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2")
-                }
-            }
-        }
-        signing {
-            sign(project.publishing.publications)
         }
     }
 
@@ -103,6 +69,23 @@ allprojects {
         dokkaSourceSets {
             configureEach {
                 documentedVisibilities(VisibilityModifier.Public, VisibilityModifier.Protected)
+            }
+        }
+    }
+
+    if (project.name != "tutorial") { // includes root project (needed for doc over all modules)
+        mavenPublishing {
+            publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+            signAllPublications()
+            group = "ch.softappeal.yass2"
+            pom {
+                name.set(project.name)
+                description.set("Yet Another Service Solution")
+                url.set("https://github.com/softappeal/yass2")
+                licenses { license { name.set("BSD-3-Clause") } }
+                scm { url.set("https://github.com/softappeal/yass2") }
+                organization { name.set("softappeal GmbH Switzerland") }
+                developers { developer { name.set("Angelo Salvade") } }
             }
         }
     }
@@ -169,6 +152,13 @@ val ktorProject = project(":yass2-ktor") {
     }
 }
 
+dependencies {
+    dokka(coreProject)
+    dokka(coroutinesProject)
+    dokka(ktorProject)
+    dokka(generateProject)
+}
+
 project(":tutorial") {
     kotlin {
         sourceSets {
@@ -186,19 +176,6 @@ project(":tutorial") {
             }
         }
     }
-}
-
-dependencies {
-    dokka(coreProject)
-    dokka(coroutinesProject)
-    dokka(ktorProject)
-    dokka(generateProject)
-}
-
-tasks.register("publishYass2") {
-    listOf(coreProject, coroutinesProject, ktorProject).forEach { dependsOn("${it.name}:publishAllPublicationsToOssrhRepository") }
-    dependsOn("${generateProject.name}:publishKotlinMultiplatformPublicationToOssrhRepository")
-    dependsOn("${generateProject.name}:publishJvmPublicationToOssrhRepository")
 }
 
 tasks.register("markers") {
