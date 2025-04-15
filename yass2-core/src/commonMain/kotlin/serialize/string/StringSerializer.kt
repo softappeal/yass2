@@ -20,6 +20,7 @@ private const val BS = '\\'.code
 private const val NL = '\n'.code
 private const val CR = '\r'.code
 private const val TAB = '\t'.code
+private const val DOLLAR = '$'.code
 private const val NULL = "null"
 private const val TRUE = "true"
 private const val FALSE = "false"
@@ -36,10 +37,16 @@ private const val S_CR = CR.toChar().toString()
 private const val S_BS_CR = S_BS + "r"
 private const val S_TAB = TAB.toChar().toString()
 private const val S_BS_TAB = S_BS + "t"
+private const val S_DOLLAR = DOLLAR.toChar().toString()
+private const val S_BS_DOLLAR = "$S_BS$"
 
 private val Tab = ByteArray(4) { SP.toByte() }
 
-public abstract class StringWriter(private val writer: Writer, protected val indent: Int) : Writer by writer {
+public abstract class StringWriter(
+    private val writer: Writer,
+    protected val indent: Int,
+    private val escapeDollar: Boolean = false,
+) : Writer by writer {
     protected abstract fun writeList(list: List<*>)
 
     private fun writeStringBuiltIn(string: String) {
@@ -51,6 +58,7 @@ public abstract class StringWriter(private val writer: Writer, protected val ind
                 .replace(S_NL, S_BS_NL)
                 .replace(S_CR, S_BS_CR)
                 .replace(S_TAB, S_BS_TAB)
+                .run { if (escapeDollar) replace(S_DOLLAR, S_BS_DOLLAR) else this }
         )
         writeByte(QUOTE)
     }
@@ -103,7 +111,11 @@ public abstract class StringWriter(private val writer: Writer, protected val ind
     public abstract fun writeProperty(name: String, value: Any?, encoderId: Int)
 }
 
-public abstract class StringReader(private val reader: Reader, private var _nextCodePoint: Int) : Reader by reader {
+public abstract class StringReader(
+    private val reader: Reader,
+    private var _nextCodePoint: Int,
+    private val escapeDollar: Boolean = false,
+) : Reader by reader {
     public fun readStringBuiltIn(): String = buildString {
         while (true) {
             readNextCodePoint()
@@ -117,6 +129,7 @@ public abstract class StringReader(private val reader: Reader, private var _next
                         expectedCodePoint('n'.code) -> append(NL.toChar())
                         expectedCodePoint('r'.code) -> append(CR.toChar())
                         expectedCodePoint('t'.code) -> append(TAB.toChar())
+                        escapeDollar && expectedCodePoint(DOLLAR) -> append(DOLLAR.toChar())
                         else -> error("illegal escape with codePoint $nextCodePoint")
                     }
                 }

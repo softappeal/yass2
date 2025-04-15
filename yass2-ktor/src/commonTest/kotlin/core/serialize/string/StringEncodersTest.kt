@@ -79,6 +79,7 @@ class StringEncodersTest {
             assertEquals(value, serializer.readString(result))
         }
         test("", "\"\"")
+        test("$", "\"$\"")
         test(" hello world ", "\" hello world \"")
         test("\u0000\u0001\u007F", "\"\u0000\u0001\u007F\"", "2200017f22")
         test("\u0080", "\"\u0080\"", "22c28022")

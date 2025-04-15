@@ -11,7 +11,7 @@ private const val LIST = "listOf"
 private const val APPLY = "apply"
 
 public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializer(encoders) {
-    private inner class TheWriter(writer: Writer, indent: Int) : StringWriter(writer, indent) {
+    private inner class TheWriter(writer: Writer, indent: Int) : StringWriter(writer, indent, true) {
         override fun writeList(list: List<*>) {
             writeString(LIST) // NOTE: only empty lists 'listOf()' of properties work; others need 'list<T>()'
             writeByte(LPAREN)
@@ -97,7 +97,7 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
         }
     }
 
-    private inner class TheReader(reader: Reader, nextCodePoint: Int) : StringReader(reader, nextCodePoint) {
+    private inner class TheReader(reader: Reader, nextCodePoint: Int) : StringReader(reader, nextCodePoint, true) {
         fun readList() = buildList {
             readNextCodePointAndSkipWhitespace()
             while (!expectedCodePoint(RPAREN)) {

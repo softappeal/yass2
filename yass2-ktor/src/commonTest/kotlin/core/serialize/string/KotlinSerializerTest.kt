@@ -256,6 +256,18 @@ class KotlinSerializerTest {
     @Test
     fun test() {
         dump(
+            "a $ b",
+            "\"a \\$ b\"",
+        )
+        dump(
+            "a\$b",
+            "\"a\\\$b\"",
+        )
+        dump(
+            "a\${b",
+            "\"a\\\${b\"",
+        )
+        dump(
             null,
             "null",
             "  null",
