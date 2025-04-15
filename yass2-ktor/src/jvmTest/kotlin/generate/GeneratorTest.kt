@@ -3,10 +3,6 @@ package ch.softappeal.yass2.generate
 import ch.softappeal.yass2.core.assertFailsMessage
 import ch.softappeal.yass2.core.serialize.binary.BinaryEncoder
 import ch.softappeal.yass2.core.serialize.binary.IntBinaryEncoder
-import kotlin.IllegalArgumentException
-import kotlin.IllegalStateException
-import kotlin.Int
-import kotlin.Suppress
 import kotlin.reflect.KClass
 import kotlin.test.Test
 
@@ -35,7 +31,11 @@ private interface NotRegularClass
 
 private abstract class AbstractClass
 
-private class ConstructorParameterIsNotProperty(@Suppress("UNUSED_PARAMETER") x: Int)
+private class ConstructorParameterIsNotProperty(x: Int) {
+    init {
+        println(x)
+    }
+}
 
 private enum class Enum { One }
 
