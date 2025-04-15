@@ -1,6 +1,6 @@
 [versions]
 
-kotlin             = "2.1.20" # https://github.com/JetBrains/kotlin
+kotlin             = "2.2.0-Beta1" # https://github.com/JetBrains/kotlin
 kotlinx-coroutines = "1.10.2" # https://github.com/Kotlin/kotlinx.coroutines
 ktor               = "3.1.2"  # https://github.com/ktorio/ktor
 dokka              = "2.0.0"  # https://github.com/Kotlin/dokka
