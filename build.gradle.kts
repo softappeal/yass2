@@ -52,7 +52,7 @@ allprojects {
                 }
                 @OptIn(ExperimentalWasmDsl::class)
                 wasmJs {
-                    outputModuleName.set("${project.name}-wasm")
+                    outputModuleName.set(project.name)
                     nodejs()
                     binaries.executable()
                 }
