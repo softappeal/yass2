@@ -95,7 +95,7 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
                         }
                     }
                 }
-                writeNestedLine("else -> error(\"service '${'$'}id' has no function '${'$'}function'\")")
+                writeNestedLine($$"else -> error(\"service '$id' has no function '$function'\")")
             }
         }
     }

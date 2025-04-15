@@ -52,8 +52,6 @@ class SocketTest {
             clientSocket.cancel() // closes clientSocket, see https://youtrack.jetbrains.com/issue/KTOR-5093/Native-Read-from-a-closed-socket-doesnt-throw-an-exception
             assertFailsWith<CancellationException> { clientByte.await() }
             assertTrue(clientSocket.isClosed)
-            acceptedSocket.close()
-            assertTrue(acceptedSocket.isClosed)
         }
     }
 

@@ -2,7 +2,6 @@ package ch.softappeal.yass2.core.serialize.string
 
 import ch.softappeal.yass2.core.NotJsPlatform
 import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.reflect.KClass
 
 public object IntStringEncoder : BaseStringEncoder<Int>(
@@ -26,10 +25,8 @@ public object DoubleStringEncoder : BaseStringEncoder<Double>(
     { toDouble() }
 )
 
-@ExperimentalEncodingApi
 private val B64 = Base64.Default // uses A-Za-z0-9+/=
 
-@OptIn(ExperimentalEncodingApi::class) // TODO: might become binary incompatible with future versions
 public object ByteArrayStringEncoder : BaseStringEncoder<ByteArray>(
     ByteArray::class,
     { value -> B64.encode(value) },

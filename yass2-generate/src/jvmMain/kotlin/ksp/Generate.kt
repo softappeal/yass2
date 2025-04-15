@@ -65,7 +65,7 @@ private fun KSAnnotated.annotationOrNull(annotation: KClass<*>) =
 @Suppress("UNCHECKED_CAST")
 private fun KSAnnotation.value() = arguments.first { it.name!!.asString() == "value" }.value as List<KSType>
 
-private class Yass2Processor(@Suppress("unused") environment: SymbolProcessorEnvironment) : SymbolProcessor {
+private class Yass2Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
 
         val packageNameToDeclarations = buildMap {
@@ -108,10 +108,10 @@ private class Yass2Processor(@Suppress("unused") environment: SymbolProcessorEnv
             declarationsAnnotationOrNull(ConcreteAndEnumClasses::class)?.let { annotation ->
                 val concreteAndEnumClasses = annotation.value()
                 declarationsAnnotationOrNull(BinaryEncoderObjects::class)?.let { annotation ->
-                    @OptIn(InternalApi::class) writer.generateBinarySerializer(annotation.value(), concreteAndEnumClasses)
+                    writer.generateBinarySerializer(annotation.value(), concreteAndEnumClasses)
                 }
                 declarationsAnnotationOrNull(StringEncoderObjects::class)?.let { annotation ->
-                    @OptIn(InternalApi::class) writer.generateStringEncoders(annotation.value(), concreteAndEnumClasses)
+                    writer.generateStringEncoders(annotation.value(), concreteAndEnumClasses)
                 }
             }
 

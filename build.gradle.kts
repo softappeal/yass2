@@ -2,7 +2,6 @@
 
 @file:Suppress("SpellCheckingInspection")
 
-import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import java.util.regex.Pattern
@@ -52,7 +51,7 @@ allprojects {
                 }
                 @OptIn(ExperimentalWasmDsl::class)
                 wasmJs {
-                    outputModuleName.set("${project.name}-wasm")
+                    outputModuleName.set(project.name)
                     nodejs()
                     binaries.executable()
                 }
@@ -82,7 +81,7 @@ allprojects {
 
     if (project.name != "tutorial") { // includes the root project (needed for doc over all modules)
         mavenPublishing {
-            publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+            publishToMavenCentral()
             signAllPublications()
             group = "ch.softappeal.yass2"
             pom {

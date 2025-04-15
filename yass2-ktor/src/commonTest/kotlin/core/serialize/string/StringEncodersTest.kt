@@ -75,7 +75,6 @@ class StringEncodersTest {
         fun test(value: String, result: String, hexResult: String? = null) {
             val r = serializer.toString(value)
             assertEquals(result, r)
-            @OptIn(ExperimentalStdlibApi::class)
             if (hexResult != null) assertEquals(hexResult, r.encodeToByteArray(throwOnInvalidSequence = true).toHexString())
             assertEquals(value, serializer.fromString(result))
         }

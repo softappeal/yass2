@@ -253,6 +253,7 @@ class KotlinSerializerTest {
         SERIALIZER.allBaseTypesTest(AllBaseTypesSerialized)
     }
 
+    @Suppress("CanConvertToMultiDollarString")
     @Test
     fun test() {
         dump(
