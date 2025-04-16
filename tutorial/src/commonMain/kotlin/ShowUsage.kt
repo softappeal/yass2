@@ -59,7 +59,7 @@ private suspend fun useServices(tunnel: Tunnel) {
     useCalculator(calculator)
 }
 
-// The following code is only needed if you use session based bidirectional remoting.
+// The following code is only needed if you use session-based bidirectional remoting.
 
 private fun <C : Connection> CoroutineScope.initiatorSessionFactory(): SessionFactory<C> = {
     object : Session<C>() {
@@ -112,7 +112,7 @@ private suspend fun useKtorRemoting() {
             route(transport, path, tunnel(
                 CalculatorId.service(CalculatorImpl),
             ))
-            // shows server-side session based bidirectional remoting with WebSocket
+            // shows server-side session-based bidirectional remoting with WebSocket
             webSocket(path) { receiveLoop(transport, acceptorSessionFactory()) }
         }
     }
@@ -123,7 +123,7 @@ private suspend fun useKtorRemoting() {
         }.use { client ->
             // shows client-side unidirectional remoting with Http
             @Suppress("HttpUrlsUsage") useServices(client.tunnel(transport, "http://$localHost:$port$path"))
-            // shows client-side session based bidirectional remoting with WebSocket
+            // shows client-side session-based bidirectional remoting with WebSocket
             client.ws("ws://$localHost:$port$path") { receiveLoop(transport, initiatorSessionFactory()) }
         }
     } finally {

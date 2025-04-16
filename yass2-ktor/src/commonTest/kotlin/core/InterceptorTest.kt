@@ -33,8 +33,10 @@ val EchoImpl = object : Echo {
     override suspend fun echoRequired(value: Any) = value
     override suspend fun noParametersNoResult() {}
     override suspend fun delay(milliSeconds: Int) = delay(milliSeconds.toLong())
-    override suspend fun echoMonster(a: List<*>, b: List<List<String?>?>, c: Map<out Int, String>, d: Pair<*, *>) = null
     override suspend fun echoException(value: Exception) = value
+
+    @Suppress("SameReturnValue")
+    override suspend fun echoMonster(a: List<*>, b: List<List<String?>?>, c: Map<out Int, String>, d: Pair<*, *>) = null
 }
 
 val Printer: Interceptor = { function, parameters, invoke ->

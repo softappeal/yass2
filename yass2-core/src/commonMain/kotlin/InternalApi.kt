@@ -1,8 +1,8 @@
 package ch.softappeal.yass2.core
 
 /**
- * An internal API should not be used outside of this library.
- * It may be changed or removed in future versions without any warnings and without providing any migration aids.
+ * An internal API should not be used outside this library.
+ * It may be changed or removed in future versions without any warnings and without providing any migration aid.
  */
 @MustBeDocumented
 @Retention(AnnotationRetention.BINARY)

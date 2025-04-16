@@ -24,22 +24,22 @@ import kotlin.test.assertTrue
 
 private val SERIALIZER = createBinarySerializer()
 
-private fun <T> Serializer.copy(value: T, check: BytesWriter.() -> Unit = {}): T {
+private fun <T> copy(value: T, check: BytesWriter.() -> Unit = {}): T {
     val writer = BytesWriter(1000)
     val size: Int
     with(writer) {
-        write(this, value)
+        SERIALIZER.write(this, value)
         size = current
         check()
     }
     return with(BytesReader(writer.buffer)) {
-        @Suppress("UNCHECKED_CAST") val result = read(this) as T
+        @Suppress("UNCHECKED_CAST") val result = SERIALIZER.read(this) as T
         assertEquals(size, current)
         result
     }
 }
 
-private fun <T> checkedCopy(value: T, vararg bytes: Int): T = SERIALIZER.copy(value) {
+private fun <T> checkedCopy(value: T, vararg bytes: Int): T = copy(value) {
     assertEquals(current, bytes.size, "actual: ${toyByteArray().toList()}")
     checkTail(*bytes)
 }
@@ -318,7 +318,7 @@ class BinarySerializerTest {
 
     @Test
     fun throwableFake() {
-        val throwableFake = SERIALIZER.copy(ThrowableFake("cause", "message"))
+        val throwableFake = copy(ThrowableFake("cause", "message"))
         assertEquals("cause", throwableFake.cause)
         assertEquals("message", throwableFake.message)
         with(checkedCopy(

@@ -19,7 +19,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
@@ -34,7 +33,6 @@ private fun runServer(block: suspend CoroutineScope.(tcp: TcpSocketBuilder, serv
     }
 }
 
-@Ignore // TODO: spurious failures in SocketTest
 class SocketTest {
     @Test
     fun closeSocket() {

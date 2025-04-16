@@ -37,7 +37,7 @@ public class BytesReader(public var buffer: ByteArray) : Reader {
 
     override fun readBytes(length: Int): ByteArray {
         val newCurrent = current + length
-        require(newCurrent <= buffer.size) // prevents allocation of ByteArray below if buffer is too small
+        require(newCurrent <= buffer.size) // prevents allocation of ByteArray below if the buffer is too small
         return ByteArray(length).apply {
             buffer.copyInto(this, 0, current, newCurrent)
             current = newCurrent

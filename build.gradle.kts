@@ -73,7 +73,7 @@ allprojects {
         }
     }
 
-    if (project.name != "tutorial") { // includes root project (needed for doc over all modules)
+    if (project.name != "tutorial") { // includes the root project (needed for doc over all modules)
         mavenPublishing {
             publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
             signAllPublications()
