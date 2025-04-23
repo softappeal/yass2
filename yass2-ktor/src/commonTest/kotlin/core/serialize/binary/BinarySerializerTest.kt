@@ -2,10 +2,10 @@ package ch.softappeal.yass2.core.serialize.binary
 
 import ch.softappeal.yass2.contract.A
 import ch.softappeal.yass2.contract.B
+import ch.softappeal.yass2.contract.BinarySerializer
 import ch.softappeal.yass2.contract.Gender
 import ch.softappeal.yass2.contract.Poly
 import ch.softappeal.yass2.contract.ThrowableFake
-import ch.softappeal.yass2.contract.createBinarySerializer
 import ch.softappeal.yass2.core.serialize.BytesReader
 import ch.softappeal.yass2.core.serialize.BytesWriter
 import ch.softappeal.yass2.core.serialize.Serializer
@@ -22,18 +22,16 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-private val SERIALIZER = createBinarySerializer()
-
 private fun <T> copy(value: T, check: BytesWriter.() -> Unit = {}): T {
     val writer = BytesWriter(1000)
     val size: Int
     with(writer) {
-        SERIALIZER.write(this, value)
+        BinarySerializer.write(this, value)
         size = current
         check()
     }
     return with(BytesReader(writer.buffer)) {
-        @Suppress("UNCHECKED_CAST") val result = SERIALIZER.read(this) as T
+        @Suppress("UNCHECKED_CAST") val result = BinarySerializer.read(this) as T
         assertEquals(size, current)
         result
     }
@@ -51,7 +49,7 @@ class BinarySerializerTest {
             assertContentEquals(serialized, writeBytes(AllBaseTypes))
             allBaseTypesAssert(serialized)
         }
-        SERIALIZER.allBaseTypesTest(byteArrayOf(
+        BinarySerializer.allBaseTypesTest(byteArrayOf(
             15,
             1,
             2,
@@ -338,7 +336,7 @@ class BinarySerializerTest {
     @Test
     fun duplicatedType() {
         val message = assertFailsWith<IllegalArgumentException> {
-            object : BinarySerializer() {
+            object : ch.softappeal.yass2.core.serialize.binary.BinarySerializer() {
                 init {
                     initialize(IntBinaryEncoder, IntBinaryEncoder)
                 }
@@ -351,7 +349,7 @@ class BinarySerializerTest {
     @Test
     fun missingType() {
         val message = assertFailsWith<IllegalStateException> {
-            SERIALIZER.write(BytesWriter(1000), BinarySerializerTest())
+            BinarySerializer.write(BytesWriter(1000), BinarySerializerTest())
         }.message!!
         assertTrue(message.startsWith("missing type 'class "))
         assertTrue(message.endsWith("BinarySerializerTest'"))
@@ -361,7 +359,7 @@ class BinarySerializerTest {
     fun bytes() {
         assertEquals(
             "hello",
-            with(SERIALIZER) { readBytes(writeBytes("hello")) }
+            with(BinarySerializer) { readBytes(writeBytes("hello")) }
         )
     }
 }

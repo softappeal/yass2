@@ -22,7 +22,7 @@ private fun Appendable.appendPackage(packageName: String) {
             "UNUSED_ANONYMOUS_PARAMETER",
             "KotlinRedundantDiagnosticSuppress",
         )
-    
+
         package $packageName
 
     """.trimIndent())

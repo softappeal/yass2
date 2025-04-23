@@ -127,7 +127,7 @@ internal val StringEncoderObjects = listOf(
     ByteArrayStringEncoder::class,
 )
 
-private val TransportSerializer = TextSerializer(createStringEncoders())
+private val TransportSerializer = TextSerializer(StringEncoders)
 val ContractTransport = Transport(TransportSerializer)
 
 val CalculatorId: ServiceId<Calculator> = ServiceId("calc")

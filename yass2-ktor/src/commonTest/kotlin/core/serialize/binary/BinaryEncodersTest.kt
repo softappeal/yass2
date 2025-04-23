@@ -87,6 +87,7 @@ class BinaryEncodersTest {
             check(byteArrayOf(), 0)
             check(byteArrayOf(0, 1, -1, 127, -128), 5, 0, 1, -1, 127, -128)
         }
+        @Suppress("GrazieInspection")
         with(ColorEncoder) {
             check(Color.Red, 0)
             check(Color.Green, 1)

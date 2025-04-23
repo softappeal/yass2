@@ -124,43 +124,41 @@ public fun CodeWriter.generateBinarySerializer(
             }
         }
     }
-    writeNestedLine("public fun createBinarySerializer(): ${BinarySerializer::class.qualifiedName} =") {
-        writeNestedLine("object : ${BinarySerializer::class.qualifiedName}() {", "}") {
-            writeNestedLine("init {", "}") {
-                writeNestedLine("initialize(", ")") {
-                    encoderObjects.forEach { type -> writeNestedLine("${type.qualifiedName},") }
-                    enumClasses.forEach { type ->
-                        writeNestedLine("${EnumBinaryEncoder::class.qualifiedName}(", "),") {
-                            writeNestedLine("${type.qualifiedName}::class, enumValues(),")
-                        }
+    writeNestedLine("object BinarySerializer : ${BinarySerializer::class.qualifiedName}() {", "}") {
+        writeNestedLine("init {", "}") {
+            writeNestedLine("initialize(", ")") {
+                encoderObjects.forEach { writeNestedLine("${it.qualifiedName},") }
+                enumClasses.forEach { type ->
+                    writeNestedLine("${EnumBinaryEncoder::class.qualifiedName}(", "),") {
+                        writeNestedLine("${type.qualifiedName}::class, enumValues(),")
                     }
-                    concreteClasses.forEach { type ->
-                        writeNestedLine("${BinaryEncoder::class.qualifiedName}(", "),") {
-                            writeNestedLine("${type.qualifiedName}::class,")
-                            val properties = properties(type)
-                            writeNestedLine("{ i ->", "},") {
-                                properties.all.forEach { property ->
-                                    writeNestedLine(property.writeObject("i.${property.name}"))
+                }
+                concreteClasses.forEach { type ->
+                    writeNestedLine("${BinaryEncoder::class.qualifiedName}(", "),") {
+                        writeNestedLine("${type.qualifiedName}::class,")
+                        val properties = properties(type)
+                        writeNestedLine("{ i ->", "},") {
+                            properties.all.forEach { property ->
+                                writeNestedLine(property.writeObject("i.${property.name}"))
+                            }
+                        }
+                        writeNestedLine("{", "}") {
+                            fun BinaryProperty.readObjectWithCast() = "${readObject()} as ${returnType.toType()}"
+                            writeNestedLine(
+                                "${type.qualifiedName}(",
+                                ")${if (properties.body.isEmpty()) "" else ".apply {"}",
+                            ) {
+                                properties.parameter.forEach { property ->
+                                    writeNestedLine("${property.readObjectWithCast()},")
                                 }
                             }
-                            writeNestedLine("{", "}") {
-                                fun BinaryProperty.readObjectWithCast() = "${readObject()} as ${returnType.toType()}"
-                                writeNestedLine(
-                                    "${type.qualifiedName}(",
-                                    ")${if (properties.body.isEmpty()) "" else ".apply {"}",
-                                ) {
-                                    properties.parameter.forEach { property ->
-                                        writeNestedLine("${property.readObjectWithCast()},")
+                            if (properties.body.isNotEmpty()) {
+                                nested {
+                                    properties.body.forEach { property ->
+                                        writeNestedLine("${property.name} = ${property.readObjectWithCast()}")
                                     }
                                 }
-                                if (properties.body.isNotEmpty()) {
-                                    nested {
-                                        properties.body.forEach { property ->
-                                            writeNestedLine("${property.name} = ${property.readObjectWithCast()}")
-                                        }
-                                    }
-                                    writeNestedLine("}")
-                                }
+                                writeNestedLine("}")
                             }
                         }
                     }
@@ -199,13 +197,8 @@ public fun CodeWriter.generateStringEncoders(
             }
         }
     }
-    writeNestedLine(
-        "public fun createStringEncoders(): ${List::class.qualifiedName}<${StringEncoder::class.qualifiedName}<*>> = listOf(",
-        ")",
-    ) {
-        encoderObjects.forEach { type ->
-            writeNestedLine("${type.qualifiedName},")
-        }
+    writeNestedLine("public val StringEncoders: List<${StringEncoder::class.qualifiedName}<*>> = listOf(", ")") {
+        encoderObjects.forEach { writeNestedLine("${it.qualifiedName},") }
         enumClasses.forEach { type ->
             writeNestedLine("${EnumStringEncoder::class.qualifiedName}(", "),") {
                 writeNestedLine("${type.qualifiedName}::class,")

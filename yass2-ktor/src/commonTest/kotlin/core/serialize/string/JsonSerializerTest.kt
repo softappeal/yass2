@@ -2,14 +2,14 @@ package ch.softappeal.yass2.core.serialize.string
 
 import ch.softappeal.yass2.contract.DivideByZeroException
 import ch.softappeal.yass2.contract.Gender
+import ch.softappeal.yass2.contract.StringEncoders
 import ch.softappeal.yass2.contract.ThrowableFake
-import ch.softappeal.yass2.contract.createStringEncoders
 import ch.softappeal.yass2.core.assertFailsMessage
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 
-private val SERIALIZER = JsonSerializer(createStringEncoders())
+private val SERIALIZER = JsonSerializer(StringEncoders)
 
 private fun dump(value: Any?, serialized: String, vararg others: String) = SERIALIZER.dump(value, serialized, *others)
 

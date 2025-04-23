@@ -4,8 +4,8 @@ import ch.softappeal.yass2.contract.B
 import ch.softappeal.yass2.contract.DivideByZeroException
 import ch.softappeal.yass2.contract.Gender
 import ch.softappeal.yass2.contract.Poly
+import ch.softappeal.yass2.contract.StringEncoders
 import ch.softappeal.yass2.contract.ThrowableFake
-import ch.softappeal.yass2.contract.createStringEncoders
 import ch.softappeal.yass2.core.assertFailsMessage
 import ch.softappeal.yass2.core.serialize.BytesWriter
 import ch.softappeal.yass2.core.serialize.writeBytes
@@ -27,7 +27,7 @@ fun StringSerializer.dump(value: Any?, serialized: String, vararg others: String
 private class Int
 private object MyIntEncoder : StringEncoder<Int>(Int::class, {}, { Int() })
 
-private val SERIALIZER = TextSerializer(createStringEncoders())
+private val SERIALIZER = TextSerializer(StringEncoders)
 
 private fun dump(value: Any?, serialized: String, vararg others: String) = SERIALIZER.dump(value, serialized, *others)
 

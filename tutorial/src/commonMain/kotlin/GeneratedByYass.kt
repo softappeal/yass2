@@ -140,7 +140,7 @@ public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.tutoria
         requestNumber: 3
         message: object
 */
-public fun createStringEncoders(): kotlin.collections.List<ch.softappeal.yass2.core.serialize.string.StringEncoder<*>> = listOf(
+public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.StringEncoder<*>> = listOf(
     ch.softappeal.yass2.core.serialize.string.IntStringEncoder,
     ch.softappeal.yass2.tutorial.MyDateEncoder,
     ch.softappeal.yass2.core.serialize.string.EnumStringEncoder(

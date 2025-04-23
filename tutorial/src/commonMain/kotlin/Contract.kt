@@ -104,4 +104,4 @@ public val CalculatorId: ServiceId<Calculator> = ServiceId("calc")
 @MustBeImplementedByInitiator
 public val NewsListenerId: ServiceId<NewsListener> = ServiceId("news")
 
-public val TutorialSerializer: StringSerializer = TextSerializer(createStringEncoders())
+public val TutorialSerializer: StringSerializer = TextSerializer(StringEncoders)
