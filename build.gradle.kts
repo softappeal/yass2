@@ -20,6 +20,12 @@ plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.dokka)
     alias(libs.plugins.publish)
+    alias(libs.plugins.compatibility)
+}
+
+apiValidation {
+    ignoredProjects.addAll(listOf("yass2", "tutorial"))
+    nonPublicMarkers.add("ch.softappeal.yass2.core.InternalApi")
 }
 
 val libraries = libs

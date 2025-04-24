@@ -5,6 +5,7 @@ kotlinx-coroutines = "1.10.2" # https://github.com/Kotlin/kotlinx.coroutines
 ktor               = "3.1.2"  # https://github.com/ktorio/ktor
 dokka              = "2.0.0"  # https://github.com/Kotlin/dokka
 publish            = "0.31.0" # https://github.com/vanniktech/gradle-maven-publish-plugin
+compatibility      = "0.17.0" # https://github.com/Kotlin/binary-compatibility-validator
 
 [libraries]
 
@@ -31,3 +32,4 @@ ktor-cio = [
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 publish = { id = "com.vanniktech.maven.publish", version.ref = "publish" }
+compatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "compatibility" }
