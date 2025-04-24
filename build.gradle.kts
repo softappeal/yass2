@@ -10,7 +10,7 @@ import java.util.regex.Pattern
 val os = System.getProperty("os.name").lowercase()
 
 val linuxPlatform = os.contains("linux")
-val webPlatform = true
+val webPlatform = linuxPlatform
 
 println("os: '$os'")
 println("linuxPlatform: $linuxPlatform")
