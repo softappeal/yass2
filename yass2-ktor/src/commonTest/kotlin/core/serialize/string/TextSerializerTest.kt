@@ -36,10 +36,15 @@ class TextSerializerTest {
     fun checkBaseString() {
         fun checkBaseString(string: String, message: String) {
             assertFailsMessage<IllegalStateException>(message) {
-                TextSerializer(listOf(object : BaseStringEncoder<Long>(Long::class,
-                    { string },
-                    { 0L }
-                ) {})).writeBytes(0L)
+                TextSerializer(
+                    listOf(
+                        object : BaseStringEncoder<Long>(
+                            Long::class,
+                            { string },
+                            { 0L }
+                        ) {},
+                    )
+                ).writeBytes(0L)
             }
         }
         checkBaseString(" ", "' ' must not contain whitespace, '\"', ',' or ')'")
@@ -51,98 +56,100 @@ class TextSerializerTest {
     @Suppress("SpellCheckingInspection")
     @Test
     fun allBaseTypes() {
-        SERIALIZER.allBaseTypesTest("""
-            Types(
-                boolean: true
-                int: 1
-                long: 2
-                double: 123.456
-                string: "hello"
-                bytes: AAEC
-                gender: Female
-                list: [
-                    null
-                    false
-                    true
-                    Int(-1)
-                    Long(2)
-                    Double(123.456)
-                    "hello"
-                    ByteArray(AAEC)
-                    Gender(Male)
-                    [
-                        Int(1)
+        SERIALIZER.allBaseTypesTest(
+            """
+                Types(
+                    boolean: true
+                    int: 1
+                    long: 2
+                    double: 123.456
+                    string: "hello"
+                    bytes: AAEC
+                    gender: Female
+                    list: [
+                        null
+                        false
+                        true
+                        Int(-1)
+                        Long(2)
+                        Double(123.456)
+                        "hello"
+                        ByteArray(AAEC)
+                        Gender(Male)
                         [
-                            "hello"
-                            "world"
+                            Int(1)
+                            [
+                                "hello"
+                                "world"
+                            ]
                         ]
-                    ]
-                    Types(
-                        boolean: true
-                        int: -123456
-                        long: 9223372036854775807
-                        double: 123.456
-                        string: "hello"
-                        bytes: AAEC
-                        gender: Female
-                        list: [
-                        ]
-                        b: B(
-                            a: 1
-                            b: 2
-                        )
-                    )
-                    DivideByZeroException(
-                    )
-                    BodyProperty(
-                        body: BodyProperty(
-                            body: BodyProperty(
+                        Types(
+                            boolean: true
+                            int: -123456
+                            long: 9223372036854775807
+                            double: 123.456
+                            string: "hello"
+                            bytes: AAEC
+                            gender: Female
+                            list: [
+                            ]
+                            b: B(
+                                a: 1
+                                b: 2
                             )
                         )
-                    )
-                    Poly(
-                        a: B(
-                            a: 10
-                            b: 20
+                        DivideByZeroException(
                         )
-                        b: B(
-                            a: 1
+                        BodyProperty(
+                            body: BodyProperty(
+                                body: BodyProperty(
+                                )
+                            )
+                        )
+                        Poly(
+                            a: B(
+                                a: 10
+                                b: 20
+                            )
+                            b: B(
+                                a: 1
+                                b: 2
+                            )
+                        )
+                        ManyProperties(
+                            h: 8
+                            d: 4
+                            f: 6
+                            g: 7
                             b: 2
+                            a: 1
+                            c: 3
+                            e: 5
+                            i: 9
+                            j: 10
                         )
+                    ]
+                    b: B(
+                        a: 10
+                        b: 20
                     )
-                    ManyProperties(
-                        h: 8
-                        d: 4
-                        f: 6
-                        g: 7
-                        b: 2
-                        a: 1
-                        c: 3
-                        e: 5
-                        i: 9
-                        j: 10
+                    booleanOptional: true
+                    intOptional: 1
+                    longOptional: 2
+                    doubleOptional: 123.456
+                    stringOptional: "hello"
+                    bytesOptional: AAEC
+                    genderOptional: Female
+                    listOptional: [
+                        "hello"
+                    ]
+                    bOptional: B(
+                        a: 30
+                        b: 40
                     )
-                ]
-                b: B(
-                    a: 10
-                    b: 20
                 )
-                booleanOptional: true
-                intOptional: 1
-                longOptional: 2
-                doubleOptional: 123.456
-                stringOptional: "hello"
-                bytesOptional: AAEC
-                genderOptional: Female
-                listOptional: [
-                    "hello"
-                ]
-                bOptional: B(
-                    a: 30
-                    b: 40
-                )
-            )
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     @Test

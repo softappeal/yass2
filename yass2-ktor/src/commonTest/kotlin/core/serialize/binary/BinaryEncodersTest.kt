@@ -14,7 +14,8 @@ private val ColorEncoder = EnumBinaryEncoder(Color::class, enumValues())
 
 private class OptionalString(val s: String?)
 
-private object OptionalStringEncoder : BinaryEncoder<OptionalString>(OptionalString::class,
+private object OptionalStringEncoder : BinaryEncoder<OptionalString>(
+    OptionalString::class,
     { value -> writeBinaryOptional(value.s) { StringBinaryEncoder.write(this, it) } },
     { OptionalString(readBinaryOptional { StringBinaryEncoder.read(this) }) }
 )
@@ -87,7 +88,6 @@ class BinaryEncodersTest {
             check(byteArrayOf(), 0)
             check(byteArrayOf(0, 1, -1, 127, -128), 5, 0, 1, -1, 127, -128)
         }
-        @Suppress("GrazieInspection")
         with(ColorEncoder) {
             check(Color.Red, 0)
             check(Color.Green, 1)

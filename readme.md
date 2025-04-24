@@ -2,7 +2,8 @@
 
 * yass2 is
     * a small [Kotlin](https://kotlinlang.org/) [Multiplatform](https://kotlinlang.org/docs/multiplatform-intro.html) library
-    * for efficient asynchronous/non-blocking [Coroutines](https://kotlinlang.org/docs/coroutines-guide.html) based peer-to-peer communication
+    * for efficient asynchronous/non-blocking [Coroutines](https://kotlinlang.org/docs/coroutines-guide.html) based
+      peer-to-peer communication
     * enforcing type-safe contracts with interfaces and data transfer objects
 
 ```

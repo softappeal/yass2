@@ -24,17 +24,21 @@ class TransportTest {
             assertEquals(counter, steps.size)
         }
 
-        check(10,
+        check(
+            10,
             Step(10, 0, 10)
         )
-        check(100,
+        check(
+            100,
             Step(100, 0, 100)
         )
-        check(101,
+        check(
+            101,
             Step(100, 0, 100),
             Step(101, 100, 1)
         )
-        check(1000,
+        check(
+            1000,
             Step(100, 0, 100),
             Step(200, 100, 100),
             Step(400, 200, 200),

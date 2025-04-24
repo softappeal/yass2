@@ -9,23 +9,25 @@ import kotlin.reflect.KType
 public const val CSY: String = "ch.softappeal.yass2"
 
 private fun Appendable.appendPackage(packageName: String) {
-    append("""
-        @file:Suppress(
-            "UNCHECKED_CAST",
-            "USELESS_CAST",
-            "PARAMETER_NAME_CHANGED_ON_OVERRIDE",
-            "RemoveRedundantQualifierName",
-            "SpellCheckingInspection",
-            "RedundantVisibilityModifier",
-            "REDUNDANT_VISIBILITY_MODIFIER",
-            "RedundantSuppression",
-            "UNUSED_ANONYMOUS_PARAMETER",
-            "KotlinRedundantDiagnosticSuppress",
-        )
+    append(
+        """
+            @file:Suppress(
+                "UNCHECKED_CAST",
+                "USELESS_CAST",
+                "PARAMETER_NAME_CHANGED_ON_OVERRIDE",
+                "RemoveRedundantQualifierName",
+                "SpellCheckingInspection",
+                "RedundantVisibilityModifier",
+                "REDUNDANT_VISIBILITY_MODIFIER",
+                "RedundantSuppression",
+                "UNUSED_ANONYMOUS_PARAMETER",
+                "KotlinRedundantDiagnosticSuppress",
+            )
 
-        package $packageName
+            package $packageName
 
-    """.trimIndent())
+        """.trimIndent()
+    )
 }
 
 internal fun <T> List<T>.hasNoDuplicates() = size == toSet().size

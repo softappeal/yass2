@@ -224,7 +224,8 @@ public abstract class BaseStringEncoder<T : Any>(
      */
     public val write: (value: T) -> String,
     private val read: String.() -> T,
-) : StringEncoder<T>(type,
+) : StringEncoder<T>(
+    type,
     { value ->
         writeString(write(value).apply {
             check(indexOfFirst { it.code.isWhitespace() || it.code == QUOTE || it.code == COMMA || it.code == RPAREN } < 0) {

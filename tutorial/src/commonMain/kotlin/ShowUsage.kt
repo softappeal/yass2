@@ -109,9 +109,11 @@ private suspend fun useKtorRemoting() {
         install(io.ktor.server.websocket.WebSockets)
         routing {
             // shows server-side unidirectional remoting with Http
-            route(transport, path, tunnel(
-                CalculatorId.service(CalculatorImpl),
-            ))
+            route(
+                transport, path, tunnel(
+                    CalculatorId.service(CalculatorImpl),
+                )
+            )
             // shows server-side session-based bidirectional remoting with WebSocket
             webSocket(path) { receiveLoop(transport, acceptorSessionFactory()) }
         }

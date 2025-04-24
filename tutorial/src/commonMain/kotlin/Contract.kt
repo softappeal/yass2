@@ -17,7 +17,8 @@ import ch.softappeal.yass2.coroutines.session.Packet
  * In contrast to regular classes, own base types could implement a more efficient serializing.
  */
 public data class MyDate(public val currentTimeMillis: Long)
-internal object MyDateEncoder : BaseStringEncoder<MyDate>(MyDate::class,
+internal object MyDateEncoder : BaseStringEncoder<MyDate>(
+    MyDate::class,
     { value -> value.currentTimeMillis.toString() },
     { MyDate(toLong()) }
 )

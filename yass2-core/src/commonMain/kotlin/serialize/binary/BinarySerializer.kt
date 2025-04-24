@@ -38,18 +38,22 @@ public abstract class BinarySerializer : Serializer {
         }
     }
 
-    private val listEncoderId = EncoderId(@OptIn(InternalApi::class) LIST_ENCODER_ID, BinaryEncoder(List::class,
-        { list ->
-            writeVarInt(list.size)
-            for (element in list) writeObject(element)
-        },
-        {
-            var size = readVarInt()
-            ArrayList<Any?>(minOf(size, 100)).apply { // prevents easy out-of-memory attack
-                while (size-- > 0) add(readObject())
+    private val listEncoderId = EncoderId(
+        @OptIn(InternalApi::class) LIST_ENCODER_ID,
+        BinaryEncoder(
+            List::class,
+            { list ->
+                writeVarInt(list.size)
+                for (element in list) writeObject(element)
+            },
+            {
+                var size = readVarInt()
+                ArrayList<Any?>(minOf(size, 100)).apply { // prevents easy out-of-memory attack
+                    while (size-- > 0) add(readObject())
+                }
             }
-        }
-    ))
+        )
+    )
 
     protected fun Writer.writeObject(value: Any?) {
         val (encoderId, encoder) = when (value) {
