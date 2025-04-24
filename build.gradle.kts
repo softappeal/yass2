@@ -118,7 +118,7 @@ val coroutinesProject = project(":yass2-coroutines") {
             commonMain {
                 dependencies {
                     api(coreProject)
-                    api(libraries.kotlinx.coroutines.core)
+                    api(libraries.coroutines.core)
                 }
             }
             jvmTest {
@@ -145,7 +145,7 @@ val ktorProject = project(":yass2-ktor") {
             commonTest {
                 dependencies {
                     implementation(kotlin("test"))
-                    implementation(libraries.kotlinx.coroutines.test)
+                    implementation(libraries.coroutines.test)
                 }
             }
             jvmTest {

@@ -1,16 +1,16 @@
 [versions]
 
-kotlin             = "2.1.20" # https://github.com/JetBrains/kotlin
-kotlinx-coroutines = "1.10.2" # https://github.com/Kotlin/kotlinx.coroutines
-ktor               = "3.1.2"  # https://github.com/ktorio/ktor
-dokka              = "2.0.0"  # https://github.com/Kotlin/dokka
-publish            = "0.31.0" # https://github.com/vanniktech/gradle-maven-publish-plugin
-compatibility      = "0.17.0" # https://github.com/Kotlin/binary-compatibility-validator
+kotlin        = "2.1.20" # https://github.com/JetBrains/kotlin
+coroutines    = "1.10.2" # https://github.com/Kotlin/kotlinx.coroutines
+ktor          = "3.1.2"  # https://github.com/ktorio/ktor
+dokka         = "2.0.0"  # https://github.com/Kotlin/dokka
+publish       = "0.31.0" # https://github.com/vanniktech/gradle-maven-publish-plugin
+compatibility = "0.17.0" # https://github.com/Kotlin/binary-compatibility-validator
 
 [libraries]
 
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
-kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
 ktor-client-core       = { module = "io.ktor:ktor-client-core"      , version.ref = "ktor" }
 ktor-server-core       = { module = "io.ktor:ktor-server-core"      , version.ref = "ktor" }
