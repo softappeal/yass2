@@ -88,11 +88,11 @@ public fun CodeWriter.generateProxies(services: List<KClass<*>>) {
 
 public const val GENERATED_BY_YASS: String = "GeneratedByYass.kt"
 
-public fun generateFile(filePath: String, packageName: String, write: CodeWriter.() -> Unit) {
+public fun generateFile(generatedDir: String, packageName: String, write: CodeWriter.() -> Unit) {
     val builder = StringBuilder()
     builder.appendPackage(packageName)
     CodeWriter(builder).write()
-    val file = Path(filePath)
-    Files.createDirectories(file.parent)
-    file.writeText(builder.toString())
+    val generatedFile = Path(generatedDir).resolve(GENERATED_BY_YASS)
+    Files.createDirectories(generatedFile.parent)
+    generatedFile.writeText(builder.toString())
 }

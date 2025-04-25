@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.contract
 
-import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import ch.softappeal.yass2.generate.generateBinarySerializer
 import ch.softappeal.yass2.generate.generateFile
 import ch.softappeal.yass2.generate.generateProxies
@@ -11,7 +10,7 @@ class GenerateTest {
     @Test
     fun test() {
         generateFile(
-            "src/commonTest/kotlin/contract/$GENERATED_BY_YASS",
+            "src/commonTest/kotlin/contract",
             "ch.softappeal.yass2.contract",
         ) {
             generateProxies(listOf(Calculator::class, Echo::class))
