@@ -193,4 +193,4 @@ public operator fun <E : Enum<E>> E.invoke(): E = this // NOTE: needed for easy 
 public fun Int(string: String): Int = IntStringEncoder.read(string)
 public fun Long(string: String): Long = LongStringEncoder.read(string)
 public fun Double(string: String): Double = DoubleStringEncoder.read(string)
-public fun ByteArray(string: String): ByteArray = ByteArrayStringEncoder.read(string)
+public fun ByteArray(string: String): ByteArray = BytesStringEncoder.read(string)

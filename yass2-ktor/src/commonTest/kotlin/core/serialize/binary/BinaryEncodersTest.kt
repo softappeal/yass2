@@ -84,7 +84,7 @@ class BinaryEncodersTest {
             check("\uDBFF\uDFFF", 4, -12, -113, -65, -65)   // U+10FFFF
             assertFails { read(BytesReader(1, 255)) }
         }
-        with(ByteArrayBinaryEncoder) {
+        with(BytesBinaryEncoder) {
             check(byteArrayOf(), 0)
             check(byteArrayOf(0, 1, -1, 127, -128), 5, 0, 1, -1, 127, -128)
         }

@@ -5,12 +5,12 @@ import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.ServiceId
 import ch.softappeal.yass2.core.remote.ValueReply
 import ch.softappeal.yass2.core.serialize.binary.BooleanBinaryEncoder
-import ch.softappeal.yass2.core.serialize.binary.ByteArrayBinaryEncoder
+import ch.softappeal.yass2.core.serialize.binary.BytesBinaryEncoder
 import ch.softappeal.yass2.core.serialize.binary.DoubleBinaryEncoder
 import ch.softappeal.yass2.core.serialize.binary.IntBinaryEncoder
 import ch.softappeal.yass2.core.serialize.binary.LongBinaryEncoder
 import ch.softappeal.yass2.core.serialize.binary.StringBinaryEncoder
-import ch.softappeal.yass2.core.serialize.string.ByteArrayStringEncoder
+import ch.softappeal.yass2.core.serialize.string.BytesStringEncoder
 import ch.softappeal.yass2.core.serialize.string.DoubleStringEncoder
 import ch.softappeal.yass2.core.serialize.string.IntStringEncoder
 import ch.softappeal.yass2.core.serialize.string.LongStringEncoder
@@ -117,14 +117,14 @@ internal val BinaryEncoderObjects = listOf(
     LongBinaryEncoder::class,
     DoubleBinaryEncoder::class,
     StringBinaryEncoder::class,
-    ByteArrayBinaryEncoder::class,
+    BytesBinaryEncoder::class,
 )
 
 internal val StringEncoderObjects = listOf(
     IntStringEncoder::class,
     LongStringEncoder::class,
     DoubleStringEncoder::class,
-    ByteArrayStringEncoder::class,
+    BytesStringEncoder::class,
 )
 
 private val TransportSerializer = TextSerializer(StringEncoders)

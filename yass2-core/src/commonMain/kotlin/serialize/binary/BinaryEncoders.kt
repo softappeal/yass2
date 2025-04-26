@@ -28,7 +28,7 @@ public object DoubleBinaryEncoder : BinaryEncoder<Double>(
     { Double.fromBits(readBinaryLong()) }
 )
 
-public object ByteArrayBinaryEncoder : BinaryEncoder<ByteArray>(
+public object BytesBinaryEncoder : BinaryEncoder<ByteArray>(
     ByteArray::class,
     { value ->
         writeVarInt(value.size)
@@ -39,8 +39,8 @@ public object ByteArrayBinaryEncoder : BinaryEncoder<ByteArray>(
 
 public object StringBinaryEncoder : BinaryEncoder<String>(
     String::class,
-    { value -> ByteArrayBinaryEncoder.write(this, value.encodeToByteArray(throwOnInvalidSequence = true)) },
-    { ByteArrayBinaryEncoder.read(this).decodeToString(throwOnInvalidSequence = true) }
+    { value -> BytesBinaryEncoder.write(this, value.encodeToByteArray(throwOnInvalidSequence = true)) },
+    { BytesBinaryEncoder.read(this).decodeToString(throwOnInvalidSequence = true) }
 )
 
 public class EnumBinaryEncoder<T : Enum<T>>(type: KClass<T>, constants: Array<T>) : BinaryEncoder<T>(

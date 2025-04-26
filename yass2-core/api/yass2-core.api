@@ -155,8 +155,8 @@ public final class ch/softappeal/yass2/core/serialize/binary/BooleanBinaryEncode
 	public static final field INSTANCE Lch/softappeal/yass2/core/serialize/binary/BooleanBinaryEncoder;
 }
 
-public final class ch/softappeal/yass2/core/serialize/binary/ByteArrayBinaryEncoder : ch/softappeal/yass2/core/serialize/binary/BinaryEncoder {
-	public static final field INSTANCE Lch/softappeal/yass2/core/serialize/binary/ByteArrayBinaryEncoder;
+public final class ch/softappeal/yass2/core/serialize/binary/BytesBinaryEncoder : ch/softappeal/yass2/core/serialize/binary/BinaryEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/core/serialize/binary/BytesBinaryEncoder;
 }
 
 public final class ch/softappeal/yass2/core/serialize/binary/DoubleBinaryEncoder : ch/softappeal/yass2/core/serialize/binary/BinaryEncoder {
@@ -185,8 +185,8 @@ public abstract class ch/softappeal/yass2/core/serialize/string/BaseStringEncode
 	public final fun read (Ljava/lang/String;)Ljava/lang/Object;
 }
 
-public final class ch/softappeal/yass2/core/serialize/string/ByteArrayStringEncoder : ch/softappeal/yass2/core/serialize/string/BaseStringEncoder {
-	public static final field INSTANCE Lch/softappeal/yass2/core/serialize/string/ByteArrayStringEncoder;
+public final class ch/softappeal/yass2/core/serialize/string/BytesStringEncoder : ch/softappeal/yass2/core/serialize/string/BaseStringEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/core/serialize/string/BytesStringEncoder;
 }
 
 public final class ch/softappeal/yass2/core/serialize/string/ClassStringEncoder : ch/softappeal/yass2/core/serialize/string/StringEncoder {
