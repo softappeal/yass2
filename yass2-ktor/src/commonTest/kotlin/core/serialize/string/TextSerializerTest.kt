@@ -7,8 +7,7 @@ import ch.softappeal.yass2.contract.Poly
 import ch.softappeal.yass2.contract.StringEncoders
 import ch.softappeal.yass2.contract.ThrowableFake
 import ch.softappeal.yass2.core.assertFailsMessage
-import ch.softappeal.yass2.core.serialize.BytesWriter
-import ch.softappeal.yass2.core.serialize.toBytes
+import ch.softappeal.yass2.core.serialize.toByteArray
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -44,7 +43,7 @@ class TextSerializerTest {
                             { 0L }
                         ) {},
                     )
-                ).toBytes(0L)
+                ).toByteArray(0L)
             }
         }
         checkBaseString(" ", "' ' must not contain whitespace, '\"', ',' or ')'")
@@ -278,9 +277,7 @@ class TextSerializerTest {
 
     @Test
     fun missingType() {
-        val message = assertFailsWith<IllegalStateException> {
-            SERIALIZER.write(BytesWriter(1000), TextSerializerTest())
-        }.message!!
+        val message = assertFailsWith<IllegalStateException> { SERIALIZER.toByteArray(TextSerializerTest()) }.message!!
         assertTrue(message.startsWith("missing type 'class "))
         assertTrue(message.endsWith("TextSerializerTest'"))
     }

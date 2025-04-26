@@ -3,7 +3,7 @@ package ch.softappeal.yass2.ktor
 import ch.softappeal.yass2.core.remote.Reply
 import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.Tunnel
-import ch.softappeal.yass2.core.serialize.fromBytes
+import ch.softappeal.yass2.core.serialize.fromByteArray
 import ch.softappeal.yass2.coroutines.session.Connection
 import ch.softappeal.yass2.coroutines.session.Packet
 import ch.softappeal.yass2.coroutines.session.SessionFactory
@@ -25,15 +25,16 @@ import kotlin.coroutines.CoroutineContext
 private suspend fun ByteWriteChannel.write(transport: Transport, value: Any?) {
     val writer = transport.createWriter()
     transport.write(writer, value)
-    writeInt(writer.current)
-    writeFully(writer.buffer, 0, writer.current)
+    val byteArray = writer.toyByteArray()
+    writeInt(byteArray.size)
+    writeFully(byteArray)
 }
 
 private suspend fun ByteReadChannel.read(transport: Transport): Any? {
-    val buffer = transport.readBytes(readInt()) { bytes, offset, size ->
-        readFully(bytes, offset, offset + size)
+    val byteArray = transport.readByteArray(readInt()) { byteArray, offset, size ->
+        readFully(byteArray, offset, offset + size)
     }
-    return transport.fromBytes(buffer)
+    return transport.fromByteArray(byteArray)
 }
 
 public typealias SocketConnector = suspend () -> Socket

@@ -11,8 +11,8 @@ import ch.softappeal.yass2.contract.ThrowableFake
 import ch.softappeal.yass2.contract.Types
 import ch.softappeal.yass2.core.assertFailsMessage
 import ch.softappeal.yass2.core.serialize.Serializer
-import ch.softappeal.yass2.core.serialize.fromBytes
-import ch.softappeal.yass2.core.serialize.toBytes
+import ch.softappeal.yass2.core.serialize.fromByteArray
+import ch.softappeal.yass2.core.serialize.toByteArray
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -237,9 +237,9 @@ private val AllBaseTypesSerialized = """
 """.trimIndent()
 
 fun Serializer.allBaseTypesAssert(serialized: ByteArray) {
-    val allBaseTypes = fromBytes(serialized) as Types
+    val allBaseTypes = fromByteArray(serialized) as Types
     assertEquals(15, allBaseTypes.list.size)
-    assertContentEquals(toBytes(AllBaseTypes), toBytes(allBaseTypes))
+    assertContentEquals(toByteArray(AllBaseTypes), toByteArray(allBaseTypes))
 }
 
 fun StringSerializer.allBaseTypesTest(serialized: String) {

@@ -7,20 +7,20 @@ import kotlin.test.assertEquals
 
 class TransportTest {
     @Test
-    fun testReadBytes() = runTest {
+    fun testReadByteArray() = runTest {
         val transport = Transport(BinarySerializer, 50, 100)
 
         class Step(val size: Int, val offset: Int, val length: Int)
 
         suspend fun check(length: Int, vararg steps: Step) {
             var counter = 0
-            val buffer = transport.readBytes(length) { bytes, offset, l ->
+            val byteArray = transport.readByteArray(length) { byteArray, offset, l ->
                 val step = steps[counter++]
-                assertEquals(step.size, bytes.size)
+                assertEquals(step.size, byteArray.size)
                 assertEquals(step.offset, offset)
                 assertEquals(step.length, l)
             }
-            assertEquals(length, buffer.size)
+            assertEquals(length, byteArray.size)
             assertEquals(counter, steps.size)
         }
 

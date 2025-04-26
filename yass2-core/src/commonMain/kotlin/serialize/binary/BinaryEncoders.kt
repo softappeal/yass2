@@ -28,25 +28,29 @@ public object DoubleBinaryEncoder : BinaryEncoder<Double>(
     { Double.fromBits(readBinaryLong()) }
 )
 
-public object BytesBinaryEncoder : BinaryEncoder<ByteArray>(
+public object ByteArrayBinaryEncoder : BinaryEncoder<ByteArray>(
     ByteArray::class,
     { value ->
         writeVarInt(value.size)
-        writeBytes(value)
+        writeByteArray(value)
     },
-    { readBytes(readVarInt()) }
+    { readByteArray(readVarInt()) }
 )
 
 public object StringBinaryEncoder : BinaryEncoder<String>(
     String::class,
-    { value -> BytesBinaryEncoder.write(this, value.encodeToByteArray(throwOnInvalidSequence = true)) },
-    { BytesBinaryEncoder.read(this).decodeToString(throwOnInvalidSequence = true) }
+    { value -> ByteArrayBinaryEncoder.write(this, value.encodeToByteArray(throwOnInvalidSequence = true)) },
+    { ByteArrayBinaryEncoder.read(this).decodeToString(throwOnInvalidSequence = true) }
 )
 
 public class EnumBinaryEncoder<T : Enum<T>>(type: KClass<T>, constants: Array<T>) : BinaryEncoder<T>(
     type,
     { value -> writeVarInt(value.ordinal) },
-    { constants[readVarInt()] }
+    {
+        val c = readVarInt()
+        check(c in 0..<constants.size) { "illegal constant $c" }
+        constants[c]
+    }
 )
 
 public fun <T : Any> Writer.writeBinaryOptional(value: T?, write: Writer.(value: T) -> Unit): Unit = if (value == null) {

@@ -5,8 +5,8 @@ import ch.softappeal.yass2.core.serialize.Property
 import ch.softappeal.yass2.core.serialize.Reader
 import ch.softappeal.yass2.core.serialize.Serializer
 import ch.softappeal.yass2.core.serialize.Writer
-import ch.softappeal.yass2.core.serialize.fromBytes
-import ch.softappeal.yass2.core.serialize.toBytes
+import ch.softappeal.yass2.core.serialize.fromByteArray
+import ch.softappeal.yass2.core.serialize.toByteArray
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
@@ -91,15 +91,15 @@ public abstract class StringWriter(
     }
 
     public fun writeString(string: String) {
-        writeBytes(string.encodeToByteArray(throwOnInvalidSequence = true))
+        writeByteArray(string.encodeToByteArray(throwOnInvalidSequence = true))
     }
 
     public fun writeIndent() {
-        repeat(indent) { writeBytes(Tab) }
+        repeat(indent) { writeByteArray(Tab) }
     }
 
     public fun writeIndentMinus1() {
-        repeat(indent - 1) { writeBytes(Tab) }
+        repeat(indent - 1) { writeByteArray(Tab) }
     }
 
     public fun writeNewLine() {
@@ -320,5 +320,6 @@ public class StringProperty(
     public fun meta(): String = if (encoderId == NO_ENCODER_ID) "object" else encoderId.toString()
 }
 
-public fun StringSerializer.toString(value: Any?): String = toBytes(value).decodeToString(throwOnInvalidSequence = true)
-public fun StringSerializer.fromString(string: String): Any? = fromBytes(string.encodeToByteArray(throwOnInvalidSequence = true))
+public fun StringSerializer.toString(value: Any?): String = toByteArray(value).decodeToString(throwOnInvalidSequence = true)
+public fun StringSerializer.fromString(string: String): Any? =
+    fromByteArray(string.encodeToByteArray(throwOnInvalidSequence = true))

@@ -4,7 +4,7 @@ import ch.softappeal.yass2.core.remote.Message
 import ch.softappeal.yass2.core.remote.Reply
 import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.Tunnel
-import ch.softappeal.yass2.core.serialize.fromBytes
+import ch.softappeal.yass2.core.serialize.fromByteArray
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -20,10 +20,9 @@ import kotlinx.coroutines.withContext
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
-private fun Transport.write(message: Message): ByteArray {
-    val writer = createWriter()
-    write(writer, message)
-    return writer.toyBytes()
+private fun Transport.write(message: Message) = with(createWriter()) {
+    write(this, message)
+    toyByteArray()
 }
 
 public fun HttpClient.tunnel(
@@ -35,7 +34,7 @@ public fun HttpClient.tunnel(
         this.headers.appendAll(headers())
         setBody(transport.write(request))
     }
-    transport.fromBytes(response.bodyAsBytes()) as Reply
+    transport.fromByteArray(response.bodyAsBytes()) as Reply
 }
 
 public class CallCce(public val call: ApplicationCall) : AbstractCoroutineContextElement(CallCce) {
@@ -46,7 +45,7 @@ public fun Route.route(transport: Transport, path: String, tunnel: Tunnel) {
     route(path) {
         post {
             withContext(CallCce(call)) {
-                val reply = tunnel(transport.fromBytes(call.receive(ByteArray::class)) as Request)
+                val reply = tunnel(transport.fromByteArray(call.receive(ByteArray::class)) as Request)
                 call.respond(transport.write(reply))
             }
         }

@@ -1,15 +1,14 @@
 package ch.softappeal.yass2.core.serialize.string
 
 import ch.softappeal.yass2.core.assertFailsMessage
-import ch.softappeal.yass2.core.serialize.BytesReader
+import ch.softappeal.yass2.core.serialize.ByteArrayReader
+import ch.softappeal.yass2.core.serialize.checkDrained
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 private fun readCodePoint(vararg bytes: Int): Int {
-    val reader = BytesReader(*bytes)
-    return reader.readCodePoint().apply {
-        reader.checkDrained()
-    }
+    val reader = ByteArrayReader(bytes.map { it.toByte() }.toByteArray())
+    return reader.readCodePoint().apply { reader.checkDrained() }
 }
 
 class UnicodeTest {

@@ -53,29 +53,22 @@ public final class ch/softappeal/yass2/core/remote/ValueReply : ch/softappeal/ya
 	public fun process ()Ljava/lang/Object;
 }
 
-public final class ch/softappeal/yass2/core/serialize/BytesReader : ch/softappeal/yass2/core/serialize/Reader {
+public final class ch/softappeal/yass2/core/serialize/ByteArrayReader : ch/softappeal/yass2/core/serialize/Reader {
 	public fun <init> ([B)V
-	public fun <init> ([I)V
-	public final fun checkDrained ()V
-	public final fun getBuffer ()[B
-	public final fun getCurrent ()I
 	public final fun isDrained ()Z
 	public fun readByte ()B
-	public fun readBytes (I)[B
-	public final fun setBuffer ([B)V
-	public final fun setCurrent (I)V
+	public fun readByteArray (I)[B
 }
 
-public final class ch/softappeal/yass2/core/serialize/BytesWriter : ch/softappeal/yass2/core/serialize/Writer {
+public final class ch/softappeal/yass2/core/serialize/ByteArrayWriter : ch/softappeal/yass2/core/serialize/Writer {
 	public fun <init> (I)V
-	public fun <init> ([B)V
-	public final fun getBuffer ()[B
-	public final fun getCurrent ()I
-	public final fun setBuffer ([B)V
-	public final fun setCurrent (I)V
-	public final fun toyBytes ()[B
+	public final fun toyByteArray ()[B
 	public fun writeByte (B)V
-	public fun writeBytes ([B)V
+	public fun writeByteArray ([B)V
+}
+
+public final class ch/softappeal/yass2/core/serialize/ByteArraysKt {
+	public static final fun checkDrained (Lch/softappeal/yass2/core/serialize/ByteArrayReader;)V
 }
 
 public abstract class ch/softappeal/yass2/core/serialize/Property {
@@ -89,7 +82,7 @@ public abstract class ch/softappeal/yass2/core/serialize/Property {
 
 public abstract interface class ch/softappeal/yass2/core/serialize/Reader {
 	public abstract fun readByte ()B
-	public abstract fun readBytes (I)[B
+	public abstract fun readByteArray (I)[B
 }
 
 public abstract interface class ch/softappeal/yass2/core/serialize/Serializer {
@@ -98,13 +91,13 @@ public abstract interface class ch/softappeal/yass2/core/serialize/Serializer {
 }
 
 public final class ch/softappeal/yass2/core/serialize/SerializerKt {
-	public static final fun fromBytes (Lch/softappeal/yass2/core/serialize/Serializer;[B)Ljava/lang/Object;
-	public static final fun toBytes (Lch/softappeal/yass2/core/serialize/Serializer;Ljava/lang/Object;)[B
+	public static final fun fromByteArray (Lch/softappeal/yass2/core/serialize/Serializer;[B)Ljava/lang/Object;
+	public static final fun toByteArray (Lch/softappeal/yass2/core/serialize/Serializer;Ljava/lang/Object;)[B
 }
 
 public abstract interface class ch/softappeal/yass2/core/serialize/Writer {
 	public abstract fun writeByte (B)V
-	public abstract fun writeBytes ([B)V
+	public abstract fun writeByteArray ([B)V
 }
 
 public class ch/softappeal/yass2/core/serialize/binary/BinaryEncoder {
@@ -155,8 +148,8 @@ public final class ch/softappeal/yass2/core/serialize/binary/BooleanBinaryEncode
 	public static final field INSTANCE Lch/softappeal/yass2/core/serialize/binary/BooleanBinaryEncoder;
 }
 
-public final class ch/softappeal/yass2/core/serialize/binary/BytesBinaryEncoder : ch/softappeal/yass2/core/serialize/binary/BinaryEncoder {
-	public static final field INSTANCE Lch/softappeal/yass2/core/serialize/binary/BytesBinaryEncoder;
+public final class ch/softappeal/yass2/core/serialize/binary/ByteArrayBinaryEncoder : ch/softappeal/yass2/core/serialize/binary/BinaryEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/core/serialize/binary/ByteArrayBinaryEncoder;
 }
 
 public final class ch/softappeal/yass2/core/serialize/binary/DoubleBinaryEncoder : ch/softappeal/yass2/core/serialize/binary/BinaryEncoder {
@@ -185,8 +178,8 @@ public abstract class ch/softappeal/yass2/core/serialize/string/BaseStringEncode
 	public final fun read (Ljava/lang/String;)Ljava/lang/Object;
 }
 
-public final class ch/softappeal/yass2/core/serialize/string/BytesStringEncoder : ch/softappeal/yass2/core/serialize/string/BaseStringEncoder {
-	public static final field INSTANCE Lch/softappeal/yass2/core/serialize/string/BytesStringEncoder;
+public final class ch/softappeal/yass2/core/serialize/string/ByteArrayStringEncoder : ch/softappeal/yass2/core/serialize/string/BaseStringEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/core/serialize/string/ByteArrayStringEncoder;
 }
 
 public final class ch/softappeal/yass2/core/serialize/string/ClassStringEncoder : ch/softappeal/yass2/core/serialize/string/StringEncoder {
@@ -249,7 +242,7 @@ public abstract class ch/softappeal/yass2/core/serialize/string/StringReader : c
 	public final fun getProperty (Ljava/lang/String;)Ljava/lang/Object;
 	public final fun readBaseString ()Ljava/lang/String;
 	public fun readByte ()B
-	public fun readBytes (I)[B
+	public fun readByteArray (I)[B
 	public final fun readNextCodePoint ()V
 	public final fun readNextCodePointAndSkipWhitespace ()V
 	public final fun readStringBuiltIn ()Ljava/lang/String;
@@ -300,7 +293,7 @@ public abstract class ch/softappeal/yass2/core/serialize/string/StringWriter : c
 	protected final fun writeBuiltIn (Ljava/lang/Object;)Z
 	public fun writeByte (B)V
 	public final fun writeByte (I)V
-	public fun writeBytes ([B)V
+	public fun writeByteArray ([B)V
 	public final fun writeIndent ()V
 	public final fun writeIndentMinus1 ()V
 	protected abstract fun writeList (Ljava/util/List;)V

@@ -51,19 +51,19 @@ class StringEncodersTest {
 
     @Suppress("SpellCheckingInspection")
     @Test
-    fun bytes() {
+    fun byteArray() {
         fun test(value: ByteArray, result: String) {
-            assertEquals(result, BytesStringEncoder.write(value))
-            assertContentEquals(value, BytesStringEncoder.read(result))
+            assertEquals(result, ByteArrayStringEncoder.write(value))
+            assertContentEquals(value, ByteArrayStringEncoder.read(result))
         }
         test(byteArrayOf(), "")
         test(byteArrayOf(0), "AA==")
         test(byteArrayOf(0, 1), "AAE=")
         test(byteArrayOf(0, 1, 2), "AAEC")
         test(byteArrayOf(0, 1, 2, 3), "AAECAw==")
-        assertFails { BytesStringEncoder.read("AA==x") }
-        assertFails { BytesStringEncoder.read("*A==") }
-        assertFails { BytesStringEncoder.read("A*==") }
+        assertFails { ByteArrayStringEncoder.read("AA==x") }
+        assertFails { ByteArrayStringEncoder.read("*A==") }
+        assertFails { ByteArrayStringEncoder.read("A*==") }
     }
 
     @Suppress("SpellCheckingInspection")

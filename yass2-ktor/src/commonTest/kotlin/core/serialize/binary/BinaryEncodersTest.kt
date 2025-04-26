@@ -1,18 +1,18 @@
 package ch.softappeal.yass2.core.serialize.binary
 
-import ch.softappeal.yass2.core.serialize.BytesReader
-import ch.softappeal.yass2.core.serialize.BytesWriter
-import ch.softappeal.yass2.core.serialize.checkTail
+import ch.softappeal.yass2.core.assertFailsMessage
+import ch.softappeal.yass2.core.serialize.ByteArrayReader
+import ch.softappeal.yass2.core.serialize.ByteArrayWriter
+import ch.softappeal.yass2.core.serialize.checkDrained
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
-import kotlin.test.assertNull
 
 private enum class Color { Red, Green }
 
 private val ColorEncoder = EnumBinaryEncoder(Color::class, enumValues())
 
-private class OptionalString(val s: String?)
+private data class OptionalString(val s: String?)
 
 private object OptionalStringEncoder : BinaryEncoder<OptionalString>(
     OptionalString::class,
@@ -20,25 +20,25 @@ private object OptionalStringEncoder : BinaryEncoder<OptionalString>(
     { OptionalString(readBinaryOptional { StringBinaryEncoder.read(this) }) }
 )
 
+private fun <T : Any> BinaryEncoder<T>.check(value: T, vararg bytes: Int) {
+    val writer = ByteArrayWriter(1000)
+    with(writer) {
+        write(this, value)
+        assertEquals(bytes.map { it.toByte() }, toyByteArray().toList())
+    }
+    with(ByteArrayReader(writer.toyByteArray())) {
+        if (value is ByteArray) {
+            assertEquals(value.toList(), (read(this) as ByteArray).toList())
+        } else {
+            assertEquals(value, read(this))
+        }
+        checkDrained()
+    }
+}
+
 class BinaryEncodersTest {
     @Test
     fun test() {
-        fun <T : Any> BinaryEncoder<T>.check(value: T, vararg bytes: Int) {
-            val writer = BytesWriter(1000)
-            with(writer) {
-                write(this, value)
-                checkTail(*bytes)
-                assertEquals(bytes.size, current)
-            }
-            with(BytesReader(writer.buffer)) {
-                if (value is ByteArray) {
-                    assertEquals(value.toList(), (read(this) as ByteArray).toList())
-                } else {
-                    assertEquals(value, read(this))
-                }
-                assertEquals(bytes.size, current)
-            }
-        }
         with(BooleanBinaryEncoder) {
             check(false, 0)
             check(true, 1)
@@ -82,34 +82,23 @@ class BinaryEncodersTest {
             check("\uD800\uDC00", 4, -16, -112, -128, -128) // U+010000
             check("\uD800\uDC01", 4, -16, -112, -128, -127) // U+010001
             check("\uDBFF\uDFFF", 4, -12, -113, -65, -65)   // U+10FFFF
-            assertFails { read(BytesReader(1, 255)) }
+            assertFails { read(ByteArrayReader(byteArrayOf(1, -1))) }
         }
-        with(BytesBinaryEncoder) {
+        with(ByteArrayBinaryEncoder) {
             check(byteArrayOf(), 0)
             check(byteArrayOf(0, 1, -1, 127, -128), 5, 0, 1, -1, 127, -128)
         }
         with(ColorEncoder) {
             check(Color.Red, 0)
             check(Color.Green, 1)
-            // assertFails { read(BytesReader(2)) } // test doesn't work for js and wasmJs targets
+            assertFailsMessage<IllegalStateException>("illegal constant 2") { read(ByteArrayReader(byteArrayOf(2))) }
+            assertFailsMessage<IllegalStateException>("illegal constant -1") {
+                read(ByteArrayReader(byteArrayOf(-1, -1, -1, -1, 15)))
+            }
         }
-    }
-
-    @Test
-    fun testOptional() {
-        val writer = BytesWriter(1000)
-        val encoder = OptionalStringEncoder
-        with(writer) {
-            encoder.write(this, OptionalString(null))
-            assertEquals(1, current)
-            encoder.write(this, OptionalString("hello"))
-            assertEquals(8, current)
-        }
-        with(BytesReader(writer.buffer)) {
-            assertNull(encoder.read(this).s)
-            assertEquals(1, current)
-            assertEquals("hello", encoder.read(this).s)
-            assertEquals(8, current)
+        with(OptionalStringEncoder) {
+            check(OptionalString(null), 0)
+            check(OptionalString("hello"), 1, 5, 104, 101, 108, 108, 111)
         }
     }
 }

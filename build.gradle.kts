@@ -28,8 +28,6 @@ apiValidation {
     nonPublicMarkers.add("ch.softappeal.yass2.core.InternalApi")
 }
 
-val libraries = libs
-
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
     apply(plugin = "org.jetbrains.dokka")
@@ -98,6 +96,8 @@ allprojects {
         }
     }
 }
+
+val libraries = libs
 
 val coreProject = project(":yass2-core")
 

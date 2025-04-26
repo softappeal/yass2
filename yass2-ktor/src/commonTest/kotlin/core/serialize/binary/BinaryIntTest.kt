@@ -1,46 +1,40 @@
 package ch.softappeal.yass2.core.serialize.binary
 
-import ch.softappeal.yass2.core.serialize.BytesReader
-import ch.softappeal.yass2.core.serialize.BytesWriter
-import ch.softappeal.yass2.core.serialize.checkTail
+import ch.softappeal.yass2.core.assertFailsMessage
+import ch.softappeal.yass2.core.serialize.ByteArrayReader
+import ch.softappeal.yass2.core.serialize.check
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFails
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class BinaryIntTest {
     @Test
-    fun test() {
-        val writer = BytesWriter(1000)
-        with(writer) {
-            writeBinaryBoolean(false)
-            writeBinaryBoolean(true)
-            writeBinaryInt(Int.MIN_VALUE)
-            checkTail(0x80, 0x00, 0x00, 0x00)
-            writeBinaryInt(Int.MAX_VALUE)
-            checkTail(0x7F, 0xFF, 0xFF, 0xFF)
-            writeBinaryInt(0x12_34_56_78)
-            checkTail(0x12, 0x34, 0x56, 0x78)
-            writeBinaryLong(Long.MIN_VALUE)
-            checkTail(0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
-            writeBinaryLong(Long.MAX_VALUE)
-            checkTail(0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF)
-            writeBinaryLong(0x12_34_56_78_9A_BC_DE_F0)
-            checkTail(0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0)
-            assertEquals(38, current)
+    fun boolean() {
+        check({ writeBinaryBoolean(false) }, 0) { assertFalse(readBinaryBoolean()) }
+        check({ writeBinaryBoolean(true) }, 1) { assertTrue(readBinaryBoolean()) }
+        assertFailsMessage<IllegalStateException>("unexpected binary boolean 2") {
+            ByteArrayReader(byteArrayOf(2)).readBinaryBoolean()
         }
-        with(BytesReader(writer.buffer)) {
-            assertFalse(readBinaryBoolean())
-            assertTrue(readBinaryBoolean())
-            assertEquals(Int.MIN_VALUE, readBinaryInt())
-            assertEquals(Int.MAX_VALUE, readBinaryInt())
-            assertEquals(0x12_34_56_78, readBinaryInt())
+    }
+
+    @Test
+    fun int() {
+        check({ writeBinaryInt(Int.MIN_VALUE) }, 0x80, 0x00, 0x00, 0x00) { assertEquals(Int.MIN_VALUE, readBinaryInt()) }
+        check({ writeBinaryInt(Int.MAX_VALUE) }, 0x7F, 0xFF, 0xFF, 0xFF) { assertEquals(Int.MAX_VALUE, readBinaryInt()) }
+        check({ writeBinaryInt(0x12_34_56_78) }, 0x12, 0x34, 0x56, 0x78) { assertEquals(0x12_34_56_78, readBinaryInt()) }
+    }
+
+    @Test
+    fun long() {
+        check({ writeBinaryLong(Long.MIN_VALUE) }, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00) {
             assertEquals(Long.MIN_VALUE, readBinaryLong())
-            assertEquals(Long.MAX_VALUE, readBinaryLong())
-            assertEquals(0x12_34_56_78_9A_BC_DE_F0, readBinaryLong())
-            assertEquals(38, current)
         }
-        assertFails { BytesReader(2).readBinaryBoolean() }
+        check({ writeBinaryLong(Long.MAX_VALUE) }, 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF) {
+            assertEquals(Long.MAX_VALUE, readBinaryLong())
+        }
+        check({ writeBinaryLong(0x12_34_56_78_9A_BC_DE_F0) }, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0) {
+            assertEquals(0x12_34_56_78_9A_BC_DE_F0, readBinaryLong())
+        }
     }
 }

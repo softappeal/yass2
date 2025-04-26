@@ -1,30 +1,30 @@
 package ch.softappeal.yass2.ktor
 
-import ch.softappeal.yass2.core.serialize.BytesWriter
+import ch.softappeal.yass2.core.serialize.ByteArrayWriter
 import ch.softappeal.yass2.core.serialize.Serializer
 
 public class Transport(
     serializer: Serializer,
     private val initialWriterCapacity: Int = 1000,
-    private val maxReadBytesInitialSize: Int = 1000,
+    private val maxReadInitialSize: Int = 1000,
 ) : Serializer by serializer {
     init {
         require(initialWriterCapacity > 0)
-        require(maxReadBytesInitialSize > 0)
+        require(maxReadInitialSize > 0)
     }
 
-    internal fun createWriter(): BytesWriter = BytesWriter(initialWriterCapacity)
+    internal fun createWriter() = ByteArrayWriter(initialWriterCapacity)
 
-    internal suspend fun readBytes(
-        length: Int, readBytes: suspend (bytes: ByteArray, offset: Int, length: Int) -> Unit,
+    internal suspend fun readByteArray(
+        length: Int, readBytes: suspend (byteArray: ByteArray, offset: Int, length: Int) -> Unit,
     ): ByteArray {
-        var buffer = ByteArray(minOf(length, maxReadBytesInitialSize))
+        var byteArray = ByteArray(minOf(length, maxReadInitialSize))
         var current = 0
         while (current < length) { // prevents easy out-of-memory attack
-            if (current >= buffer.size) buffer = buffer.copyOf(minOf(length, 2 * buffer.size))
-            readBytes(buffer, current, buffer.size - current)
-            current = buffer.size
+            if (current >= byteArray.size) byteArray = byteArray.copyOf(minOf(length, 2 * byteArray.size))
+            readBytes(byteArray, current, byteArray.size - current)
+            current = byteArray.size
         }
-        return buffer
+        return byteArray
     }
 }

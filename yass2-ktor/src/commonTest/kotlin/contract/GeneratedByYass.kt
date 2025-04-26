@@ -275,7 +275,7 @@ object BinarySerializer : ch.softappeal.yass2.core.serialize.binary.BinarySerial
             ch.softappeal.yass2.core.serialize.binary.LongBinaryEncoder,
             ch.softappeal.yass2.core.serialize.binary.DoubleBinaryEncoder,
             ch.softappeal.yass2.core.serialize.binary.StringBinaryEncoder,
-            ch.softappeal.yass2.core.serialize.binary.BytesBinaryEncoder,
+            ch.softappeal.yass2.core.serialize.binary.ByteArrayBinaryEncoder,
             ch.softappeal.yass2.core.serialize.binary.EnumBinaryEncoder(
                 ch.softappeal.yass2.contract.Gender::class, enumValues(),
             ),
@@ -550,7 +550,7 @@ public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.String
     ch.softappeal.yass2.core.serialize.string.IntStringEncoder,
     ch.softappeal.yass2.core.serialize.string.LongStringEncoder,
     ch.softappeal.yass2.core.serialize.string.DoubleStringEncoder,
-    ch.softappeal.yass2.core.serialize.string.BytesStringEncoder,
+    ch.softappeal.yass2.core.serialize.string.ByteArrayStringEncoder,
     ch.softappeal.yass2.core.serialize.string.EnumStringEncoder(
         ch.softappeal.yass2.contract.Gender::class,
         ch.softappeal.yass2.contract.Gender::valueOf,

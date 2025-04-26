@@ -1,68 +1,28 @@
 package ch.softappeal.yass2.core.serialize.binary
 
-import ch.softappeal.yass2.core.serialize.BytesReader
-import ch.softappeal.yass2.core.serialize.BytesWriter
-import ch.softappeal.yass2.core.serialize.checkTail
+import ch.softappeal.yass2.core.serialize.check
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class BinaryVarIntTest {
     @Test
     fun varInt() {
-        val writer = BytesWriter(1000)
-        with(writer) {
-            writeVarInt(0)
-            checkTail(0)
-            writeVarInt(0x7F)
-            checkTail(0x7F)
-            writeVarInt(0x80)
-            checkTail(0x80, 0x01)
-            writeVarInt(0x3F_FF)
-            checkTail(0xFF, 0x7F)
-            writeVarInt(0x40_00)
-            checkTail(0x80, 0x80, 0x01)
-            assertEquals(9, current)
-            writeVarInt(-1)
-            assertEquals(14, current)
-        }
-        with(BytesReader(writer.buffer)) {
-            assertEquals(0, readVarInt())
-            assertEquals(0x7F, readVarInt())
-            assertEquals(0x80, readVarInt())
-            assertEquals(0x3F_FF, readVarInt())
-            assertEquals(0x40_00, readVarInt())
-            assertEquals(-1, readVarInt())
-            assertEquals(14, current)
-        }
+        check({ writeVarInt(0) }, 0) { assertEquals(0, readVarInt()) }
+        check({ writeVarInt(0x7F) }, 0x7F) { assertEquals(0x7F, readVarInt()) }
+        check({ writeVarInt(0x80) }, 0x80, 0x01) { assertEquals(0x80, readVarInt()) }
+        check({ writeVarInt(0x3F_FF) }, 0xFF, 0x7F) { assertEquals(0x3F_FF, readVarInt()) }
+        check({ writeVarInt(0x40_00) }, 0x80, 0x80, 0x01) { assertEquals(0x40_00, readVarInt()) }
+        check({ writeVarInt(-1) }, 0xFF, 0xFF, 0xFF, 0xFF, 0x0F) { assertEquals(-1, readVarInt()) }
     }
 
     @Test
     fun varLong() {
-        val writer = BytesWriter(1000)
-        with(writer) {
-            writeVarLong(0L)
-            checkTail(0)
-            writeVarLong(0x7FL)
-            checkTail(0x7F)
-            writeVarLong(0x80L)
-            checkTail(0x80, 0x01)
-            writeVarLong(0x3F_FFL)
-            checkTail(0xFF, 0x7F)
-            writeVarLong(0x40_00L)
-            checkTail(0x80, 0x80, 0x01)
-            assertEquals(9, current)
-            writeVarLong(-1)
-            assertEquals(19, current)
-        }
-        with(BytesReader(writer.buffer)) {
-            assertEquals(0L, readVarLong())
-            assertEquals(0x7FL, readVarLong())
-            assertEquals(0x80L, readVarLong())
-            assertEquals(0x3F_FFL, readVarLong())
-            assertEquals(0x40_00L, readVarLong())
-            assertEquals(-1, readVarLong())
-            assertEquals(19, current)
-        }
+        check({ writeVarLong(0L) }, 0) { assertEquals(0L, readVarLong()) }
+        check({ writeVarLong(0x7FL) }, 0x7F) { assertEquals(0x7FL, readVarLong()) }
+        check({ writeVarLong(0x80L) }, 0x80, 0x01) { assertEquals(0x80L, readVarLong()) }
+        check({ writeVarLong(0x3F_FFL) }, 0xFF, 0x7F) { assertEquals(0x3F_FFL, readVarLong()) }
+        check({ writeVarLong(0x40_00L) }, 0x80, 0x80, 0x01) { assertEquals(0x40_00L, readVarLong()) }
+        check({ writeVarLong(-1) }, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x01) { assertEquals(-1, readVarLong()) }
     }
 
     @Test
