@@ -44,6 +44,7 @@ allprojects {
         if (project.name !in setOf("yass2", "yass2-generate")) {
             if (webPlatform) {
                 js {
+                    outputModuleName.set(project.name)
                     nodejs()
                     binaries.executable()
                     compilerOptions {
@@ -52,6 +53,7 @@ allprojects {
                 }
                 @OptIn(ExperimentalWasmDsl::class)
                 wasmJs {
+                    outputModuleName.set("${project.name}-wasm")
                     nodejs()
                     binaries.executable()
                 }
