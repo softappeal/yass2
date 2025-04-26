@@ -157,18 +157,13 @@ class StringEncodersTest {
             assertFails { read("++2") }
         }
     }
+}
 
-    /** @see DoubleStringEncoder */
-    @Test
-    fun doubleNotJsPlatform() {
-        with(DoubleStringEncoder) {
-            try {
-                test(0.0, "0.0")
-                test(1.0, "1.0")
-                test(-1.0, "-1.0")
-            } catch (ignore: AssertionError) {
-                println(ignore)
-            }
-        }
+/** @see DoubleStringEncoder */
+fun doubleNotJsPlatform() {
+    with(DoubleStringEncoder) {
+        test(0.0, "0.0")
+        test(1.0, "1.0")
+        test(-1.0, "-1.0")
     }
 }
