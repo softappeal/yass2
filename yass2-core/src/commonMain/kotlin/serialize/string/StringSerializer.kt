@@ -5,8 +5,8 @@ import ch.softappeal.yass2.core.serialize.Property
 import ch.softappeal.yass2.core.serialize.Reader
 import ch.softappeal.yass2.core.serialize.Serializer
 import ch.softappeal.yass2.core.serialize.Writer
-import ch.softappeal.yass2.core.serialize.readBytes
-import ch.softappeal.yass2.core.serialize.writeBytes
+import ch.softappeal.yass2.core.serialize.fromBytes
+import ch.softappeal.yass2.core.serialize.toBytes
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
@@ -320,5 +320,5 @@ public class StringProperty(
     public fun meta(): String = if (encoderId == NO_ENCODER_ID) "object" else encoderId.toString()
 }
 
-public fun StringSerializer.writeString(value: Any?): String = writeBytes(value).decodeToString(throwOnInvalidSequence = true)
-public fun StringSerializer.readString(string: String): Any? = readBytes(string.encodeToByteArray(throwOnInvalidSequence = true))
+public fun StringSerializer.toString(value: Any?): String = toBytes(value).decodeToString(throwOnInvalidSequence = true)
+public fun StringSerializer.fromString(string: String): Any? = fromBytes(string.encodeToByteArray(throwOnInvalidSequence = true))

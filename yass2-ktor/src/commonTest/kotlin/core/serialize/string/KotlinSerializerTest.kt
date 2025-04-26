@@ -11,8 +11,8 @@ import ch.softappeal.yass2.contract.ThrowableFake
 import ch.softappeal.yass2.contract.Types
 import ch.softappeal.yass2.core.assertFailsMessage
 import ch.softappeal.yass2.core.serialize.Serializer
-import ch.softappeal.yass2.core.serialize.readBytes
-import ch.softappeal.yass2.core.serialize.writeBytes
+import ch.softappeal.yass2.core.serialize.fromBytes
+import ch.softappeal.yass2.core.serialize.toBytes
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -237,13 +237,13 @@ private val AllBaseTypesSerialized = """
 """.trimIndent()
 
 fun Serializer.allBaseTypesAssert(serialized: ByteArray) {
-    val allBaseTypes = readBytes(serialized) as Types
+    val allBaseTypes = fromBytes(serialized) as Types
     assertEquals(15, allBaseTypes.list.size)
-    assertContentEquals(writeBytes(AllBaseTypes), writeBytes(allBaseTypes))
+    assertContentEquals(toBytes(AllBaseTypes), toBytes(allBaseTypes))
 }
 
 fun StringSerializer.allBaseTypesTest(serialized: String) {
-    assertEquals(serialized, writeString(AllBaseTypes))
+    assertEquals(serialized, toString(AllBaseTypes))
     allBaseTypesAssert(serialized.encodeToByteArray(throwOnInvalidSequence = true))
 }
 
@@ -344,13 +344,13 @@ class KotlinSerializerTest {
     @Test
     fun properties() {
         assertFailsMessage<IllegalStateException>("no property 'A.noSuchProperty'") {
-            SERIALIZER.readString("A(noSuchProperty=1,)")
+            SERIALIZER.fromString("A(noSuchProperty=1,)")
         }
         assertFailsMessage<IllegalStateException>("missing properties '[a, b]' for 'B'") {
-            SERIALIZER.readString("B()")
+            SERIALIZER.fromString("B()")
         }
         assertFailsMessage<IllegalStateException>("duplicated property 'A.a'") {
-            SERIALIZER.readString("A(a=1,a=1,)")
+            SERIALIZER.fromString("A(a=1,a=1,)")
         }
     }
 }

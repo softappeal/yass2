@@ -1,9 +1,9 @@
 package ch.softappeal.yass2.core.serialize
 
+import ch.softappeal.yass2.core.assertFailsMessage
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
-import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
@@ -47,12 +47,16 @@ class BytesTest {
             assertEquals(2, current)
             assertEquals(0, readBytes(0).size)
             assertEquals(2, current)
-            assertFailsWith<IllegalArgumentException> { readBytes(3) }
+            assertFailsMessage<IllegalArgumentException>("'readBytes(3)' called when buffer is empty") {
+                readBytes(3)
+            }
             assertEquals(2, current)
             assertEquals(byteArrayOf(1, 2).toList(), readBytes(2).toList())
             assertEquals(4, current)
             assertTrue(isDrained)
-            assertFailsWith<IllegalArgumentException> { readByte() }
+            assertFailsMessage<IllegalArgumentException>("'readByte()' called when buffer is empty") {
+                readByte()
+            }
             assertEquals(4, current)
         }
         with(BytesWriter(0)) {

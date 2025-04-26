@@ -3,8 +3,8 @@ package ch.softappeal.yass2.tutorial
 import ch.softappeal.yass2.core.remote.Tunnel
 import ch.softappeal.yass2.core.remote.tunnel
 import ch.softappeal.yass2.core.serialize.string.StringSerializer
-import ch.softappeal.yass2.core.serialize.string.readString
-import ch.softappeal.yass2.core.serialize.string.writeString
+import ch.softappeal.yass2.core.serialize.string.fromString
+import ch.softappeal.yass2.core.serialize.string.toString
 import ch.softappeal.yass2.coroutines.session.Connection
 import ch.softappeal.yass2.coroutines.session.Session
 import ch.softappeal.yass2.coroutines.session.SessionFactory
@@ -40,9 +40,9 @@ private suspend fun useCalculator(calculator: Calculator) {
 
 private fun useSerializer(serializer: StringSerializer) {
     println("*** useSerializer ***")
-    val serialized = serializer.writeString(MyDate(123456))
+    val serialized = serializer.toString(MyDate(123456))
     println(serialized)
-    println(serializer.readString(serialized))
+    println(serializer.fromString(serialized))
 }
 
 private suspend fun useInterceptor() {

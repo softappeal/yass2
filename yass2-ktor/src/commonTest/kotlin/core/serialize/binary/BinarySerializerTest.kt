@@ -10,10 +10,10 @@ import ch.softappeal.yass2.core.serialize.BytesReader
 import ch.softappeal.yass2.core.serialize.BytesWriter
 import ch.softappeal.yass2.core.serialize.Serializer
 import ch.softappeal.yass2.core.serialize.checkTail
-import ch.softappeal.yass2.core.serialize.readBytes
+import ch.softappeal.yass2.core.serialize.fromBytes
 import ch.softappeal.yass2.core.serialize.string.AllBaseTypes
 import ch.softappeal.yass2.core.serialize.string.allBaseTypesAssert
-import ch.softappeal.yass2.core.serialize.writeBytes
+import ch.softappeal.yass2.core.serialize.toBytes
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -38,7 +38,7 @@ private fun <T> copy(value: T, check: BytesWriter.() -> Unit = {}): T {
 }
 
 private fun <T> checkedCopy(value: T, vararg bytes: Int): T = copy(value) {
-    assertEquals(current, bytes.size, "actual: ${toyByteArray().toList()}")
+    assertEquals(current, bytes.size, "actual: ${toyBytes().toList()}")
     checkTail(*bytes)
 }
 
@@ -46,7 +46,7 @@ class BinarySerializerTest {
     @Test
     fun allBaseTypes() {
         fun Serializer.allBaseTypesTest(serialized: ByteArray) {
-            assertContentEquals(serialized, writeBytes(AllBaseTypes))
+            assertContentEquals(serialized, toBytes(AllBaseTypes))
             allBaseTypesAssert(serialized)
         }
         BinarySerializer.allBaseTypesTest(
@@ -367,7 +367,7 @@ class BinarySerializerTest {
     fun bytes() {
         assertEquals(
             "hello",
-            with(BinarySerializer) { readBytes(writeBytes("hello")) }
+            with(BinarySerializer) { fromBytes(toBytes("hello")) }
         )
     }
 }

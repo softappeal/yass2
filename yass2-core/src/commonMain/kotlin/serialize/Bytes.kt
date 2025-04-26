@@ -17,7 +17,7 @@ public class BytesWriter(public var buffer: ByteArray) : Writer {
         current = newCurrent
     }
 
-    public fun toyByteArray(): ByteArray = buffer.copyOf(current)
+    public fun toyBytes(): ByteArray = buffer.copyOf(current)
 }
 
 public class BytesReader(public var buffer: ByteArray) : Reader {
@@ -31,13 +31,13 @@ public class BytesReader(public var buffer: ByteArray) : Reader {
     }
 
     override fun readByte(): Byte {
-        require(current < buffer.size)
+        require(current < buffer.size) { "'readByte()' called when buffer is empty" }
         return buffer[current++]
     }
 
     override fun readBytes(length: Int): ByteArray {
         val newCurrent = current + length
-        require(newCurrent <= buffer.size) // prevents allocation of ByteArray below if the buffer is too small
+        require(newCurrent <= buffer.size) { "'readBytes($length)' called when buffer is empty" }
         return ByteArray(length).apply {
             buffer.copyInto(this, 0, current, newCurrent)
             current = newCurrent

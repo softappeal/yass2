@@ -15,11 +15,11 @@ public interface Serializer {
     public fun read(reader: Reader): Any?
 }
 
-public fun Serializer.writeBytes(value: Any?): ByteArray = with(BytesWriter(1000)) {
+public fun Serializer.toBytes(value: Any?): ByteArray = with(BytesWriter(1000)) {
     write(this, value)
-    toyByteArray()
+    toyBytes()
 }
 
-public fun Serializer.readBytes(byteArray: ByteArray): Any? = with(BytesReader(byteArray)) {
+public fun Serializer.fromBytes(bytes: ByteArray): Any? = with(BytesReader(bytes)) {
     read(this).apply { checkDrained() }
 }

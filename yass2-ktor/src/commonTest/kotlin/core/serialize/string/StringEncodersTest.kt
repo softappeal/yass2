@@ -72,11 +72,11 @@ class StringEncodersTest {
         println("\t\r\n\\\"")
         val serializer = TextSerializer(listOf())
         fun test(value: String, result: String, hexResult: String? = null) {
-            val r = serializer.writeString(value)
+            val r = serializer.toString(value)
             assertEquals(result, r)
             @OptIn(ExperimentalStdlibApi::class)
             if (hexResult != null) assertEquals(hexResult, r.encodeToByteArray(throwOnInvalidSequence = true).toHexString())
-            assertEquals(value, serializer.readString(result))
+            assertEquals(value, serializer.fromString(result))
         }
         test("", "\"\"")
         test("$", "\"$\"")
@@ -95,11 +95,11 @@ class StringEncodersTest {
         test("\ta", "\"\\ta\"", "225c746122")
         test("\na", "\"\\na\"", "225c6e6122")
         test("\ra", "\"\\ra\"", "225c726122")
-        println(serializer.readString("\"a\tb\""))
-        println(serializer.readString("\"c\nd\""))
-        assertFailsMessage<IllegalStateException>("illegal escape with codePoint 97") { serializer.readString("\"\\a\"") }
-        println(assertFails { serializer.readString("invalid") })
-        println(assertFails { serializer.readString("\"a") })
+        println(serializer.fromString("\"a\tb\""))
+        println(serializer.fromString("\"c\nd\""))
+        assertFailsMessage<IllegalStateException>("illegal escape with codePoint 97") { serializer.fromString("\"\\a\"") }
+        println(assertFails { serializer.fromString("invalid") })
+        println(assertFails { serializer.fromString("\"a") })
     }
 
     @Test

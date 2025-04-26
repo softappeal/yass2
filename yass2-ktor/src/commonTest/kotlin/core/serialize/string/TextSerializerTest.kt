@@ -8,7 +8,7 @@ import ch.softappeal.yass2.contract.StringEncoders
 import ch.softappeal.yass2.contract.ThrowableFake
 import ch.softappeal.yass2.core.assertFailsMessage
 import ch.softappeal.yass2.core.serialize.BytesWriter
-import ch.softappeal.yass2.core.serialize.writeBytes
+import ch.softappeal.yass2.core.serialize.toBytes
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -17,11 +17,11 @@ import kotlin.test.assertTrue
 
 fun StringSerializer.dump(value: Any?, serialized: String, vararg others: String) {
     fun write(data: Any?) {
-        assertEquals(serialized, writeString(data))
+        assertEquals(serialized, toString(data))
     }
     write(value)
-    write(readString(serialized))
-    others.forEach { write(readString(it)) }
+    write(fromString(serialized))
+    others.forEach { write(fromString(it)) }
 }
 
 private class Int
@@ -44,7 +44,7 @@ class TextSerializerTest {
                             { 0L }
                         ) {},
                     )
-                ).writeBytes(0L)
+                ).toBytes(0L)
             }
         }
         checkBaseString(" ", "' ' must not contain whitespace, '\"', ',' or ')'")
@@ -247,16 +247,16 @@ class TextSerializerTest {
 
     @Test
     fun properties() {
-        assertNull((SERIALIZER.readString("""ThrowableFake(message:"hello")""") as ThrowableFake).cause) // implicit null
-        assertNull((SERIALIZER.readString("""ThrowableFake(message:"hello",cause:null)""") as ThrowableFake).cause) // explicit null
+        assertNull((SERIALIZER.fromString("""ThrowableFake(message:"hello")""") as ThrowableFake).cause) // implicit null
+        assertNull((SERIALIZER.fromString("""ThrowableFake(message:"hello",cause:null)""") as ThrowableFake).cause) // explicit null
         assertFailsMessage<IllegalStateException>("no property 'A.noSuchProperty'") {
-            SERIALIZER.readString("A(noSuchProperty:[])")
+            SERIALIZER.fromString("A(noSuchProperty:[])")
         }
         assertFailsMessage<IllegalStateException>("duplicated property 'A.a'") {
-            SERIALIZER.readString("A(a:1,a:1)")
+            SERIALIZER.fromString("A(a:1,a:1)")
         }
         println(assertFailsWith<Exception> { // missing required property
-            SERIALIZER.readString("A()")
+            SERIALIZER.fromString("A()")
         })
     }
 
@@ -288,7 +288,7 @@ class TextSerializerTest {
     @Test
     fun missingEncoder() {
         assertFailsMessage<IllegalStateException>("missing encoder for class 'X'") {
-            SERIALIZER.readString("X()")
+            SERIALIZER.fromString("X()")
         }
     }
 }

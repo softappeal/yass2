@@ -205,16 +205,16 @@ class JsonSerializerTest {
 
     @Test
     fun properties() {
-        assertNull((SERIALIZER.readString("""{"#":"ThrowableFake","message":"hello"}""") as ThrowableFake).cause) // implicit null
-        assertNull((SERIALIZER.readString("""{"#":"ThrowableFake","message":"hello","cause":null}""") as ThrowableFake).cause) // explicit null
+        assertNull((SERIALIZER.fromString("""{"#":"ThrowableFake","message":"hello"}""") as ThrowableFake).cause) // implicit null
+        assertNull((SERIALIZER.fromString("""{"#":"ThrowableFake","message":"hello","cause":null}""") as ThrowableFake).cause) // explicit null
         assertFailsMessage<IllegalStateException>("no property 'A.noSuchProperty'") {
-            SERIALIZER.readString("""{"#":"A","noSuchProperty":[]}""")
+            SERIALIZER.fromString("""{"#":"A","noSuchProperty":[]}""")
         }
         assertFailsMessage<IllegalStateException>("duplicated property 'A.a'") {
-            SERIALIZER.readString("""{"#":"A","a":"1","a":"1"}""")
+            SERIALIZER.fromString("""{"#":"A","a":"1","a":"1"}""")
         }
         println(assertFailsWith<Exception> { // missing required property
-            SERIALIZER.readString("""{"#":"A"}""")
+            SERIALIZER.fromString("""{"#":"A"}""")
         })
     }
 }

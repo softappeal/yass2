@@ -1,6 +1,6 @@
 package ch.softappeal.yass2.ktor
 
-import ch.softappeal.yass2.core.serialize.readBytes
+import ch.softappeal.yass2.core.serialize.fromBytes
 import ch.softappeal.yass2.coroutines.session.Connection
 import ch.softappeal.yass2.coroutines.session.Packet
 import ch.softappeal.yass2.coroutines.session.SessionFactory
@@ -16,7 +16,7 @@ public class WebSocketConnection internal constructor(
     override suspend fun write(packet: Packet?) {
         val writer = transport.createWriter()
         transport.write(writer, packet)
-        session.outgoing.send(Frame.Binary(true, writer.toyByteArray()))
+        session.outgoing.send(Frame.Binary(true, writer.toyBytes()))
     }
 
     override suspend fun closed(): Unit = session.close()
@@ -25,6 +25,6 @@ public class WebSocketConnection internal constructor(
 public suspend fun WebSocketSession.receiveLoop(transport: Transport, sessionFactory: SessionFactory<WebSocketConnection>) {
     WebSocketConnection(transport, this).receiveLoop(sessionFactory) {
         val buffer = (incoming.receive() as Frame.Binary).data
-        transport.readBytes(buffer) as Packet?
+        transport.fromBytes(buffer) as Packet?
     }
 }

@@ -3,7 +3,7 @@ package ch.softappeal.yass2.ktor
 import ch.softappeal.yass2.core.remote.Reply
 import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.Tunnel
-import ch.softappeal.yass2.core.serialize.readBytes
+import ch.softappeal.yass2.core.serialize.fromBytes
 import ch.softappeal.yass2.coroutines.session.Connection
 import ch.softappeal.yass2.coroutines.session.Packet
 import ch.softappeal.yass2.coroutines.session.SessionFactory
@@ -33,7 +33,7 @@ private suspend fun ByteReadChannel.read(transport: Transport): Any? {
     val buffer = transport.readBytes(readInt()) { bytes, offset, size ->
         readFully(bytes, offset, offset + size)
     }
-    return transport.readBytes(buffer)
+    return transport.fromBytes(buffer)
 }
 
 public typealias SocketConnector = suspend () -> Socket
