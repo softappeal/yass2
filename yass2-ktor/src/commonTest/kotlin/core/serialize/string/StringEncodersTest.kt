@@ -1,6 +1,7 @@
 package ch.softappeal.yass2.core.serialize.string
 
 import ch.softappeal.yass2.contract.Gender
+import ch.softappeal.yass2.core.NotJsPlatform
 import ch.softappeal.yass2.core.assertFailsMessage
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -104,6 +105,7 @@ class StringEncodersTest {
 
     @Test
     fun double() {
+        @OptIn(NotJsPlatform::class)
         with(DoubleStringEncoder) {
             test(123.456, "123.456")
             test(Double.POSITIVE_INFINITY, "Infinity")
@@ -161,6 +163,7 @@ class StringEncodersTest {
 
 /** @see DoubleStringEncoder */
 fun doubleNotJsPlatform() {
+    @OptIn(NotJsPlatform::class)
     with(DoubleStringEncoder) {
         test(0.0, "0.0")
         test(1.0, "1.0")

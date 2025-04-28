@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.contract
 
+import ch.softappeal.yass2.core.NotJsPlatform
 import ch.softappeal.yass2.core.remote.ExceptionReply
 import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.ServiceId
@@ -123,7 +124,7 @@ internal val BinaryEncoderObjects = listOf(
 internal val StringEncoderObjects = listOf(
     IntStringEncoder::class,
     LongStringEncoder::class,
-    DoubleStringEncoder::class,
+    @OptIn(NotJsPlatform::class) DoubleStringEncoder::class,
     ByteArrayStringEncoder::class,
 )
 

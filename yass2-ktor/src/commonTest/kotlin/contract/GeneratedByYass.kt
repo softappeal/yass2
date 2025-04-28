@@ -549,6 +549,7 @@ object BinarySerializer : ch.softappeal.yass2.core.serialize.binary.BinarySerial
 public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.StringEncoder<*>> = listOf(
     ch.softappeal.yass2.core.serialize.string.IntStringEncoder,
     ch.softappeal.yass2.core.serialize.string.LongStringEncoder,
+    @OptIn(ch.softappeal.yass2.core.NotJsPlatform::class)
     ch.softappeal.yass2.core.serialize.string.DoubleStringEncoder,
     ch.softappeal.yass2.core.serialize.string.ByteArrayStringEncoder,
     ch.softappeal.yass2.core.serialize.string.EnumStringEncoder(

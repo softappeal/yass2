@@ -1,6 +1,7 @@
 package ch.softappeal.yass2.generate
 
 import ch.softappeal.yass2.core.InternalApi
+import ch.softappeal.yass2.core.NotJsPlatform
 import ch.softappeal.yass2.core.serialize.Property
 import ch.softappeal.yass2.core.serialize.binary.BinaryEncoder
 import ch.softappeal.yass2.core.serialize.binary.BinaryProperty
@@ -8,6 +9,7 @@ import ch.softappeal.yass2.core.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.core.serialize.binary.EnumBinaryEncoder
 import ch.softappeal.yass2.core.serialize.string.BaseStringEncoder
 import ch.softappeal.yass2.core.serialize.string.ClassStringEncoder
+import ch.softappeal.yass2.core.serialize.string.DoubleStringEncoder
 import ch.softappeal.yass2.core.serialize.string.EnumStringEncoder
 import ch.softappeal.yass2.core.serialize.string.StringEncoder
 import ch.softappeal.yass2.core.serialize.string.StringProperty
@@ -127,7 +129,9 @@ public fun CodeWriter.generateBinarySerializer(
     writeNestedLine("object BinarySerializer : ${BinarySerializer::class.qualifiedName}() {", "}") {
         writeNestedLine("init {", "}") {
             writeNestedLine("initialize(", ")") {
-                encoderObjects.forEach { writeNestedLine("${it.qualifiedName},") }
+                encoderObjects.forEach { type ->
+                    writeNestedLine("${type.qualifiedName},")
+                }
                 enumClasses.forEach { type ->
                     writeNestedLine("${EnumBinaryEncoder::class.qualifiedName}(", "),") {
                         writeNestedLine("${type.qualifiedName}::class, enumValues(),")
@@ -198,7 +202,11 @@ public fun CodeWriter.generateStringEncoders(
         }
     }
     writeNestedLine("public val StringEncoders: List<${StringEncoder::class.qualifiedName}<*>> = listOf(", ")") {
-        encoderObjects.forEach { writeNestedLine("${it.qualifiedName},") }
+        encoderObjects.forEach { type ->
+            @OptIn(NotJsPlatform::class)
+            if (type == DoubleStringEncoder::class) writeNestedLine("@OptIn(${NotJsPlatform::class.qualifiedName}::class)")
+            writeNestedLine("${type.qualifiedName},")
+        }
         enumClasses.forEach { type ->
             writeNestedLine("${EnumStringEncoder::class.qualifiedName}(", "),") {
                 writeNestedLine("${type.qualifiedName}::class,")
