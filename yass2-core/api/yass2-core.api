@@ -64,7 +64,9 @@ public final class ch/softappeal/yass2/core/serialize/ByteArrayReader : ch/softa
 }
 
 public final class ch/softappeal/yass2/core/serialize/ByteArrayWriter : ch/softappeal/yass2/core/serialize/Writer {
+	public fun <init> ()V
 	public fun <init> (I)V
+	public synthetic fun <init> (IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun toyByteArray ()[B
 	public fun writeByte (B)V
 	public fun writeByteArray ([B)V

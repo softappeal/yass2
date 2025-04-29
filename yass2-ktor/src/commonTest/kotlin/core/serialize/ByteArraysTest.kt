@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
 fun check(write: Writer.() -> Unit, vararg bytes: Int, read: Reader.() -> Unit) {
-    val writer = ByteArrayWriter(1000)
+    val writer = ByteArrayWriter()
     writer.write()
     val byteArray = writer.toyByteArray()
     assertEquals(bytes.map { it.toByte() }, byteArray.toList())

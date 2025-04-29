@@ -1,6 +1,6 @@
 package ch.softappeal.yass2.core.serialize
 
-public class ByteArrayWriter(initialCapacity: Int) : Writer {
+public class ByteArrayWriter(initialCapacity: Int = 1000) : Writer {
     private var byteArray = ByteArray(initialCapacity)
     private var current = 0
 

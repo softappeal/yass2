@@ -21,7 +21,7 @@ private object OptionalStringEncoder : BinaryEncoder<OptionalString>(
 )
 
 private fun <T : Any> BinaryEncoder<T>.check(value: T, vararg bytes: Int) {
-    val writer = ByteArrayWriter(1000)
+    val writer = ByteArrayWriter()
     with(writer) {
         write(this, value)
         assertEquals(bytes.map { it.toByte() }, toyByteArray().toList())

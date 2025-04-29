@@ -17,7 +17,6 @@ import ch.softappeal.yass2.core.serialize.string.IntStringEncoder
 import ch.softappeal.yass2.core.serialize.string.LongStringEncoder
 import ch.softappeal.yass2.core.serialize.string.TextSerializer
 import ch.softappeal.yass2.coroutines.session.Packet
-import ch.softappeal.yass2.ktor.Transport
 
 enum class Gender { Female, Male }
 
@@ -128,8 +127,7 @@ internal val StringEncoderObjects = listOf(
     ByteArrayStringEncoder::class,
 )
 
-private val TransportSerializer = TextSerializer(StringEncoders)
-val ContractTransport = Transport(TransportSerializer)
+val TransportSerializer = TextSerializer(StringEncoders)
 
 val CalculatorId: ServiceId<Calculator> = ServiceId("calc")
 val EchoId: ServiceId<Echo> = ServiceId("echo")

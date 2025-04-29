@@ -23,12 +23,12 @@ import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
-val CalculatorImpl = object : Calculator {
+object CalculatorImpl : Calculator {
     override suspend fun add(a: Int, b: Int) = a + b
     override suspend fun divide(a: Int, b: Int) = if (b == 0) throw DivideByZeroException() else a / b
 }
 
-val EchoImpl = object : Echo {
+object EchoImpl : Echo {
     override suspend fun echo(value: Any?) = value
     override suspend fun echoRequired(value: Any) = value
     override suspend fun noParametersNoResult() {}

@@ -1,16 +1,10 @@
 package ch.softappeal.yass2.tutorial
 
-import ch.softappeal.yass2.core.remote.ExceptionReply
-import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.ServiceId
-import ch.softappeal.yass2.core.remote.ValueReply
 import ch.softappeal.yass2.core.serialize.string.BaseStringEncoder
 import ch.softappeal.yass2.core.serialize.string.IntStringEncoder
 import ch.softappeal.yass2.core.serialize.string.StringSerializer
 import ch.softappeal.yass2.core.serialize.string.TextSerializer
-import ch.softappeal.yass2.coroutines.session.MustBeImplementedByAcceptor
-import ch.softappeal.yass2.coroutines.session.MustBeImplementedByInitiator
-import ch.softappeal.yass2.coroutines.session.Packet
 
 /**
  * Shows how to implement an own base type.
@@ -76,11 +70,7 @@ public interface Calculator {
     public suspend fun divide(a: Int, b: Int): Int
 }
 
-public interface NewsListener {
-    public suspend fun notify(news: String)
-}
-
-internal val Services = listOf(Calculator::class, NewsListener::class)
+internal val Services = listOf(Calculator::class)
 
 // Define all the additional base encoders needed by the contract (including own base types and types used in services).
 internal val EncoderObjects = listOf(
@@ -95,14 +85,8 @@ internal val ConcreteClasses = listOf(
     Person::class,
     DivideByZeroException::class,
     SubClass::class,
-    Request::class, ValueReply::class, ExceptionReply::class, // needed by ch.softappeal.yass2.remote (also needs String)
-    Packet::class, // needed by ch.softappeal.yass2.remote.coroutines (also needs Int)
 )
 
-@MustBeImplementedByAcceptor
 public val CalculatorId: ServiceId<Calculator> = ServiceId("calc")
-
-@MustBeImplementedByInitiator
-public val NewsListenerId: ServiceId<NewsListener> = ServiceId("news")
 
 public val TutorialSerializer: StringSerializer = TextSerializer(StringEncoders)

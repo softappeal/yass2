@@ -33,7 +33,7 @@
 
 * provides unidirectional and session-based bidirectional remoting
 
-* provides [Ktor](https://ktor.io) transport adaptors for Http, WebSocket and plain Socket
+* provides [Ktor](https://ktor.io) transport adaptors for Http and WebSocket
 
 * generates code (works on any platform and is fast)
     * fast, compact and extendable binary serializer for high throughput and low latency

@@ -139,9 +139,7 @@ val ktorProject = project(":yass2-ktor") {
             commonMain {
                 dependencies {
                     api(coroutinesProject)
-                    api(libraries.ktor.client.core)
-                    api(libraries.ktor.server.core)
-                    api(libraries.ktor.network)
+                    api(libraries.bundles.ktor)
                 }
             }
             commonTest {
@@ -172,14 +170,14 @@ project(":tutorial") {
         sourceSets {
             commonMain {
                 dependencies {
-                    implementation(ktorProject)
-                    implementation(libraries.bundles.ktor.cio)
+                    implementation(coreProject)
                 }
             }
             jvmTest {
                 dependencies {
                     implementation(generateProject)
                     implementation(kotlin("test"))
+                    implementation(libraries.coroutines.test)
                 }
             }
         }

@@ -15,7 +15,7 @@ public interface Serializer {
     public fun read(reader: Reader): Any?
 }
 
-public fun Serializer.toByteArray(value: Any?): ByteArray = with(ByteArrayWriter(1000)) {
+public fun Serializer.toByteArray(value: Any?): ByteArray = with(ByteArrayWriter()) {
     write(this, value)
     toyByteArray()
 }
