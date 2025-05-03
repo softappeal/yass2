@@ -39,7 +39,7 @@ public abstract class BinarySerializer : Serializer {
     }
 
     private val listEncoderId = EncoderId(
-        @OptIn(InternalApi::class) LIST_ENCODER_ID,
+        LIST_ENCODER_ID,
         BinaryEncoder(
             List::class,
             { list ->
@@ -58,7 +58,7 @@ public abstract class BinarySerializer : Serializer {
     protected fun Writer.writeObject(value: Any?) {
         val (encoderId, encoder) = when (value) {
             null -> {
-                writeVarInt(@OptIn(InternalApi::class) NULL_ENCODER_ID)
+                writeVarInt(NULL_ENCODER_ID)
                 return
             }
             is List<*> -> listEncoderId
@@ -78,7 +78,7 @@ public abstract class BinarySerializer : Serializer {
 
     protected fun Reader.readObject(): Any? {
         val encoderId = readVarInt()
-        return if (encoderId == @OptIn(InternalApi::class) NULL_ENCODER_ID) null else encoders[encoderId].read(this)
+        return if (encoderId == NULL_ENCODER_ID) null else encoders[encoderId].read(this)
     }
 
     protected fun Reader.readRequired(encoderId: Int): Any = encoders[encoderId].read(this)
@@ -89,9 +89,9 @@ public abstract class BinarySerializer : Serializer {
 }
 
 private const val NO_ENCODER_ID = -1
-@InternalApi public const val NULL_ENCODER_ID: Int = 0
-@InternalApi public const val LIST_ENCODER_ID: Int = 1
-@InternalApi public const val FIRST_ENCODER_ID: Int = 2
+private const val NULL_ENCODER_ID = 0
+private const val LIST_ENCODER_ID = 1
+private const val FIRST_ENCODER_ID = 2
 
 @InternalApi
 public class BinaryProperty(

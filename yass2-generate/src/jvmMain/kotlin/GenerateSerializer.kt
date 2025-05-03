@@ -20,13 +20,6 @@ import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.superclasses
 import kotlin.reflect.full.valueParameters
-import ch.softappeal.yass2.core.serialize.binary.FIRST_ENCODER_ID as BINARY_FIRST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.binary.LIST_ENCODER_ID as BINARY_LIST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.binary.NULL_ENCODER_ID as BINARY_NULL_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.BOOLEAN_ENCODER_ID as STRING_BOOLEAN_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.FIRST_ENCODER_ID as STRING_FIRST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.LIST_ENCODER_ID as STRING_LIST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.STRING_ENCODER_ID as STRING_STRING_ENCODER_ID
 
 public fun KClass<*>.isEnum(): Boolean = java.isEnum
 
@@ -102,30 +95,7 @@ public fun CodeWriter.generateBinarySerializer(
     concreteAndEnumClasses: List<KClass<*>>,
 ) {
     val (baseClasses, enumClasses, concreteClasses) = getClasses(encoderObjects, concreteAndEnumClasses)
-    fun properties(type: KClass<*>) = Properties(type) {
-        BinaryProperty(it, it.returnType, baseClasses, concreteClasses) { superClass -> superclasses.contains(superClass) }
-    }
     writeLine()
-    writeNestedLine("/*", "*/") {
-        writeNestedLine("$BINARY_NULL_ENCODER_ID: null - built-in")
-        writeNestedLine("$BINARY_LIST_ENCODER_ID: [] - built-in")
-        var encoderId = BINARY_FIRST_ENCODER_ID
-        fun KClass<*>.writeType(suffix: String, write: CodeWriter.() -> Unit) =
-            writeNestedLine("${encoderId++}: $qualifiedName - $suffix", write)
-        baseClasses.forEach { type ->
-            type.writeType(if (type.isEnum()) "enum" else "base") {
-                if (type.isEnum()) {
-                    @Suppress("UNCHECKED_CAST") val constants = (type as KClass<out Enum<*>>).java.enumConstants
-                    constants.forEach { constant -> writeNestedLine("${constant.ordinal}: ${constant.name}") }
-                }
-            }
-        }
-        concreteClasses.forEach { type ->
-            type.writeType("class") {
-                properties(type).all.forEach { property -> writeNestedLine("${property.name}: ${property.meta()}") }
-            }
-        }
-    }
     writeNestedLine("object BinarySerializer : ${BinarySerializer::class.qualifiedName}() {", "}") {
         writeNestedLine("init {", "}") {
             writeNestedLine("initialize(", ")") {
@@ -140,7 +110,11 @@ public fun CodeWriter.generateBinarySerializer(
                 concreteClasses.forEach { type ->
                     writeNestedLine("${BinaryEncoder::class.qualifiedName}(", "),") {
                         writeNestedLine("${type.qualifiedName}::class,")
-                        val properties = properties(type)
+                        val properties = Properties(type) {
+                            BinaryProperty(it, it.returnType, baseClasses, concreteClasses) { superClass ->
+                                superclasses.contains(superClass)
+                            }
+                        }
                         writeNestedLine("{ i ->", "},") {
                             properties.all.forEach { property ->
                                 writeNestedLine(property.writeObject("i.${property.name}"))
@@ -178,29 +152,7 @@ public fun CodeWriter.generateStringEncoders(
     concreteAndEnumClasses: List<KClass<*>>,
 ) {
     val (baseClasses, enumClasses, concreteClasses) = getClasses(encoderObjects, concreteAndEnumClasses)
-    fun properties(type: KClass<*>) = Properties(type) { StringProperty(it, it.returnType, baseClasses) }
     writeLine()
-    writeNestedLine("/*", "*/") {
-        writeNestedLine("$STRING_STRING_ENCODER_ID: \"\" - built-in")
-        writeNestedLine("$STRING_BOOLEAN_ENCODER_ID: true/false - built-in")
-        writeNestedLine("$STRING_LIST_ENCODER_ID: [] - built-in")
-        var encoderId = STRING_FIRST_ENCODER_ID
-        fun KClass<*>.writeType(suffix: String, write: CodeWriter.() -> Unit) =
-            writeNestedLine("${encoderId++}: $qualifiedName - $suffix", write)
-        baseClasses.forEach { type ->
-            type.writeType(if (type.isEnum()) "enum" else "base") {
-                if (type.isEnum()) {
-                    @Suppress("UNCHECKED_CAST") val constants = (type as KClass<out Enum<*>>).java.enumConstants
-                    constants.forEach { constant -> writeNestedLine(constant.name) }
-                }
-            }
-        }
-        concreteClasses.forEach { type ->
-            type.writeType("class") {
-                properties(type).all.forEach { property -> writeNestedLine("${property.name}: ${property.meta()}") }
-            }
-        }
-    }
     writeNestedLine("public val StringEncoders: List<${StringEncoder::class.qualifiedName}<*>> = listOf(", ")") {
         encoderObjects.forEach { type ->
             @OptIn(NotJsPlatform::class)
@@ -215,7 +167,7 @@ public fun CodeWriter.generateStringEncoders(
         }
         concreteClasses.forEach { type ->
             writeNestedLine("${ClassStringEncoder::class.qualifiedName}(", "),") {
-                val properties = properties(type)
+                val properties = Properties(type) { StringProperty(it, it.returnType, baseClasses) }
                 writeNestedLine("${type.qualifiedName}::class, ${properties.body.isNotEmpty()},")
                 writeNestedLine("{ i ->", "},") {
                     fun List<StringProperty>.forEach() = forEach { property ->

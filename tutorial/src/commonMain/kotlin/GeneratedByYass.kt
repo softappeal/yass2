@@ -71,28 +71,6 @@ public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.tutoria
         }
     }
 
-/*
-    0: "" - built-in
-    1: true/false - built-in
-    2: [] - built-in
-    3: kotlin.Int - base
-    4: ch.softappeal.yass2.tutorial.MyDate - base
-    5: ch.softappeal.yass2.tutorial.Gender - enum
-        Female
-        Male
-    6: ch.softappeal.yass2.tutorial.Address - class
-        street: 0
-        number: 3
-    7: ch.softappeal.yass2.tutorial.Person - class
-        name: 0
-        gender: 5
-        birthday: 4
-        addresses: 2
-    8: ch.softappeal.yass2.tutorial.DivideByZeroException - class
-    9: ch.softappeal.yass2.tutorial.SubClass - class
-        baseClassProperty: 0
-        subClassProperty: 0
-*/
 public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.StringEncoder<*>> = listOf(
     ch.softappeal.yass2.core.serialize.string.IntStringEncoder,
     ch.softappeal.yass2.tutorial.MyDateEncoder,
