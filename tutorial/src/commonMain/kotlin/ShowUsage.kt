@@ -36,7 +36,7 @@ private suspend fun useRemoting() {
     useCalculator(calculator)
 }
 
-public suspend fun main() {
+suspend fun main() {
     useSerializer(TutorialSerializer)
     useInterceptor()
     useRemoting()

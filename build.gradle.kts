@@ -61,7 +61,7 @@ allprojects {
                 linuxArm64()
             }
         }
-        explicitApi()
+        if (project.name != "tutorial") explicitApi()
         compilerOptions {
             allWarningsAsErrors.set(true)
             extraWarnings.set(true)

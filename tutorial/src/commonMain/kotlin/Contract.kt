@@ -10,7 +10,7 @@ import ch.softappeal.yass2.core.serialize.string.TextSerializer
  * Shows how to implement an own base type.
  * In contrast to regular classes, own base types could implement a more efficient serializing.
  */
-public data class MyDate(public val currentTimeMillis: Long)
+data class MyDate(val currentTimeMillis: Long)
 internal object MyDateEncoder : BaseStringEncoder<MyDate>(
     MyDate::class,
     { value -> value.currentTimeMillis.toString() },
@@ -22,52 +22,52 @@ internal object MyDateEncoder : BaseStringEncoder<MyDate>(
  * Body properties are allowed but must be of `var` kind.
  * Properties can be optional.
  */
-public class Address(
-    public val street: String,
+class Address(
+    val street: String,
 ) {
-    public var number: Int? = null
+    var number: Int? = null
 }
 
 /** Enumerations are supported. */
-public enum class Gender {
+enum class Gender {
     Female,
     Male,
 }
 
 /** Lists are supported. */
-public class Person(
-    public val name: String,
-    public val gender: Gender,
-    public val birthday: MyDate,
-    public val addresses: List<Address>,
+class Person(
+    val name: String,
+    val gender: Gender,
+    val birthday: MyDate,
+    val addresses: List<Address>,
 )
 
 /**
  * Exceptions are supported.
  * They are basically like regular classes but [Throwable.message] and [Throwable.cause] aren't serialized.
  */
-public class DivideByZeroException : RuntimeException()
+class DivideByZeroException : RuntimeException()
 
 /**
  * Inheritance is supported.
  * Base class properties must be in body and abstract and overridden in subclasses.
  */
-public abstract class BaseClass {
-    public abstract val baseClassProperty: String
+abstract class BaseClass {
+    abstract val baseClassProperty: String
 }
 
-public class SubClass(
-    public override val baseClassProperty: String,
-    public val subClassProperty: String,
+class SubClass(
+    override val baseClassProperty: String,
+    val subClassProperty: String,
 ) : BaseClass()
 
 /**
  * All functions must be suspendable because they need IO.
  * Overloading is not allowed.
  */
-public interface Calculator {
-    public suspend fun add(a: Int, b: Int): Int
-    public suspend fun divide(a: Int, b: Int): Int
+interface Calculator {
+    suspend fun add(a: Int, b: Int): Int
+    suspend fun divide(a: Int, b: Int): Int
 }
 
 internal val Services = listOf(Calculator::class)
@@ -87,6 +87,6 @@ internal val ConcreteClasses = listOf(
     SubClass::class,
 )
 
-public val CalculatorId: ServiceId<Calculator> = ServiceId("calc")
+val CalculatorId: ServiceId<Calculator> = ServiceId("calc")
 
-public val TutorialSerializer: StringSerializer = TextSerializer(StringEncoders)
+val TutorialSerializer: StringSerializer = TextSerializer(StringEncoders)
