@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.generate
+package ch.softappeal.yass2.generate.reflect
 
 import ch.softappeal.yass2.core.InternalApi
 import ch.softappeal.yass2.core.NotJsPlatform
@@ -13,6 +13,7 @@ import ch.softappeal.yass2.core.serialize.string.DoubleStringEncoder
 import ch.softappeal.yass2.core.serialize.string.EnumStringEncoder
 import ch.softappeal.yass2.core.serialize.string.StringEncoder
 import ch.softappeal.yass2.core.serialize.string.StringProperty
+import ch.softappeal.yass2.generate.CodeWriter
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.isSubclassOf
