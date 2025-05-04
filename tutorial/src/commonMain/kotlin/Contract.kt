@@ -3,7 +3,6 @@ package ch.softappeal.yass2.tutorial
 import ch.softappeal.yass2.core.remote.ServiceId
 import ch.softappeal.yass2.core.serialize.string.BaseStringEncoder
 import ch.softappeal.yass2.core.serialize.string.IntStringEncoder
-import ch.softappeal.yass2.core.serialize.string.StringSerializer
 import ch.softappeal.yass2.core.serialize.string.TextSerializer
 
 /**
@@ -79,7 +78,7 @@ internal val EncoderObjects = listOf(
     MyDateEncoder::class,
 )
 
-internal val ConcreteClasses = listOf(
+internal val ConcreteAndEnumClasses = listOf(
     Gender::class,
     Address::class,
     Person::class,
@@ -87,6 +86,6 @@ internal val ConcreteClasses = listOf(
     SubClass::class,
 )
 
-val CalculatorId: ServiceId<Calculator> = ServiceId("calc")
+val TutorialSerializer = TextSerializer(createStringEncoders())
 
-val TutorialSerializer: StringSerializer = TextSerializer(StringEncoders)
+val CalculatorId = ServiceId<Calculator>("calc")

@@ -1,4 +1,5 @@
 @file:Suppress(
+    "unused",
     "UNCHECKED_CAST",
     "USELESS_CAST",
     "PARAMETER_NAME_CHANGED_ON_OVERRIDE",
@@ -71,7 +72,7 @@ public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.tutoria
         }
     }
 
-public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.StringEncoder<*>> = listOf(
+public fun createStringEncoders(): List<ch.softappeal.yass2.core.serialize.string.StringEncoder<*>> = listOf(
     ch.softappeal.yass2.core.serialize.string.IntStringEncoder,
     ch.softappeal.yass2.tutorial.MyDateEncoder,
     ch.softappeal.yass2.core.serialize.string.EnumStringEncoder(

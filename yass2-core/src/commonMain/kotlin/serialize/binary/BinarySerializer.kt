@@ -1,13 +1,10 @@
 package ch.softappeal.yass2.core.serialize.binary
 
 import ch.softappeal.yass2.core.InternalApi
-import ch.softappeal.yass2.core.serialize.Property
 import ch.softappeal.yass2.core.serialize.Reader
 import ch.softappeal.yass2.core.serialize.Serializer
 import ch.softappeal.yass2.core.serialize.Writer
 import kotlin.reflect.KClass
-import kotlin.reflect.KProperty1
-import kotlin.reflect.KType
 
 public open class BinaryEncoder<T : Any>(
     internal val type: KClass<T>,
@@ -25,7 +22,7 @@ public abstract class BinarySerializer : Serializer {
     private lateinit var encoders: Array<BinaryEncoder<*>>
     private lateinit var type2encoderId: Map<KClass<*>, EncoderId>
 
-    /** See [NULL_ENCODER_ID] and [LIST_ENCODER_ID]. */
+    /** See [BINARY_NULL_ENCODER_ID] and [BINARY_LIST_ENCODER_ID]. */
     protected fun initialize(vararg binaryEncoders: BinaryEncoder<*>) {
         encoders = (listOf(
             BinaryEncoder(Unit::class, {}, {}), // placeholder for NULL_ENCODER_ID, methods are never called
@@ -39,7 +36,7 @@ public abstract class BinarySerializer : Serializer {
     }
 
     private val listEncoderId = EncoderId(
-        LIST_ENCODER_ID,
+        @OptIn(InternalApi::class) BINARY_LIST_ENCODER_ID,
         BinaryEncoder(
             List::class,
             { list ->
@@ -58,7 +55,7 @@ public abstract class BinarySerializer : Serializer {
     protected fun Writer.writeObject(value: Any?) {
         val (encoderId, encoder) = when (value) {
             null -> {
-                writeVarInt(NULL_ENCODER_ID)
+                writeVarInt(BINARY_NULL_ENCODER_ID)
                 return
             }
             is List<*> -> listEncoderId
@@ -78,7 +75,7 @@ public abstract class BinarySerializer : Serializer {
 
     protected fun Reader.readObject(): Any? {
         val encoderId = readVarInt()
-        return if (encoderId == NULL_ENCODER_ID) null else encoders[encoderId].read(this)
+        return if (encoderId == BINARY_NULL_ENCODER_ID) null else encoders[encoderId].read(this)
     }
 
     protected fun Reader.readRequired(encoderId: Int): Any = encoders[encoderId].read(this)
@@ -88,36 +85,10 @@ public abstract class BinarySerializer : Serializer {
     override fun read(reader: Reader): Any? = reader.readObject()
 }
 
-private const val NO_ENCODER_ID = -1
-private const val NULL_ENCODER_ID = 0
-private const val LIST_ENCODER_ID = 1
-private const val FIRST_ENCODER_ID = 2
+@InternalApi public const val BINARY_NO_ENCODER_ID: Int = -1
+private const val BINARY_NULL_ENCODER_ID: Int = 0
+@InternalApi public const val BINARY_LIST_ENCODER_ID: Int = 1
+@InternalApi public const val BINARY_FIRST_ENCODER_ID: Int = 2
 
-@InternalApi
-public class BinaryProperty(
-    property: KProperty1<out Any, *>,
-    returnType: KType,
-    baseClasses: List<KClass<*>>,
-    concreteClasses: List<KClass<*>>,
-    hasSuperClass: KClass<*>.(superClass: KClass<*>) -> Boolean,
-) : Property(property, returnType) {
-    private val encoderId = if (classifier == List::class) LIST_ENCODER_ID else {
-        val baseClassIndex = baseClasses.indexOfFirst { it == classifier }
-        if (baseClassIndex >= 0) baseClassIndex + FIRST_ENCODER_ID else {
-            val concreteClassIndex = concreteClasses.indexOfFirst { it == classifier }
-            if (
-                concreteClassIndex >= 0 && concreteClasses.none { it.hasSuperClass(concreteClasses[concreteClassIndex]) }
-            ) concreteClassIndex + baseClasses.size + FIRST_ENCODER_ID else NO_ENCODER_ID
-        }
-    }
-
-    private fun suffix() = if (encoderId == NO_ENCODER_ID) "Object" else if (nullable) "Optional" else "Required"
-
-    public fun writeObject(reference: String): String =
-        "write${suffix()}($reference${if (encoderId == NO_ENCODER_ID) "" else ", $encoderId"})"
-
-    public fun readObject(): String = "read${suffix()}(${if (encoderId == NO_ENCODER_ID) "" else encoderId})"
-
-    public fun meta(): String =
-        if (encoderId == NO_ENCODER_ID) "object" else "${if (nullable) "optional" else "required"} $encoderId"
-}
+@Target(AnnotationTarget.CLASS)
+public annotation class BinaryEncoderObjects(vararg val value: KClass<out BinaryEncoder<*>>)

@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.core.serialize.string
 
+import ch.softappeal.yass2.core.InternalApi
 import ch.softappeal.yass2.core.serialize.Reader
 import ch.softappeal.yass2.core.serialize.Writer
 
@@ -74,7 +75,7 @@ public class TextSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
                 val name = readUntil { expectedCodePoint(COLON) }
                 readNextCodePointAndSkipWhitespace()
                 val encoderId = encoder.encoderId(name)
-                val value = if (encoderId != NO_ENCODER_ID) encoder(encoderId).read(this) else {
+                val value = if (encoderId != @OptIn(InternalApi::class) STRING_NO_ENCODER_ID) encoder(encoderId).read(this) else {
                     readObject(this, nextCodePoint).apply { readNextCodePoint() }
                 }
                 skipWhitespace()

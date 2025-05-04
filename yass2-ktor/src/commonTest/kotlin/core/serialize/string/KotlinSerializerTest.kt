@@ -1,23 +1,23 @@
 package ch.softappeal.yass2.core.serialize.string
 
-import ch.softappeal.yass2.contract.B
-import ch.softappeal.yass2.contract.BodyProperty
-import ch.softappeal.yass2.contract.DivideByZeroException
-import ch.softappeal.yass2.contract.Gender
-import ch.softappeal.yass2.contract.ManyProperties
-import ch.softappeal.yass2.contract.Poly
-import ch.softappeal.yass2.contract.StringEncoders
-import ch.softappeal.yass2.contract.ThrowableFake
-import ch.softappeal.yass2.contract.Types
+import ch.softappeal.yass2.B
+import ch.softappeal.yass2.BodyProperty
+import ch.softappeal.yass2.DivideByZeroException
+import ch.softappeal.yass2.Gender
+import ch.softappeal.yass2.ManyProperties
+import ch.softappeal.yass2.Poly
+import ch.softappeal.yass2.ThrowableFake
+import ch.softappeal.yass2.Types
 import ch.softappeal.yass2.core.assertFailsMessage
 import ch.softappeal.yass2.core.serialize.Serializer
 import ch.softappeal.yass2.core.serialize.fromByteArray
 import ch.softappeal.yass2.core.serialize.toByteArray
+import ch.softappeal.yass2.createStringEncoders
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
-private val SERIALIZER = KotlinSerializer(StringEncoders)
+private val SERIALIZER = KotlinSerializer(createStringEncoders())
 
 private fun dump(value: Any?, serialized: String, vararg others: String) = SERIALIZER.dump(value, serialized, *others)
 

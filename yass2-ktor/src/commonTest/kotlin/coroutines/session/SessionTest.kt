@@ -1,12 +1,12 @@
 package ch.softappeal.yass2.coroutines.session
 
-import ch.softappeal.yass2.contract.EchoId
-import ch.softappeal.yass2.contract.proxy
-import ch.softappeal.yass2.contract.service
+import ch.softappeal.yass2.EchoId
 import ch.softappeal.yass2.core.EchoImpl
 import ch.softappeal.yass2.core.InternalApi
 import ch.softappeal.yass2.core.remote.test
 import ch.softappeal.yass2.core.remote.tunnel
+import ch.softappeal.yass2.proxy
+import ch.softappeal.yass2.service
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay

@@ -1,6 +1,6 @@
 package ch.softappeal.yass2.core.serialize.string
 
-import ch.softappeal.yass2.contract.Gender
+import ch.softappeal.yass2.Gender
 import ch.softappeal.yass2.core.NotJsPlatform
 import ch.softappeal.yass2.core.assertFailsMessage
 import kotlin.test.Test

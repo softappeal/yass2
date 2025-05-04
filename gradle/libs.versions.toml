@@ -1,11 +1,13 @@
 [versions]
 
-kotlin        = "2.1.20" # https://github.com/JetBrains/kotlin
-coroutines    = "1.10.2" # https://github.com/Kotlin/kotlinx.coroutines
-ktor          = "3.1.2"  # https://github.com/ktorio/ktor
-dokka         = "2.0.0"  # https://github.com/Kotlin/dokka
-publish       = "0.31.0" # https://github.com/vanniktech/gradle-maven-publish-plugin
-compatibility = "0.17.0" # https://github.com/Kotlin/binary-compatibility-validator
+kotlin        = "2.1.20"       # https://github.com/JetBrains/kotlin
+ksp           = "2.1.20-2.0.1" # https://github.com/google/ksp
+coroutines    = "1.10.2"       # https://github.com/Kotlin/kotlinx.coroutines
+ktor          = "3.1.3"        # https://github.com/ktorio/ktor
+dokka         = "2.0.0"        # https://github.com/Kotlin/dokka
+publish       = "0.31.0"       # https://github.com/vanniktech/gradle-maven-publish-plugin
+compatibility = "0.17.0"       # https://github.com/Kotlin/binary-compatibility-validator
+kct           = "1.6.0"        # https://github.com/tschuchortdev/kotlin-compile-testing
 
 [libraries]
 
@@ -19,6 +21,10 @@ client-cio        = { module = "io.ktor:ktor-client-cio"       , version.ref = "
 server-cio        = { module = "io.ktor:ktor-server-cio"       , version.ref = "ktor" }
 server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
 
+ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+
+kct = { module = "com.github.tschuchortdev:kotlin-compile-testing-ksp", version.ref = "kct" }
+
 [bundles]
 
 ktor     = [ "client-core", "server-core", "client-websockets" ]
@@ -30,3 +36,4 @@ multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotl
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 publish = { id = "com.vanniktech.maven.publish", version.ref = "publish" }
 compatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "compatibility" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

@@ -1,15 +1,15 @@
 package ch.softappeal.yass2.core.remote
 
-import ch.softappeal.yass2.contract.CalculatorId
-import ch.softappeal.yass2.contract.Echo
-import ch.softappeal.yass2.contract.EchoId
-import ch.softappeal.yass2.contract.proxy
-import ch.softappeal.yass2.contract.service
+import ch.softappeal.yass2.CalculatorId
+import ch.softappeal.yass2.Echo
+import ch.softappeal.yass2.EchoId
 import ch.softappeal.yass2.core.CalculatorImpl
 import ch.softappeal.yass2.core.EchoImpl
 import ch.softappeal.yass2.core.assertFailsMessage
 import ch.softappeal.yass2.core.performance
 import ch.softappeal.yass2.core.test
+import ch.softappeal.yass2.proxy
+import ch.softappeal.yass2.service
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

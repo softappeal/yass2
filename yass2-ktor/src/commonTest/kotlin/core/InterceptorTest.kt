@@ -1,9 +1,9 @@
 package ch.softappeal.yass2.core
 
-import ch.softappeal.yass2.contract.Calculator
-import ch.softappeal.yass2.contract.DivideByZeroException
-import ch.softappeal.yass2.contract.Echo
-import ch.softappeal.yass2.contract.proxy
+import ch.softappeal.yass2.Calculator
+import ch.softappeal.yass2.DivideByZeroException
+import ch.softappeal.yass2.Echo
+import ch.softappeal.yass2.proxy
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.coroutineScope

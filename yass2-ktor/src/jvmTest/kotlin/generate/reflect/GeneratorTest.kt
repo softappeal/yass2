@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.generate.reflect
 
+import ch.softappeal.yass2.core.InternalApi
 import ch.softappeal.yass2.core.assertFailsMessage
 import ch.softappeal.yass2.core.serialize.binary.BinaryEncoder
 import ch.softappeal.yass2.core.serialize.binary.IntBinaryEncoder
@@ -42,6 +43,7 @@ private enum class Enum { One }
 
 private object MyEnumEncoder : BinaryEncoder<Enum>(Enum::class, {}, { Enum.One })
 
+@OptIn(InternalApi::class)
 private fun codeWriter() = CodeWriter(StringBuilder())
 
 class GeneratorTest {
@@ -66,7 +68,7 @@ class GeneratorTest {
             "class ch.softappeal.yass2.generate.reflect.AbstractClass must be concrete"
         ) { generateBinarySerializer(AbstractClass::class) }
         assertFailsMessage<IllegalStateException>(
-            "enum class ch.softappeal.yass2.generate.reflect.Enum belongs to enumClasses"
+            "enum class ch.softappeal.yass2.generate.reflect.Enum belongs to concreteAndEnumClasses"
         ) { codeWriter().generateBinarySerializer(listOf(MyEnumEncoder::class), listOf()) }
         assertFailsMessage<IllegalArgumentException>(
             "classes [kotlin.Int] are duplicated"

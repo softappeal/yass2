@@ -1,15 +1,12 @@
 package ch.softappeal.yass2.core.serialize.string
 
 import ch.softappeal.yass2.core.InternalApi
-import ch.softappeal.yass2.core.serialize.Property
 import ch.softappeal.yass2.core.serialize.Reader
 import ch.softappeal.yass2.core.serialize.Serializer
 import ch.softappeal.yass2.core.serialize.Writer
 import ch.softappeal.yass2.core.serialize.fromByteArray
 import ch.softappeal.yass2.core.serialize.toByteArray
 import kotlin.reflect.KClass
-import kotlin.reflect.KProperty1
-import kotlin.reflect.KType
 
 public const val QUOTE: Int = '"'.code
 public const val COMMA: Int = ','.code
@@ -76,10 +73,11 @@ public abstract class StringWriter(
     }
 
     protected fun writePropertyBuiltIn(value: Any?, encoderId: Int): Boolean {
+        @OptIn(InternalApi::class)
         when (encoderId) {
-            STRING_ENCODER_ID -> writeStringBuiltIn(value as String)
-            BOOLEAN_ENCODER_ID -> writeString(if (value as Boolean) TRUE else FALSE)
-            LIST_ENCODER_ID -> writeList(value as List<*>)
+            STRING_STRING_ENCODER_ID -> writeStringBuiltIn(value as String)
+            STRING_BOOLEAN_ENCODER_ID -> writeString(if (value as Boolean) TRUE else FALSE)
+            STRING_LIST_ENCODER_ID -> writeList(value as List<*>)
             else -> return true
         }
         return false
@@ -242,7 +240,7 @@ public class ClassStringEncoder<T : Any>(
     public val hasBodyProperties: Boolean,
     write: StringWriter.(value: T) -> Unit,
     read: StringReader.() -> T,
-    /** see [NO_ENCODER_ID] */
+    /** see [STRING_NO_ENCODER_ID] */
     vararg propertyEncoderIds: Pair<String, Int>,
 ) : StringEncoder<T>(type, write, read) {
     internal val property2encoderId = propertyEncoderIds.toMap()
@@ -282,43 +280,15 @@ public abstract class StringSerializer(stringEncoders: List<StringEncoder<*>>) :
         className2encoder[className] ?: error("missing encoder for class '$className'")
 }
 
-public const val NO_ENCODER_ID: Int = -1
-private const val STRING_ENCODER_ID = 0
-private const val BOOLEAN_ENCODER_ID = 1
-private const val LIST_ENCODER_ID = 2
-private const val FIRST_ENCODER_ID = 3
-
-@InternalApi
-public class StringProperty(
-    property: KProperty1<out Any, *>,
-    returnType: KType,
-    baseClasses: List<KClass<*>>,
-) : Property(property, returnType) {
-    private val encoderId = when (classifier) {
-        String::class -> STRING_ENCODER_ID
-        Boolean::class -> BOOLEAN_ENCODER_ID
-        List::class -> LIST_ENCODER_ID
-        else -> {
-            val baseClassIndex = baseClasses.indexOfFirst { it == classifier }
-            if (baseClassIndex >= 0) baseClassIndex + FIRST_ENCODER_ID else NO_ENCODER_ID
-        }
-    }
-
-    public fun writeProperty(reference: String): String =
-        "writeProperty(\"$name\", $reference${if (encoderId == NO_ENCODER_ID) "" else ", $encoderId"})"
-
-    public fun propertyEncoderId(): String = "\"$name\" to ${
-        if (
-            encoderId != NO_ENCODER_ID &&
-            encoderId != STRING_ENCODER_ID &&
-            encoderId != BOOLEAN_ENCODER_ID &&
-            encoderId != LIST_ENCODER_ID
-        ) encoderId else NO_ENCODER_ID
-    }"
-
-    public fun meta(): String = if (encoderId == NO_ENCODER_ID) "object" else encoderId.toString()
-}
+@InternalApi public const val STRING_NO_ENCODER_ID: Int = -1
+@InternalApi public const val STRING_STRING_ENCODER_ID: Int = 0
+@InternalApi public const val STRING_BOOLEAN_ENCODER_ID: Int = 1
+@InternalApi public const val STRING_LIST_ENCODER_ID: Int = 2
+@InternalApi public const val STRING_FIRST_ENCODER_ID: Int = 3
 
 public fun StringSerializer.toString(value: Any?): String = toByteArray(value).decodeToString(throwOnInvalidSequence = true)
 public fun StringSerializer.fromString(string: String): Any? =
     fromByteArray(string.encodeToByteArray(throwOnInvalidSequence = true))
+
+@Target(AnnotationTarget.CLASS)
+public annotation class StringEncoderObjects(vararg val value: KClass<out BaseStringEncoder<*>>)

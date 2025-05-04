@@ -1,16 +1,16 @@
 package ch.softappeal.yass2.core.serialize.binary
 
-import ch.softappeal.yass2.contract.A
-import ch.softappeal.yass2.contract.B
-import ch.softappeal.yass2.contract.BinarySerializer
-import ch.softappeal.yass2.contract.Gender
-import ch.softappeal.yass2.contract.Poly
-import ch.softappeal.yass2.contract.ThrowableFake
+import ch.softappeal.yass2.A
+import ch.softappeal.yass2.B
+import ch.softappeal.yass2.Gender
+import ch.softappeal.yass2.Poly
+import ch.softappeal.yass2.ThrowableFake
 import ch.softappeal.yass2.core.serialize.Serializer
 import ch.softappeal.yass2.core.serialize.fromByteArray
 import ch.softappeal.yass2.core.serialize.string.AllBaseTypes
 import ch.softappeal.yass2.core.serialize.string.allBaseTypesAssert
 import ch.softappeal.yass2.core.serialize.toByteArray
+import ch.softappeal.yass2.createBinarySerializer
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -19,10 +19,12 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+private val SERIALIZER = createBinarySerializer()
+
 private fun <T> copy(value: T, vararg bytes: Int): T {
-    val byteArray = BinarySerializer.toByteArray(value)
+    val byteArray = SERIALIZER.toByteArray(value)
     assertEquals(bytes.map { it.toByte() }, byteArray.toList())
-    @Suppress("UNCHECKED_CAST") return BinarySerializer.fromByteArray(byteArray) as T
+    @Suppress("UNCHECKED_CAST") return SERIALIZER.fromByteArray(byteArray) as T
 }
 
 class BinarySerializerTest {
@@ -32,7 +34,7 @@ class BinarySerializerTest {
             assertContentEquals(serialized, toByteArray(AllBaseTypes))
             allBaseTypesAssert(serialized)
         }
-        BinarySerializer.allBaseTypesTest(
+        SERIALIZER.allBaseTypesTest(
             byteArrayOf(
                 15,
                 1,
@@ -338,7 +340,7 @@ class BinarySerializerTest {
     @Test
     fun duplicatedType() {
         val message = assertFailsWith<IllegalArgumentException> {
-            object : ch.softappeal.yass2.core.serialize.binary.BinarySerializer() {
+            object : BinarySerializer() {
                 init {
                     initialize(IntBinaryEncoder, IntBinaryEncoder)
                 }
@@ -350,7 +352,7 @@ class BinarySerializerTest {
 
     @Test
     fun missingType() {
-        val message = assertFailsWith<IllegalStateException> { BinarySerializer.toByteArray(BinarySerializerTest()) }.message!!
+        val message = assertFailsWith<IllegalStateException> { SERIALIZER.toByteArray(BinarySerializerTest()) }.message!!
         assertTrue(message.startsWith("missing type 'class "))
         assertTrue(message.endsWith("BinarySerializerTest'"))
     }
@@ -359,7 +361,7 @@ class BinarySerializerTest {
     fun byteArrays() {
         assertEquals(
             "hello",
-            BinarySerializer.fromByteArray(BinarySerializer.toByteArray("hello"))
+            SERIALIZER.fromByteArray(SERIALIZER.toByteArray("hello"))
         )
     }
 }

@@ -2,7 +2,7 @@
 
 package ch.softappeal.yass2.coroutines.flow
 
-import ch.softappeal.yass2.contract.DivideByZeroException
+import ch.softappeal.yass2.DivideByZeroException
 import ch.softappeal.yass2.core.ExperimentalApi
 import ch.softappeal.yass2.core.Printer
 import ch.softappeal.yass2.core.remote.ServiceId
