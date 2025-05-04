@@ -32,7 +32,12 @@ private suspend fun useInterceptor() {
 
 private suspend fun useRemoting() {
     println("*** useRemoting ***")
-    val calculator = CalculatorId.proxy(tunnel(CalculatorId.service(CalculatorImpl)))
+    val calculatorService = CalculatorId.service(CalculatorImpl)
+    val tunnel = tunnel(
+        // enumerate services
+        calculatorService,
+    )
+    val calculator = CalculatorId.proxy(tunnel)
     useCalculator(calculator)
 }
 
