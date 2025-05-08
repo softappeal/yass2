@@ -39,7 +39,10 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration, expectWriter:
 
     expectWriter?.let {
         it.writeLine()
-        it.writeNestedLine("public expect fun${service.types} ${service.withTypes}.proxy(intercept: $CSY.core.Interceptor): ${service.withTypes}")
+        it.writeNestedLine("public expect fun${service.types} ${service.withTypes}.proxy(") {
+            writeNestedLine("intercept: $CSY.core.Interceptor,")
+        }
+        it.writeNestedLine("): ${service.withTypes}")
     }
     writeLine()
     writeNestedLine("public ${expectWriter.actual()}fun${service.types} ${service.withTypes}.proxy(") {
@@ -63,7 +66,13 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration, expectWriter:
         }
     }
 
-    expectWriter?.writeNestedLine("public expect fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.proxy(tunnel: $CSY.core.remote.Tunnel): ${service.withTypes}")
+    expectWriter?.let {
+        it.writeLine()
+        it.writeNestedLine("public expect fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.proxy(") {
+            writeNestedLine("tunnel: $CSY.core.remote.Tunnel,")
+        }
+        it.writeNestedLine("): ${service.withTypes}")
+    }
     writeLine()
     writeNestedLine("public ${expectWriter.actual()}fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.proxy(") {
         writeNestedLine("tunnel: $CSY.core.remote.Tunnel,")
@@ -86,7 +95,13 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration, expectWriter:
         }
     }
 
-    expectWriter?.writeNestedLine("public expect fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.service(implementation: ${service.withTypes}): ${Service::class.qualifiedName}")
+    expectWriter?.let {
+        it.writeLine()
+        it.writeNestedLine("public expect fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.service(") {
+            writeNestedLine("implementation: ${service.withTypes},")
+        }
+        it.writeNestedLine("): ${Service::class.qualifiedName}")
+    }
     writeLine()
     writeNestedLine("public ${expectWriter.actual()}fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.service(") {
         writeNestedLine("implementation: ${service.withTypes},")
