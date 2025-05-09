@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.generate.ksp // TODO: review
+package ch.softappeal.yass2.generate.ksp
 
 import ch.softappeal.yass2.core.InternalApi
 import com.tschuchort.compiletesting.KotlinCompilation
@@ -37,7 +37,7 @@ class GeneratorTest {
         )
     }
 
-    @Ignore
+    @Ignore // TODO: review
     @Test
     fun binarySerializer() {
         executeTest(
@@ -126,14 +126,13 @@ class GeneratorTest {
         )
     }
 
-    @Ignore
     @Test
     fun proxy() {
         executeTest(
             "test.NotAnInterface must be an interface",
             """
                 package test
-                @ch.softappeal.yass2.GenerateProxy
+                @ch.softappeal.yass2.core.Proxy
                 class NotAnInterface
             """,
         )
@@ -141,10 +140,20 @@ class GeneratorTest {
             "interface test.Overloaded has overloaded methods [f]",
             """
                 package test
-                @ch.softappeal.yass2.GenerateProxy
+                @ch.softappeal.yass2.core.Proxy
                 interface Overloaded {
                     suspend fun f()
                     suspend fun f(i: Int)
+                }
+            """,
+        )
+        executeTest(
+            "method test.NoSuspend.noSuspend must be suspend",
+            """
+                package test
+                @ch.softappeal.yass2.core.Proxy
+                interface NoSuspend {
+                    fun noSuspend f()
                 }
             """,
         )

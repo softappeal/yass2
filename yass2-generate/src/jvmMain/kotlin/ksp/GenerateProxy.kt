@@ -1,6 +1,6 @@
 @file:Suppress("DuplicatedCode")
 
-package ch.softappeal.yass2.generate.ksp // TODO: review
+package ch.softappeal.yass2.generate.ksp
 
 import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.Service
