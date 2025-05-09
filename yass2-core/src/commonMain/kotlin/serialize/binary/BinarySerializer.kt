@@ -20,7 +20,7 @@ public abstract class BinarySerializer : Serializer {
     private data class EncoderId(val id: Int, val encoder: BinaryEncoder<*>)
 
     private lateinit var encoders: Array<BinaryEncoder<*>>
-    private lateinit var type2encoderId: Map<KClass<*>, EncoderId>
+    private lateinit var typeToEncoderId: Map<KClass<*>, EncoderId>
 
     /** See [BINARY_NULL_ENCODER_ID] and [BINARY_LIST_ENCODER_ID]. */
     protected fun initialize(vararg binaryEncoders: BinaryEncoder<*>) {
@@ -28,7 +28,7 @@ public abstract class BinarySerializer : Serializer {
             BinaryEncoder(Unit::class, {}, {}), // placeholder for NULL_ENCODER_ID, methods are never called
             listEncoderId.encoder,
         ) + binaryEncoders).toTypedArray()
-        type2encoderId = buildMap {
+        typeToEncoderId = buildMap {
             encoders.forEachIndexed { encoderId, encoder ->
                 require(put(encoder.type, EncoderId(encoderId, encoder)) == null) { "duplicated type '${encoder.type}'" }
             }
@@ -59,7 +59,7 @@ public abstract class BinarySerializer : Serializer {
                 return
             }
             is List<*> -> listEncoderId
-            else -> type2encoderId[value::class] ?: error("missing type '${value::class}'")
+            else -> typeToEncoderId[value::class] ?: error("missing type '${value::class}'")
         }
         writeVarInt(encoderId)
         encoder.write(this, value)

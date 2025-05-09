@@ -48,7 +48,7 @@ public abstract class Session<C : Connection> {
         suspendCoroutine { continuation ->
             CoroutineScope(continuation.context).launch {
                 try {
-                    requestNumber2continuation.put(requestNumber, continuation)
+                    requestNumberToContinuation.put(requestNumber, continuation)
                     write(Packet(requestNumber, request))
                 } catch (e: Exception) {
                     close(e)
@@ -68,7 +68,7 @@ public abstract class Session<C : Connection> {
 
     private val closed = AtomicBoolean(false)
     private val nextRequestNumber = AtomicInt(0)
-    private val requestNumber2continuation = ThreadSafeMap<Int, Continuation<Reply>>(16)
+    private val requestNumberToContinuation = ThreadSafeMap<Int, Continuation<Reply>>(16)
     private val writeMutex = Mutex()
 
     private suspend fun write(packet: Packet?): Unit = writeMutex.withLock { connection.write(packet) }
@@ -91,7 +91,7 @@ public abstract class Session<C : Connection> {
         check(!isClosed()) { "session '$this' is closed" }
         when (val message = packet.message) {
             is Request -> write(Packet(packet.requestNumber, serverTunnel(message)))
-            is Reply -> requestNumber2continuation.remove(packet.requestNumber)!!.resume(message)
+            is Reply -> requestNumberToContinuation.remove(packet.requestNumber)!!.resume(message)
         }
     }
 }

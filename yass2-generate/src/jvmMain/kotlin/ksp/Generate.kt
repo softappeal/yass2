@@ -7,6 +7,7 @@ import ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects
 import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
+import ch.softappeal.yass2.generate.GENERATED_BY_YASS_EXPECT
 import ch.softappeal.yass2.generate.appendPackage
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
@@ -86,7 +87,7 @@ private fun KSAnnotation.value() = arguments.first { it.name!!.asString() == "va
 private class Yass2Processor(private val environment: SymbolProcessorEnvironment) : SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
 
-        val packageName2declarations = buildMap {
+        val packageNameToDeclarations = buildMap {
             buildList {
                 listOf(
                     Proxy::class, ConcreteAndEnumClasses::class, BinaryEncoderObjects::class, StringEncoderObjects::class,
@@ -99,7 +100,7 @@ private class Yass2Processor(private val environment: SymbolProcessorEnvironment
                 .forEach { packageName, declarations -> put(packageName, declarations.toSet()) }
         }
 
-        packageName2declarations.forEach { packageName, declarations ->
+        packageNameToDeclarations.forEach { packageName, declarations ->
             @OptIn(InternalApi::class)
             environment.codeGenerator.createNewFile(
                 Dependencies.ALL_FILES, // we want to be on the safe side
@@ -145,7 +146,7 @@ private class Yass2Processor(private val environment: SymbolProcessorEnvironment
                     writeNestedLine(
                         // TODO: Common/intermediate (= none-platform) code cannot reference generated code in the compilation of platform code.
                         //       Generated codes are treated as platform code (you'll have to use expect/actual).
-                        "/* save manually as file '$GENERATED_BY_YASS.kt' in common code; needed due to https://github.com/google/ksp/issues/2233",
+                        "/* save manually as file '$GENERATED_BY_YASS_EXPECT.kt' in common code; needed due to https://github.com/google/ksp/issues/2233",
                         "*/",
                     ) {
                         writeLine()

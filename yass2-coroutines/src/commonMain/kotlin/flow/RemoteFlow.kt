@@ -48,13 +48,13 @@ public typealias FlowFactory<F, I> = (flowId: I) -> Flow<F>
 @OptIn(ExperimentalAtomicApi::class) // TODO: might become binary incompatible with future versions
 public fun <F, I> flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I> {
     val nextCollectId = AtomicInt(0)
-    val collectId2channel = ThreadSafeMap<Int, Channel<Reply?>>(16)
+    val collectIdToChannel = ThreadSafeMap<Int, Channel<Reply?>>(16)
     return object : FlowService<F, I> {
         override suspend fun create(flowId: I): Int {
             val flow = flowFactory(flowId)
             val collectId = nextCollectId.incrementAndFetch()
             val channel = Channel<Reply?>()
-            collectId2channel.put(collectId, channel)
+            collectIdToChannel.put(collectId, channel)
             CoroutineScope(coroutineContext).launch {
                 tryFinally({
                     try {
@@ -64,19 +64,19 @@ public fun <F, I> flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I>
                         channel.send(ExceptionReply(e))
                     }
                 }) {
-                    collectId2channel.remove(collectId)
+                    collectIdToChannel.remove(collectId)
                 }
             }
             return collectId
         }
 
         override suspend fun next(collectId: Int): F? {
-            val reply = collectId2channel.get(collectId)!!.receive()
+            val reply = collectIdToChannel.get(collectId)!!.receive()
             @Suppress("UNCHECKED_CAST") return reply?.process() as F
         }
 
         override suspend fun cancel(collectId: Int) {
-            val channel = collectId2channel.remove(collectId)
+            val channel = collectIdToChannel.remove(collectId)
             channel?.cancel()
         }
     }

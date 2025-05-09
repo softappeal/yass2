@@ -189,17 +189,17 @@ public abstract class StringReader(
         }
     }
 
-    private val properties = mutableMapOf<String, Any?>()
+    private val propertyNameToValue = mutableMapOf<String, Any?>()
 
     protected fun ClassStringEncoder<*>.addProperty(name: String, value: Any?) {
-        check(!properties.containsKey(name)) { "duplicated property '${type.simpleName}.$name'" }
-        properties[name] = value
+        check(!propertyNameToValue.containsKey(name)) { "duplicated property '${type.simpleName}.$name'" }
+        propertyNameToValue[name] = value
     }
 
-    public fun getProperty(property: String): Any? = properties[property]
+    public fun getProperty(name: String): Any? = propertyNameToValue[name]
 
     protected fun ClassStringEncoder<*>.checkMissingProperties() {
-        val missingProperties = property2encoderId.keys - properties.keys
+        val missingProperties = propertyToEncoderId.keys - propertyNameToValue.keys
         check(missingProperties.isEmpty()) { "missing properties '${missingProperties.sorted()}' for '${type.simpleName}'" }
     }
 }
@@ -243,9 +243,9 @@ public class ClassStringEncoder<T : Any>(
     /** see [STRING_NO_ENCODER_ID] */
     vararg propertyEncoderIds: Pair<String, Int>,
 ) : StringEncoder<T>(type, write, read) {
-    internal val property2encoderId = propertyEncoderIds.toMap()
+    internal val propertyToEncoderId = propertyEncoderIds.toMap()
     public fun encoderId(property: String): Int {
-        val encoderId = property2encoderId[property]
+        val encoderId = propertyToEncoderId[property]
         check(encoderId != null) { "no property '${type.simpleName}.$property'" }
         return encoderId
     }
@@ -262,22 +262,22 @@ public abstract class StringSerializer(stringEncoders: List<StringEncoder<*>>) :
         StringEncoder(Boolean::class, {}, { false }),
         StringEncoder(List::class, {}, { listOf<Int>() }),
     ) + stringEncoders).toTypedArray()
-    private val type2encoder = HashMap<KClass<*>, StringEncoder<*>>(encoders.size)
-    private val className2encoder = HashMap<String, StringEncoder<*>>(encoders.size)
+    private val typeToEncoder = HashMap<KClass<*>, StringEncoder<*>>(encoders.size)
+    private val classNameToEncoder = HashMap<String, StringEncoder<*>>(encoders.size)
 
     init {
         encoders.forEach { encoder ->
-            require(type2encoder.put(encoder.type, encoder) == null) { "duplicated type '${encoder.type}'" }
-            require(className2encoder.put(encoder.type.simpleName!!, encoder) == null) {
+            require(typeToEncoder.put(encoder.type, encoder) == null) { "duplicated type '${encoder.type}'" }
+            require(classNameToEncoder.put(encoder.type.simpleName!!, encoder) == null) {
                 "duplicated className '${encoder.type.simpleName}'"
             }
         }
     }
 
     protected fun encoder(encoderId: Int): StringEncoder<*> = encoders[encoderId]
-    protected fun encoder(type: KClass<*>): StringEncoder<*> = type2encoder[type] ?: error("missing type '$type'")
+    protected fun encoder(type: KClass<*>): StringEncoder<*> = typeToEncoder[type] ?: error("missing type '$type'")
     protected fun encoder(className: String): StringEncoder<*> =
-        className2encoder[className] ?: error("missing encoder for class '$className'")
+        classNameToEncoder[className] ?: error("missing encoder for class '$className'")
 }
 
 @InternalApi public const val STRING_NO_ENCODER_ID: Int = -1

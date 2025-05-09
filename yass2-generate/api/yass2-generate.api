@@ -3,6 +3,7 @@ public final class ch/softappeal/yass2/generate/CodeWriter {
 
 public final class ch/softappeal/yass2/generate/SharedKt {
 	public static final field GENERATED_BY_YASS Ljava/lang/String;
+	public static final field GENERATED_BY_YASS_EXPECT Ljava/lang/String;
 }
 
 public final class ch/softappeal/yass2/generate/reflect/GenerateKt {

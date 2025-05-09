@@ -40,6 +40,63 @@ class GeneratorTest {
     @Ignore // TODO: review
     @Test
     fun binarySerializer() {
+
+        /*
+
+        private class BodyPropertyNotVar {
+            @Suppress("unused") val x: Int = 0
+        }
+
+        private class NoPrimaryConstructor {
+            @Suppress("unused", "ConvertSecondaryConstructorToPrimary") constructor()
+        }
+
+        private interface NotRegularClass
+
+        private abstract class AbstractClass
+
+        private class ConstructorParameterIsNotProperty(x: Int) {
+            init {
+                println(x)
+            }
+        }
+
+        private enum class Enum { One }
+
+        private object MyEnumEncoder : BinaryEncoder<Enum>(Enum::class, {}, { Enum.One })
+
+        fun generateBinarySerializer(klass: KClass<*>) {
+            codeWriter().generateBinarySerializer(listOf(), listOf(klass))
+        }
+        assertFailsMessage<IllegalArgumentException>(
+            "body property x of ch.softappeal.yass2.generate.reflect.BodyPropertyNotVar must be var"
+        ) { generateBinarySerializer(BodyPropertyNotVar::class) }
+        assertFailsMessage<IllegalStateException>(
+            "class ch.softappeal.yass2.generate.reflect.NoPrimaryConstructor must hava a primary constructor"
+        ) { generateBinarySerializer(NoPrimaryConstructor::class) }
+        assertFailsMessage<IllegalArgumentException>(
+            "primary constructor parameter x of class ch.softappeal.yass2.generate.reflect.ConstructorParameterIsNotProperty must be a property"
+        ) { generateBinarySerializer(ConstructorParameterIsNotProperty::class) }
+        assertFailsMessage<IllegalArgumentException>(
+            "class ch.softappeal.yass2.generate.reflect.NotRegularClass must be concrete"
+        ) { generateBinarySerializer(NotRegularClass::class) }
+        assertFailsMessage<IllegalArgumentException>(
+            "class ch.softappeal.yass2.generate.reflect.AbstractClass must be concrete"
+        ) { generateBinarySerializer(AbstractClass::class) }
+        assertFailsMessage<IllegalStateException>(
+            "enum class ch.softappeal.yass2.generate.reflect.Enum belongs to concreteAndEnumClasses"
+        ) { codeWriter().generateBinarySerializer(listOf(MyEnumEncoder::class), listOf()) }
+        assertFailsMessage<IllegalArgumentException>(
+            "classes [kotlin.Int] are duplicated"
+        ) { codeWriter().generateBinarySerializer(listOf(IntBinaryEncoder::class), listOf(Int::class)) }
+        assertFailsMessage<IllegalArgumentException>(
+            "classes [ch.softappeal.yass2.generate.reflect.Enum] are duplicated"
+        ) {
+            codeWriter().generateBinarySerializer(listOf(), listOf(Enum::class, Enum::class))
+        }
+
+        */
+
         executeTest(
             "body property x of test.BodyPropertyNotVar must be var",
             """
