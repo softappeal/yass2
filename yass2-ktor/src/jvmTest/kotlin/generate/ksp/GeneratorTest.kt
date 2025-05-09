@@ -6,7 +6,6 @@ import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.symbolProcessorProviders
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import java.io.File
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -37,75 +36,18 @@ class GeneratorTest {
         )
     }
 
-    @Ignore // TODO: review
     @Test
     fun binarySerializer() {
-
-        /*
-
-        private class BodyPropertyNotVar {
-            @Suppress("unused") val x: Int = 0
-        }
-
-        private class NoPrimaryConstructor {
-            @Suppress("unused", "ConvertSecondaryConstructorToPrimary") constructor()
-        }
-
-        private interface NotRegularClass
-
-        private abstract class AbstractClass
-
-        private class ConstructorParameterIsNotProperty(x: Int) {
-            init {
-                println(x)
-            }
-        }
-
-        private enum class Enum { One }
-
-        private object MyEnumEncoder : BinaryEncoder<Enum>(Enum::class, {}, { Enum.One })
-
-        fun generateBinarySerializer(klass: KClass<*>) {
-            codeWriter().generateBinarySerializer(listOf(), listOf(klass))
-        }
-        assertFailsMessage<IllegalArgumentException>(
-            "body property x of ch.softappeal.yass2.generate.reflect.BodyPropertyNotVar must be var"
-        ) { generateBinarySerializer(BodyPropertyNotVar::class) }
-        assertFailsMessage<IllegalStateException>(
-            "class ch.softappeal.yass2.generate.reflect.NoPrimaryConstructor must hava a primary constructor"
-        ) { generateBinarySerializer(NoPrimaryConstructor::class) }
-        assertFailsMessage<IllegalArgumentException>(
-            "primary constructor parameter x of class ch.softappeal.yass2.generate.reflect.ConstructorParameterIsNotProperty must be a property"
-        ) { generateBinarySerializer(ConstructorParameterIsNotProperty::class) }
-        assertFailsMessage<IllegalArgumentException>(
-            "class ch.softappeal.yass2.generate.reflect.NotRegularClass must be concrete"
-        ) { generateBinarySerializer(NotRegularClass::class) }
-        assertFailsMessage<IllegalArgumentException>(
-            "class ch.softappeal.yass2.generate.reflect.AbstractClass must be concrete"
-        ) { generateBinarySerializer(AbstractClass::class) }
-        assertFailsMessage<IllegalStateException>(
-            "enum class ch.softappeal.yass2.generate.reflect.Enum belongs to concreteAndEnumClasses"
-        ) { codeWriter().generateBinarySerializer(listOf(MyEnumEncoder::class), listOf()) }
-        assertFailsMessage<IllegalArgumentException>(
-            "classes [kotlin.Int] are duplicated"
-        ) { codeWriter().generateBinarySerializer(listOf(IntBinaryEncoder::class), listOf(Int::class)) }
-        assertFailsMessage<IllegalArgumentException>(
-            "classes [ch.softappeal.yass2.generate.reflect.Enum] are duplicated"
-        ) {
-            codeWriter().generateBinarySerializer(listOf(), listOf(Enum::class, Enum::class))
-        }
-
-        */
-
         executeTest(
             "body property x of test.BodyPropertyNotVar must be var",
             """
                 package test
                 class BodyPropertyNotVar {
-                    val x: Int = 0
+                    val x: String = ""
                 }
-                @ch.softappeal.yass2.serialize.GenerateSerializer([BodyPropertyNotVar::class], [ch.softappeal.yass2.serialize.binary.IntBinaryEncoder::class], [])
-                val x = 0
+                @ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses(BodyPropertyNotVar::class)
+                @ch.softappeal.yass2.core.serialize.string.StringEncoderObjects()
+                class Generate
             """,
         )
         executeTest(
@@ -115,8 +57,9 @@ class GeneratorTest {
                 class NoPrimaryConstructor {
                     constructor()
                 }
-                @ch.softappeal.yass2.serialize.GenerateSerializer([NoPrimaryConstructor::class], [ch.softappeal.yass2.serialize.binary.IntBinaryEncoder::class], [])
-                val x = 0
+                @ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses(NoPrimaryConstructor::class)
+                @ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects()
+                class Generate
             """,
         )
         executeTest(
@@ -124,8 +67,9 @@ class GeneratorTest {
             """
                 package test
                 class ConstructorParameterIsNotProperty(x: Int)
-                @ch.softappeal.yass2.serialize.GenerateSerializer([ConstructorParameterIsNotProperty::class], [ch.softappeal.yass2.serialize.binary.IntBinaryEncoder::class], [])
-                val x = 0
+                @ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses(ConstructorParameterIsNotProperty::class)
+                @ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects()
+                class Generate
             """,
         )
         executeTest(
@@ -133,8 +77,9 @@ class GeneratorTest {
             """
                 package test
                 interface NotRegularClass
-                @ch.softappeal.yass2.serialize.GenerateSerializer([NotRegularClass::class], [ch.softappeal.yass2.serialize.binary.IntBinaryEncoder::class], [])
-                val x = 0
+                @ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses(NotRegularClass::class)
+                @ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects()
+                class Generate
             """,
         )
         executeTest(
@@ -142,43 +87,39 @@ class GeneratorTest {
             """
                 package test
                 abstract class AbstractClass
-                @ch.softappeal.yass2.serialize.GenerateSerializer([AbstractClass::class], [ch.softappeal.yass2.serialize.binary.IntBinaryEncoder::class], [])
-                val x = 0
+                @ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses(AbstractClass::class)
+                @ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects()
+                class Generate
             """,
         )
         executeTest(
-            "enum class test.MyEnum belongs to enumClasses",
+            "enum class test.Enum belongs to ConcreteAndEnumClasses",
             """
                 package test
-                enum class MyEnum
-                class MyEnumEncoder : ch.softappeal.yass2.serialize.binary.EnumBinaryEncoder<MyEnum>(MyEnum::class, enumValues())
-                @ch.softappeal.yass2.serialize.GenerateSerializer([], [MyEnumEncoder::class], [])
-                val x = 0
+                enum class Enum { One }
+                object MyEnumEncoder : ch.softappeal.yass2.core.serialize.binary.BinaryEncoder<Enum>(Enum::class, {}, { Enum.One })
+                @ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses()
+                @ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects(MyEnumEncoder::class)
+                class Generate
             """,
         )
         executeTest(
-            "classes [Int] are duplicated",
-            """
-                @ch.softappeal.yass2.serialize.GenerateSerializer([Int::class], [ch.softappeal.yass2.serialize.binary.IntBinaryEncoder::class], [])
-                val x = 0
-            """,
-        )
-        executeTest(
-            "classes [MyEnum] are duplicated",
-            """
-                enum class MyEnum
-                @ch.softappeal.yass2.serialize.GenerateSerializer([MyEnum::class, MyEnum::class], [ch.softappeal.yass2.serialize.binary.IntBinaryEncoder::class], [])
-                val x = 0
-            """,
-        )
-        executeTest(
-            "there can be at most one annotation GenerateSerializer in package test",
+            "classes [kotlin.Int] are duplicated",
             """
                 package test
-                @ch.softappeal.yass2.serialize.GenerateSerializer([], [], [])
-                val x1 = 0
-                @ch.softappeal.yass2.serialize.GenerateSerializer([], [], [])
-                val x2 = 0
+                @ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses(Int::class)
+                @ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects(ch.softappeal.yass2.core.serialize.binary.IntBinaryEncoder::class)
+                class Generate
+            """,
+        )
+        executeTest(
+            "classes [test.Enum] are duplicated",
+            """
+                package test
+                enum class Enum
+                @ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses(Enum::class, Enum::class)
+                @ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects()
+                class Generate
             """,
         )
     }

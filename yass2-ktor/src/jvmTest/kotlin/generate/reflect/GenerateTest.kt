@@ -3,7 +3,6 @@ package ch.softappeal.yass2.generate.reflect
 import ch.softappeal.yass2.Generate
 import ch.softappeal.yass2.Services
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
-import ch.softappeal.yass2.generate.GENERATED_BY_YASS_EXPECT
 import kotlin.io.path.Path
 import kotlin.io.path.readText
 import kotlin.test.Test
@@ -28,7 +27,7 @@ class GenerateTest {
             Path("src/jvmTest/kotlin/generate/reflect/$GENERATED_BY_YASS.kt").readText() +
                 """
 
-                    /* save manually as file 'GeneratedByYassExpect.kt' in common code; needed due to https://github.com/google/ksp/issues/2233
+                    /* save manually as file 'GeneratedByYass.kt' in common code; needed due to https://github.com/google/ksp/issues/2233
 
                     @file:Suppress(
                         "unused",
@@ -90,7 +89,7 @@ class GenerateTest {
 
         assertTrue(
             ksp.endsWith(
-                Path("src/commonTest/kotlin/$GENERATED_BY_YASS_EXPECT.kt").readText() +
+                Path("src/commonTest/kotlin/$GENERATED_BY_YASS.kt").readText() +
                     """
 
                         */

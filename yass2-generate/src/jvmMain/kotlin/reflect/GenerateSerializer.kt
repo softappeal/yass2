@@ -39,9 +39,12 @@ private data class Classes(
     val concreteClasses: List<KClass<*>>,
 )
 
+private fun KClass<*>.isEnum() = java.isEnum
+
 private fun getClasses(encoderObjects: List<KClass<*>>, concreteAndEnumClasses: List<KClass<*>>): Classes {
-    val encoderTypes = encoderObjects.map { it.supertypes.first().arguments.first().type!!.classifier as KClass<*> }
-    fun KClass<*>.isEnum() = java.isEnum
+    val encoderTypes = encoderObjects.map {
+        it.supertypes.first().arguments.first().type!!.classifier as KClass<*>
+    }
     val enumClasses = concreteAndEnumClasses.filter { it.isEnum() }.map { @Suppress("UNCHECKED_CAST") (it as KClass<Enum<*>>) }
     val concreteClasses = concreteAndEnumClasses.filterNot { it.isEnum() }
     val baseClasses = encoderTypes + enumClasses
@@ -74,9 +77,8 @@ private class Properties<P : Property>(klass: KClass<*>, createProperty: (proper
             .sortedBy { it.name }
             .map { createProperty(it) }
         parameter = buildList {
-            val primaryConstructor = klass.primaryConstructor ?: error(
-                "class ${klass.qualifiedName} must hava a primary constructor"
-            )
+            val primaryConstructor =
+                klass.primaryConstructor ?: error("class ${klass.qualifiedName} must hava a primary constructor")
             val propertyNames = properties.map { it.name }
             val parameterNames = primaryConstructor.valueParameters.map { it.name }
             parameterNames.forEach { parameterName ->
@@ -90,7 +92,9 @@ private class Properties<P : Property>(klass: KClass<*>, createProperty: (proper
             properties
                 .filter { it !in parameter }
                 .forEach { property ->
-                    require(property.mutable) { "body property ${property.name} of ${klass.qualifiedName} must be var" }
+                    require(property.mutable) {
+                        "body property ${property.name} of ${klass.qualifiedName} must be var"
+                    }
                     add(property)
                 }
         }
@@ -109,9 +113,12 @@ public fun CodeWriter.generateBinarySerializer(
         private val encoderId = if (classifier == List::class) BINARY_LIST_ENCODER_ID else {
             val baseClassIndex = baseClasses.indexOfFirst { it == classifier }
             if (baseClassIndex >= 0) baseClassIndex + BINARY_FIRST_ENCODER_ID else {
+                fun KClass<*>.hasSuperCLass(superClass: KClass<*>) =
+                    superclasses.contains(superClass)
+
                 val concreteClassIndex = concreteClasses.indexOfFirst { it == classifier }
                 if (
-                    concreteClassIndex >= 0 && concreteClasses.none { it.superclasses.contains(concreteClasses[concreteClassIndex]) }
+                    concreteClassIndex >= 0 && concreteClasses.none { it.hasSuperCLass(concreteClasses[concreteClassIndex]) }
                 ) concreteClassIndex + baseClasses.size + BINARY_FIRST_ENCODER_ID else BINARY_NO_ENCODER_ID
             }
         }
@@ -203,7 +210,10 @@ public fun CodeWriter.generateStringEncoders(
     }
 
     writeLine()
-    writeNestedLine("public fun createStringEncoders(): List<${StringEncoder::class.qualifiedName}<*>> = listOf(", ")") {
+    writeNestedLine(
+        "public fun createStringEncoders(): List<${StringEncoder::class.qualifiedName}<*>> = listOf(",
+        ")",
+    ) {
         encoderObjects.forEach { type ->
             @OptIn(NotJsPlatform::class)
             if (type == DoubleStringEncoder::class) writeNestedLine("@OptIn(${NotJsPlatform::class.qualifiedName}::class)")

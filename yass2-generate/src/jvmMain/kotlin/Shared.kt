@@ -90,4 +90,3 @@ public class CodeWriter private constructor(private val appendable: Appendable, 
 }
 
 public const val GENERATED_BY_YASS: String = "GeneratedByYass"
-public const val GENERATED_BY_YASS_EXPECT: String = "${GENERATED_BY_YASS}Expect"
