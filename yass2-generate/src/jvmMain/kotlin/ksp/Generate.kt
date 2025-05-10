@@ -13,6 +13,7 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
+import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
@@ -21,6 +22,8 @@ import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSTypeParameter
 import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.Variance
+import kotlin.io.path.Path
+import kotlin.io.path.writeText
 import kotlin.reflect.KClass
 
 internal fun KSDeclaration.qualifiedName() = qualifiedName!!.asString()
@@ -140,19 +143,16 @@ private class Yass2Processor(private val environment: SymbolProcessorEnvironment
                     }
                 }
 
-                if (expectStringBuilder.isNotEmpty()) with(codeWriter) {
-                    writeLine()
-                    writeNestedLine(
-                        // TODO: Common/intermediate (= none-platform) code cannot reference generated code in the compilation of platform code.
-                        //       Generated codes are treated as platform code (you'll have to use expect/actual).
-                        "/* save manually as file '$GENERATED_BY_YASS.kt' in common code; needed due to https://github.com/google/ksp/issues/2233",
-                        "*/",
-                    ) {
-                        writeLine()
-                        writer.appendPackage(packageName)
-                        write(expectStringBuilder.toString())
-                        writeLine()
-                    }
+                if (expectStringBuilder.isNotEmpty()) {
+                    // TODO: Needed due to https://github.com/google/ksp/issues/2233 .
+                    //       Common/intermediate (= none-platform) code cannot reference generated code in the compilation of platform code.
+                    //       Generated codes are treated as platform code (you'll have to use expect/actual).
+                    val declarationPath = Path((declarations.first().location as FileLocation).filePath)
+                    declarationPath.parent.resolve("$GENERATED_BY_YASS.kt")
+                        .writeText(StringBuilder().apply {
+                            appendPackage(packageName)
+                            append(expectStringBuilder)
+                        })
                 }
             }
         }

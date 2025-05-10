@@ -39,12 +39,12 @@ class PlatformTest {
         }
 
         assertEquals(
-            Path("src/jvmTest/kotlin/generate/ksp/reflect/$GENERATED_BY_YASS.kt").readText(),
-            Path("build/generated/ksp/jvm/jvmTest/kotlin/ch/softappeal/yass2/generate/ksp/$GENERATED_BY_YASS.kt").readText()
+            Path("src/jvmTest/kotlin/generate/ksp/reflect/$GENERATED_BY_YASS.kt").readText()
                 .replace(
-                    "package ch.softappeal.yass2.generate.ksp",
                     "package ch.softappeal.yass2.generate.ksp.reflect",
+                    "package ch.softappeal.yass2.generate.ksp",
                 ),
+            Path("build/generated/ksp/jvm/jvmTest/kotlin/ch/softappeal/yass2/generate/ksp/$GENERATED_BY_YASS.kt").readText()
         )
     }
 }
