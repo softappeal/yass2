@@ -30,22 +30,15 @@ private val KSClassDeclaration.withTypeParameters get() = "<${typeParameters.joi
 private val KSClassDeclaration.withTypes get() = "${qualifiedName()}${if (typeParameters.isEmpty()) "" else withTypeParameters}"
 private val KSClassDeclaration.types get() = if (typeParameters.isEmpty()) "" else " $withTypeParameters"
 
-internal fun CodeWriter.generateProxy(service: KSClassDeclaration, expectWriter: CodeWriter?) {
+internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
     require(service.classKind == ClassKind.INTERFACE) { "${service.qualifiedName()} must be an interface" }
 
     val functions = service.getAllFunctions().toList()
         .filter { it.name !in AnyFunctions }
         .sortMethods({ service.qualifiedName() }, { name }, { Modifier.SUSPEND in modifiers })
 
-    expectWriter?.let {
-        it.writeLine()
-        it.writeNestedLine("public expect fun${service.types} ${service.withTypes}.proxy(") {
-            writeNestedLine("intercept: $CSY.core.Interceptor,")
-        }
-        it.writeNestedLine("): ${service.withTypes}")
-    }
     writeLine()
-    writeNestedLine("public ${expectWriter.actual()}fun${service.types} ${service.withTypes}.proxy(") {
+    writeNestedLine("public fun${service.types} ${service.withTypes}.proxy(") {
         writeNestedLine("intercept: $CSY.core.Interceptor,")
     }
     writeNestedLine("): ${service.withTypes} = object : ${service.withTypes} {", "}") {
@@ -66,15 +59,8 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration, expectWriter:
         }
     }
 
-    expectWriter?.let {
-        it.writeLine()
-        it.writeNestedLine("public expect fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.proxy(") {
-            writeNestedLine("tunnel: $CSY.core.remote.Tunnel,")
-        }
-        it.writeNestedLine("): ${service.withTypes}")
-    }
     writeLine()
-    writeNestedLine("public ${expectWriter.actual()}fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.proxy(") {
+    writeNestedLine("public fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.proxy(") {
         writeNestedLine("tunnel: $CSY.core.remote.Tunnel,")
     }
     writeNestedLine("): ${service.withTypes} =") {
@@ -95,15 +81,8 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration, expectWriter:
         }
     }
 
-    expectWriter?.let {
-        it.writeLine()
-        it.writeNestedLine("public expect fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.service(") {
-            writeNestedLine("implementation: ${service.withTypes},")
-        }
-        it.writeNestedLine("): ${Service::class.qualifiedName}")
-    }
     writeLine()
-    writeNestedLine("public ${expectWriter.actual()}fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.service(") {
+    writeNestedLine("public fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.service(") {
         writeNestedLine("implementation: ${service.withTypes},")
     }
     writeNestedLine("): ${Service::class.qualifiedName} =") {

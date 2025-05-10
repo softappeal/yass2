@@ -8,7 +8,6 @@ import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import ch.softappeal.yass2.generate.appendPackage
-import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
@@ -60,33 +59,13 @@ internal fun KSTypeReference.toType(): String {
     return appendable.toString()
 }
 
-@Suppress("SpellCheckingInspection")
-private val Platforms = setOf(
-    "jvm", // JVM
-    "js", // JavaScript
-    "wasmJs", "wasmWasi",// WebAssembly
-    "macosX64", "macosArm64", // macOS
-    "iosArm64", "iosX64", "iosSimulatorArm64", // iOS
-    "linuxX64", "linuxArm64", // Linux
-    "watchosArm64", "watchosX64", "watchosSimulatorArm64", "watchosDeviceArm64", // watchOS
-    "tvosArm64", "tvosX64", "tvosSimulatorArm64", // tvOS
-    "mingwX64", // Windows
-)
-
-private fun KSDeclaration.isPlatformCode(): Boolean {
-    val filePath = containingFile!!.filePath
-    return Platforms.any { platform -> filePath.contains("/${platform}Main/") || filePath.contains("/${platform}Test/") }
-}
-
-internal fun CodeWriter?.actual() = if (this == null) "" else "actual "
-
 private fun KSClassDeclaration.annotationOrNull(annotation: KClass<*>) =
     annotations.firstOrNull { it.annotationType.resolve().declaration.qualifiedName() == annotation.qualifiedName }
 
 @Suppress("UNCHECKED_CAST")
 private fun KSAnnotation.value() = arguments.first { it.name!!.asString() == "value" }.value as List<KSType>
 
-private class Yass2Processor(private val environment: SymbolProcessorEnvironment) : SymbolProcessor {
+private class Yass2Processor(@Suppress("unused") environment: SymbolProcessorEnvironment) : SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
 
         val packageNameToDeclarations = buildMap {
@@ -103,58 +82,41 @@ private class Yass2Processor(private val environment: SymbolProcessorEnvironment
         }
 
         packageNameToDeclarations.forEach { packageName, declarations ->
-            @OptIn(InternalApi::class)
-            environment.codeGenerator.createNewFile(
-                Dependencies.ALL_FILES, // we want to be on the safe side
-                packageName,
-                GENERATED_BY_YASS,
-            ).writer().use { writer ->
-                writer.appendPackage(packageName)
-                val codeWriter = CodeWriter(writer)
-                val expectStringBuilder = StringBuilder()
-                val expectWriter = if (declarations.any { !it.isPlatformCode() }) CodeWriter(expectStringBuilder) else null
+            val code = StringBuilder()
+            code.appendPackage(packageName)
+            @OptIn(InternalApi::class) val writer = CodeWriter(code)
 
-                buildList {
+            buildList {
+                declarations.forEach { declaration ->
+                    declaration.annotationOrNull(Proxy::class)?.let { add(declaration) }
+                }
+            }.sortedBy { it.name }
+                .forEach { declaration -> writer.generateProxy(declaration) }
+
+            fun declarationsAnnotationOrNull(annotation: KClass<*>): KSAnnotation? {
+                val annotations = buildList {
                     declarations.forEach { declaration ->
-                        declaration.annotationOrNull(Proxy::class)?.let { add(declaration) }
-                    }
-                }.sortedBy { it.name }
-                    .forEach { declaration -> codeWriter.generateProxy(declaration, expectWriter) }
-
-                fun declarationsAnnotationOrNull(annotation: KClass<*>): KSAnnotation? {
-                    val annotations = buildList {
-                        declarations.forEach { declaration ->
-                            declaration.annotationOrNull(annotation)?.let { annotation -> add(annotation) }
-                        }
-                    }
-                    require(annotations.size <= 1) {
-                        "there can be at most one annotation '${annotation.qualifiedName}' in package '$packageName'"
-                    }
-                    return annotations.firstOrNull()
-                }
-
-                declarationsAnnotationOrNull(ConcreteAndEnumClasses::class)?.let { annotation ->
-                    val concreteAndEnumClasses = annotation.value()
-                    declarationsAnnotationOrNull(BinaryEncoderObjects::class)?.let { annotation ->
-                        codeWriter.generateBinarySerializer(annotation.value(), concreteAndEnumClasses, expectWriter)
-                    }
-                    declarationsAnnotationOrNull(StringEncoderObjects::class)?.let { annotation ->
-                        codeWriter.generateStringEncoders(annotation.value(), concreteAndEnumClasses, expectWriter)
+                        declaration.annotationOrNull(annotation)?.let { annotation -> add(annotation) }
                     }
                 }
+                require(annotations.size <= 1) {
+                    "there can be at most one annotation '${annotation.qualifiedName}' in package '$packageName'"
+                }
+                return annotations.firstOrNull()
+            }
 
-                if (expectStringBuilder.isNotEmpty()) {
-                    // TODO: Needed due to https://github.com/google/ksp/issues/2233 .
-                    //       Common/intermediate (= none-platform) code cannot reference generated code in the compilation of platform code.
-                    //       Generated codes are treated as platform code (you'll have to use expect/actual).
-                    val declarationPath = Path((declarations.first().location as FileLocation).filePath)
-                    declarationPath.parent.resolve("$GENERATED_BY_YASS.kt")
-                        .writeText(StringBuilder().apply {
-                            appendPackage(packageName)
-                            append(expectStringBuilder)
-                        })
+            declarationsAnnotationOrNull(ConcreteAndEnumClasses::class)?.let { annotation ->
+                val concreteAndEnumClasses = annotation.value()
+                declarationsAnnotationOrNull(BinaryEncoderObjects::class)?.let { annotation ->
+                    writer.generateBinarySerializer(annotation.value(), concreteAndEnumClasses)
+                }
+                declarationsAnnotationOrNull(StringEncoderObjects::class)?.let { annotation ->
+                    writer.generateStringEncoders(annotation.value(), concreteAndEnumClasses)
                 }
             }
+
+            val declarationPath = Path((declarations.first().location as FileLocation).filePath)
+            declarationPath.parent.resolve("$GENERATED_BY_YASS.kt").writeText(code) // see https://github.com/google/ksp/issues/2233
         }
         return emptyList()
     }

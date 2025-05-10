@@ -82,6 +82,7 @@ private class Properties<P : Property>(type: KSType, createProperty: (property: 
             val primaryConstructor =
                 klass.primaryConstructor ?: error("class ${klass.qualifiedName()} must hava a primary constructor")
             val parameters = primaryConstructor.parameters
+
             parameters.forEach { parameter ->
                 require(parameter.isVal || parameter.isVar) {
                     "primary constructor parameter ${parameter.name!!.asString()} of class ${klass.qualifiedName()} must be a property"
@@ -106,7 +107,6 @@ private class Properties<P : Property>(type: KSType, createProperty: (property: 
 internal fun CodeWriter.generateBinarySerializer(
     encoderObjects: List<KSType>,
     concreteAndEnumClasses: List<KSType>,
-    expectWriter: CodeWriter?,
 ) {
     val (baseClasses, enumClasses, concreteClasses) = getClasses(encoderObjects, concreteAndEnumClasses)
 
@@ -131,50 +131,44 @@ internal fun CodeWriter.generateBinarySerializer(
             "write${suffix()}($reference${if (encoderId == BINARY_NO_ENCODER_ID) "" else ", $encoderId"})"
     }
 
-    expectWriter?.let {
-        it.writeLine()
-        it.writeNestedLine("public expect fun createBinarySerializer(): ${BinarySerializer::class.qualifiedName}")
-    }
     writeLine()
-    writeNestedLine("public ${expectWriter.actual()}fun createBinarySerializer(): ${BinarySerializer::class.qualifiedName} =") {
-        writeNestedLine("object : ${BinarySerializer::class.qualifiedName}() {", "}") {
-            writeNestedLine("init {", "}") {
-                writeNestedLine("initialize(", ")") {
-                    encoderObjects.forEach { type ->
-                        writeNestedLine("${type.qualifiedName},")
+    writeNestedLine("public object BinarySerializer : ${BinarySerializer::class.qualifiedName}() {", "}") {
+        writeNestedLine("init {", "}") {
+            writeNestedLine("initialize(", ")") {
+                encoderObjects.forEach { type ->
+                    writeNestedLine("${type.qualifiedName},")
+                }
+                enumClasses.forEach { type ->
+                    writeNestedLine("${EnumBinaryEncoder::class.qualifiedName}(", "),") {
+                        writeNestedLine("${type.qualifiedName}::class, enumValues(),")
                     }
-                    enumClasses.forEach { type ->
-                        writeNestedLine("${EnumBinaryEncoder::class.qualifiedName}(", "),") {
-                            writeNestedLine("${type.qualifiedName}::class, enumValues(),")
+                }
+                concreteClasses.forEach { type ->
+                    writeNestedLine("${BinaryEncoder::class.qualifiedName}(", "),") {
+                        writeNestedLine("${type.qualifiedName}::class,")
+                        val properties = Properties(type) { BinaryProperty(it) }
+                        writeNestedLine("{ i ->", "},") {
+                            properties.all.forEach { property ->
+                                writeNestedLine(property.writeObject("i.${property.name}"))
+                            }
                         }
-                    }
-                    concreteClasses.forEach { type ->
-                        writeNestedLine("${BinaryEncoder::class.qualifiedName}(", "),") {
-                            writeNestedLine("${type.qualifiedName}::class,")
-                            val properties = Properties(type) { BinaryProperty(it) }
-                            writeNestedLine("{ i ->", "},") {
-                                properties.all.forEach { property ->
-                                    writeNestedLine(property.writeObject("i.${property.name}"))
+                        writeNestedLine("{", "}") {
+                            fun BinaryProperty.readObjectWithCast() = "${readObject()} as ${returnType.toType()}"
+                            writeNestedLine(
+                                "${type.qualifiedName}(",
+                                ")${if (properties.body.isEmpty()) "" else ".apply {"}",
+                            ) {
+                                properties.parameter.forEach { property ->
+                                    writeNestedLine("${property.readObjectWithCast()},")
                                 }
                             }
-                            writeNestedLine("{", "}") {
-                                fun BinaryProperty.readObjectWithCast() = "${readObject()} as ${returnType.toType()}"
-                                writeNestedLine(
-                                    "${type.qualifiedName}(",
-                                    ")${if (properties.body.isEmpty()) "" else ".apply {"}",
-                                ) {
-                                    properties.parameter.forEach { property ->
-                                        writeNestedLine("${property.readObjectWithCast()},")
+                            if (properties.body.isNotEmpty()) {
+                                nested {
+                                    properties.body.forEach { property ->
+                                        writeNestedLine("${property.name} = ${property.readObjectWithCast()}")
                                     }
                                 }
-                                if (properties.body.isNotEmpty()) {
-                                    nested {
-                                        properties.body.forEach { property ->
-                                            writeNestedLine("${property.name} = ${property.readObjectWithCast()}")
-                                        }
-                                    }
-                                    writeNestedLine("}")
-                                }
+                                writeNestedLine("}")
                             }
                         }
                     }
@@ -187,7 +181,6 @@ internal fun CodeWriter.generateBinarySerializer(
 internal fun CodeWriter.generateStringEncoders(
     encoderObjects: List<KSType>,
     concreteAndEnumClasses: List<KSType>,
-    expectWriter: CodeWriter?,
 ) {
     val (baseClasses, enumClasses, concreteClasses) = getClasses(encoderObjects, concreteAndEnumClasses)
 
@@ -216,15 +209,8 @@ internal fun CodeWriter.generateStringEncoders(
         }"
     }
 
-    expectWriter?.let {
-        it.writeLine()
-        it.writeNestedLine("public expect fun createStringEncoders(): List<${StringEncoder::class.qualifiedName}<*>>")
-    }
     writeLine()
-    writeNestedLine(
-        "public ${expectWriter.actual()}fun createStringEncoders(): List<${StringEncoder::class.qualifiedName}<*>> = listOf(",
-        ")",
-    ) {
+    writeNestedLine("public val StringEncoders: List<${StringEncoder::class.qualifiedName}<*>> = listOf(", ")") {
         encoderObjects.forEach { type ->
             @OptIn(NotJsPlatform::class)
             if (type.qualifiedName == DoubleStringEncoder::class.qualifiedName) writeNestedLine("@OptIn(${NotJsPlatform::class.qualifiedName}::class)")

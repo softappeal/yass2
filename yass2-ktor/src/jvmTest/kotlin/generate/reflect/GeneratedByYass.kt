@@ -200,220 +200,219 @@ public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.Echo>.s
         }
     }
 
-public fun createBinarySerializer(): ch.softappeal.yass2.core.serialize.binary.BinarySerializer =
-    object : ch.softappeal.yass2.core.serialize.binary.BinarySerializer() {
-        init {
-            initialize(
-                ch.softappeal.yass2.core.serialize.binary.BooleanBinaryEncoder,
-                ch.softappeal.yass2.core.serialize.binary.IntBinaryEncoder,
-                ch.softappeal.yass2.core.serialize.binary.LongBinaryEncoder,
-                ch.softappeal.yass2.core.serialize.binary.DoubleBinaryEncoder,
-                ch.softappeal.yass2.core.serialize.binary.StringBinaryEncoder,
-                ch.softappeal.yass2.core.serialize.binary.ByteArrayBinaryEncoder,
-                ch.softappeal.yass2.core.serialize.binary.EnumBinaryEncoder(
-                    ch.softappeal.yass2.Gender::class, enumValues(),
-                ),
-                ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
-                    ch.softappeal.yass2.A::class,
-                    { i ->
-                        writeRequired(i.a, 3)
-                    },
-                    {
-                        ch.softappeal.yass2.A(
-                            readRequired(3) as kotlin.Int,
-                        )
+public object BinarySerializer : ch.softappeal.yass2.core.serialize.binary.BinarySerializer() {
+    init {
+        initialize(
+            ch.softappeal.yass2.core.serialize.binary.BooleanBinaryEncoder,
+            ch.softappeal.yass2.core.serialize.binary.IntBinaryEncoder,
+            ch.softappeal.yass2.core.serialize.binary.LongBinaryEncoder,
+            ch.softappeal.yass2.core.serialize.binary.DoubleBinaryEncoder,
+            ch.softappeal.yass2.core.serialize.binary.StringBinaryEncoder,
+            ch.softappeal.yass2.core.serialize.binary.ByteArrayBinaryEncoder,
+            ch.softappeal.yass2.core.serialize.binary.EnumBinaryEncoder(
+                ch.softappeal.yass2.Gender::class, enumValues(),
+            ),
+            ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
+                ch.softappeal.yass2.A::class,
+                { i ->
+                    writeRequired(i.a, 3)
+                },
+                {
+                    ch.softappeal.yass2.A(
+                        readRequired(3) as kotlin.Int,
+                    )
+                }
+            ),
+            ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
+                ch.softappeal.yass2.B::class,
+                { i ->
+                    writeRequired(i.a, 3)
+                    writeRequired(i.b, 3)
+                },
+                {
+                    ch.softappeal.yass2.B(
+                        readRequired(3) as kotlin.Int,
+                        readRequired(3) as kotlin.Int,
+                    )
+                }
+            ),
+            ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
+                ch.softappeal.yass2.Poly::class,
+                { i ->
+                    writeObject(i.a)
+                    writeRequired(i.b, 10)
+                },
+                {
+                    ch.softappeal.yass2.Poly(
+                        readObject() as ch.softappeal.yass2.A,
+                        readRequired(10) as ch.softappeal.yass2.B,
+                    )
+                }
+            ),
+            ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
+                ch.softappeal.yass2.ManyProperties::class,
+                { i ->
+                    writeRequired(i.h, 3)
+                    writeRequired(i.d, 3)
+                    writeRequired(i.f, 3)
+                    writeRequired(i.g, 3)
+                    writeRequired(i.b, 3)
+                    writeRequired(i.a, 3)
+                    writeRequired(i.c, 3)
+                    writeRequired(i.e, 3)
+                    writeRequired(i.i, 3)
+                    writeRequired(i.j, 3)
+                },
+                {
+                    ch.softappeal.yass2.ManyProperties(
+                        readRequired(3) as kotlin.Int,
+                        readRequired(3) as kotlin.Int,
+                        readRequired(3) as kotlin.Int,
+                        readRequired(3) as kotlin.Int,
+                        readRequired(3) as kotlin.Int,
+                    ).apply {
+                        a = readRequired(3) as kotlin.Int
+                        c = readRequired(3) as kotlin.Int
+                        e = readRequired(3) as kotlin.Int
+                        i = readRequired(3) as kotlin.Int
+                        j = readRequired(3) as kotlin.Int
                     }
-                ),
-                ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
-                    ch.softappeal.yass2.B::class,
-                    { i ->
-                        writeRequired(i.a, 3)
-                        writeRequired(i.b, 3)
-                    },
-                    {
-                        ch.softappeal.yass2.B(
-                            readRequired(3) as kotlin.Int,
-                            readRequired(3) as kotlin.Int,
-                        )
+                }
+            ),
+            ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
+                ch.softappeal.yass2.DivideByZeroException::class,
+                { i ->
+                },
+                {
+                    ch.softappeal.yass2.DivideByZeroException(
+                    )
+                }
+            ),
+            ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
+                ch.softappeal.yass2.ThrowableFake::class,
+                { i ->
+                    writeOptional(i.cause, 6)
+                    writeRequired(i.message, 6)
+                },
+                {
+                    ch.softappeal.yass2.ThrowableFake(
+                        readOptional(6) as kotlin.String?,
+                        readRequired(6) as kotlin.String,
+                    )
+                }
+            ),
+            ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
+                ch.softappeal.yass2.Types::class,
+                { i ->
+                    writeRequired(i.boolean, 2)
+                    writeRequired(i.int, 3)
+                    writeRequired(i.long, 4)
+                    writeRequired(i.double, 5)
+                    writeRequired(i.string, 6)
+                    writeRequired(i.bytes, 7)
+                    writeRequired(i.gender, 8)
+                    writeRequired(i.list, 1)
+                    writeRequired(i.b, 10)
+                    writeOptional(i.booleanOptional, 2)
+                    writeOptional(i.intOptional, 3)
+                    writeOptional(i.longOptional, 4)
+                    writeOptional(i.doubleOptional, 5)
+                    writeOptional(i.stringOptional, 6)
+                    writeOptional(i.bytesOptional, 7)
+                    writeOptional(i.genderOptional, 8)
+                    writeOptional(i.listOptional, 1)
+                    writeOptional(i.bOptional, 10)
+                },
+                {
+                    ch.softappeal.yass2.Types(
+                        readRequired(2) as kotlin.Boolean,
+                        readRequired(3) as kotlin.Int,
+                        readRequired(4) as kotlin.Long,
+                        readRequired(5) as kotlin.Double,
+                        readRequired(6) as kotlin.String,
+                        readRequired(7) as kotlin.ByteArray,
+                        readRequired(8) as ch.softappeal.yass2.Gender,
+                        readRequired(1) as kotlin.collections.List<kotlin.Any?>,
+                        readRequired(10) as ch.softappeal.yass2.B,
+                        readOptional(2) as kotlin.Boolean?,
+                        readOptional(3) as kotlin.Int?,
+                        readOptional(4) as kotlin.Long?,
+                        readOptional(5) as kotlin.Double?,
+                        readOptional(6) as kotlin.String?,
+                        readOptional(7) as kotlin.ByteArray?,
+                        readOptional(8) as ch.softappeal.yass2.Gender?,
+                        readOptional(1) as kotlin.collections.List<kotlin.Any?>?,
+                        readOptional(10) as ch.softappeal.yass2.B?,
+                    )
+                }
+            ),
+            ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
+                ch.softappeal.yass2.core.remote.Request::class,
+                { i ->
+                    writeRequired(i.service, 6)
+                    writeRequired(i.function, 6)
+                    writeRequired(i.parameters, 1)
+                },
+                {
+                    ch.softappeal.yass2.core.remote.Request(
+                        readRequired(6) as kotlin.String,
+                        readRequired(6) as kotlin.String,
+                        readRequired(1) as kotlin.collections.List<kotlin.Any?>,
+                    )
+                }
+            ),
+            ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
+                ch.softappeal.yass2.core.remote.ValueReply::class,
+                { i ->
+                    writeObject(i.value)
+                },
+                {
+                    ch.softappeal.yass2.core.remote.ValueReply(
+                        readObject() as kotlin.Any?,
+                    )
+                }
+            ),
+            ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
+                ch.softappeal.yass2.core.remote.ExceptionReply::class,
+                { i ->
+                    writeObject(i.exception)
+                },
+                {
+                    ch.softappeal.yass2.core.remote.ExceptionReply(
+                        readObject() as kotlin.Exception,
+                    )
+                }
+            ),
+            ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
+                ch.softappeal.yass2.coroutines.session.Packet::class,
+                { i ->
+                    writeRequired(i.requestNumber, 3)
+                    writeObject(i.message)
+                },
+                {
+                    ch.softappeal.yass2.coroutines.session.Packet(
+                        readRequired(3) as kotlin.Int,
+                        readObject() as ch.softappeal.yass2.core.remote.Message,
+                    )
+                }
+            ),
+            ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
+                ch.softappeal.yass2.BodyProperty::class,
+                { i ->
+                    writeObject(i.body)
+                },
+                {
+                    ch.softappeal.yass2.BodyProperty(
+                    ).apply {
+                        body = readObject() as kotlin.Any?
                     }
-                ),
-                ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
-                    ch.softappeal.yass2.Poly::class,
-                    { i ->
-                        writeObject(i.a)
-                        writeRequired(i.b, 10)
-                    },
-                    {
-                        ch.softappeal.yass2.Poly(
-                            readObject() as ch.softappeal.yass2.A,
-                            readRequired(10) as ch.softappeal.yass2.B,
-                        )
-                    }
-                ),
-                ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
-                    ch.softappeal.yass2.ManyProperties::class,
-                    { i ->
-                        writeRequired(i.h, 3)
-                        writeRequired(i.d, 3)
-                        writeRequired(i.f, 3)
-                        writeRequired(i.g, 3)
-                        writeRequired(i.b, 3)
-                        writeRequired(i.a, 3)
-                        writeRequired(i.c, 3)
-                        writeRequired(i.e, 3)
-                        writeRequired(i.i, 3)
-                        writeRequired(i.j, 3)
-                    },
-                    {
-                        ch.softappeal.yass2.ManyProperties(
-                            readRequired(3) as kotlin.Int,
-                            readRequired(3) as kotlin.Int,
-                            readRequired(3) as kotlin.Int,
-                            readRequired(3) as kotlin.Int,
-                            readRequired(3) as kotlin.Int,
-                        ).apply {
-                            a = readRequired(3) as kotlin.Int
-                            c = readRequired(3) as kotlin.Int
-                            e = readRequired(3) as kotlin.Int
-                            i = readRequired(3) as kotlin.Int
-                            j = readRequired(3) as kotlin.Int
-                        }
-                    }
-                ),
-                ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
-                    ch.softappeal.yass2.DivideByZeroException::class,
-                    { i ->
-                    },
-                    {
-                        ch.softappeal.yass2.DivideByZeroException(
-                        )
-                    }
-                ),
-                ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
-                    ch.softappeal.yass2.ThrowableFake::class,
-                    { i ->
-                        writeOptional(i.cause, 6)
-                        writeRequired(i.message, 6)
-                    },
-                    {
-                        ch.softappeal.yass2.ThrowableFake(
-                            readOptional(6) as kotlin.String?,
-                            readRequired(6) as kotlin.String,
-                        )
-                    }
-                ),
-                ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
-                    ch.softappeal.yass2.Types::class,
-                    { i ->
-                        writeRequired(i.boolean, 2)
-                        writeRequired(i.int, 3)
-                        writeRequired(i.long, 4)
-                        writeRequired(i.double, 5)
-                        writeRequired(i.string, 6)
-                        writeRequired(i.bytes, 7)
-                        writeRequired(i.gender, 8)
-                        writeRequired(i.list, 1)
-                        writeRequired(i.b, 10)
-                        writeOptional(i.booleanOptional, 2)
-                        writeOptional(i.intOptional, 3)
-                        writeOptional(i.longOptional, 4)
-                        writeOptional(i.doubleOptional, 5)
-                        writeOptional(i.stringOptional, 6)
-                        writeOptional(i.bytesOptional, 7)
-                        writeOptional(i.genderOptional, 8)
-                        writeOptional(i.listOptional, 1)
-                        writeOptional(i.bOptional, 10)
-                    },
-                    {
-                        ch.softappeal.yass2.Types(
-                            readRequired(2) as kotlin.Boolean,
-                            readRequired(3) as kotlin.Int,
-                            readRequired(4) as kotlin.Long,
-                            readRequired(5) as kotlin.Double,
-                            readRequired(6) as kotlin.String,
-                            readRequired(7) as kotlin.ByteArray,
-                            readRequired(8) as ch.softappeal.yass2.Gender,
-                            readRequired(1) as kotlin.collections.List<kotlin.Any?>,
-                            readRequired(10) as ch.softappeal.yass2.B,
-                            readOptional(2) as kotlin.Boolean?,
-                            readOptional(3) as kotlin.Int?,
-                            readOptional(4) as kotlin.Long?,
-                            readOptional(5) as kotlin.Double?,
-                            readOptional(6) as kotlin.String?,
-                            readOptional(7) as kotlin.ByteArray?,
-                            readOptional(8) as ch.softappeal.yass2.Gender?,
-                            readOptional(1) as kotlin.collections.List<kotlin.Any?>?,
-                            readOptional(10) as ch.softappeal.yass2.B?,
-                        )
-                    }
-                ),
-                ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
-                    ch.softappeal.yass2.core.remote.Request::class,
-                    { i ->
-                        writeRequired(i.service, 6)
-                        writeRequired(i.function, 6)
-                        writeRequired(i.parameters, 1)
-                    },
-                    {
-                        ch.softappeal.yass2.core.remote.Request(
-                            readRequired(6) as kotlin.String,
-                            readRequired(6) as kotlin.String,
-                            readRequired(1) as kotlin.collections.List<kotlin.Any?>,
-                        )
-                    }
-                ),
-                ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
-                    ch.softappeal.yass2.core.remote.ValueReply::class,
-                    { i ->
-                        writeObject(i.value)
-                    },
-                    {
-                        ch.softappeal.yass2.core.remote.ValueReply(
-                            readObject() as kotlin.Any?,
-                        )
-                    }
-                ),
-                ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
-                    ch.softappeal.yass2.core.remote.ExceptionReply::class,
-                    { i ->
-                        writeObject(i.exception)
-                    },
-                    {
-                        ch.softappeal.yass2.core.remote.ExceptionReply(
-                            readObject() as kotlin.Exception,
-                        )
-                    }
-                ),
-                ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
-                    ch.softappeal.yass2.coroutines.session.Packet::class,
-                    { i ->
-                        writeRequired(i.requestNumber, 3)
-                        writeObject(i.message)
-                    },
-                    {
-                        ch.softappeal.yass2.coroutines.session.Packet(
-                            readRequired(3) as kotlin.Int,
-                            readObject() as ch.softappeal.yass2.core.remote.Message,
-                        )
-                    }
-                ),
-                ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
-                    ch.softappeal.yass2.BodyProperty::class,
-                    { i ->
-                        writeObject(i.body)
-                    },
-                    {
-                        ch.softappeal.yass2.BodyProperty(
-                        ).apply {
-                            body = readObject() as kotlin.Any?
-                        }
-                    }
-                ),
-            )
-        }
+                }
+            ),
+        )
     }
+}
 
-public fun createStringEncoders(): List<ch.softappeal.yass2.core.serialize.string.StringEncoder<*>> = listOf(
+public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.StringEncoder<*>> = listOf(
     ch.softappeal.yass2.core.serialize.string.IntStringEncoder,
     ch.softappeal.yass2.core.serialize.string.LongStringEncoder,
     @OptIn(ch.softappeal.yass2.core.NotJsPlatform::class)

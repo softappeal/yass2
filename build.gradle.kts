@@ -162,14 +162,6 @@ val ktorProject = project(":yass2-ktor") {
     }
     dependencies {
         add("kspJvmTest", generateProject)
-        if (webPlatform) {
-            add("kspJsTest", generateProject)
-            add("kspWasmJsTest", generateProject)
-        }
-        if (linuxPlatform) {
-            add("kspLinuxX64Test", generateProject)
-            add("kspLinuxArm64Test", generateProject)
-        }
     }
 }
 

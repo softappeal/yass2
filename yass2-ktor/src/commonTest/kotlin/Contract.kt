@@ -132,7 +132,7 @@ interface Echo {
 )
 internal class Generate
 
-val ContractSerializer = TextSerializer(createStringEncoders())
+val ContractSerializer = TextSerializer(StringEncoders)
 
 val CalculatorId = ServiceId<Calculator>("calc")
 val EchoId = ServiceId<Echo>("echo")

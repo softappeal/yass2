@@ -60,12 +60,16 @@ private abstract class Property(property: KProperty1<out Any, *>) {
     val name = property.name
     val returnType = property.returnType
     val mutable = property is KMutableProperty1<out Any, *>
+
+
     protected val nullable = returnType.isMarkedNullable
     protected val classifier = returnType.classifier
+
 }
 
 /** see [ConcreteAndEnumClasses] */
 private class Properties<P : Property>(klass: KClass<*>, createProperty: (property: KProperty1<out Any, *>) -> P) {
+
     val parameter: List<P>
     val body: List<P>
     val all: List<P>
@@ -74,6 +78,7 @@ private class Properties<P : Property>(klass: KClass<*>, createProperty: (proper
         require(!klass.isAbstract) { "class ${klass.qualifiedName} must be concrete" }
         val properties = klass.memberProperties
             .filterNot { (it.name == "cause" || it.name == "message") && klass.isSubclassOf(Throwable::class) }
+
             .sortedBy { it.name }
             .map { createProperty(it) }
         parameter = buildList {
@@ -130,45 +135,43 @@ public fun CodeWriter.generateBinarySerializer(
     }
 
     writeLine()
-    writeNestedLine("public fun createBinarySerializer(): ${BinarySerializer::class.qualifiedName} =") {
-        writeNestedLine("object : ${BinarySerializer::class.qualifiedName}() {", "}") {
-            writeNestedLine("init {", "}") {
-                writeNestedLine("initialize(", ")") {
-                    encoderObjects.forEach { type ->
-                        writeNestedLine("${type.qualifiedName},")
+    writeNestedLine("public object BinarySerializer : ${BinarySerializer::class.qualifiedName}() {", "}") {
+        writeNestedLine("init {", "}") {
+            writeNestedLine("initialize(", ")") {
+                encoderObjects.forEach { type ->
+                    writeNestedLine("${type.qualifiedName},")
+                }
+                enumClasses.forEach { type ->
+                    writeNestedLine("${EnumBinaryEncoder::class.qualifiedName}(", "),") {
+                        writeNestedLine("${type.qualifiedName}::class, enumValues(),")
                     }
-                    enumClasses.forEach { type ->
-                        writeNestedLine("${EnumBinaryEncoder::class.qualifiedName}(", "),") {
-                            writeNestedLine("${type.qualifiedName}::class, enumValues(),")
+                }
+                concreteClasses.forEach { type ->
+                    writeNestedLine("${BinaryEncoder::class.qualifiedName}(", "),") {
+                        writeNestedLine("${type.qualifiedName}::class,")
+                        val properties = Properties(type) { BinaryProperty(it) }
+                        writeNestedLine("{ i ->", "},") {
+                            properties.all.forEach { property ->
+                                writeNestedLine(property.writeObject("i.${property.name}"))
+                            }
                         }
-                    }
-                    concreteClasses.forEach { type ->
-                        writeNestedLine("${BinaryEncoder::class.qualifiedName}(", "),") {
-                            writeNestedLine("${type.qualifiedName}::class,")
-                            val properties = Properties(type) { BinaryProperty(it) }
-                            writeNestedLine("{ i ->", "},") {
-                                properties.all.forEach { property ->
-                                    writeNestedLine(property.writeObject("i.${property.name}"))
+                        writeNestedLine("{", "}") {
+                            fun BinaryProperty.readObjectWithCast() = "${readObject()} as ${returnType.toType()}"
+                            writeNestedLine(
+                                "${type.qualifiedName}(",
+                                ")${if (properties.body.isEmpty()) "" else ".apply {"}",
+                            ) {
+                                properties.parameter.forEach { property ->
+                                    writeNestedLine("${property.readObjectWithCast()},")
                                 }
                             }
-                            writeNestedLine("{", "}") {
-                                fun BinaryProperty.readObjectWithCast() = "${readObject()} as ${returnType.toType()}"
-                                writeNestedLine(
-                                    "${type.qualifiedName}(",
-                                    ")${if (properties.body.isEmpty()) "" else ".apply {"}",
-                                ) {
-                                    properties.parameter.forEach { property ->
-                                        writeNestedLine("${property.readObjectWithCast()},")
+                            if (properties.body.isNotEmpty()) {
+                                nested {
+                                    properties.body.forEach { property ->
+                                        writeNestedLine("${property.name} = ${property.readObjectWithCast()}")
                                     }
                                 }
-                                if (properties.body.isNotEmpty()) {
-                                    nested {
-                                        properties.body.forEach { property ->
-                                            writeNestedLine("${property.name} = ${property.readObjectWithCast()}")
-                                        }
-                                    }
-                                    writeNestedLine("}")
-                                }
+                                writeNestedLine("}")
                             }
                         }
                     }
@@ -210,10 +213,7 @@ public fun CodeWriter.generateStringEncoders(
     }
 
     writeLine()
-    writeNestedLine(
-        "public fun createStringEncoders(): List<${StringEncoder::class.qualifiedName}<*>> = listOf(",
-        ")",
-    ) {
+    writeNestedLine("public val StringEncoders: List<${StringEncoder::class.qualifiedName}<*>> = listOf(", ")") {
         encoderObjects.forEach { type ->
             @OptIn(NotJsPlatform::class)
             if (type == DoubleStringEncoder::class) writeNestedLine("@OptIn(${NotJsPlatform::class.qualifiedName}::class)")

@@ -88,6 +88,6 @@ interface Calculator {
 )
 @Suppress("unused") private class Generate
 
-val TutorialSerializer = TextSerializer(createStringEncoders())
+val TutorialSerializer = TextSerializer(StringEncoders)
 
 val CalculatorId = ServiceId<Calculator>("calc")

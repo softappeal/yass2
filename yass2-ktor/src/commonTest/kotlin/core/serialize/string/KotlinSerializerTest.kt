@@ -6,18 +6,18 @@ import ch.softappeal.yass2.DivideByZeroException
 import ch.softappeal.yass2.Gender
 import ch.softappeal.yass2.ManyProperties
 import ch.softappeal.yass2.Poly
+import ch.softappeal.yass2.StringEncoders
 import ch.softappeal.yass2.ThrowableFake
 import ch.softappeal.yass2.Types
 import ch.softappeal.yass2.core.assertFailsMessage
 import ch.softappeal.yass2.core.serialize.Serializer
 import ch.softappeal.yass2.core.serialize.fromByteArray
 import ch.softappeal.yass2.core.serialize.toByteArray
-import ch.softappeal.yass2.createStringEncoders
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
-private val SERIALIZER = KotlinSerializer(createStringEncoders())
+private val SERIALIZER = KotlinSerializer(StringEncoders)
 
 private fun dump(value: Any?, serialized: String, vararg others: String) = SERIALIZER.dump(value, serialized, *others)
 

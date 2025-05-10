@@ -4,10 +4,10 @@ import ch.softappeal.yass2.B
 import ch.softappeal.yass2.DivideByZeroException
 import ch.softappeal.yass2.Gender
 import ch.softappeal.yass2.Poly
+import ch.softappeal.yass2.StringEncoders
 import ch.softappeal.yass2.ThrowableFake
 import ch.softappeal.yass2.core.assertFailsMessage
 import ch.softappeal.yass2.core.serialize.toByteArray
-import ch.softappeal.yass2.createStringEncoders
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -26,7 +26,7 @@ fun StringSerializer.dump(value: Any?, serialized: String, vararg others: String
 private class Int
 private object MyIntEncoder : StringEncoder<Int>(Int::class, {}, { Int() })
 
-private val SERIALIZER = TextSerializer(createStringEncoders())
+private val SERIALIZER = TextSerializer(StringEncoders)
 
 private fun dump(value: Any?, serialized: String, vararg others: String) = SERIALIZER.dump(value, serialized, *others)
 
