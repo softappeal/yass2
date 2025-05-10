@@ -1,8 +1,11 @@
 package ch.softappeal.yass2.tutorial
 
+import ch.softappeal.yass2.core.Proxy
 import ch.softappeal.yass2.core.remote.ServiceId
+import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses
 import ch.softappeal.yass2.core.serialize.string.BaseStringEncoder
 import ch.softappeal.yass2.core.serialize.string.IntStringEncoder
+import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
 import ch.softappeal.yass2.core.serialize.string.TextSerializer
 
 /**
@@ -64,27 +67,26 @@ class SubClass(
  * All functions must be suspendable because they need IO.
  * Overloading is not allowed.
  */
+@Proxy
 interface Calculator {
     suspend fun add(a: Int, b: Int): Int
     suspend fun divide(a: Int, b: Int): Int
 }
 
-internal val Services = listOf(Calculator::class)
-
 // Define all the additional base encoders needed by the contract (including own base types and types used in services).
-internal val EncoderObjects = listOf(
+@StringEncoderObjects(
     // String and Boolean is built-in
     IntStringEncoder::class,
     MyDateEncoder::class,
 )
-
-internal val ConcreteAndEnumClasses = listOf(
+@ConcreteAndEnumClasses(
     Gender::class,
     Address::class,
     Person::class,
     DivideByZeroException::class,
     SubClass::class,
 )
+@Suppress("unused") private class Generate
 
 val TutorialSerializer = TextSerializer(createStringEncoders())
 

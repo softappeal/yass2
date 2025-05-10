@@ -40,7 +40,7 @@ allprojects {
 
     kotlin {
         jvm()
-        if (project.name !in setOf("yass2", "yass2-generate")) {
+        if (project.name in setOf("yass2-core", "yass2-coroutines", "yass2-ktor")) {
             if (webPlatform) {
                 js {
                     outputModuleName.set(project.name)
@@ -181,6 +181,7 @@ dependencies {
 }
 
 project(":tutorial") {
+    apply(plugin = "com.google.devtools.ksp")
     kotlin {
         sourceSets {
             commonMain {
@@ -190,12 +191,14 @@ project(":tutorial") {
             }
             jvmTest {
                 dependencies {
-                    implementation(generateProject)
                     implementation(kotlin("test"))
                     implementation(libraries.coroutines.test)
                 }
             }
         }
+    }
+    dependencies {
+        add("kspJvm", generateProject)
     }
 }
 
