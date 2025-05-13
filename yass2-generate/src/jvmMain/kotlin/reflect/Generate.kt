@@ -29,6 +29,7 @@ public fun CodeWriter.generateProxies(services: List<KClass<*>>) {
     services.forEach(::generateProxy)
 }
 
+@OptIn(InternalApi::class)
 public fun CodeWriter.generateBinarySerializer(annotatedClass: KClass<*>) {
     generateBinarySerializer(
         annotatedClass.java.getAnnotation(BinaryEncoderObjects::class.java)!!.value.toList(),
@@ -36,6 +37,7 @@ public fun CodeWriter.generateBinarySerializer(annotatedClass: KClass<*>) {
     )
 }
 
+@OptIn(InternalApi::class)
 public fun CodeWriter.generateStringEncoders(annotatedClass: KClass<*>) {
     generateStringEncoders(
         annotatedClass.java.getAnnotation(StringEncoderObjects::class.java)!!.value.toList(),

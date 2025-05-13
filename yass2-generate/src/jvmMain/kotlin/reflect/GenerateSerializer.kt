@@ -52,7 +52,7 @@ private fun getClasses(encoderObjects: List<KClass<*>>, concreteAndEnumClasses: 
         require(hasNoDuplicates()) { "classes ${duplicates().map { it.qualifiedName }} are duplicated" }
     }
     (encoderTypes + concreteClasses).firstOrNull { it.isEnum() }
-        ?.let { error("enum class ${it.qualifiedName} belongs to concreteAndEnumClasses") }
+        ?.let { error("enum class ${it.qualifiedName} belongs to ConcreteAndEnumClasses") }
     return Classes(baseClasses, enumClasses, concreteClasses)
 }
 
@@ -107,6 +107,7 @@ private class Properties<P : Property>(klass: KClass<*>, createProperty: (proper
     }
 }
 
+@InternalApi
 public fun CodeWriter.generateBinarySerializer(
     encoderObjects: List<KClass<out BinaryEncoder<*>>>,
     concreteAndEnumClasses: List<KClass<*>>,
@@ -181,6 +182,7 @@ public fun CodeWriter.generateBinarySerializer(
     }
 }
 
+@InternalApi
 public fun CodeWriter.generateStringEncoders(
     encoderObjects: List<KClass<out BaseStringEncoder<*>>>,
     concreteAndEnumClasses: List<KClass<*>>,
