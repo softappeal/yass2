@@ -115,10 +115,9 @@ private class Yass2Processor(@Suppress("unused") environment: SymbolProcessorEnv
                 }
             }
 
-            // TODO: see https://github.com/google/ksp/issues/2233
+            // TODO: We don't use 'createNewFile()' and write directly to the source location without expect/actual (see https://github.com/google/ksp/issues/2233).
             //       Common/intermediate (= none-platform) code cannot reference generated code in the compilation of platform code.
             //       Generated codes are treated as platform code (you'll have to use expect/actual).
-            //       Or here we don't use 'createNewFile()' and write directly to the source location without expect/actual.
             val declarationPath = Path((declarations.first().location as FileLocation).filePath)
             declarationPath.parent.resolve("$GENERATED_BY_YASS.kt").writeText(code)
         }
