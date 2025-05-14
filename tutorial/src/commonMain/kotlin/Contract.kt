@@ -86,8 +86,6 @@ interface Calculator {
     DivideByZeroException::class,
     SubClass::class,
 )
-@Suppress("unused") private class Generate
-
 val TutorialSerializer = TextSerializer(StringEncoders)
 
 val CalculatorId = ServiceId<Calculator>("calc")

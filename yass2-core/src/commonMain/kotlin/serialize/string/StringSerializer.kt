@@ -290,5 +290,4 @@ public fun StringSerializer.toString(value: Any?): String = toByteArray(value).d
 public fun StringSerializer.fromString(string: String): Any? =
     fromByteArray(string.encodeToByteArray(throwOnInvalidSequence = true))
 
-@Target(AnnotationTarget.CLASS)
 public annotation class StringEncoderObjects(vararg val value: KClass<out BaseStringEncoder<*>>)

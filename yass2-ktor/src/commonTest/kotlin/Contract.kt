@@ -130,8 +130,6 @@ interface Echo {
     @OptIn(NotJsPlatform::class) DoubleStringEncoder::class,
     ByteArrayStringEncoder::class,
 )
-internal class Generate
-
 val ContractSerializer = TextSerializer(StringEncoders)
 
 val CalculatorId = ServiceId<Calculator>("calc")

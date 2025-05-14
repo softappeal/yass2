@@ -7,5 +7,4 @@ import kotlin.reflect.KClass
  * Body properties are allowed but must be of `var` kind.
  * Inheritance is supported.
  */
-@Target(AnnotationTarget.CLASS)
 public annotation class ConcreteAndEnumClasses(vararg val value: KClass<*>)

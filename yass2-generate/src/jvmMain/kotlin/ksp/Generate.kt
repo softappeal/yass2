@@ -59,7 +59,7 @@ internal fun KSTypeReference.toType(): String {
     return appendable.toString()
 }
 
-private fun KSClassDeclaration.annotationOrNull(annotation: KClass<*>) =
+private fun KSAnnotated.annotationOrNull(annotation: KClass<*>) =
     annotations.firstOrNull { it.annotationType.resolve().declaration.qualifiedName() == annotation.qualifiedName }
 
 @Suppress("UNCHECKED_CAST")
@@ -74,7 +74,7 @@ private class Yass2Processor(@Suppress("unused") environment: SymbolProcessorEnv
                     Proxy::class, ConcreteAndEnumClasses::class, BinaryEncoderObjects::class, StringEncoderObjects::class,
                 ).forEach { annotation ->
                     resolver.getSymbolsWithAnnotation(annotation.qualifiedName!!)
-                        .map { it as KSClassDeclaration }
+                        .map { it as KSDeclaration }
                         .forEach { declaration -> add(declaration.packageName.asString() to declaration) }
                 }
             }.groupBy({ it.first }, { it.second })
@@ -91,7 +91,7 @@ private class Yass2Processor(@Suppress("unused") environment: SymbolProcessorEnv
                     declaration.annotationOrNull(Proxy::class)?.let { add(declaration) }
                 }
             }.sortedBy { it.name }
-                .forEach { declaration -> writer.generateProxy(declaration) }
+                .forEach { declaration -> writer.generateProxy(declaration as KSClassDeclaration) }
 
             fun declarationsAnnotationOrNull(annotation: KClass<*>): KSAnnotation? {
                 val annotations = buildList {

@@ -1,6 +1,6 @@
 package ch.softappeal.yass2.generate.reflect
 
-import ch.softappeal.yass2.Generate
+import ch.softappeal.yass2.ContractSerializer
 import ch.softappeal.yass2.Services
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import kotlin.io.path.Path
@@ -16,8 +16,8 @@ class GenerateTest {
             "ch.softappeal.yass2.generate.reflect",
         ) {
             generateProxies(Services)
-            generateBinarySerializer(Generate::class)
-            generateStringEncoders(Generate::class)
+            generateBinarySerializer(::ContractSerializer)
+            generateStringEncoders(::ContractSerializer)
         }
 
         assertEquals(

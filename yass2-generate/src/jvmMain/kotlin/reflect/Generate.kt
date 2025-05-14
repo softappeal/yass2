@@ -10,8 +10,10 @@ import ch.softappeal.yass2.generate.appendPackage
 import java.nio.file.Files
 import kotlin.io.path.Path
 import kotlin.io.path.writeText
+import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
+import kotlin.reflect.full.findAnnotation
 
 internal fun KType.toType() = toString() // TODO: see file 'KTypeToTypeTest.kt'
     .replace("kotlin.Exception /* = java.lang.Exception */", "kotlin.Exception")
@@ -30,17 +32,17 @@ public fun CodeWriter.generateProxies(services: List<KClass<*>>) {
 }
 
 @OptIn(InternalApi::class)
-public fun CodeWriter.generateBinarySerializer(annotatedClass: KClass<*>) {
+public fun CodeWriter.generateBinarySerializer(annotatedElement: KAnnotatedElement) {
     generateBinarySerializer(
-        annotatedClass.java.getAnnotation(BinaryEncoderObjects::class.java)!!.value.toList(),
-        annotatedClass.java.getAnnotation(ConcreteAndEnumClasses::class.java)!!.value.toList(),
+        annotatedElement.findAnnotation<BinaryEncoderObjects>()!!.value.toList(),
+        annotatedElement.findAnnotation<ConcreteAndEnumClasses>()!!.value.toList(),
     )
 }
 
 @OptIn(InternalApi::class)
-public fun CodeWriter.generateStringEncoders(annotatedClass: KClass<*>) {
+public fun CodeWriter.generateStringEncoders(annotatedElement: KAnnotatedElement) {
     generateStringEncoders(
-        annotatedClass.java.getAnnotation(StringEncoderObjects::class.java)!!.value.toList(),
-        annotatedClass.java.getAnnotation(ConcreteAndEnumClasses::class.java)!!.value.toList(),
+        annotatedElement.findAnnotation<StringEncoderObjects>()!!.value.toList(),
+        annotatedElement.findAnnotation<ConcreteAndEnumClasses>()!!.value.toList(),
     )
 }
