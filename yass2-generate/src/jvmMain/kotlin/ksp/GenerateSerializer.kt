@@ -104,7 +104,7 @@ private class Properties<P : Property>(type: KSType, createProperty: (property: 
     }
 }
 
-@OptIn(InternalApi::class)
+@InternalApi
 internal fun CodeWriter.generateBinarySerializer(
     encoderObjects: List<KSType>,
     concreteAndEnumClasses: List<KSType>,
@@ -180,7 +180,7 @@ internal fun CodeWriter.generateBinarySerializer(
     }
 }
 
-@OptIn(InternalApi::class)
+@InternalApi
 internal fun CodeWriter.generateStringEncoders(
     encoderObjects: List<KSType>,
     concreteAndEnumClasses: List<KSType>,

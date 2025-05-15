@@ -108,10 +108,10 @@ private class Yass2Processor(@Suppress("unused") environment: SymbolProcessorEnv
             declarationsAnnotationOrNull(ConcreteAndEnumClasses::class)?.let { annotation ->
                 val concreteAndEnumClasses = annotation.value()
                 declarationsAnnotationOrNull(BinaryEncoderObjects::class)?.let { annotation ->
-                    writer.generateBinarySerializer(annotation.value(), concreteAndEnumClasses)
+                    @OptIn(InternalApi::class) writer.generateBinarySerializer(annotation.value(), concreteAndEnumClasses)
                 }
                 declarationsAnnotationOrNull(StringEncoderObjects::class)?.let { annotation ->
-                    writer.generateStringEncoders(annotation.value(), concreteAndEnumClasses)
+                    @OptIn(InternalApi::class) writer.generateStringEncoders(annotation.value(), concreteAndEnumClasses)
                 }
             }
 
