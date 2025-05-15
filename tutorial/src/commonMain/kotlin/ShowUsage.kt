@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.tutorial
+package tutorial
 
 import ch.softappeal.yass2.core.remote.tunnel
 import ch.softappeal.yass2.core.serialize.string.StringSerializer

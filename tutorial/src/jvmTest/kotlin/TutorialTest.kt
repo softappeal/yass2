@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.tutorial
+package tutorial
 
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test

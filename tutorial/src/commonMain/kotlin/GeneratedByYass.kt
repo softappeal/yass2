@@ -12,11 +12,11 @@
     "KotlinRedundantDiagnosticSuppress",
 )
 
-package ch.softappeal.yass2.tutorial
+package tutorial
 
-public fun ch.softappeal.yass2.tutorial.Calculator.proxy(
+public fun tutorial.Calculator.proxy(
     intercept: ch.softappeal.yass2.core.Interceptor,
-): ch.softappeal.yass2.tutorial.Calculator = object : ch.softappeal.yass2.tutorial.Calculator {
+): tutorial.Calculator = object : tutorial.Calculator {
     override suspend fun add(
         p1: kotlin.Int,
         p2: kotlin.Int,
@@ -36,10 +36,10 @@ public fun ch.softappeal.yass2.tutorial.Calculator.proxy(
     }
 }
 
-public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.tutorial.Calculator>.proxy(
+public fun ch.softappeal.yass2.core.remote.ServiceId<tutorial.Calculator>.proxy(
     tunnel: ch.softappeal.yass2.core.remote.Tunnel,
-): ch.softappeal.yass2.tutorial.Calculator =
-    object : ch.softappeal.yass2.tutorial.Calculator {
+): tutorial.Calculator =
+    object : tutorial.Calculator {
         override suspend fun add(
             p1: kotlin.Int,
             p2: kotlin.Int,
@@ -55,8 +55,8 @@ public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.tutoria
                 .process() as kotlin.Int
     }
 
-public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.tutorial.Calculator>.service(
-    implementation: ch.softappeal.yass2.tutorial.Calculator,
+public fun ch.softappeal.yass2.core.remote.ServiceId<tutorial.Calculator>.service(
+    implementation: tutorial.Calculator,
 ): ch.softappeal.yass2.core.remote.Service =
     ch.softappeal.yass2.core.remote.Service(id) { function, parameters ->
         when (function) {
@@ -77,20 +77,20 @@ public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.String
     // kotlin.Boolean: 1
     // kotlin.collections.List: 2
     ch.softappeal.yass2.core.serialize.string.IntStringEncoder, // 3
-    ch.softappeal.yass2.tutorial.MyDateEncoder, // 4
+    tutorial.MyDateEncoder, // 4
     ch.softappeal.yass2.core.serialize.string.EnumStringEncoder(
-        ch.softappeal.yass2.tutorial.Gender::class, // 5
-        ch.softappeal.yass2.tutorial.Gender::valueOf,
+        tutorial.Gender::class, // 5
+        tutorial.Gender::valueOf,
     ),
     ch.softappeal.yass2.core.serialize.string.ClassStringEncoder(
-        ch.softappeal.yass2.tutorial.Address::class, true, // 6
+        tutorial.Address::class, true, // 6
         { i ->
             writeProperty("street", i.street, 0)
             startBodyProperties()
             writeProperty("number", i.number, 3)
         },
         {
-            ch.softappeal.yass2.tutorial.Address(
+            tutorial.Address(
                 getProperty("street") as kotlin.String,
             ).apply {
                 number = getProperty("number") as kotlin.Int?
@@ -100,7 +100,7 @@ public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.String
         "number" to 3,
     ),
     ch.softappeal.yass2.core.serialize.string.ClassStringEncoder(
-        ch.softappeal.yass2.tutorial.Person::class, false, // 7
+        tutorial.Person::class, false, // 7
         { i ->
             writeProperty("name", i.name, 0)
             writeProperty("gender", i.gender, 5)
@@ -108,11 +108,11 @@ public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.String
             writeProperty("addresses", i.addresses, 2)
         },
         {
-            ch.softappeal.yass2.tutorial.Person(
+            tutorial.Person(
                 getProperty("name") as kotlin.String,
-                getProperty("gender") as ch.softappeal.yass2.tutorial.Gender,
-                getProperty("birthday") as ch.softappeal.yass2.tutorial.MyDate,
-                getProperty("addresses") as kotlin.collections.List<ch.softappeal.yass2.tutorial.Address>,
+                getProperty("gender") as tutorial.Gender,
+                getProperty("birthday") as tutorial.MyDate,
+                getProperty("addresses") as kotlin.collections.List<tutorial.Address>,
             )
         },
         "name" to -1,
@@ -121,22 +121,22 @@ public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.String
         "addresses" to -1,
     ),
     ch.softappeal.yass2.core.serialize.string.ClassStringEncoder(
-        ch.softappeal.yass2.tutorial.DivideByZeroException::class, false, // 8
+        tutorial.DivideByZeroException::class, false, // 8
         { i ->
         },
         {
-            ch.softappeal.yass2.tutorial.DivideByZeroException(
+            tutorial.DivideByZeroException(
             )
         },
     ),
     ch.softappeal.yass2.core.serialize.string.ClassStringEncoder(
-        ch.softappeal.yass2.tutorial.SubClass::class, false, // 9
+        tutorial.SubClass::class, false, // 9
         { i ->
             writeProperty("baseClassProperty", i.baseClassProperty, 0)
             writeProperty("subClassProperty", i.subClassProperty, 0)
         },
         {
-            ch.softappeal.yass2.tutorial.SubClass(
+            tutorial.SubClass(
                 getProperty("baseClassProperty") as kotlin.String,
                 getProperty("subClassProperty") as kotlin.String,
             )
