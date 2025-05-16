@@ -33,7 +33,7 @@
 
 * provides unidirectional and session-based bidirectional remoting
 
-* provides [Ktor](https://ktor.io) transport adaptors for Http and WebSocket
+* provides [Ktor](https://ktor.io) transport adaptors for Http, WebSocket and Socket
 
 * generates code (works on any platform and is fast) either with [KSP](https://kotlinlang.org/docs/ksp-overview.html) or
   with reflection
