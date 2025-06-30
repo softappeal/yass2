@@ -7,15 +7,13 @@ import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.ServiceId
 import ch.softappeal.yass2.core.remote.Tunnel
 import ch.softappeal.yass2.core.tryFinally
+import ch.softappeal.yass2.coroutines.AtomicBoolean
+import ch.softappeal.yass2.coroutines.AtomicInt
 import ch.softappeal.yass2.coroutines.ThreadSafeMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlin.concurrent.atomics.AtomicBoolean
-import kotlin.concurrent.atomics.AtomicInt
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
-import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -27,7 +25,6 @@ public interface Connection {
     public suspend fun closed()
 }
 
-@OptIn(ExperimentalAtomicApi::class) // TODO: might become binary incompatible with future versions
 public abstract class Session<C : Connection> {
     public open fun opened() {}
 
@@ -40,7 +37,7 @@ public abstract class Session<C : Connection> {
     /** Is idempotent. */
     public suspend fun close(e: Exception): Unit = close(false, e)
 
-    public fun isClosed(): Boolean = closed.load()
+    public suspend fun isClosed(): Boolean = closed.load()
 
     protected val clientTunnel: Tunnel = { request ->
         check(!isClosed()) { "session '$this' is closed" }

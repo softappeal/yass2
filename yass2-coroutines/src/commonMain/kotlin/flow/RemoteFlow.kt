@@ -6,6 +6,7 @@ import ch.softappeal.yass2.core.remote.ExceptionReply
 import ch.softappeal.yass2.core.remote.Reply
 import ch.softappeal.yass2.core.remote.ValueReply
 import ch.softappeal.yass2.core.tryFinally
+import ch.softappeal.yass2.coroutines.AtomicInt
 import ch.softappeal.yass2.coroutines.ThreadSafeMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,9 +15,6 @@ import kotlinx.coroutines.flow.AbstractFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
-import kotlin.concurrent.atomics.AtomicInt
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
-import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.coroutines.coroutineContext
 
 public interface FlowService<out F, I> {
@@ -45,7 +43,6 @@ public fun <F, I> FlowService<F, I>.createFlow(flowId: I): Flow<F> =
 public typealias FlowFactory<F, I> = (flowId: I) -> Flow<F>
 
 @ExperimentalApi
-@OptIn(ExperimentalAtomicApi::class) // TODO: might become binary incompatible with future versions
 public fun <F, I> flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I> {
     val nextCollectId = AtomicInt(0)
     val collectIdToChannel = ThreadSafeMap<Int, Channel<Reply?>>(16)

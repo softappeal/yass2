@@ -40,7 +40,7 @@ public abstract class ch/softappeal/yass2/coroutines/session/Session {
 	protected final fun getClientTunnel ()Lkotlin/jvm/functions/Function2;
 	public final fun getConnection ()Lch/softappeal/yass2/coroutines/session/Connection;
 	protected fun getServerTunnel ()Lkotlin/jvm/functions/Function2;
-	public final fun isClosed ()Z
+	public final fun isClosed (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun opened ()V
 }
 
