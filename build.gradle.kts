@@ -177,13 +177,13 @@ project(":tutorial") {
         sourceSets {
             commonMain {
                 dependencies {
-                    implementation(coreProject)
+                    implementation(ktorProject)
+                    implementation(libraries.bundles.ktor.cio)
                 }
             }
             jvmTest {
                 dependencies {
                     implementation(kotlin("test"))
-                    implementation(libraries.coroutines.test)
                 }
             }
         }

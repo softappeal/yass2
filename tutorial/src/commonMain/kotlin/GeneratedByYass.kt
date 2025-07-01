@@ -72,6 +72,42 @@ public fun ch.softappeal.yass2.core.remote.ServiceId<tutorial.Calculator>.servic
         }
     }
 
+public fun tutorial.NewsListener.proxy(
+    intercept: ch.softappeal.yass2.core.Interceptor,
+): tutorial.NewsListener = object : tutorial.NewsListener {
+    override suspend fun notify(
+        p1: kotlin.String,
+    ) {
+        intercept("notify", listOf(p1)) {
+            this@proxy.notify(p1)
+        }
+    }
+}
+
+public fun ch.softappeal.yass2.core.remote.ServiceId<tutorial.NewsListener>.proxy(
+    tunnel: ch.softappeal.yass2.core.remote.Tunnel,
+): tutorial.NewsListener =
+    object : tutorial.NewsListener {
+        override suspend fun notify(
+            p1: kotlin.String,
+        ) {
+            tunnel(ch.softappeal.yass2.core.remote.Request(id, "notify", listOf(p1)))
+                .process()
+        }
+    }
+
+public fun ch.softappeal.yass2.core.remote.ServiceId<tutorial.NewsListener>.service(
+    implementation: tutorial.NewsListener,
+): ch.softappeal.yass2.core.remote.Service =
+    ch.softappeal.yass2.core.remote.Service(id) { function, parameters ->
+        when (function) {
+            "notify" -> implementation.notify(
+                parameters[0] as kotlin.String,
+            )
+            else -> error("service '$id' has no function '$function'")
+        }
+    }
+
 public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.StringEncoder<*>> = listOf(
     // kotlin.String: 0
     // kotlin.Boolean: 1
@@ -143,5 +179,62 @@ public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.String
         },
         "baseClassProperty" to -1,
         "subClassProperty" to -1,
+    ),
+    ch.softappeal.yass2.core.serialize.string.ClassStringEncoder(
+        ch.softappeal.yass2.core.remote.Request::class, false, // 10
+        { i ->
+            writeProperty("service", i.service, 0)
+            writeProperty("function", i.function, 0)
+            writeProperty("parameters", i.parameters, 2)
+        },
+        {
+            ch.softappeal.yass2.core.remote.Request(
+                getProperty("service") as kotlin.String,
+                getProperty("function") as kotlin.String,
+                getProperty("parameters") as kotlin.collections.List<kotlin.Any?>,
+            )
+        },
+        "service" to -1,
+        "function" to -1,
+        "parameters" to -1,
+    ),
+    ch.softappeal.yass2.core.serialize.string.ClassStringEncoder(
+        ch.softappeal.yass2.core.remote.ValueReply::class, false, // 11
+        { i ->
+            writeProperty("value", i.value)
+        },
+        {
+            ch.softappeal.yass2.core.remote.ValueReply(
+                getProperty("value") as kotlin.Any?,
+            )
+        },
+        "value" to -1,
+    ),
+    ch.softappeal.yass2.core.serialize.string.ClassStringEncoder(
+        ch.softappeal.yass2.core.remote.ExceptionReply::class, false, // 12
+        { i ->
+            writeProperty("exception", i.exception)
+        },
+        {
+            ch.softappeal.yass2.core.remote.ExceptionReply(
+                getProperty("exception") as kotlin.Exception,
+            )
+        },
+        "exception" to -1,
+    ),
+    ch.softappeal.yass2.core.serialize.string.ClassStringEncoder(
+        ch.softappeal.yass2.coroutines.session.Packet::class, false, // 13
+        { i ->
+            writeProperty("requestNumber", i.requestNumber, 3)
+            writeProperty("message", i.message)
+        },
+        {
+            ch.softappeal.yass2.coroutines.session.Packet(
+                getProperty("requestNumber") as kotlin.Int,
+                getProperty("message") as ch.softappeal.yass2.core.remote.Message,
+            )
+        },
+        "requestNumber" to 3,
+        "message" to -1,
     ),
 )
