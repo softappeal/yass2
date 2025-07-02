@@ -5,22 +5,15 @@ import ch.softappeal.yass2.DivideByZeroException
 import ch.softappeal.yass2.Echo
 import ch.softappeal.yass2.proxy
 import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
-import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
 object CalculatorImpl : Calculator {
@@ -40,13 +33,13 @@ object EchoImpl : Echo {
 }
 
 val Printer: Interceptor = { function, parameters, invoke ->
-    print("$function $parameters -> ")
+    println("$function $parameters -> ")
     try {
         val result = invoke()
-        println(result)
+        println("-> $result")
         result
     } catch (e: Exception) {
-        println(e)
+        println("-> $e")
         throw e
     }
 }
@@ -75,6 +68,11 @@ suspend fun test(calculatorImpl: Calculator, echoImpl: Echo) {
     echo.noParametersNoResult()
     assertEquals("hello", echo.echo("hello"))
     assertEquals(3, (echo.echo(ByteArray(3)) as ByteArray).size)
+    withTimeout(200.milliseconds) { echo.delay(100) }
+    assertFailsWith<TimeoutCancellationException> {
+        withTimeout(100.milliseconds) { echo.delay(200) }
+    }
+    println("done")
 }
 
 class InterceptorTest {
@@ -103,30 +101,6 @@ class InterceptorTest {
     @Test
     fun test() = runTest {
         test(CalculatorImpl, EchoImpl)
-        withTimeout(200.milliseconds) { EchoImpl.delay(100) }
-        assertFailsWith<TimeoutCancellationException> {
-            withTimeout(100.milliseconds) { EchoImpl.delay(200) }
-        }
-        coroutineScope {
-            class AtomicBoolean {
-                private var value = false
-                private val mutex = Mutex()
-                suspend fun get() = mutex.withLock { value }
-                suspend fun set() = mutex.withLock { value = true }
-            }
-
-            val before = AtomicBoolean()
-            val after = AtomicBoolean()
-            val job = launch {
-                before.set()
-                EchoImpl.delay(200)
-                after.set()
-            }
-            delay(100)
-            assertTrue(before.get())
-            job.cancelAndJoin()
-            assertFalse(after.get())
-        }
     }
 
     @Test

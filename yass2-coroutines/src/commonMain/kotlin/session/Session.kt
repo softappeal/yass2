@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.coroutines.session
 
-import ch.softappeal.yass2.core.InternalApi
 import ch.softappeal.yass2.core.remote.Message
 import ch.softappeal.yass2.core.remote.Reply
 import ch.softappeal.yass2.core.remote.Request
@@ -10,10 +9,14 @@ import ch.softappeal.yass2.core.tryFinally
 import ch.softappeal.yass2.coroutines.AtomicBoolean
 import ch.softappeal.yass2.coroutines.AtomicInt
 import ch.softappeal.yass2.coroutines.ThreadSafeMap
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withTimeout
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -25,7 +28,7 @@ public interface Connection {
     public suspend fun closed()
 }
 
-public abstract class Session<C : Connection> {
+public abstract class Session {
     public open fun opened() {}
 
     /** [e] is `null` for regular close. */
@@ -39,16 +42,26 @@ public abstract class Session<C : Connection> {
 
     public suspend fun isClosed(): Boolean = closed.load()
 
+    private suspend fun closeOnException(block: suspend () -> Unit) {
+        try {
+            block()
+        } catch (e: Exception) {
+            try {
+                close(e)
+            } finally {
+                if (e is CancellationException) throw e
+            }
+        }
+    }
+
     protected val clientTunnel: Tunnel = { request ->
         check(!isClosed()) { "session '$this' is closed" }
         val requestNumber = nextRequestNumber.incrementAndFetch()
         suspendCoroutine { continuation ->
             CoroutineScope(continuation.context).launch {
-                try {
+                closeOnException {
                     requestNumberToContinuation.put(requestNumber, continuation)
                     write(Packet(requestNumber, request))
-                } catch (e: Exception) {
-                    close(e)
                 }
             }
         }
@@ -56,8 +69,8 @@ public abstract class Session<C : Connection> {
 
     protected open val serverTunnel: Tunnel = { throw UnsupportedOperationException() }
 
-    private lateinit var _connection: C
-    public var connection: C
+    private lateinit var _connection: Connection
+    public var connection: Connection
         get() = _connection
         internal set(value) {
             _connection = value
@@ -80,7 +93,7 @@ public abstract class Session<C : Connection> {
         }
     }
 
-    internal suspend fun received(packet: Packet?) {
+    private suspend fun received(packet: Packet?) {
         if (packet == null) {
             close(false, null)
             return
@@ -91,35 +104,40 @@ public abstract class Session<C : Connection> {
             is Reply -> requestNumberToContinuation.remove(packet.requestNumber)!!.resume(message)
         }
     }
-}
 
-@InternalApi
-public fun connect(session1: Session<Connection>, session2: Session<Connection>) {
-    class LocalConnection(val session: Session<Connection>) : Connection {
-        override suspend fun write(packet: Packet?) = session.received(packet)
-        override suspend fun closed() = session.close()
-    }
-    session1.connection = LocalConnection(session2)
-    session2.connection = LocalConnection(session1)
-    session1.opened()
-    session2.opened()
-}
-
-public typealias SessionFactory<C> = () -> Session<C>
-
-public suspend fun <C : Connection> C.receiveLoop(sessionFactory: SessionFactory<C>, receive: suspend () -> Packet?) {
-    val session = sessionFactory().apply {
-        connection = this@receiveLoop
-    }
-    try {
-        session.opened()
+    internal suspend fun receiveLoop(receive: suspend () -> Packet?) = closeOnException {
+        opened()
         do {
             val packet = receive()
-            session.received(packet)
+            received(packet)
         } while (packet != null)
-    } catch (e: Exception) {
-        session.close(e)
     }
+
+    /** Launches a new coroutine that closes the session if [heartbeat] throws an exception or doesn't return within [timeoutMillis]. */
+    public fun CoroutineScope.heartbeat(
+        intervalMillis: Long,
+        timeoutMillis: Long,
+        heartbeat: suspend () -> Unit,
+    ): Job {
+        require(intervalMillis > 0)
+        require(timeoutMillis > 0)
+        return launch {
+            closeOnException {
+                while (true) {
+                    withTimeout(timeoutMillis) { heartbeat() }
+                    delay(intervalMillis)
+                }
+            }
+        }
+    }
+}
+
+public typealias SessionFactory = () -> Session
+
+public suspend fun Connection.receiveLoop(sessionFactory: SessionFactory, receive: suspend () -> Packet?) {
+    sessionFactory()
+        .apply { connection = this@receiveLoop }
+        .receiveLoop(receive)
 }
 
 @Target(AnnotationTarget.PROPERTY)

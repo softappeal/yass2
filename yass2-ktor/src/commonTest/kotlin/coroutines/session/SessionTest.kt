@@ -1,34 +1,29 @@
 package ch.softappeal.yass2.coroutines.session
 
+import ch.softappeal.yass2.Echo
 import ch.softappeal.yass2.EchoId
 import ch.softappeal.yass2.core.EchoImpl
-import ch.softappeal.yass2.core.InternalApi
 import ch.softappeal.yass2.core.remote.test
 import ch.softappeal.yass2.core.remote.tunnel
 import ch.softappeal.yass2.proxy
 import ch.softappeal.yass2.service
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.withTimeout
 import kotlin.concurrent.atomics.AtomicInt
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.concurrent.atomics.incrementAndFetch
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.milliseconds
 
-fun <C : Connection> CoroutineScope.acceptorSessionFactory(context: suspend Session<C>.() -> Any): SessionFactory<C> = {
-    object : Session<C>() {
+fun CoroutineScope.acceptorSessionFactory(context: suspend Session.() -> Any): SessionFactory = {
+    object : Session() {
         override val serverTunnel = tunnel { context() }
 
         override fun opened() {
@@ -43,15 +38,14 @@ fun <C : Connection> CoroutineScope.acceptorSessionFactory(context: suspend Sess
 
         override suspend fun closed(e: Exception?) {
             assertTrue(isClosed())
-            println("acceptorSessionFactory closed: $e")
-            e?.printStackTrace()
             assertNull(e)
+            println("acceptorSessionFactory closed")
         }
     }
 }
 
-fun <C : Connection> CoroutineScope.initiatorSessionFactory(): SessionFactory<C> = {
-    object : Session<C>() {
+fun CoroutineScope.initiatorSessionFactory(): SessionFactory = {
+    object : Session() {
         override val serverTunnel = tunnel(EchoId.service(EchoImpl))
 
         override fun opened() {
@@ -65,136 +59,165 @@ fun <C : Connection> CoroutineScope.initiatorSessionFactory(): SessionFactory<C>
 
         override suspend fun closed(e: Exception?) {
             assertTrue(isClosed())
-            println("initiatorSessionFactory closed: $e")
-            e?.printStackTrace()
             assertNull(e)
+            println("initiatorSessionFactory closed")
         }
     }
 }
 
-@OptIn(InternalApi::class)
+private suspend fun localConnect(
+    sessionFactory1: SessionFactory,
+    sessionFactory2: SessionFactory,
+) {
+    class LocalConnection : Connection {
+        val channel = Channel<Packet?>(1)
+        override suspend fun write(packet: Packet?) = channel.send(packet)
+        override suspend fun closed() {
+            channel.close()
+        }
+    }
+
+    val connection1 = LocalConnection()
+    val connection2 = LocalConnection()
+    coroutineScope {
+        launch {
+            connection1.receiveLoop(sessionFactory1) { connection2.channel.receive() }
+        }
+        launch {
+            connection2.receiveLoop(sessionFactory2) { connection1.channel.receive() }
+        }
+    }
+}
+
+private suspend fun CoroutineScope.heartbeatTest(open: suspend Session.(echo: Echo) -> Unit) {
+    localConnect(
+        {
+            object : Session() {
+                override fun opened() {
+                    launch {
+                        assertFalse(isClosed())
+                        open(EchoId.proxy(clientTunnel))
+                        assertTrue(isClosed())
+                    }
+                }
+
+                override suspend fun closed(e: Exception?) = println("session1 closed: $e")
+            }
+        },
+        {
+            object : Session() {
+                override val serverTunnel = tunnel(EchoId.service(EchoImpl))
+                override suspend fun closed(e: Exception?) = println("session2 closed: $e")
+            }
+        },
+    )
+}
+
+@OptIn(ExperimentalAtomicApi::class)
 class SessionTest {
     @Test
     fun test() = runTest {
-        connect(initiatorSessionFactory<Connection>()(), acceptorSessionFactory { connection }())
+        localConnect(initiatorSessionFactory(), acceptorSessionFactory { connection })
     }
 
-    @OptIn(ExperimentalAtomicApi::class)
     @Test
-    fun cancel() = runTest {
-        val counter = AtomicInt(0)
-
-        abstract class MySession : Session<Connection>() {
-            override suspend fun closed(e: Exception?) {
-                assertNull(e)
-                counter.incrementAndFetch()
-                println("closed $this")
+    fun heartbeatClose() = runTest {
+        heartbeatTest { echo ->
+            val job = heartbeat(200, 100) {
+                println("heartbeat")
+                echo.noParametersNoResult()
             }
+            delay(500)
+            close()
+            delay(400)
+            assertTrue(job.isCompleted)
+            assertFalse(job.isCancelled)
         }
-
-        connect(
-            object : MySession() {
-                override fun opened() {
-                    val echo = EchoId.proxy(clientTunnel)
-                    launch {
-                        assertFailsWith<TimeoutCancellationException> {
-                            withTimeout(5_000) { echo.delay(10_000) }
-                        }
-                        close()
-                    }
-                }
-            },
-            object : MySession() {
-                override val serverTunnel = tunnel(EchoId.service(EchoImpl.proxy { _, _, invoke ->
-                    try {
-                        invoke()
-                    } catch (e: Exception) {
-                        assertTrue(e is TimeoutCancellationException)
-                        assertEquals(1, counter.incrementAndFetch())
-                        println(e)
-                        throw e
-                    }
-                }))
-            },
-        )
-
-        delay(20_000)
-        assertEquals(3, counter.load())
     }
 
     @Test
-    fun timedOutResume() = runTest {
-        lateinit var continuation: Continuation<String>
-        suspend fun getString(): String = suspendCancellableCoroutine { c: Continuation<String> ->
-            continuation = c
-            println(continuation)
-            CoroutineScope(continuation.context).launch { delay(200.milliseconds) }
+    fun heartbeatCancel() = runTest {
+        heartbeatTest {
+            val job = heartbeat(200, 100) { println("heartbeat") }
+            delay(500)
+            job.cancel()
+            delay(100)
+            assertTrue(job.isCompleted)
+            assertTrue(job.isCancelled)
         }
-        launch {
-            delay(100.milliseconds)
-            continuation.resume("hello")
-        }
-        assertEquals("hello", getString())
-        assertFailsWith<TimeoutCancellationException> {
-            withTimeout(100) { getString() }
-        }
-        continuation.resume("first call after withTimeout")
-        println(assertFailsWith<Exception> { continuation.resume("second call after withTimeout") })
-        println("done")
     }
 
     @Test
-    fun watch() = runTest {
-        val session1 = object : Session<Connection>() {
-            override fun opened() {
-                val session = this
-                launch {
-                    val echo = EchoId.proxy(clientTunnel)
-                    var timeoutMillis = 20
-                    val job = watch(session, 200, 40) {
-                        println("check")
-                        echo.delay(timeoutMillis)
-                        timeoutMillis += 4
-                    }
-                    println(echo.echo("hello"))
-                    println(job)
-                }
+    fun heartbeatException() = runTest {
+        heartbeatTest {
+            val job = heartbeat(200, 100) { throw Exception("heartbeat") }
+            delay(100)
+            assertTrue(job.isCompleted)
+            assertFalse(job.isCancelled)
+        }
+    }
+
+    @Test
+    fun heartbeatTimeout() = runTest {
+        heartbeatTest {
+            var timeoutMillis = 0L
+            val job = heartbeat(200, 100) {
+                println("heartbeat")
+                delay(timeoutMillis)
+                timeoutMillis += 75
             }
-
-            override suspend fun closed(e: Exception?) = println("session1 closed: $e")
+            delay(700)
+            assertTrue(job.isCompleted)
+            assertTrue(job.isCancelled)
         }
-        val session2 = object : Session<Connection>() {
-            override val serverTunnel = tunnel(EchoId.service(EchoImpl))
-            override suspend fun closed(e: Exception?) = println("session2 closed: $e")
-        }
-        connect(session1, session2)
     }
 
     @Test
     fun connect() = runTest {
+        val counter = AtomicInt(0)
         val initiatorSessionFactory = {
-            object : Session<Connection>() {
+            object : Session() {
                 override fun opened() {
                     launch {
-                        val echo = EchoId.proxy(clientTunnel)
-                        println(echo.echo("hello"))
+                        counter.incrementAndFetch()
+                        println(EchoId.proxy(clientTunnel).echo("opened $counter"))
+                        delay(if (counter.load() == 19) 1000 else 100)
                         close()
                     }
                 }
 
-                override suspend fun closed(e: Exception?) = println("initiatorSession closed: $e")
+                override suspend fun closed(e: Exception?) {
+                    counter.incrementAndFetch()
+                    assertNull(e)
+                    println("initiatorSession closed $counter")
+                }
             }
         }
-
-        val serverTunnel = tunnel(EchoId.service(EchoImpl))
         val acceptorSessionFactory = {
-            object : Session<Connection>() {
-                override val serverTunnel = serverTunnel
-                override suspend fun closed(e: Exception?) = println("acceptorSession closed: $e")
+            object : Session() {
+                override val serverTunnel = tunnel(EchoId.service(EchoImpl))
+                override suspend fun closed(e: Exception?) {
+                    counter.incrementAndFetch()
+                    assertNull(e)
+                    println("acceptorSession closed $counter")
+                }
             }
         }
-        val job = connect(initiatorSessionFactory, 200) { connect(it(), acceptorSessionFactory()) }
-        delay(600.milliseconds)
+        val job = connect(
+            initiatorSessionFactory,
+            200,
+        ) {
+            counter.incrementAndFetch()
+            println("connect $counter")
+            if (counter.load() == 9) throw Exception("connect failed")
+            launch { localConnect(it, acceptorSessionFactory) }
+        }
+        delay(1300)
+        assertEquals(19, counter.load())
+        delay(600)
+        assertEquals(19, counter.load())
+        delay(500)
         job.cancel()
+        assertEquals(29, counter.load())
     }
 }

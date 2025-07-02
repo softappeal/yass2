@@ -22,7 +22,7 @@ public class WebSocketConnection internal constructor(
     override suspend fun closed(): Unit = session.close()
 }
 
-public suspend fun WebSocketSession.receiveLoop(serializer: Serializer, sessionFactory: SessionFactory<WebSocketConnection>) {
+public suspend fun WebSocketSession.receiveLoop(serializer: Serializer, sessionFactory: SessionFactory) {
     WebSocketConnection(serializer, this).receiveLoop(sessionFactory) {
         val byteArray = (incoming.receive() as Frame.Binary).data
         serializer.fromByteArray(byteArray) as Packet?

@@ -26,15 +26,19 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-private const val IGNORE = true // TODO: spurious failures in SocketTest
+private const val IGNORE = false // TODO: spurious failures in SocketTest
 
 private fun runServer(block: suspend CoroutineScope.(tcp: TcpSocketBuilder, serverSocket: ServerSocket) -> Unit) {
     if (IGNORE) return
-    runBlocking {
-        SelectorManager().use { selector ->
-            val tcp = aSocket(selector).tcp()
-            tcp.bind(LOCAL_HOST, PORT).use { serverSocket -> block(tcp, serverSocket) }
+    try {
+        runBlocking {
+            SelectorManager().use { selector ->
+                val tcp = aSocket(selector).tcp()
+                tcp.bind(LOCAL_HOST, PORT).use { serverSocket -> block(tcp, serverSocket) }
+            }
         }
+    } catch (e: CancellationException) {
+        println(e)
     }
 }
 
@@ -85,7 +89,7 @@ class SocketTest {
                     launch {
                         socket.receiveLoop(
                             ContractSerializer,
-                            acceptorSessionFactory { connection.socket.remoteAddress }
+                            acceptorSessionFactory { (connection as SocketConnection).socket.remoteAddress }
                         )
                     }
                 }

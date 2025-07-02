@@ -8,6 +8,7 @@ import ch.softappeal.yass2.core.remote.ValueReply
 import ch.softappeal.yass2.core.tryFinally
 import ch.softappeal.yass2.coroutines.AtomicInt
 import ch.softappeal.yass2.coroutines.ThreadSafeMap
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -57,6 +58,8 @@ public fun <F, I> flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I>
                     try {
                         flow.collect { channel.send(ValueReply(it)) }
                         channel.send(null)
+                    } catch (e: CancellationException) {
+                        throw e
                     } catch (e: Exception) {
                         channel.send(ExceptionReply(e))
                     }

@@ -6,7 +6,7 @@ import kotlin.test.Test
 
 class GenerateTest {
     @Test
-    fun test() {
+    fun generate() {
         generateFile(
             "src/commonMain/kotlin/flow",
             "ch.softappeal.yass2.coroutines.flow",

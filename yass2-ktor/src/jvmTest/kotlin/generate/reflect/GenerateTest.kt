@@ -10,7 +10,7 @@ import kotlin.test.assertEquals
 
 class GenerateTest {
     @Test
-    fun test() {
+    fun generate() {
         generateFile(
             "src/jvmTest/kotlin/generate/reflect",
             "ch.softappeal.yass2.generate.reflect",

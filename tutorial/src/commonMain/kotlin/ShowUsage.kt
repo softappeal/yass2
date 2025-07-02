@@ -5,7 +5,6 @@ import ch.softappeal.yass2.core.remote.tunnel
 import ch.softappeal.yass2.core.serialize.string.StringSerializer
 import ch.softappeal.yass2.core.serialize.string.fromString
 import ch.softappeal.yass2.core.serialize.string.toString
-import ch.softappeal.yass2.coroutines.session.Connection
 import ch.softappeal.yass2.coroutines.session.Session
 import ch.softappeal.yass2.ktor.receiveLoop
 import ch.softappeal.yass2.ktor.route
@@ -21,29 +20,23 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-private fun useSerializer(serializer: StringSerializer) {
+fun useSerializer(serializer: StringSerializer) {
     println("*** useSerializer ***")
     val serialized = serializer.toString(MyDate(123456))
     println(serialized)
     println(serializer.fromString(serialized))
 }
 
-private object CalculatorImpl : Calculator {
+object CalculatorImpl : Calculator {
     override suspend fun add(a: Int, b: Int) = a + b
     override suspend fun divide(a: Int, b: Int) = if (b == 0) throw DivideByZeroException() else a / b
 }
 
-private object NewsListenerImpl : NewsListener {
-    override suspend fun notify(news: String) {
-        println("NewsListener.notify: $news")
-    }
-}
-
-private suspend fun useCalculator(calculator: Calculator) {
+suspend fun useCalculator(calculator: Calculator) {
     println("1 + 2 = ${calculator.add(1, 2)}")
 }
 
-private suspend fun useInterceptor() {
+suspend fun useInterceptor() {
     println("*** useInterceptor ***")
     val calculator = CalculatorImpl.proxy { function, _, invoke ->
         println("calling function '$function'")
@@ -52,15 +45,28 @@ private suspend fun useInterceptor() {
     useCalculator(calculator)
 }
 
-private suspend fun useTunnel(tunnel: Tunnel) {
+suspend fun useTunnel(tunnel: Tunnel) {
     val calculator = CalculatorId.proxy(tunnel)
     useCalculator(calculator)
 }
 
-private fun <C : Connection> CoroutineScope.initiatorSessionFactory() = {
-    object : Session<C>() {
+abstract class InitiatorSession : Session() {
+    fun printNews(news: String) {
+        println("news: $news")
+    }
+}
+
+// Shows how to pass session to service implementation.
+class NewsListenerImpl(val session: InitiatorSession) : NewsListener {
+    override suspend fun notify(news: String) {
+        session.printNews(news)
+    }
+}
+
+fun CoroutineScope.initiatorSessionFactory() = {
+    object : InitiatorSession() {
         override val serverTunnel = tunnel(
-            NewsListenerId.service(NewsListenerImpl),
+            NewsListenerId.service(NewsListenerImpl(this)),
         )
 
         override fun opened() {
@@ -77,8 +83,8 @@ private fun <C : Connection> CoroutineScope.initiatorSessionFactory() = {
     }
 }
 
-private fun <C : Connection> CoroutineScope.acceptorSessionFactory() = {
-    object : Session<C>() {
+fun CoroutineScope.acceptorSessionFactory() = {
+    object : Session() {
         override val serverTunnel = tunnel(
             CalculatorId.service(CalculatorImpl),
         )
@@ -97,7 +103,7 @@ private fun <C : Connection> CoroutineScope.acceptorSessionFactory() = {
     }
 }
 
-private suspend fun useKtor() {
+suspend fun useKtor() {
     println("*** useKtor ***")
 
     val localHost = "localhost"
