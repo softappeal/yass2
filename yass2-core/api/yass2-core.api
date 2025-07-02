@@ -30,7 +30,7 @@ public abstract class ch/softappeal/yass2/core/remote/Message {
 }
 
 public final class ch/softappeal/yass2/core/remote/RemoteKt {
-	public static final fun tunnel ([Lch/softappeal/yass2/core/remote/Service;)Lkotlin/jvm/functions/Function2;
+	public static final fun tunnel (Ljava/util/List;)Lkotlin/jvm/functions/Function2;
 }
 
 public abstract class ch/softappeal/yass2/core/remote/Reply : ch/softappeal/yass2/core/remote/Message {

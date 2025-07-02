@@ -4,13 +4,15 @@ import ch.softappeal.yass2.core.InternalApi
 import ch.softappeal.yass2.core.remote.Message
 import ch.softappeal.yass2.core.remote.Reply
 import ch.softappeal.yass2.core.remote.Request
+import ch.softappeal.yass2.core.remote.Service
 import ch.softappeal.yass2.core.remote.ServiceId
 import ch.softappeal.yass2.core.remote.Tunnel
+import ch.softappeal.yass2.core.remote.tunnel
 import ch.softappeal.yass2.core.tryFinally
 import ch.softappeal.yass2.coroutines.AtomicBoolean
 import ch.softappeal.yass2.coroutines.AtomicInt
 import ch.softappeal.yass2.coroutines.ThreadSafeMap
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -25,7 +27,12 @@ public interface Connection {
     public suspend fun closed()
 }
 
-public abstract class Session<C : Connection> {
+public abstract class Session<C : Connection> @InternalApi constructor(
+    internal val heartbeatConfig: HeartbeatConfig?,
+    internal val heartbeat: Heartbeat,
+) {
+    public constructor(heartbeatConfig: HeartbeatConfig? = null) : this(heartbeatConfig, HeartbeatImpl)
+
     public open fun opened() {}
 
     /** [e] is `null` for regular close. */
@@ -39,22 +46,25 @@ public abstract class Session<C : Connection> {
 
     public suspend fun isClosed(): Boolean = closed.load()
 
-    protected val clientTunnel: Tunnel = { request ->
+    public val clientTunnel: Tunnel = { request ->
         check(!isClosed()) { "session '$this' is closed" }
         val requestNumber = nextRequestNumber.incrementAndFetch()
-        suspendCoroutine { continuation ->
-            CoroutineScope(continuation.context).launch {
-                try {
-                    requestNumberToContinuation.put(requestNumber, continuation)
-                    write(Packet(requestNumber, request))
-                } catch (e: Exception) {
-                    close(e)
+        coroutineScope {
+            suspendCoroutine { continuation ->
+                launch {
+                    try {
+                        requestNumberToContinuation.put(requestNumber, continuation)
+                        write(Packet(requestNumber, request))
+                    } catch (e: Exception) {
+                        close(e)
+                    }
                 }
             }
         }
     }
 
-    protected open val serverTunnel: Tunnel = { throw UnsupportedOperationException() }
+    public open val serverServices: List<Service> = emptyList()
+    internal lateinit var serverTunnel: Tunnel
 
     private lateinit var _connection: C
     public var connection: C
@@ -93,31 +103,24 @@ public abstract class Session<C : Connection> {
     }
 }
 
-@InternalApi
-public fun connect(session1: Session<Connection>, session2: Session<Connection>) {
-    class LocalConnection(val session: Session<Connection>) : Connection {
-        override suspend fun write(packet: Packet?) = session.received(packet)
-        override suspend fun closed() = session.close()
-    }
-    session1.connection = LocalConnection(session2)
-    session2.connection = LocalConnection(session1)
-    session1.opened()
-    session2.opened()
-}
-
 public typealias SessionFactory<C> = () -> Session<C>
 
 public suspend fun <C : Connection> C.receiveLoop(sessionFactory: SessionFactory<C>, receive: suspend () -> Packet?) {
     val session = sessionFactory().apply {
         connection = this@receiveLoop
+        serverTunnel = tunnel(serverServices + HeartbeatId.service(heartbeat))
     }
     try {
         session.opened()
-        do {
-            val packet = receive()
-            session.received(packet)
-        } while (packet != null)
+        coroutineScope {
+            session.heartbeatConfig?.heartbeat(this, session)
+            do {
+                val packet = receive()
+                session.received(packet)
+            } while (packet != null)
+        }
     } catch (e: Exception) {
+        println(e)
         session.close(e)
     }
 }

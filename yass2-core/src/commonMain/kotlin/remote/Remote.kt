@@ -9,7 +9,7 @@ public class Service(
 
 public typealias Tunnel = suspend (request: Request) -> Reply
 
-public fun tunnel(vararg services: Service): Tunnel {
+public fun tunnel(services: List<Service>): Tunnel {
     val serviceId2service = services.associateBy(Service::serviceId)
     require(serviceId2service.size == services.size) { "duplicated service" }
     return { request ->

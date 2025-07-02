@@ -1,6 +1,7 @@
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.ContractSerializer
+import ch.softappeal.yass2.core.remote.serverServices
 import ch.softappeal.yass2.core.remote.tunnel
 import ch.softappeal.yass2.coroutines.session.acceptorSessionFactory
 import io.ktor.server.application.install
@@ -21,9 +22,11 @@ val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
         route(
             ContractSerializer,
             PATH,
-            tunnel {
-                currentCoroutineContext()[CallCce]!!.call.request.headers[DEMO_HEADER_KEY] ?: "no-header"
-            }
+            tunnel(
+                serverServices {
+                    currentCoroutineContext()[CallCce]!!.call.request.headers[DEMO_HEADER_KEY] ?: "no-header"
+                }
+            )
         )
         webSocket(PATH) {
             receiveLoop(

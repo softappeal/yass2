@@ -1,6 +1,7 @@
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.ContractSerializer
+import ch.softappeal.yass2.core.remote.serverServices
 import ch.softappeal.yass2.core.remote.test
 import ch.softappeal.yass2.core.remote.tunnel
 import ch.softappeal.yass2.coroutines.session.acceptorSessionFactory
@@ -59,11 +60,11 @@ class SocketTest {
     fun socket() {
         runServer { tcp, serverSocket ->
             val listenerJob = launch {
-                val serverTunnel = tunnel { currentCoroutineContext()[SocketCce]!!.socket.remoteAddress }
+                val tunnel = tunnel(serverServices { currentCoroutineContext()[SocketCce]!!.socket.remoteAddress })
                 while (true) {
                     val socket = serverSocket.accept()
                     launch {
-                        socket.handleRequest(ContractSerializer, serverTunnel)
+                        socket.handleRequest(ContractSerializer, tunnel)
                     }
                 }
             }

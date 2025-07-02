@@ -33,7 +33,7 @@ private val flowFactory: FlowFactory<Int, Int> = { flowId ->
 private val flowService = flowService(flowFactory).proxy(Printer)
 
 private val flowServiceId = ServiceId<FlowService<Int, Int>>("flow")
-private val remoteFlowService = flowServiceId.proxy(tunnel(flowServiceId.service(flowService)))
+private val remoteFlowService = flowServiceId.proxy(tunnel(listOf(flowServiceId.service(flowService))))
 
 private val flow1 = remoteFlowService.createFlow(1)
 private val flow2 = remoteFlowService.createFlow(2)

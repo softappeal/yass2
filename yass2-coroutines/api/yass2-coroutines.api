@@ -20,6 +20,27 @@ public abstract interface class ch/softappeal/yass2/coroutines/session/Connectio
 	public abstract fun write (Lch/softappeal/yass2/coroutines/session/Packet;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
+public final class ch/softappeal/yass2/coroutines/session/GeneratedByYassKt {
+	public static final fun proxy (Lch/softappeal/yass2/core/remote/ServiceId;Lkotlin/jvm/functions/Function2;)Lch/softappeal/yass2/coroutines/session/Heartbeat;
+	public static final fun proxy (Lch/softappeal/yass2/coroutines/session/Heartbeat;Lkotlin/jvm/functions/Function4;)Lch/softappeal/yass2/coroutines/session/Heartbeat;
+	public static final fun service (Lch/softappeal/yass2/core/remote/ServiceId;Lch/softappeal/yass2/coroutines/session/Heartbeat;)Lch/softappeal/yass2/core/remote/Service;
+}
+
+public abstract interface class ch/softappeal/yass2/coroutines/session/Heartbeat {
+	public abstract fun echo (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ch/softappeal/yass2/coroutines/session/HeartbeatConfig {
+	public fun <init> (JJ)V
+	public final fun getIntervalMillis ()J
+	public final fun getTimeoutMillis ()J
+	public final fun heartbeat (Lkotlinx/coroutines/CoroutineScope;Lch/softappeal/yass2/coroutines/session/Session;)Lkotlinx/coroutines/Job;
+}
+
+public final class ch/softappeal/yass2/coroutines/session/HeartbeatKt {
+	public static final fun getHeartbeatId ()Lch/softappeal/yass2/core/remote/ServiceId;
+}
+
 public abstract interface annotation class ch/softappeal/yass2/coroutines/session/MustBeImplementedByAcceptor : java/lang/annotation/Annotation {
 }
 
@@ -33,13 +54,14 @@ public final class ch/softappeal/yass2/coroutines/session/Packet {
 }
 
 public abstract class ch/softappeal/yass2/coroutines/session/Session {
-	public fun <init> ()V
+	public fun <init> (Lch/softappeal/yass2/coroutines/session/HeartbeatConfig;)V
+	public synthetic fun <init> (Lch/softappeal/yass2/coroutines/session/HeartbeatConfig;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun close (Ljava/lang/Exception;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun close (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	protected fun closed (Ljava/lang/Exception;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	protected final fun getClientTunnel ()Lkotlin/jvm/functions/Function2;
+	public final fun getClientTunnel ()Lkotlin/jvm/functions/Function2;
 	public final fun getConnection ()Lch/softappeal/yass2/coroutines/session/Connection;
-	protected fun getServerTunnel ()Lkotlin/jvm/functions/Function2;
+	public fun getServerServices ()Ljava/util/List;
 	public final fun isClosed (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun opened ()V
 }
@@ -51,10 +73,5 @@ public final class ch/softappeal/yass2/coroutines/session/SessionConnectorKt {
 
 public final class ch/softappeal/yass2/coroutines/session/SessionKt {
 	public static final fun receiveLoop (Lch/softappeal/yass2/coroutines/session/Connection;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class ch/softappeal/yass2/coroutines/session/SessionWatcherKt {
-	public static final fun watch (Lkotlinx/coroutines/CoroutineScope;Lch/softappeal/yass2/coroutines/session/Session;JJLkotlin/jvm/functions/Function1;)Lkotlinx/coroutines/Job;
-	public static synthetic fun watch$default (Lkotlinx/coroutines/CoroutineScope;Lch/softappeal/yass2/coroutines/session/Session;JJLkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/coroutines/Job;
 }
 

@@ -15,12 +15,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertSame
 
-private val TestTunnel = tunnel(CalculatorId.service(CalculatorImpl), EchoId.service(EchoImpl))
+private val TestTunnel = tunnel(listOf(CalculatorId.service(CalculatorImpl), EchoId.service(EchoImpl)))
 
 class RemoteTest {
     @Test
     fun duplicatedService() = assertFailsMessage<IllegalArgumentException>("duplicated service") {
-        tunnel(EchoId.service(EchoImpl), EchoId.service(EchoImpl))
+        tunnel(listOf(EchoId.service(EchoImpl), EchoId.service(EchoImpl)))
     }
 
     @Test
@@ -34,7 +34,7 @@ class RemoteTest {
     @Test
     fun noFunction() = runTest {
         assertFailsMessage<IllegalStateException>("service 'calc' has no function 'noParametersNoResult'") {
-            ServiceId<Echo>(CalculatorId.id).proxy(tunnel(CalculatorId.service(CalculatorImpl))).noParametersNoResult()
+            ServiceId<Echo>(CalculatorId.id).proxy(tunnel(listOf(CalculatorId.service(CalculatorImpl)))).noParametersNoResult()
         }
     }
 
@@ -62,7 +62,7 @@ class RemoteTest {
     }
 }
 
-fun tunnel(context: suspend () -> Any): Tunnel = tunnel(
+fun serverServices(context: suspend () -> Any) = listOf(
     CalculatorId.service(CalculatorImpl),
     EchoId.service(EchoImpl.proxy { _, _, invoke ->
         println("context<${context()}>")
