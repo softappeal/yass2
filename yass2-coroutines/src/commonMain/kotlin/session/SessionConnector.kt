@@ -6,17 +6,17 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-public typealias SessionConnector = suspend (sessionFactory: SessionFactory) -> Unit
+public typealias SessionConnector<C> = suspend (sessionFactory: SessionFactory<C>) -> Unit
 
 /** Launches a new coroutine that maintains a session. */
-public fun CoroutineScope.connect(
-    sessionFactory: SessionFactory,
+public fun <C : Connection> CoroutineScope.connect(
+    sessionFactory: SessionFactory<C>,
     intervalMillis: Long,
-    sessionConnector: SessionConnector,
+    sessionConnector: SessionConnector<C>,
 ): Job {
     require(intervalMillis > 0)
     return launch {
-        var session: Session? = null
+        var session: Session<C>? = null
         while (true) {
             if (session == null || session.isClosed()) {
                 try {

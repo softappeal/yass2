@@ -89,7 +89,7 @@ class SocketTest {
                     launch {
                         socket.receiveLoop(
                             ContractSerializer,
-                            acceptorSessionFactory { (connection as SocketConnection).socket.remoteAddress }
+                            acceptorSessionFactory { connection.socket.remoteAddress }
                         )
                     }
                 }

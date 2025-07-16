@@ -29,8 +29,7 @@ val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
             receiveLoop(
                 ContractSerializer,
                 acceptorSessionFactory {
-                    ((connection as WebSocketConnection).session as WebSocketServerSession)
-                        .call.request.headers[DEMO_HEADER_KEY] ?: "no-header"
+                    (connection.session as WebSocketServerSession).call.request.headers[DEMO_HEADER_KEY] ?: "no-header"
                 }
             )
         }

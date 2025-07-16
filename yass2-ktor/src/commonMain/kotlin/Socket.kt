@@ -92,7 +92,7 @@ public class SocketConnection internal constructor(
     }
 }
 
-public suspend fun Socket.receiveLoop(serializer: Serializer, sessionFactory: SessionFactory): Unit = use {
+public suspend fun Socket.receiveLoop(serializer: Serializer, sessionFactory: SessionFactory<SocketConnection>): Unit = use {
     val readChannel = openReadChannel()
     SocketConnection(serializer, this).receiveLoop(sessionFactory) { readChannel.read(serializer) as Packet? }
 }

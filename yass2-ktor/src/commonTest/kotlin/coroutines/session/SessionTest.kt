@@ -22,8 +22,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-fun CoroutineScope.acceptorSessionFactory(context: suspend Session.() -> Any): SessionFactory = {
-    object : Session() {
+fun <C : Connection> CoroutineScope.acceptorSessionFactory(context: suspend Session<C>.() -> Any): SessionFactory<C> = {
+    object : Session<C>() {
         override val serverTunnel = tunnel { context() }
 
         override fun opened() {
@@ -44,8 +44,8 @@ fun CoroutineScope.acceptorSessionFactory(context: suspend Session.() -> Any): S
     }
 }
 
-fun CoroutineScope.initiatorSessionFactory(): SessionFactory = {
-    object : Session() {
+fun <C : Connection> CoroutineScope.initiatorSessionFactory(): SessionFactory<C> = {
+    object : Session<C>() {
         override val serverTunnel = tunnel(EchoId.service(EchoImpl))
 
         override fun opened() {
@@ -66,8 +66,8 @@ fun CoroutineScope.initiatorSessionFactory(): SessionFactory = {
 }
 
 private suspend fun localConnect(
-    sessionFactory1: SessionFactory,
-    sessionFactory2: SessionFactory,
+    sessionFactory1: SessionFactory<Connection>,
+    sessionFactory2: SessionFactory<Connection>,
 ) {
     class LocalConnection : Connection {
         val channel = Channel<Packet?>(1)
@@ -89,10 +89,10 @@ private suspend fun localConnect(
     }
 }
 
-private suspend fun CoroutineScope.heartbeatTest(open: suspend Session.(echo: Echo) -> Unit) {
+private suspend fun CoroutineScope.heartbeatTest(open: suspend Session<Connection>.(echo: Echo) -> Unit) {
     localConnect(
         {
-            object : Session() {
+            object : Session<Connection>() {
                 override fun opened() {
                     launch {
                         assertFalse(isClosed())
@@ -105,7 +105,7 @@ private suspend fun CoroutineScope.heartbeatTest(open: suspend Session.(echo: Ec
             }
         },
         {
-            object : Session() {
+            object : Session<Connection>() {
                 override val serverTunnel = tunnel(EchoId.service(EchoImpl))
                 override suspend fun closed(e: Exception?) = println("session2 closed: $e")
             }
@@ -176,7 +176,7 @@ class SessionTest {
     fun connect() = runTest {
         val counter = AtomicInt(0)
         val initiatorSessionFactory = {
-            object : Session() {
+            object : Session<Connection>() {
                 override fun opened() {
                     launch {
                         counter.incrementAndFetch()
@@ -194,7 +194,7 @@ class SessionTest {
             }
         }
         val acceptorSessionFactory = {
-            object : Session() {
+            object : Session<Connection>() {
                 override val serverTunnel = tunnel(EchoId.service(EchoImpl))
                 override suspend fun closed(e: Exception?) {
                     counter.incrementAndFetch()

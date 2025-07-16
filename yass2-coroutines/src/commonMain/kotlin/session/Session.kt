@@ -28,7 +28,7 @@ public interface Connection {
     public suspend fun closed()
 }
 
-public abstract class Session {
+public abstract class Session<C : Connection> {
     public open fun opened() {}
 
     /** [e] is `null` for regular close. */
@@ -69,8 +69,8 @@ public abstract class Session {
 
     protected open val serverTunnel: Tunnel = { throw UnsupportedOperationException() }
 
-    private lateinit var _connection: Connection
-    public var connection: Connection
+    private lateinit var _connection: C
+    public var connection: C
         get() = _connection
         internal set(value) {
             _connection = value
@@ -132,9 +132,9 @@ public abstract class Session {
     }
 }
 
-public typealias SessionFactory = () -> Session
+public typealias SessionFactory<C> = () -> Session<C>
 
-public suspend fun Connection.receiveLoop(sessionFactory: SessionFactory, receive: suspend () -> Packet?) {
+public suspend fun <C : Connection> C.receiveLoop(sessionFactory: SessionFactory<C>, receive: suspend () -> Packet?) {
     sessionFactory()
         .apply { connection = this@receiveLoop }
         .receiveLoop(receive)
