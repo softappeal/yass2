@@ -10,9 +10,7 @@ import ch.softappeal.yass2.coroutines.AtomicInt
 import ch.softappeal.yass2.coroutines.ThreadSafeMap
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.AbstractFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
@@ -26,9 +24,8 @@ public interface FlowService<out F, I> {
 
 @ExperimentalApi
 public fun <F, I> FlowService<F, I>.createFlow(flowId: I): Flow<F> =
-    @OptIn(ExperimentalCoroutinesApi::class) // TODO: might become binary incompatible with future versions
-    object : AbstractFlow<F>() {
-        override suspend fun collectSafely(collector: FlowCollector<F>) {
+    object : Flow<F> {
+        override suspend fun collect(collector: FlowCollector<F>) {
             val collectId = create(flowId)
             try {
                 while (true) {
