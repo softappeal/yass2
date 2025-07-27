@@ -1,3 +1,5 @@
+@file:OptIn(InternalApi::class)
+
 package ch.softappeal.yass2.core.serialize.string
 
 import ch.softappeal.yass2.core.InternalApi
@@ -73,7 +75,6 @@ public abstract class StringWriter(
     }
 
     protected fun writePropertyBuiltIn(value: Any?, encoderId: Int): Boolean {
-        @OptIn(InternalApi::class)
         when (encoderId) {
             STRING_STRING_ENCODER_ID -> writeStringBuiltIn(value as String)
             STRING_BOOLEAN_ENCODER_ID -> writeString(if (value as Boolean) TRUE else FALSE)
@@ -289,5 +290,3 @@ public abstract class StringSerializer(stringEncoders: List<StringEncoder<*>>) :
 public fun StringSerializer.toString(value: Any?): String = toByteArray(value).decodeToString(throwOnInvalidSequence = true)
 public fun StringSerializer.fromString(string: String): Any? =
     fromByteArray(string.encodeToByteArray(throwOnInvalidSequence = true))
-
-public annotation class StringEncoderObjects(vararg val value: KClass<out BaseStringEncoder<*>>)

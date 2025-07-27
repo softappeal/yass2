@@ -1,13 +1,8 @@
-@file:Suppress("DuplicatedCode")
-
-package ch.softappeal.yass2.generate.reflect
+package ch.softappeal.yass2.generate
 
 import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.Service
 import ch.softappeal.yass2.core.remote.ServiceId
-import ch.softappeal.yass2.generate.CSY
-import ch.softappeal.yass2.generate.CodeWriter
-import ch.softappeal.yass2.generate.sortMethods
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.memberFunctions
@@ -36,7 +31,16 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
 
     val functions = service.memberFunctions
         .filter { it.javaMethod!!.declaringClass != Any::class.java }
-        .sortMethods({ service.qualifiedName!! }, { name }, { isSuspend })
+        .onEach {
+            require(it.isSuspend) { "method ${service.qualifiedName}.${it.name} must be suspend" }
+        }
+        .sortedBy { it.name }
+        .apply {
+            val methodNames = map { it.name }
+            require(methodNames.hasNoDuplicates()) {
+                "interface ${service.qualifiedName} has overloaded methods ${methodNames.duplicates()}" // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
+            }
+        }
 
     writeLine()
     writeNestedLine("public fun${service.types} ${service.withTypes}.proxy(") {

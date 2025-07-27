@@ -1,3 +1,5 @@
+@file:OptIn(InternalApi::class)
+
 package ch.softappeal.yass2.core.serialize.string
 
 import ch.softappeal.yass2.core.InternalApi
@@ -118,10 +120,7 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
                     val encoderId = encoder.encoderId(name)
 
                     @OptIn(NotJsPlatform::class)
-                    val value = when (
-                        val propertyEncoder =
-                            if (encoderId != @OptIn(InternalApi::class) STRING_NO_ENCODER_ID) encoder(encoderId) else null
-                    ) {
+                    val value = when (val propertyEncoder = if (encoderId != STRING_NO_ENCODER_ID) encoder(encoderId) else null) {
                         is IntStringEncoder,
                         is LongStringEncoder,
                         is DoubleStringEncoder,

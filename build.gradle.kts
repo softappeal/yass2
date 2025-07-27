@@ -20,7 +20,6 @@ plugins {
     alias(libs.plugins.dokka)
     alias(libs.plugins.publish)
     alias(libs.plugins.compatibility)
-    alias(libs.plugins.ksp)
 }
 
 apiValidation {
@@ -108,7 +107,6 @@ val generateProject = project(":yass2-generate") {
                 dependencies {
                     api(coreProject)
                     implementation(kotlin("reflect"))
-                    implementation(libraries.ksp)
                 }
             }
         }
@@ -135,7 +133,6 @@ val coroutinesProject = project(":yass2-coroutines") {
 }
 
 val ktorProject = project(":yass2-ktor") {
-    apply(plugin = "com.google.devtools.ksp")
     kotlin {
         sourceSets {
             commonMain {
@@ -154,13 +151,9 @@ val ktorProject = project(":yass2-ktor") {
                 dependencies {
                     implementation(generateProject)
                     implementation(libraries.bundles.ktor.cio)
-                    implementation(libraries.kct)
                 }
             }
         }
-    }
-    dependencies {
-        add("kspJvmTest", generateProject)
     }
 }
 
@@ -172,7 +165,6 @@ dependencies {
 }
 
 project(":tutorial") {
-    apply(plugin = "com.google.devtools.ksp")
     kotlin {
         sourceSets {
             commonMain {
@@ -183,13 +175,11 @@ project(":tutorial") {
             }
             jvmTest {
                 dependencies {
+                    implementation(generateProject)
                     implementation(kotlin("test"))
                 }
             }
         }
-    }
-    dependencies {
-        add("kspJvm", generateProject)
     }
 }
 

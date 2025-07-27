@@ -1,13 +1,11 @@
 [versions]
 
-kotlin        = "2.2.0"        # https://github.com/JetBrains/kotlin
-ksp           = "2.2.0-2.0.2"  # https://github.com/google/ksp
-coroutines    = "1.10.2"       # https://github.com/Kotlin/kotlinx.coroutines
-ktor          = "3.2.2"        # https://github.com/ktorio/ktor
-dokka         = "2.0.0"        # https://github.com/Kotlin/dokka
-publish       = "0.33.0"       # https://github.com/vanniktech/gradle-maven-publish-plugin
-compatibility = "0.18.0"       # https://github.com/Kotlin/binary-compatibility-validator
-kct           = "1.6.0"        # https://github.com/tschuchortdev/kotlin-compile-testing
+kotlin        = "2.2.0"  # https://github.com/JetBrains/kotlin
+coroutines    = "1.10.2" # https://github.com/Kotlin/kotlinx.coroutines
+ktor          = "3.2.2"  # https://github.com/ktorio/ktor
+dokka         = "2.0.0"  # https://github.com/Kotlin/dokka
+publish       = "0.33.0" # https://github.com/vanniktech/gradle-maven-publish-plugin
+compatibility = "0.18.0" # https://github.com/Kotlin/binary-compatibility-validator
 
 [libraries]
 
@@ -22,10 +20,6 @@ server-cio        = { module = "io.ktor:ktor-server-cio"       , version.ref = "
 server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
 network           = { module = "io.ktor:ktor-network"          , version.ref = "ktor" }
 
-ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
-
-kct = { module = "com.github.tschuchortdev:kotlin-compile-testing-ksp", version.ref = "kct" }
-
 [bundles]
 
 ktor     = [ "client-core", "server-core", "client-websockets", "network" ]
@@ -37,4 +31,3 @@ multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotl
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 publish = { id = "com.vanniktech.maven.publish", version.ref = "publish" }
 compatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "compatibility" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

@@ -8,6 +8,3 @@ public typealias Interceptor = suspend (function: String, parameters: List<Any?>
 public operator fun Interceptor.plus(intercept: Interceptor): Interceptor = { function, parameters, invoke ->
     this(function, parameters) { intercept(function, parameters, invoke) }
 }
-
-@Target(AnnotationTarget.CLASS)
-public annotation class Proxy
