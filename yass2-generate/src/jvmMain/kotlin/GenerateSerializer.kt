@@ -58,11 +58,6 @@ private abstract class Property(property: KProperty1<out Any, *>) {
     protected val classifier = returnType.classifier
 }
 
-/**
- * Concrete classes must have a primary constructor and all its parameters must be properties.
- * Body properties are allowed but must be of `var` kind.
- * Inheritance is supported.
- */
 private class Properties<P : Property>(klass: KClass<*>, createProperty: (property: KProperty1<out Any, *>) -> P) {
     val parameter: List<P>
     val body: List<P>
@@ -98,7 +93,6 @@ private class Properties<P : Property>(klass: KClass<*>, createProperty: (proper
     }
 }
 
-/** [concreteAndEnumClasses]: see [Properties]. */
 public fun CodeWriter.generateBinarySerializer(
     encoderObjects: List<KClass<out BinaryEncoder<*>>>,
     concreteAndEnumClasses: List<KClass<*>>,
@@ -161,7 +155,6 @@ public fun CodeWriter.generateBinarySerializer(
     }
 }
 
-/** [concreteAndEnumClasses]: see [Properties]. */
 public fun CodeWriter.generateStringEncoders(
     encoderObjects: List<KClass<out BaseStringEncoder<*>>>,
     concreteAndEnumClasses: List<KClass<*>>,
