@@ -2,7 +2,7 @@
 
 kotlin        = "2.2.0"  # https://github.com/JetBrains/kotlin
 coroutines    = "1.10.2" # https://github.com/Kotlin/kotlinx.coroutines
-ktor          = "3.2.2"  # https://github.com/ktorio/ktor
+ktor          = "3.2.3"  # https://github.com/ktorio/ktor
 dokka         = "2.0.0"  # https://github.com/Kotlin/dokka
 publish       = "0.34.0" # https://github.com/vanniktech/gradle-maven-publish-plugin
 compatibility = "0.18.1" # https://github.com/Kotlin/binary-compatibility-validator
