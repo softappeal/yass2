@@ -164,6 +164,7 @@ class SessionTest {
             val job = heartbeat(200, 100) {
                 println("heartbeat")
                 delay(timeoutMillis)
+                @Suppress("AssignedValueIsNeverRead")
                 timeoutMillis += 75
             }
             delay(700)

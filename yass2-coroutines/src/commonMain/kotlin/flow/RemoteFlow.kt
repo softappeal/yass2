@@ -11,10 +11,10 @@ import ch.softappeal.yass2.coroutines.ThreadSafeMap
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
-import kotlin.coroutines.coroutineContext
 
 public interface FlowService<out F, I> {
     public suspend fun create(flowId: I): Int
@@ -50,7 +50,7 @@ public fun <F, I> flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I>
             val collectId = nextCollectId.incrementAndFetch()
             val channel = Channel<Reply?>()
             collectIdToChannel.put(collectId, channel)
-            CoroutineScope(coroutineContext).launch {
+            CoroutineScope(currentCoroutineContext()).launch {
                 tryFinally({
                     try {
                         flow.collect { channel.send(ValueReply(it)) }
