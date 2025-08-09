@@ -3,7 +3,6 @@
 package ch.softappeal.yass2.core.serialize.string
 
 import ch.softappeal.yass2.core.InternalApi
-import ch.softappeal.yass2.core.NotJsPlatform
 import ch.softappeal.yass2.core.serialize.Reader
 import ch.softappeal.yass2.core.serialize.Writer
 
@@ -118,8 +117,6 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
                     val name = readUntil { expectedCodePoint(EQUALS) }
                     readNextCodePointAndSkipWhitespace()
                     val encoderId = encoder.encoderId(name)
-
-                    @OptIn(NotJsPlatform::class)
                     val value = when (val propertyEncoder = if (encoderId != STRING_NO_ENCODER_ID) encoder(encoderId) else null) {
                         is IntStringEncoder,
                         is LongStringEncoder,
@@ -199,5 +196,5 @@ public operator fun <E : Enum<E>> E.invoke(): E = this // NOTE: needed for easy 
 /** NOTE: Provide a `constructor` for each [BaseStringEncoder] (needed for easy parsing of base types). */
 public fun Int(string: String): Int = IntStringEncoder.read(string)
 public fun Long(string: String): Long = LongStringEncoder.read(string)
-public fun Double(string: String): Double = @OptIn(NotJsPlatform::class) DoubleStringEncoder.read(string)
+public fun Double(string: String): Double = DoubleStringEncoder.read(string)
 public fun ByteArray(string: String): ByteArray = ByteArrayStringEncoder.read(string)

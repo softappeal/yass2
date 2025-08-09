@@ -3,7 +3,6 @@
 package ch.softappeal.yass2.generate
 
 import ch.softappeal.yass2.core.InternalApi
-import ch.softappeal.yass2.core.NotJsPlatform
 import ch.softappeal.yass2.core.serialize.binary.BINARY_FIRST_ENCODER_ID
 import ch.softappeal.yass2.core.serialize.binary.BINARY_LIST_ENCODER_ID
 import ch.softappeal.yass2.core.serialize.binary.BINARY_NO_ENCODER_ID
@@ -12,7 +11,6 @@ import ch.softappeal.yass2.core.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.core.serialize.binary.EnumBinaryEncoder
 import ch.softappeal.yass2.core.serialize.string.BaseStringEncoder
 import ch.softappeal.yass2.core.serialize.string.ClassStringEncoder
-import ch.softappeal.yass2.core.serialize.string.DoubleStringEncoder
 import ch.softappeal.yass2.core.serialize.string.EnumStringEncoder
 import ch.softappeal.yass2.core.serialize.string.STRING_BOOLEAN_ENCODER_ID
 import ch.softappeal.yass2.core.serialize.string.STRING_FIRST_ENCODER_ID
@@ -191,11 +189,7 @@ public fun CodeWriter.generateStringEncoders(
         writeNestedLine("// ${Boolean::class.qualifiedName}: $STRING_BOOLEAN_ENCODER_ID")
         writeNestedLine("// ${List::class.qualifiedName}: $STRING_LIST_ENCODER_ID")
         var encoderId = STRING_FIRST_ENCODER_ID
-        encoderObjects.forEach { type ->
-            @OptIn(NotJsPlatform::class)
-            if (type == DoubleStringEncoder::class) writeNestedLine("@OptIn(${NotJsPlatform::class.qualifiedName}::class)")
-            writeNestedLine("${type.qualifiedName}, // ${encoderId++}")
-        }
+        encoderObjects.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
         enumClasses.forEach { type ->
             writeNestedLine("${EnumStringEncoder::class.qualifiedName}(", "),") {
                 writeNestedLine("${type.qualifiedName}::class, // ${encoderId++}")

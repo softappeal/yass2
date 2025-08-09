@@ -17,8 +17,3 @@ public annotation class InternalApi
 @Retention(AnnotationRetention.BINARY)
 @RequiresOptIn(level = RequiresOptIn.Level.ERROR)
 public annotation class ExperimentalApi
-
-@MustBeDocumented
-@Retention(AnnotationRetention.BINARY)
-@RequiresOptIn(level = RequiresOptIn.Level.ERROR)
-public annotation class NotJsPlatform

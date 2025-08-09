@@ -419,7 +419,6 @@ public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.String
     // kotlin.collections.List: 2
     ch.softappeal.yass2.core.serialize.string.IntStringEncoder, // 3
     ch.softappeal.yass2.core.serialize.string.LongStringEncoder, // 4
-    @OptIn(ch.softappeal.yass2.core.NotJsPlatform::class)
     ch.softappeal.yass2.core.serialize.string.DoubleStringEncoder, // 5
     ch.softappeal.yass2.core.serialize.string.ByteArrayStringEncoder, // 6
     ch.softappeal.yass2.core.serialize.string.EnumStringEncoder(

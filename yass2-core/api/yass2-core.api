@@ -13,9 +13,6 @@ public final class ch/softappeal/yass2/core/InterceptorKt {
 public abstract interface annotation class ch/softappeal/yass2/core/InternalApi : java/lang/annotation/Annotation {
 }
 
-public abstract interface annotation class ch/softappeal/yass2/core/NotJsPlatform : java/lang/annotation/Annotation {
-}
-
 public final class ch/softappeal/yass2/core/remote/ExceptionReply : ch/softappeal/yass2/core/remote/Reply {
 	public fun <init> (Ljava/lang/Exception;)V
 	public final fun getException ()Ljava/lang/Exception;
