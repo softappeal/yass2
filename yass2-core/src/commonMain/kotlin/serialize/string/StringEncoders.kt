@@ -15,6 +15,7 @@ public object LongStringEncoder : BaseStringEncoder<Long>(
     { toLong() }
 )
 
+/** NOTE: Doesn't work for [whole numbers on the JS platform](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger). */
 public object DoubleStringEncoder : BaseStringEncoder<Double>(
     Double::class,
     { value -> value.toString() },

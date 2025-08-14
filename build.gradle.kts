@@ -40,6 +40,14 @@ allprojects {
         jvm()
         if (project.name in setOf("yass2-core", "yass2-coroutines", "yass2-ktor")) {
             if (webPlatform) {
+                js {
+                    outputModuleName.set(project.name)
+                    nodejs()
+                    binaries.executable()
+                    compilerOptions {
+                        target.set("es2015")
+                    }
+                }
                 @OptIn(ExperimentalWasmDsl::class)
                 wasmJs {
                     outputModuleName.set(project.name)
