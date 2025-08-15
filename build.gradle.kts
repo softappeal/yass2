@@ -141,7 +141,7 @@ val ktorProject = project(":yass2-ktor") {
                     api(libraries.bundles.ktor)
                 }
             }
-            val commonTest by getting { // tests are here due to https://youtrack.jetbrains.com/issue/KT-35073
+            commonTest { // tests are here due to https://youtrack.jetbrains.com/issue/KT-35073
                 dependencies {
                     implementation(kotlin("test"))
                     implementation(libraries.coroutines.test)
@@ -152,15 +152,6 @@ val ktorProject = project(":yass2-ktor") {
                     implementation(generateProject)
                     implementation(libraries.bundles.ktor.cio)
                 }
-            }
-            val webTest by creating { // TODO: remove if Kotlin 2.2.20
-                dependsOn(commonTest)
-            }
-            jsTest {
-                dependsOn(webTest)
-            }
-            wasmJsTest {
-                dependsOn(webTest)
             }
         }
     }
