@@ -76,7 +76,7 @@ class KTypeToTypeTest {
     fun complexTest() {
         assertType(
             "kotlin.collections.Map<kotlin.collections.Map<in A, *>?, kotlin.collections.Map<out B?, kotlin.Int?>>",
-            Complex<String, Double>::action,
+            Complex<String, Int>::action,
         )
     }
 

@@ -168,6 +168,7 @@ class SessionTest {
         }
     }
 
+    @Suppress("ASSIGNED_VALUE_IS_NEVER_READ")
     @Test
     fun heartbeatTimeout() = runTest {
         heartbeatTest {
@@ -175,7 +176,6 @@ class SessionTest {
             val job = heartbeat(200, 100) {
                 println("heartbeat")
                 delay(timeoutMillis)
-                @Suppress("AssignedValueIsNeverRead")
                 timeoutMillis += 20
             }
             delay(10_000)

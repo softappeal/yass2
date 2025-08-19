@@ -1,0 +1,62 @@
+// Klib ABI Dump
+// Targets: [js, linuxArm64, linuxX64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <ch.softappeal.yass2:yass2-coroutines>
+open annotation class ch.softappeal.yass2.coroutines.session/MustBeImplementedByAcceptor : kotlin/Annotation { // ch.softappeal.yass2.coroutines.session/MustBeImplementedByAcceptor|null[0]
+    constructor <init>() // ch.softappeal.yass2.coroutines.session/MustBeImplementedByAcceptor.<init>|<init>(){}[0]
+}
+
+open annotation class ch.softappeal.yass2.coroutines.session/MustBeImplementedByInitiator : kotlin/Annotation { // ch.softappeal.yass2.coroutines.session/MustBeImplementedByInitiator|null[0]
+    constructor <init>() // ch.softappeal.yass2.coroutines.session/MustBeImplementedByInitiator.<init>|<init>(){}[0]
+}
+
+abstract interface <#A: out kotlin/Any?, #B: kotlin/Any?> ch.softappeal.yass2.coroutines.flow/FlowService { // ch.softappeal.yass2.coroutines.flow/FlowService|null[0]
+    abstract suspend fun cancel(kotlin/Int) // ch.softappeal.yass2.coroutines.flow/FlowService.cancel|cancel(kotlin.Int){}[0]
+    abstract suspend fun create(#B): kotlin/Int // ch.softappeal.yass2.coroutines.flow/FlowService.create|create(1:1){}[0]
+    abstract suspend fun next(kotlin/Int): #A? // ch.softappeal.yass2.coroutines.flow/FlowService.next|next(kotlin.Int){}[0]
+}
+
+abstract interface ch.softappeal.yass2.coroutines.session/Connection { // ch.softappeal.yass2.coroutines.session/Connection|null[0]
+    abstract suspend fun closed() // ch.softappeal.yass2.coroutines.session/Connection.closed|closed(){}[0]
+    abstract suspend fun write(ch.softappeal.yass2.coroutines.session/Packet?) // ch.softappeal.yass2.coroutines.session/Connection.write|write(ch.softappeal.yass2.coroutines.session.Packet?){}[0]
+}
+
+abstract class <#A: ch.softappeal.yass2.coroutines.session/Connection> ch.softappeal.yass2.coroutines.session/Session { // ch.softappeal.yass2.coroutines.session/Session|null[0]
+    constructor <init>() // ch.softappeal.yass2.coroutines.session/Session.<init>|<init>(){}[0]
+
+    final val clientTunnel // ch.softappeal.yass2.coroutines.session/Session.clientTunnel|{}clientTunnel[0]
+        final fun <get-clientTunnel>(): kotlin.coroutines/SuspendFunction1<ch.softappeal.yass2.core.remote/Request, ch.softappeal.yass2.core.remote/Reply> // ch.softappeal.yass2.coroutines.session/Session.clientTunnel.<get-clientTunnel>|<get-clientTunnel>(){}[0]
+    open val serverTunnel // ch.softappeal.yass2.coroutines.session/Session.serverTunnel|{}serverTunnel[0]
+        open fun <get-serverTunnel>(): kotlin.coroutines/SuspendFunction1<ch.softappeal.yass2.core.remote/Request, ch.softappeal.yass2.core.remote/Reply> // ch.softappeal.yass2.coroutines.session/Session.serverTunnel.<get-serverTunnel>|<get-serverTunnel>(){}[0]
+
+    final var connection // ch.softappeal.yass2.coroutines.session/Session.connection|{}connection[0]
+        final fun <get-connection>(): #A // ch.softappeal.yass2.coroutines.session/Session.connection.<get-connection>|<get-connection>(){}[0]
+
+    final fun (kotlinx.coroutines/CoroutineScope).heartbeat(kotlin/Long, kotlin/Long, kotlin.coroutines/SuspendFunction0<kotlin/Unit>): kotlinx.coroutines/Job // ch.softappeal.yass2.coroutines.session/Session.heartbeat|heartbeat@kotlinx.coroutines.CoroutineScope(kotlin.Long;kotlin.Long;kotlin.coroutines.SuspendFunction0<kotlin.Unit>){}[0]
+    final suspend fun close() // ch.softappeal.yass2.coroutines.session/Session.close|close(){}[0]
+    final suspend fun close(kotlin/Exception) // ch.softappeal.yass2.coroutines.session/Session.close|close(kotlin.Exception){}[0]
+    final suspend fun isClosed(): kotlin/Boolean // ch.softappeal.yass2.coroutines.session/Session.isClosed|isClosed(){}[0]
+    open fun opened() // ch.softappeal.yass2.coroutines.session/Session.opened|opened(){}[0]
+    open suspend fun closed(kotlin/Exception?) // ch.softappeal.yass2.coroutines.session/Session.closed|closed(kotlin.Exception?){}[0]
+}
+
+final class ch.softappeal.yass2.coroutines.session/Packet { // ch.softappeal.yass2.coroutines.session/Packet|null[0]
+    constructor <init>(kotlin/Int, ch.softappeal.yass2.core.remote/Message) // ch.softappeal.yass2.coroutines.session/Packet.<init>|<init>(kotlin.Int;ch.softappeal.yass2.core.remote.Message){}[0]
+
+    final val message // ch.softappeal.yass2.coroutines.session/Packet.message|{}message[0]
+        final fun <get-message>(): ch.softappeal.yass2.core.remote/Message // ch.softappeal.yass2.coroutines.session/Packet.message.<get-message>|<get-message>(){}[0]
+    final val requestNumber // ch.softappeal.yass2.coroutines.session/Packet.requestNumber|{}requestNumber[0]
+        final fun <get-requestNumber>(): kotlin/Int // ch.softappeal.yass2.coroutines.session/Packet.requestNumber.<get-requestNumber>|<get-requestNumber>(){}[0]
+}
+
+final fun <#A: ch.softappeal.yass2.coroutines.session/Connection> (kotlinx.coroutines/CoroutineScope).ch.softappeal.yass2.coroutines.session/connect(kotlin/Function0<ch.softappeal.yass2.coroutines.session/Session<#A>>, kotlin/Long, kotlin.coroutines/SuspendFunction1<kotlin/Function0<ch.softappeal.yass2.coroutines.session/Session<#A>>, kotlin/Unit>): kotlinx.coroutines/Job // ch.softappeal.yass2.coroutines.session/connect|connect@kotlinx.coroutines.CoroutineScope(kotlin.Function0<ch.softappeal.yass2.coroutines.session.Session<0:0>>;kotlin.Long;kotlin.coroutines.SuspendFunction1<kotlin.Function0<ch.softappeal.yass2.coroutines.session.Session<0:0>>,kotlin.Unit>){0§<ch.softappeal.yass2.coroutines.session.Connection>}[0]
+final fun <#A: kotlin/Any?, #B: kotlin/Any?> (ch.softappeal.yass2.core.remote/ServiceId<ch.softappeal.yass2.coroutines.flow/FlowService<#A, #B>>).ch.softappeal.yass2.coroutines.flow/proxy(kotlin.coroutines/SuspendFunction1<ch.softappeal.yass2.core.remote/Request, ch.softappeal.yass2.core.remote/Reply>): ch.softappeal.yass2.coroutines.flow/FlowService<#A, #B> // ch.softappeal.yass2.coroutines.flow/proxy|proxy@ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.coroutines.flow.FlowService<0:0,0:1>>(kotlin.coroutines.SuspendFunction1<ch.softappeal.yass2.core.remote.Request,ch.softappeal.yass2.core.remote.Reply>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?, #B: kotlin/Any?> (ch.softappeal.yass2.core.remote/ServiceId<ch.softappeal.yass2.coroutines.flow/FlowService<#A, #B>>).ch.softappeal.yass2.coroutines.flow/service(ch.softappeal.yass2.coroutines.flow/FlowService<#A, #B>): ch.softappeal.yass2.core.remote/Service // ch.softappeal.yass2.coroutines.flow/service|service@ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.coroutines.flow.FlowService<0:0,0:1>>(ch.softappeal.yass2.coroutines.flow.FlowService<0:0,0:1>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?, #B: kotlin/Any?> (ch.softappeal.yass2.coroutines.flow/FlowService<#A, #B>).ch.softappeal.yass2.coroutines.flow/createFlow(#B): kotlinx.coroutines.flow/Flow<#A> // ch.softappeal.yass2.coroutines.flow/createFlow|createFlow@ch.softappeal.yass2.coroutines.flow.FlowService<0:0,0:1>(0:1){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?, #B: kotlin/Any?> (ch.softappeal.yass2.coroutines.flow/FlowService<#A, #B>).ch.softappeal.yass2.coroutines.flow/proxy(kotlin.coroutines/SuspendFunction3<kotlin/String, kotlin.collections/List<kotlin/Any?>, kotlin.coroutines/SuspendFunction0<kotlin/Any?>, kotlin/Any?>): ch.softappeal.yass2.coroutines.flow/FlowService<#A, #B> // ch.softappeal.yass2.coroutines.flow/proxy|proxy@ch.softappeal.yass2.coroutines.flow.FlowService<0:0,0:1>(kotlin.coroutines.SuspendFunction3<kotlin.String,kotlin.collections.List<kotlin.Any?>,kotlin.coroutines.SuspendFunction0<kotlin.Any?>,kotlin.Any?>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?, #B: kotlin/Any?> ch.softappeal.yass2.coroutines.flow/flowService(kotlin/Function1<#B, kotlinx.coroutines.flow/Flow<#A>>): ch.softappeal.yass2.coroutines.flow/FlowService<#A, #B> // ch.softappeal.yass2.coroutines.flow/flowService|flowService(kotlin.Function1<0:1,kotlinx.coroutines.flow.Flow<0:0>>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+final suspend fun <#A: ch.softappeal.yass2.coroutines.session/Connection> (#A).ch.softappeal.yass2.coroutines.session/receiveLoop(kotlin/Function0<ch.softappeal.yass2.coroutines.session/Session<#A>>, kotlin.coroutines/SuspendFunction0<ch.softappeal.yass2.coroutines.session/Packet?>) // ch.softappeal.yass2.coroutines.session/receiveLoop|receiveLoop@0:0(kotlin.Function0<ch.softappeal.yass2.coroutines.session.Session<0:0>>;kotlin.coroutines.SuspendFunction0<ch.softappeal.yass2.coroutines.session.Packet?>){0§<ch.softappeal.yass2.coroutines.session.Connection>}[0]

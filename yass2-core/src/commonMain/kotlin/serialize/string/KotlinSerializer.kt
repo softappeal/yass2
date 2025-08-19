@@ -72,10 +72,7 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
         override fun writeProperty(name: String, value: Any?, encoderId: Int) {
             writeProperty(name) {
                 when (value) {
-                    is Int,
-                    is Long,
-                    is Double,
-                        -> encoder(encoderId).write(this, value)
+                    is Int -> encoder(encoderId).write(this, value)
                     else -> writeObject(value)
                 }
             }
@@ -99,19 +96,18 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
                 readNextCodePointAndSkipWhitespace()
                 val encoderId = encoder.encoderId(name)
                 val value = when (val propertyEncoder = if (encoderId != STRING_NO_ENCODER_ID) encoder(encoderId) else null) {
-                    is IntStringEncoder,
-                    is LongStringEncoder,
-                    is DoubleStringEncoder,
-                        -> if (expectedCodePoint('n'.code)) {
-                        readNextCodePoint()
-                        checkExpectedCodePoint('u'.code)
-                        readNextCodePoint()
-                        checkExpectedCodePoint('l'.code)
-                        readNextCodePoint()
-                        checkExpectedCodePoint('l'.code)
-                        readNextCodePoint()
-                        null
-                    } else propertyEncoder.read(this)
+                    is IntStringEncoder -> {
+                        if (expectedCodePoint('n'.code)) {
+                            readNextCodePoint()
+                            checkExpectedCodePoint('u'.code)
+                            readNextCodePoint()
+                            checkExpectedCodePoint('l'.code)
+                            readNextCodePoint()
+                            checkExpectedCodePoint('l'.code)
+                            readNextCodePoint()
+                            null
+                        } else propertyEncoder.read(this)
+                    }
                     else -> readObject(this, nextCodePoint).apply { readNextCodePoint() }
                 }
                 skipWhitespace()
@@ -163,6 +159,4 @@ public operator fun <E : Enum<E>> E.invoke(): E = this // NOTE: needed for easy 
 
 /** NOTE: Provide a `constructor` for each [BaseStringEncoder] (needed for easy parsing of base types). */
 public fun Int(string: String): Int = IntStringEncoder.read(string)
-public fun Long(string: String): Long = LongStringEncoder.read(string)
-public fun Double(string: String): Double = DoubleStringEncoder.read(string)
 public fun ByteArray(string: String): ByteArray = ByteArrayStringEncoder.read(string)

@@ -1,11 +1,13 @@
 [versions]
 
-kotlin        = "2.2.10" # https://github.com/JetBrains/kotlin
-coroutines    = "1.10.2" # https://github.com/Kotlin/kotlinx.coroutines
-ktor          = "3.2.3"  # https://github.com/ktorio/ktor
-dokka         = "2.0.0"  # https://github.com/Kotlin/dokka
-publish       = "0.34.0" # https://github.com/vanniktech/gradle-maven-publish-plugin
-compatibility = "0.18.1" # https://github.com/Kotlin/binary-compatibility-validator
+# API
+kotlin     = "2.2.20"        # https://github.com/JetBrains/kotlin
+coroutines = "1.10.2"        # https://github.com/Kotlin/kotlinx.coroutines
+ktor       = "3.2.3"         # https://github.com/ktorio/ktor
+
+# build
+dokka      = "2.1.0-Beta"    # https://github.com/Kotlin/dokka
+publish    = "0.34.0"        # https://github.com/vanniktech/gradle-maven-publish-plugin
 
 [libraries]
 
@@ -30,4 +32,3 @@ ktor-cio = [ "client-cio" , "server-cio" , "server-websockets"            ]
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 publish = { id = "com.vanniktech.maven.publish", version.ref = "publish" }
-compatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "compatibility" }

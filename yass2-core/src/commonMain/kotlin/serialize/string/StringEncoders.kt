@@ -9,19 +9,6 @@ public object IntStringEncoder : BaseStringEncoder<Int>(
     { toInt() }
 )
 
-public object LongStringEncoder : BaseStringEncoder<Long>(
-    Long::class,
-    { value -> value.toString() },
-    { toLong() }
-)
-
-/** NOTE: Doesn't work for [whole numbers on the JS platform](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger). */
-public object DoubleStringEncoder : BaseStringEncoder<Double>(
-    Double::class,
-    { value -> value.toString() },
-    { toDouble() }
-)
-
 private val B64 = Base64.Default // uses A-Za-z0-9+/=
 
 public object ByteArrayStringEncoder : BaseStringEncoder<ByteArray>(

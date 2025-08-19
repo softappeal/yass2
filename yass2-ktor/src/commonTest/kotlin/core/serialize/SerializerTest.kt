@@ -11,11 +11,9 @@ import ch.softappeal.yass2.StringEncoders
 import ch.softappeal.yass2.Types
 import ch.softappeal.yass2.core.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.core.serialize.string.ByteArray
-import ch.softappeal.yass2.core.serialize.string.Double
 import ch.softappeal.yass2.core.serialize.string.Int
 import ch.softappeal.yass2.core.serialize.string.JsonSerializer
 import ch.softappeal.yass2.core.serialize.string.KotlinSerializer
-import ch.softappeal.yass2.core.serialize.string.Long
 import ch.softappeal.yass2.core.serialize.string.StringSerializer
 import ch.softappeal.yass2.core.serialize.string.TextSerializer
 import ch.softappeal.yass2.core.serialize.string.fromString
@@ -29,8 +27,6 @@ private val AllBaseTypes =
     Types(
         boolean = false,
         int = 1,
-        long = 2,
-        double = 123.456,
         string = "hello",
         bytes = ByteArray("AAEC"),
         gender = Gender.Female(),
@@ -39,8 +35,6 @@ private val AllBaseTypes =
             false,
             true,
             Int("-1"),
-            Long("2"),
-            Double("123.456"),
             "hello",
             ByteArray("AAEC"),
             Gender.Male(),
@@ -54,8 +48,6 @@ private val AllBaseTypes =
             Types(
                 boolean = true,
                 int = -123456,
-                long = 9223372036854775807,
-                double = 123.456,
                 string = "hello",
                 bytes = ByteArray("AAEC"),
                 gender = Gender.Female(),
@@ -67,8 +59,6 @@ private val AllBaseTypes =
                 ),
                 booleanOptional = null,
                 intOptional = null,
-                longOptional = null,
-                doubleOptional = null,
                 stringOptional = null,
                 bytesOptional = null,
                 genderOptional = null,
@@ -101,8 +91,6 @@ private val AllBaseTypes =
         ),
         booleanOptional = true,
         intOptional = 1,
-        longOptional = 2,
-        doubleOptional = 123.456,
         stringOptional = "hello",
         bytesOptional = ByteArray("AAEC"),
         genderOptional = Gender.Female(),
@@ -134,8 +122,6 @@ class SerializerTest {
                 Types(
                     boolean = false,
                     int = 1,
-                    long = 2,
-                    double = 123.456,
                     string = "hello",
                     bytes = ByteArray("AAEC"),
                     gender = Gender.Female(),
@@ -144,8 +130,6 @@ class SerializerTest {
                         false,
                         true,
                         Int("-1"),
-                        Long("2"),
-                        Double("123.456"),
                         "hello",
                         ByteArray("AAEC"),
                         Gender.Male(),
@@ -159,8 +143,6 @@ class SerializerTest {
                         Types(
                             boolean = true,
                             int = -123456,
-                            long = 9223372036854775807,
-                            double = 123.456,
                             string = "hello",
                             bytes = ByteArray("AAEC"),
                             gender = Gender.Female(),
@@ -172,8 +154,6 @@ class SerializerTest {
                             ),
                             booleanOptional = null,
                             intOptional = null,
-                            longOptional = null,
-                            doubleOptional = null,
                             stringOptional = null,
                             bytesOptional = null,
                             genderOptional = null,
@@ -206,8 +186,6 @@ class SerializerTest {
                     ),
                     booleanOptional = true,
                     intOptional = 1,
-                    longOptional = 2,
-                    doubleOptional = 123.456,
                     stringOptional = "hello",
                     bytesOptional = ByteArray("AAEC"),
                     genderOptional = Gender.Female(),
@@ -230,8 +208,6 @@ class SerializerTest {
                 Types(
                     boolean: false
                     int: 1
-                    long: 2
-                    double: 123.456
                     string: "hello"
                     bytes: AAEC
                     gender: Female
@@ -240,8 +216,6 @@ class SerializerTest {
                         false
                         true
                         Int(-1)
-                        Long(2)
-                        Double(123.456)
                         "hello"
                         ByteArray(AAEC)
                         Gender(Male)
@@ -255,8 +229,6 @@ class SerializerTest {
                         Types(
                             boolean: true
                             int: -123456
-                            long: 9223372036854775807
-                            double: 123.456
                             string: "hello"
                             bytes: AAEC
                             gender: Female
@@ -293,8 +265,6 @@ class SerializerTest {
                     )
                     booleanOptional: true
                     intOptional: 1
-                    longOptional: 2
-                    doubleOptional: 123.456
                     stringOptional: "hello"
                     bytesOptional: AAEC
                     genderOptional: Female
@@ -318,8 +288,6 @@ class SerializerTest {
                     "#": "Types",
                     "boolean": false,
                     "int": "1",
-                    "long": "2",
-                    "double": "123.456",
                     "string": "hello",
                     "bytes": "AAEC",
                     "gender": "Female",
@@ -328,8 +296,6 @@ class SerializerTest {
                         false,
                         true,
                         {"#Int":"-1"},
-                        {"#Long":"2"},
-                        {"#Double":"123.456"},
                         "hello",
                         {"#ByteArray":"AAEC"},
                         {"#Gender":"Male"},
@@ -344,8 +310,6 @@ class SerializerTest {
                             "#": "Types",
                             "boolean": true,
                             "int": "-123456",
-                            "long": "9223372036854775807",
-                            "double": "123.456",
                             "string": "hello",
                             "bytes": "AAEC",
                             "gender": "Female",
@@ -389,8 +353,6 @@ class SerializerTest {
                     },
                     "booleanOptional": true,
                     "intOptional": "1",
-                    "longOptional": "2",
-                    "doubleOptional": "123.456",
                     "stringOptional": "hello",
                     "bytesOptional": "AAEC",
                     "genderOptional": "Female",
@@ -410,7 +372,7 @@ class SerializerTest {
     @Test
     fun binarySerializer() {
         ch.softappeal.yass2.BinarySerializer.check(
-            "15, 0, 2, 4, 64, 94, -35, 47, 26, -97, -66, 119, 5, 104, 101, 108, 108, 111, 3, 0, 1, 2, 0, 14, 0, 2, 0, 2, 1, 3, 1, 4, 4, 5, 64, 94, -35, 47, 26, -97, -66, 119, 6, 5, 104, 101, 108, 108, 111, 7, 3, 0, 1, 2, 8, 1, 1, 2, 3, 2, 1, 2, 6, 5, 104, 101, 108, 108, 111, 6, 5, 119, 111, 114, 108, 100, 15, 1, -1, -120, 15, -2, -1, -1, -1, -1, -1, -1, -1, -1, 1, 64, 94, -35, 47, 26, -97, -66, 119, 5, 104, 101, 108, 108, 111, 3, 0, 1, 2, 0, 0, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 11, 10, 20, 40, 2, 4, 12, 16, 8, 12, 14, 4, 20, 40, 1, 1, 1, 2, 1, 4, 1, 64, 94, -35, 47, 26, -97, -66, 119, 1, 5, 104, 101, 108, 108, 111, 1, 3, 0, 1, 2, 1, 0, 1, 1, 6, 5, 104, 101, 108, 108, 111, 1, 60, 80"
+            "13, 0, 2, 5, 104, 101, 108, 108, 111, 3, 0, 1, 2, 0, 12, 0, 2, 0, 2, 1, 3, 1, 4, 5, 104, 101, 108, 108, 111, 5, 3, 0, 1, 2, 6, 1, 1, 2, 3, 2, 1, 2, 4, 5, 104, 101, 108, 108, 111, 4, 5, 119, 111, 114, 108, 100, 13, 1, -1, -120, 15, 5, 104, 101, 108, 108, 111, 3, 0, 1, 2, 0, 0, 2, 4, 0, 0, 0, 0, 0, 0, 0, 11, 9, 8, 20, 40, 2, 4, 10, 16, 8, 12, 14, 4, 20, 40, 1, 1, 1, 2, 1, 5, 104, 101, 108, 108, 111, 1, 3, 0, 1, 2, 1, 0, 1, 1, 4, 5, 104, 101, 108, 108, 111, 1, 60, 80"
                 .split(", ").map { it.toByte() }.toByteArray()
         )
     }

@@ -4,6 +4,7 @@
 
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import java.util.regex.Pattern
 
 val os = System.getProperty("os.name").lowercase()
@@ -19,12 +20,6 @@ plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.dokka)
     alias(libs.plugins.publish)
-    alias(libs.plugins.compatibility)
-}
-
-apiValidation {
-    ignoredProjects.addAll(listOf("yass2", "tutorial"))
-    nonPublicMarkers.add("ch.softappeal.yass2.core.InternalApi")
 }
 
 allprojects {
@@ -39,6 +34,15 @@ allprojects {
     kotlin {
         jvm()
         if (project.name in setOf("yass2-core", "yass2-coroutines", "yass2-ktor")) {
+            @OptIn(ExperimentalAbiValidation::class)
+            abiValidation {
+                enabled.set(true)
+                filters {
+                    excluded {
+                        annotatedWith.add("ch.softappeal.yass2.core.InternalApi")
+                    }
+                }
+            }
             if (webPlatform) {
                 js {
                     outputModuleName.set(project.name)

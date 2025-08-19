@@ -6,14 +6,10 @@ import ch.softappeal.yass2.core.remote.ServiceId
 import ch.softappeal.yass2.core.remote.ValueReply
 import ch.softappeal.yass2.core.serialize.binary.BooleanBinaryEncoder
 import ch.softappeal.yass2.core.serialize.binary.ByteArrayBinaryEncoder
-import ch.softappeal.yass2.core.serialize.binary.DoubleBinaryEncoder
 import ch.softappeal.yass2.core.serialize.binary.IntBinaryEncoder
-import ch.softappeal.yass2.core.serialize.binary.LongBinaryEncoder
 import ch.softappeal.yass2.core.serialize.binary.StringBinaryEncoder
 import ch.softappeal.yass2.core.serialize.string.ByteArrayStringEncoder
-import ch.softappeal.yass2.core.serialize.string.DoubleStringEncoder
 import ch.softappeal.yass2.core.serialize.string.IntStringEncoder
-import ch.softappeal.yass2.core.serialize.string.LongStringEncoder
 import ch.softappeal.yass2.core.serialize.string.TextSerializer
 import ch.softappeal.yass2.coroutines.session.Packet
 
@@ -22,8 +18,6 @@ enum class Gender { Female, Male }
 class Types(
     val boolean: Boolean,
     val int: Int,
-    val long: Long,
-    val double: Double,
     val string: String,
     val bytes: ByteArray,
     val gender: Gender,
@@ -31,8 +25,6 @@ class Types(
     val b: B,
     val booleanOptional: Boolean?,
     val intOptional: Int?,
-    val longOptional: Long?,
-    val doubleOptional: Double?,
     val stringOptional: String?,
     val bytesOptional: ByteArray?,
     val genderOptional: Gender?,
@@ -116,16 +108,12 @@ internal val ConcreteAndEnumClasses = listOf(
 internal val BinaryEncoderObjects = listOf(
     BooleanBinaryEncoder::class,
     IntBinaryEncoder::class,
-    LongBinaryEncoder::class,
-    DoubleBinaryEncoder::class,
     StringBinaryEncoder::class,
     ByteArrayBinaryEncoder::class,
 )
 
 internal val StringEncoderObjects = listOf(
     IntStringEncoder::class,
-    LongStringEncoder::class,
-    DoubleStringEncoder::class,
     ByteArrayStringEncoder::class,
 )
 
