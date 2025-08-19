@@ -164,8 +164,8 @@ class SessionTest {
             val job = heartbeat(200, 100) {
                 println("heartbeat")
                 delay(timeoutMillis)
-                @Suppress("AssignedValueIsNeverRead")
                 timeoutMillis += 75
+                println(timeoutMillis) // remove if https://youtrack.jetbrains.com/issue/KT-80275/False-positive-Assigned-value-is-never-read-if-compiled-with-extraWarnings is fixed
             }
             delay(700)
             assertTrue(job.isCompleted)
