@@ -66,15 +66,6 @@ class JsonSerializerTest {
                             "#": "DivideByZeroException"
                         },
                         {
-                            "#": "BodyProperty",
-                            "body": {
-                                "#": "BodyProperty",
-                                "body": {
-                                    "#": "BodyProperty"
-                                }
-                            }
-                        },
-                        {
                             "#": "Poly",
                             "a": {
                                 "#": "B",
@@ -93,12 +84,7 @@ class JsonSerializerTest {
                             "d": "4",
                             "f": "6",
                             "g": "7",
-                            "b": "2",
-                            "a": "1",
-                            "c": "3",
-                            "e": "5",
-                            "i": "9",
-                            "j": "10"
+                            "b": "2"
                         }
                     ],
                     "b": {

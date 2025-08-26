@@ -22,8 +22,8 @@ private interface NoSuspend {
     fun noSuspend()
 }
 
-private class BodyPropertyNotVar {
-    @Suppress("unused") val x: Int = 0
+private class BodyProperty {
+    @Suppress("unused") var x: Int = 0
 }
 
 private class NoPrimaryConstructor {
@@ -53,8 +53,8 @@ class GeneratorTest {
             codeWriter().generateBinarySerializer(listOf(), listOf(klass))
         }
         assertFailsMessage<IllegalArgumentException>(
-            "body property x of ch.softappeal.yass2.generate.BodyPropertyNotVar must be var"
-        ) { generateBinarySerializer(BodyPropertyNotVar::class) }
+            "ch.softappeal.yass2.generate.BodyProperty must not have body properties"
+        ) { generateBinarySerializer(BodyProperty::class) }
         assertFailsMessage<IllegalStateException>(
             "class ch.softappeal.yass2.generate.NoPrimaryConstructor must hava a primary constructor"
         ) { generateBinarySerializer(NoPrimaryConstructor::class) }

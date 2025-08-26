@@ -104,7 +104,6 @@ public abstract class StringWriter(
         writeByte(NL)
     }
 
-    public open fun startBodyProperties() {}
     public abstract fun writeProperty(name: String, value: Any?)
     public abstract fun writeProperty(name: String, value: Any?, encoderId: Int)
 }
@@ -238,7 +237,6 @@ public abstract class BaseStringEncoder<T : Any>(
 
 public class ClassStringEncoder<T : Any>(
     type: KClass<T>,
-    public val hasBodyProperties: Boolean,
     write: StringWriter.(value: T) -> Unit,
     read: StringReader.() -> T,
     /** see [STRING_NO_ENCODER_ID] */

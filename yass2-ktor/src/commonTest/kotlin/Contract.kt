@@ -54,14 +54,8 @@ class ManyProperties(
     val d: Int,
     val f: Int,
     val g: Int,
-    val b: Int,
-) {
-    var e: Int = 0
-    var j: Int = 0
-    var c: Int = 0
-    var a: Int = 0
-    var i: Int = 0
-}
+    var b: Int,
+)
 
 class DivideByZeroException : RuntimeException()
 
@@ -69,10 +63,6 @@ class ThrowableFake(
     val cause: String?,
     val message: String,
 )
-
-class BodyProperty {
-    var body: Any? = null
-}
 
 interface AddCalculator {
     suspend fun add(a: Int, b: Int): Int
@@ -107,7 +97,6 @@ internal val ConcreteAndEnumClasses = listOf(
     Types::class,
     Request::class, ValueReply::class, ExceptionReply::class,
     Packet::class,
-    BodyProperty::class,
 )
 
 internal val BinaryEncoderObjects = listOf(

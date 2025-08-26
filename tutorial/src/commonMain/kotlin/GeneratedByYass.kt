@@ -119,24 +119,22 @@ public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.String
         tutorial.Gender::valueOf,
     ),
     ch.softappeal.yass2.core.serialize.string.ClassStringEncoder(
-        tutorial.Address::class, true, // 6
+        tutorial.Address::class, // 6
         { i ->
             writeProperty("street", i.street, 0)
-            startBodyProperties()
             writeProperty("number", i.number, 3)
         },
         {
             tutorial.Address(
                 getProperty("street") as kotlin.String,
-            ).apply {
-                number = getProperty("number") as kotlin.Int?
-            }
+                getProperty("number") as kotlin.Int?,
+            )
         },
         "street" to -1,
         "number" to 3,
     ),
     ch.softappeal.yass2.core.serialize.string.ClassStringEncoder(
-        tutorial.Person::class, false, // 7
+        tutorial.Person::class, // 7
         { i ->
             writeProperty("name", i.name, 0)
             writeProperty("gender", i.gender, 5)
@@ -157,7 +155,7 @@ public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.String
         "addresses" to -1,
     ),
     ch.softappeal.yass2.core.serialize.string.ClassStringEncoder(
-        tutorial.DivideByZeroException::class, false, // 8
+        tutorial.DivideByZeroException::class, // 8
         { i ->
         },
         {
@@ -166,7 +164,7 @@ public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.String
         },
     ),
     ch.softappeal.yass2.core.serialize.string.ClassStringEncoder(
-        tutorial.SubClass::class, false, // 9
+        tutorial.SubClass::class, // 9
         { i ->
             writeProperty("baseClassProperty", i.baseClassProperty, 0)
             writeProperty("subClassProperty", i.subClassProperty, 0)
@@ -181,7 +179,7 @@ public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.String
         "subClassProperty" to -1,
     ),
     ch.softappeal.yass2.core.serialize.string.ClassStringEncoder(
-        ch.softappeal.yass2.core.remote.Request::class, false, // 10
+        ch.softappeal.yass2.core.remote.Request::class, // 10
         { i ->
             writeProperty("service", i.service, 0)
             writeProperty("function", i.function, 0)
@@ -199,7 +197,7 @@ public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.String
         "parameters" to -1,
     ),
     ch.softappeal.yass2.core.serialize.string.ClassStringEncoder(
-        ch.softappeal.yass2.core.remote.ValueReply::class, false, // 11
+        ch.softappeal.yass2.core.remote.ValueReply::class, // 11
         { i ->
             writeProperty("value", i.value)
         },
@@ -211,7 +209,7 @@ public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.String
         "value" to -1,
     ),
     ch.softappeal.yass2.core.serialize.string.ClassStringEncoder(
-        ch.softappeal.yass2.core.remote.ExceptionReply::class, false, // 12
+        ch.softappeal.yass2.core.remote.ExceptionReply::class, // 12
         { i ->
             writeProperty("exception", i.exception)
         },
@@ -223,7 +221,7 @@ public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.String
         "exception" to -1,
     ),
     ch.softappeal.yass2.core.serialize.string.ClassStringEncoder(
-        ch.softappeal.yass2.coroutines.session.Packet::class, false, // 13
+        ch.softappeal.yass2.coroutines.session.Packet::class, // 13
         { i ->
             writeProperty("requestNumber", i.requestNumber, 3)
             writeProperty("message", i.message)

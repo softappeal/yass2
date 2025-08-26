@@ -1,7 +1,6 @@
 package ch.softappeal.yass2.core.serialize.string
 
 import ch.softappeal.yass2.B
-import ch.softappeal.yass2.BodyProperty
 import ch.softappeal.yass2.DivideByZeroException
 import ch.softappeal.yass2.Gender
 import ch.softappeal.yass2.ManyProperties
@@ -74,16 +73,6 @@ val AllBaseTypes =
             ),
             DivideByZeroException(
             ),
-            BodyProperty(
-            ).apply {
-                body = BodyProperty(
-                ).apply {
-                    body = BodyProperty(
-                    ).apply {
-                        body = null
-                    }
-                }
-            },
             Poly(
                 a = B(
                     a = 10,
@@ -100,13 +89,7 @@ val AllBaseTypes =
                 f = 6,
                 g = 7,
                 b = 2,
-            ).apply {
-                a = 1
-                c = 3
-                e = 5
-                i = 9
-                j = 10
-            },
+            ),
         ),
         b = B(
             a = 10,
@@ -181,16 +164,6 @@ private val AllBaseTypesSerialized = """
             ),
             DivideByZeroException(
             ),
-            BodyProperty(
-            ).apply {
-                body = BodyProperty(
-                ).apply {
-                    body = BodyProperty(
-                    ).apply {
-                        body = null
-                    }
-                }
-            },
             Poly(
                 a = B(
                     a = 10,
@@ -207,13 +180,7 @@ private val AllBaseTypesSerialized = """
                 f = 6,
                 g = 7,
                 b = 2,
-            ).apply {
-                a = 1
-                c = 3
-                e = 5
-                i = 9
-                j = 10
-            },
+            ),
         ),
         b = B(
             a = 10,
@@ -238,7 +205,7 @@ private val AllBaseTypesSerialized = """
 
 fun Serializer.allBaseTypesAssert(serialized: ByteArray) {
     val allBaseTypes = fromByteArray(serialized) as Types
-    assertEquals(15, allBaseTypes.list.size)
+    assertEquals(14, allBaseTypes.list.size)
     assertContentEquals(toByteArray(AllBaseTypes), toByteArray(allBaseTypes))
 }
 

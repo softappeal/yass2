@@ -24,14 +24,12 @@ internal object MyDateEncoder : BaseStringEncoder<MyDate>(
 
 /**
  * A concrete class must have a primary constructor and all its parameters must be properties.
- * Body properties are allowed but must be of `var` kind.
  * Properties can be optional.
  */
 class Address(
     val street: String,
-) {
-    var number: Int? = null
-}
+    var number: Int?,
+)
 
 /** Enumerations are supported. */
 enum class Gender {

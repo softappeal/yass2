@@ -8,10 +8,7 @@ import ch.softappeal.yass2.core.serialize.Writer
 
 private const val EQUALS = '='.code
 private const val DOT = '.'.code
-private const val LBRACE = '{'.code
-private const val RBRACE = '}'.code
 private const val LIST = "listOf"
-private const val APPLY = "apply"
 
 public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializer(encoders) {
     private inner class TheWriter(writer: Writer, indent: Int) : StringWriter(writer, indent, true) {
@@ -33,18 +30,6 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
 
         private fun nested() = TheWriter(this, indent + 1)
 
-        private var bodyProperties = false
-        override fun startBodyProperties() {
-            bodyProperties = true
-            writeIndentMinus1()
-            writeByte(RPAREN)
-            writeByte(DOT)
-            writeString(APPLY)
-            writeByte(SP)
-            writeByte(LBRACE)
-            writeNewLine()
-        }
-
         fun writeObject(value: Any?) {
             if (writeBuiltIn(value)) return
             val encoder = encoder(value!!::class)
@@ -61,7 +46,7 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
                     with(nested()) {
                         encoder.write(this, value)
                         writeIndentMinus1()
-                        writeByte(if (bodyProperties) RBRACE else RPAREN)
+                        writeByte(RPAREN)
                     }
                 } else {
                     writeByte(QUOTE)
@@ -79,7 +64,7 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
             writeByte(EQUALS)
             writeByte(SP)
             writeValue()
-            if (!bodyProperties) writeByte(COMMA)
+            writeByte(COMMA)
             writeNewLine()
         }
 
@@ -112,44 +97,30 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
         }
 
         fun readClass(encoder: ClassStringEncoder<*>): Any {
-            fun properties(apply: Boolean) {
-                while (!expectedCodePoint(if (apply) RBRACE else RPAREN)) {
-                    val name = readUntil { expectedCodePoint(EQUALS) }
-                    readNextCodePointAndSkipWhitespace()
-                    val encoderId = encoder.encoderId(name)
-                    val value = when (val propertyEncoder = if (encoderId != STRING_NO_ENCODER_ID) encoder(encoderId) else null) {
-                        is IntStringEncoder,
-                        is LongStringEncoder,
-                        is DoubleStringEncoder,
-                            -> if (expectedCodePoint('n'.code)) {
-                            readNextCodePoint()
-                            checkExpectedCodePoint('u'.code)
-                            readNextCodePoint()
-                            checkExpectedCodePoint('l'.code)
-                            readNextCodePoint()
-                            checkExpectedCodePoint('l'.code)
-                            readNextCodePoint()
-                            null
-                        } else propertyEncoder.read(this)
-                        else -> readObject(this, nextCodePoint).apply { readNextCodePoint() }
-                    }
-
-                    skipWhitespace()
-                    encoder.addProperty(name, value)
-                    if (!apply) {
-                        checkExpectedCodePoint(COMMA)
-                        readNextCodePointAndSkipWhitespace()
-                    }
+            while (!expectedCodePoint(RPAREN)) {
+                val name = readUntil { expectedCodePoint(EQUALS) }
+                readNextCodePointAndSkipWhitespace()
+                val encoderId = encoder.encoderId(name)
+                val value = when (val propertyEncoder = if (encoderId != STRING_NO_ENCODER_ID) encoder(encoderId) else null) {
+                    is IntStringEncoder,
+                    is LongStringEncoder,
+                    is DoubleStringEncoder,
+                        -> if (expectedCodePoint('n'.code)) {
+                        readNextCodePoint()
+                        checkExpectedCodePoint('u'.code)
+                        readNextCodePoint()
+                        checkExpectedCodePoint('l'.code)
+                        readNextCodePoint()
+                        checkExpectedCodePoint('l'.code)
+                        readNextCodePoint()
+                        null
+                    } else propertyEncoder.read(this)
+                    else -> readObject(this, nextCodePoint).apply { readNextCodePoint() }
                 }
-            }
-            properties(false)
-            if (encoder.hasBodyProperties) {
+                skipWhitespace()
+                encoder.addProperty(name, value)
+                checkExpectedCodePoint(COMMA)
                 readNextCodePointAndSkipWhitespace()
-                checkExpectedCodePoint(DOT)
-                readNextCodePointAndSkipWhitespace()
-                check(APPLY == readUntil { expectedCodePoint(LBRACE) }) { "'$APPLY' expected" }
-                readNextCodePointAndSkipWhitespace()
-                properties(true)
             }
             encoder.checkMissingProperties()
             return encoder.read(this)

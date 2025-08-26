@@ -176,9 +176,8 @@ public final class ch/softappeal/yass2/core/serialize/string/ByteArrayStringEnco
 }
 
 public final class ch/softappeal/yass2/core/serialize/string/ClassStringEncoder : ch/softappeal/yass2/core/serialize/string/StringEncoder {
-	public fun <init> (Lkotlin/reflect/KClass;ZLkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;[Lkotlin/Pair;)V
+	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;[Lkotlin/Pair;)V
 	public final fun encoderId (Ljava/lang/String;)I
-	public final fun getHasBodyProperties ()Z
 }
 
 public final class ch/softappeal/yass2/core/serialize/string/DoubleStringEncoder : ch/softappeal/yass2/core/serialize/string/BaseStringEncoder {
@@ -281,7 +280,6 @@ public abstract class ch/softappeal/yass2/core/serialize/string/StringWriter : c
 	public fun <init> (Lch/softappeal/yass2/core/serialize/Writer;IZ)V
 	public synthetic fun <init> (Lch/softappeal/yass2/core/serialize/Writer;IZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	protected final fun getIndent ()I
-	public fun startBodyProperties ()V
 	protected final fun writeBuiltIn (Ljava/lang/Object;)Z
 	public fun writeByte (B)V
 	public final fun writeByte (I)V

@@ -99,12 +99,6 @@ class TextSerializerTest {
                         )
                         DivideByZeroException(
                         )
-                        BodyProperty(
-                            body: BodyProperty(
-                                body: BodyProperty(
-                                )
-                            )
-                        )
                         Poly(
                             a: B(
                                 a: 10
@@ -121,11 +115,6 @@ class TextSerializerTest {
                             f: 6
                             g: 7
                             b: 2
-                            a: 1
-                            c: 3
-                            e: 5
-                            i: 9
-                            j: 10
                         )
                     ]
                     b: B(
