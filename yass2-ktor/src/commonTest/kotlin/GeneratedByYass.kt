@@ -220,7 +220,7 @@ public object BinarySerializer : ch.softappeal.yass2.core.serialize.binary.Binar
                 },
                 {
                     ch.softappeal.yass2.A(
-                        readRequired(3) as kotlin.Int,
+                        a = readRequired(3) as kotlin.Int,
                     )
                 }
             ),
@@ -232,8 +232,8 @@ public object BinarySerializer : ch.softappeal.yass2.core.serialize.binary.Binar
                 },
                 {
                     ch.softappeal.yass2.B(
-                        readRequired(3) as kotlin.Int,
-                        readRequired(3) as kotlin.Int,
+                        a = readRequired(3) as kotlin.Int,
+                        b = readRequired(3) as kotlin.Int,
                     )
                 }
             ),
@@ -245,8 +245,8 @@ public object BinarySerializer : ch.softappeal.yass2.core.serialize.binary.Binar
                 },
                 {
                     ch.softappeal.yass2.Poly(
-                        readObject() as ch.softappeal.yass2.A,
-                        readRequired(10) as ch.softappeal.yass2.B,
+                        a = readObject() as ch.softappeal.yass2.A,
+                        b = readRequired(10) as ch.softappeal.yass2.B,
                     )
                 }
             ),
@@ -261,11 +261,11 @@ public object BinarySerializer : ch.softappeal.yass2.core.serialize.binary.Binar
                 },
                 {
                     ch.softappeal.yass2.ManyProperties(
-                        readRequired(3) as kotlin.Int,
-                        readRequired(3) as kotlin.Int,
-                        readRequired(3) as kotlin.Int,
-                        readRequired(3) as kotlin.Int,
-                        readRequired(3) as kotlin.Int,
+                        h = readRequired(3) as kotlin.Int,
+                        d = readRequired(3) as kotlin.Int,
+                        f = readRequired(3) as kotlin.Int,
+                        g = readRequired(3) as kotlin.Int,
+                        b = readRequired(3) as kotlin.Int,
                     )
                 }
             ),
@@ -286,8 +286,8 @@ public object BinarySerializer : ch.softappeal.yass2.core.serialize.binary.Binar
                 },
                 {
                     ch.softappeal.yass2.ThrowableFake(
-                        readOptional(6) as kotlin.String?,
-                        readRequired(6) as kotlin.String,
+                        cause = readOptional(6) as kotlin.String?,
+                        message = readRequired(6) as kotlin.String,
                     )
                 }
             ),
@@ -315,24 +315,24 @@ public object BinarySerializer : ch.softappeal.yass2.core.serialize.binary.Binar
                 },
                 {
                     ch.softappeal.yass2.Types(
-                        readRequired(2) as kotlin.Boolean,
-                        readRequired(3) as kotlin.Int,
-                        readRequired(4) as kotlin.Long,
-                        readRequired(5) as kotlin.Double,
-                        readRequired(6) as kotlin.String,
-                        readRequired(7) as kotlin.ByteArray,
-                        readRequired(8) as ch.softappeal.yass2.Gender,
-                        readRequired(1) as kotlin.collections.List<kotlin.Any?>,
-                        readRequired(10) as ch.softappeal.yass2.B,
-                        readOptional(2) as kotlin.Boolean?,
-                        readOptional(3) as kotlin.Int?,
-                        readOptional(4) as kotlin.Long?,
-                        readOptional(5) as kotlin.Double?,
-                        readOptional(6) as kotlin.String?,
-                        readOptional(7) as kotlin.ByteArray?,
-                        readOptional(8) as ch.softappeal.yass2.Gender?,
-                        readOptional(1) as kotlin.collections.List<kotlin.Any?>?,
-                        readOptional(10) as ch.softappeal.yass2.B?,
+                        boolean = readRequired(2) as kotlin.Boolean,
+                        int = readRequired(3) as kotlin.Int,
+                        long = readRequired(4) as kotlin.Long,
+                        double = readRequired(5) as kotlin.Double,
+                        string = readRequired(6) as kotlin.String,
+                        bytes = readRequired(7) as kotlin.ByteArray,
+                        gender = readRequired(8) as ch.softappeal.yass2.Gender,
+                        list = readRequired(1) as kotlin.collections.List<kotlin.Any?>,
+                        b = readRequired(10) as ch.softappeal.yass2.B,
+                        booleanOptional = readOptional(2) as kotlin.Boolean?,
+                        intOptional = readOptional(3) as kotlin.Int?,
+                        longOptional = readOptional(4) as kotlin.Long?,
+                        doubleOptional = readOptional(5) as kotlin.Double?,
+                        stringOptional = readOptional(6) as kotlin.String?,
+                        bytesOptional = readOptional(7) as kotlin.ByteArray?,
+                        genderOptional = readOptional(8) as ch.softappeal.yass2.Gender?,
+                        listOptional = readOptional(1) as kotlin.collections.List<kotlin.Any?>?,
+                        bOptional = readOptional(10) as ch.softappeal.yass2.B?,
                     )
                 }
             ),
@@ -345,9 +345,9 @@ public object BinarySerializer : ch.softappeal.yass2.core.serialize.binary.Binar
                 },
                 {
                     ch.softappeal.yass2.core.remote.Request(
-                        readRequired(6) as kotlin.String,
-                        readRequired(6) as kotlin.String,
-                        readRequired(1) as kotlin.collections.List<kotlin.Any?>,
+                        service = readRequired(6) as kotlin.String,
+                        function = readRequired(6) as kotlin.String,
+                        parameters = readRequired(1) as kotlin.collections.List<kotlin.Any?>,
                     )
                 }
             ),
@@ -358,7 +358,7 @@ public object BinarySerializer : ch.softappeal.yass2.core.serialize.binary.Binar
                 },
                 {
                     ch.softappeal.yass2.core.remote.ValueReply(
-                        readObject() as kotlin.Any?,
+                        value = readObject() as kotlin.Any?,
                     )
                 }
             ),
@@ -369,7 +369,7 @@ public object BinarySerializer : ch.softappeal.yass2.core.serialize.binary.Binar
                 },
                 {
                     ch.softappeal.yass2.core.remote.ExceptionReply(
-                        readObject() as kotlin.Exception,
+                        exception = readObject() as kotlin.Exception,
                     )
                 }
             ),
@@ -381,8 +381,8 @@ public object BinarySerializer : ch.softappeal.yass2.core.serialize.binary.Binar
                 },
                 {
                     ch.softappeal.yass2.coroutines.session.Packet(
-                        readRequired(3) as kotlin.Int,
-                        readObject() as ch.softappeal.yass2.core.remote.Message,
+                        requestNumber = readRequired(3) as kotlin.Int,
+                        message = readObject() as ch.softappeal.yass2.core.remote.Message,
                     )
                 }
             ),

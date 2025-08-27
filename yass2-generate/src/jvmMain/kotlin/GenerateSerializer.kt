@@ -120,7 +120,7 @@ public fun CodeWriter.generateBinarySerializer(
                         }
                         writeNestedLine("{", "}") {
                             writeNestedLine("${type.qualifiedName}(", ")") {
-                                properties.forEach { writeNestedLine("${it.readObject()} as ${it.returnType.toType()},") }
+                                properties.forEach { writeNestedLine("${it.name} = ${it.readObject()} as ${it.returnType.toType()},") }
                             }
                         }
                     }
