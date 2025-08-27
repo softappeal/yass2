@@ -1,12 +1,10 @@
 package ch.softappeal.yass2.core.serialize.string
 
-import ch.softappeal.yass2.B
-import ch.softappeal.yass2.DivideByZeroException
+import ch.softappeal.yass2.Example
 import ch.softappeal.yass2.Gender
-import ch.softappeal.yass2.Poly
 import ch.softappeal.yass2.StringEncoders
 import ch.softappeal.yass2.ThrowableFake
-import ch.softappeal.yass2.core.assertFailsMessage
+import ch.softappeal.yass2.assertFailsWithMessage
 import ch.softappeal.yass2.core.serialize.toByteArray
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -14,7 +12,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-fun StringSerializer.dump(value: Any?, serialized: String, vararg others: String) {
+fun StringSerializer.check(value: Any?, serialized: String, vararg others: String) {
     fun write(data: Any?) {
         assertEquals(serialized, toString(data))
     }
@@ -23,18 +21,15 @@ fun StringSerializer.dump(value: Any?, serialized: String, vararg others: String
     others.forEach { write(fromString(it)) }
 }
 
-private class Int
-private object MyIntEncoder : StringEncoder<Int>(Int::class, {}, { Int() })
-
 private val SERIALIZER = TextSerializer(StringEncoders)
 
-private fun dump(value: Any?, serialized: String, vararg others: String) = SERIALIZER.dump(value, serialized, *others)
+private fun check(value: Any?, serialized: String, vararg others: String) = SERIALIZER.check(value, serialized, *others)
 
 class TextSerializerTest {
     @Test
     fun checkBaseString() {
         fun checkBaseString(string: String, message: String) {
-            assertFailsMessage<IllegalStateException>(message) {
+            assertFailsWithMessage<IllegalStateException>(message) {
                 TextSerializer(
                     listOf(
                         object : BaseStringEncoder<Long>(
@@ -52,117 +47,21 @@ class TextSerializerTest {
         checkBaseString(")", "')' must not contain whitespace, '\"', ',' or ')'")
     }
 
-    @Suppress("SpellCheckingInspection")
     @Test
-    fun allBaseTypes() {
-        SERIALIZER.allBaseTypesTest(
-            """
-                Types(
-                    boolean: true
-                    int: 1
-                    long: 2
-                    double: 123.456
-                    string: "hello"
-                    bytes: AAEC
-                    gender: Female
-                    list: [
-                        null
-                        false
-                        true
-                        Int(-1)
-                        Long(2)
-                        Double(123.456)
-                        "hello"
-                        ByteArray(AAEC)
-                        Gender(Male)
-                        [
-                            Int(1)
-                            [
-                                "hello"
-                                "world"
-                            ]
-                        ]
-                        Types(
-                            boolean: true
-                            int: -123456
-                            long: 9223372036854775807
-                            double: 123.456
-                            string: "hello"
-                            bytes: AAEC
-                            gender: Female
-                            list: [
-                            ]
-                            b: B(
-                                a: 1
-                                b: 2
-                            )
-                        )
-                        DivideByZeroException(
-                        )
-                        Poly(
-                            a: B(
-                                a: 10
-                                b: 20
-                            )
-                            b: B(
-                                a: 1
-                                b: 2
-                            )
-                        )
-                        ManyProperties(
-                            h: 8
-                            d: 4
-                            f: 6
-                            g: 7
-                            b: 2
-                        )
-                    ]
-                    b: B(
-                        a: 10
-                        b: 20
-                    )
-                    booleanOptional: true
-                    intOptional: 1
-                    longOptional: 2
-                    doubleOptional: 123.456
-                    stringOptional: "hello"
-                    bytesOptional: AAEC
-                    genderOptional: Female
-                    listOptional: [
-                        "hello"
-                    ]
-                    bOptional: B(
-                        a: 30
-                        b: 40
-                    )
-                )
-            """.trimIndent()
-        )
-    }
-
-    @Test
-    fun test() {
-        dump(
+    fun builtIn() {
+        check(
             null,
             "null",
             "  null",
         )
-        dump(
-            "hello",
-            """"hello"""",
-            """  "hello"""",
+
+        check(
+            123,
+            "Int(123)",
+            "  Int  (  123  )",
         )
-        dump(
-            false,
-            "false",
-            "  false",
-        )
-        dump(
-            true,
-            "true",
-            "  true",
-        )
-        dump(
+
+        check(
             listOf<Int>(),
             """
                 [
@@ -170,66 +69,92 @@ class TextSerializerTest {
             """.trimIndent(),
             "[]",
         )
-        dump(
-            listOf(null),
+        check(
+            listOf(null, 60),
             """
                 [
                     null
+                    Int(60)
                 ]
             """.trimIndent(),
-            "[null]",
+            "[nullInt(60)]",
+            "  [  nullInt  (  60  )  ,  ]",
         )
-        dump(
+
+        check(
+            false,
+            "false",
+            "  false",
+        )
+        check(
+            true,
+            "true",
+            "  true",
+        )
+
+        check(
+            "hello",
+            """"hello"""",
+            "\t\n\r \"hello\"",
+        )
+
+        check(
             Gender.Male,
             "Gender(Male)",
             "  Gender  (  Male  )",
         )
-        dump(
-            123,
-            "Int(123)",
-            "  Int  (  123  )",
-        )
-        dump(
-            Poly(B(1, 2), B(3, 4)),
+    }
+
+    @Test
+    fun example() {
+        check(
+            Example(
+                int = 10,
+                intOptional = null,
+                any = 11,
+                anyOptional = null,
+                list = listOf(12, 13),
+                listOptional = null,
+            ),
             """
-                Poly(
-                    a: B(
-                        a: 1
-                        b: 2
-                    )
-                    b: B(
-                        a: 3
-                        b: 4
-                    )
+                Example(
+                    int: 10
+                    any: Int(11)
+                    list: [
+                        Int(12)
+                        Int(13)
+                    ]
                 )
             """.trimIndent(),
-            "Poly(a:B(a:1,b:2),b:B(a:3,b:4))",
-            "Poly(a:B(a:1,b:2,),b:B(a:3,b:4,),)",
-            "Poly(a:B(a:1,b:2)b:B(a:3,b:4))",
+            """Example(int:10,any:Int(11),list:[Int(12),Int(13),],)""",
+            """  Example  (  int  :  10  ,  any  :  Int  (  11  )  ,  list  :  [  Int  (  12  )  ,  Int  (  13  )  ,  ]  ,  )""",
+            """Example(int:10 any:Int(11)list:[Int(12)Int(13)])""",
         )
-        dump(
-            ThrowableFake("hello", "world"),
+        check(
+            Example(
+                int = 10,
+                intOptional = 14,
+                any = 11,
+                anyOptional = 15,
+                list = listOf(12, 13),
+                listOptional = listOf(16, 17),
+            ),
             """
-                ThrowableFake(
-                    cause: "hello"
-                    message: "world"
+                Example(
+                    int: 10
+                    intOptional: 14
+                    any: Int(11)
+                    anyOptional: Int(15)
+                    list: [
+                        Int(12)
+                        Int(13)
+                    ]
+                    listOptional: [
+                        Int(16)
+                        Int(17)
+                    ]
                 )
-            """.trimIndent(),
-        )
-        dump(
-            ThrowableFake(null, "m"),
-            """
-                ThrowableFake(
-                    message: "m"
-                )
-            """.trimIndent(),
-        )
-        dump(
-            DivideByZeroException(),
-            """
-                DivideByZeroException(
-                )
-            """.trimIndent(),
+            """.trimIndent()
         )
     }
 
@@ -237,10 +162,10 @@ class TextSerializerTest {
     fun properties() {
         assertNull((SERIALIZER.fromString("""ThrowableFake(message:"hello")""") as ThrowableFake).cause) // implicit null
         assertNull((SERIALIZER.fromString("""ThrowableFake(message:"hello",cause:null)""") as ThrowableFake).cause) // explicit null
-        assertFailsMessage<IllegalStateException>("no property 'A.noSuchProperty'") {
+        assertFailsWithMessage<IllegalStateException>("no property 'A.noSuchProperty'") {
             SERIALIZER.fromString("A(noSuchProperty:[])")
         }
-        assertFailsMessage<IllegalStateException>("duplicated property 'A.a'") {
+        assertFailsWithMessage<IllegalStateException>("duplicated property 'A.a'") {
             SERIALIZER.fromString("A(a:1,a:1)")
         }
         println(assertFailsWith<Exception> { // missing required property
@@ -250,31 +175,30 @@ class TextSerializerTest {
 
     @Test
     fun duplicatedType() {
-        val message = assertFailsWith<IllegalArgumentException> {
-            TextSerializer(listOf(IntStringEncoder, IntStringEncoder))
-        }.message!!
+        val message = assertFailsWith<IllegalArgumentException> { TextSerializer(listOf(GenderEncoder, GenderEncoder)) }.message!!
+        println(message)
         assertTrue(message.startsWith("duplicated type 'class "))
-        assertTrue(message.endsWith("Int'"))
+        assertTrue(message.endsWith("Gender'"))
     }
 
     @Test
     fun duplicatedClassName() {
-        assertFailsMessage<IllegalArgumentException>("duplicated className 'Int'") {
-            TextSerializer(listOf(IntStringEncoder, MyIntEncoder))
+        class Gender
+        assertFailsWithMessage<IllegalArgumentException>("duplicated className 'Gender'") {
+            TextSerializer(listOf(GenderEncoder, ClassStringEncoder(Gender::class, {}, { Gender() })))
         }
     }
 
     @Test
     fun missingType() {
         val message = assertFailsWith<IllegalStateException> { SERIALIZER.toByteArray(TextSerializerTest()) }.message!!
+        println(message)
         assertTrue(message.startsWith("missing type 'class "))
         assertTrue(message.endsWith("TextSerializerTest'"))
     }
 
     @Test
     fun missingEncoder() {
-        assertFailsMessage<IllegalStateException>("missing encoder for class 'X'") {
-            SERIALIZER.fromString("X()")
-        }
+        assertFailsWithMessage<IllegalStateException>("missing encoder for class 'X'") { SERIALIZER.fromString("X()") }
     }
 }

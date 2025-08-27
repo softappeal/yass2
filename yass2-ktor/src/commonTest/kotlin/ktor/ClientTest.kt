@@ -1,7 +1,7 @@
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.ContractSerializer
-import ch.softappeal.yass2.core.remote.test
+import ch.softappeal.yass2.core.remote.invoke
 import ch.softappeal.yass2.coroutines.session.initiatorSessionFactory
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngineFactory
@@ -24,7 +24,7 @@ suspend fun clientTest(httpClientEngineFactory: HttpClientEngineFactory<*>) {
     }.use { client ->
         client.tunnel(ContractSerializer, "http://$LOCAL_HOST:$PORT$PATH") {
             headersOf(DEMO_HEADER_KEY, DEMO_HEADER_VALUE)
-        }.test()
+        }.invoke()
         client.ws("ws://$LOCAL_HOST:$PORT$PATH", {
             header(DEMO_HEADER_KEY, DEMO_HEADER_VALUE)
         }) {

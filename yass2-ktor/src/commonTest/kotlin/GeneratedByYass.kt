@@ -200,6 +200,44 @@ public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.Echo>.s
         }
     }
 
+public fun <A, B, C> ch.softappeal.yass2.GenericService<A, B, C>.proxy(
+    intercept: ch.softappeal.yass2.core.Interceptor,
+): ch.softappeal.yass2.GenericService<A, B, C> = object : ch.softappeal.yass2.GenericService<A, B, C> {
+    override suspend fun service(
+        p1: A,
+        p2: B,
+    ): C {
+        return intercept("service", listOf(p1, p2)) {
+            this@proxy.service(p1, p2)
+        } as C
+    }
+}
+
+public fun <A, B, C> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.GenericService<A, B, C>>.proxy(
+    tunnel: ch.softappeal.yass2.core.remote.Tunnel,
+): ch.softappeal.yass2.GenericService<A, B, C> =
+    object : ch.softappeal.yass2.GenericService<A, B, C> {
+        override suspend fun service(
+            p1: A,
+            p2: B,
+        ) =
+            tunnel(ch.softappeal.yass2.core.remote.Request(id, "service", listOf(p1, p2)))
+                .process() as C
+    }
+
+public fun <A, B, C> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.GenericService<A, B, C>>.service(
+    implementation: ch.softappeal.yass2.GenericService<A, B, C>,
+): ch.softappeal.yass2.core.remote.Service =
+    ch.softappeal.yass2.core.remote.Service(id) { function, parameters ->
+        when (function) {
+            "service" -> implementation.service(
+                parameters[0] as A,
+                parameters[1] as B,
+            )
+            else -> error("service '$id' has no function '$function'")
+        }
+    }
+
 public object BinarySerializer : ch.softappeal.yass2.core.serialize.binary.BinarySerializer() {
     init {
         initialize(
@@ -383,6 +421,27 @@ public object BinarySerializer : ch.softappeal.yass2.core.serialize.binary.Binar
                     ch.softappeal.yass2.coroutines.session.Packet(
                         requestNumber = readRequired(3) as kotlin.Int,
                         message = readObject() as ch.softappeal.yass2.core.remote.Message,
+                    )
+                }
+            ),
+            ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
+                ch.softappeal.yass2.Example::class, // 20
+                { i ->
+                    writeRequired(i.int, 3)
+                    writeOptional(i.intOptional, 3)
+                    writeObject(i.any)
+                    writeObject(i.anyOptional)
+                    writeRequired(i.list, 1)
+                    writeOptional(i.listOptional, 1)
+                },
+                {
+                    ch.softappeal.yass2.Example(
+                        int = readRequired(3) as kotlin.Int,
+                        intOptional = readOptional(3) as kotlin.Int?,
+                        any = readObject() as kotlin.Any,
+                        anyOptional = readObject() as kotlin.Any?,
+                        list = readRequired(1) as kotlin.collections.List<kotlin.Int>,
+                        listOptional = readOptional(1) as kotlin.collections.List<kotlin.Int>?,
                     )
                 }
             ),
@@ -611,5 +670,32 @@ public val StringEncoders: List<ch.softappeal.yass2.core.serialize.string.String
         },
         "requestNumber" to 3,
         "message" to -1,
+    ),
+    ch.softappeal.yass2.core.serialize.string.ClassStringEncoder(
+        ch.softappeal.yass2.Example::class, // 19
+        { i ->
+            writeProperty("int", i.int, 3)
+            writeProperty("intOptional", i.intOptional, 3)
+            writeProperty("any", i.any)
+            writeProperty("anyOptional", i.anyOptional)
+            writeProperty("list", i.list, 2)
+            writeProperty("listOptional", i.listOptional, 2)
+        },
+        {
+            ch.softappeal.yass2.Example(
+                getProperty("int") as kotlin.Int,
+                getProperty("intOptional") as kotlin.Int?,
+                getProperty("any") as kotlin.Any,
+                getProperty("anyOptional") as kotlin.Any?,
+                getProperty("list") as kotlin.collections.List<kotlin.Int>,
+                getProperty("listOptional") as kotlin.collections.List<kotlin.Int>?,
+            )
+        },
+        "int" to 3,
+        "intOptional" to 3,
+        "any" to -1,
+        "anyOptional" to -1,
+        "list" to -1,
+        "listOptional" to -1,
     ),
 )

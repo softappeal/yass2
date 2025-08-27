@@ -43,13 +43,13 @@ public object StringBinaryEncoder : BinaryEncoder<String>(
     { ByteArrayBinaryEncoder.read(this).decodeToString(throwOnInvalidSequence = true) }
 )
 
-public class EnumBinaryEncoder<T : Enum<T>>(type: KClass<T>, constants: Array<T>) : BinaryEncoder<T>(
+public class EnumBinaryEncoder<T : Enum<T>>(type: KClass<T>, enumValues: Array<T>) : BinaryEncoder<T>(
     type,
     { value -> writeVarInt(value.ordinal) },
     {
         val c = readVarInt()
-        check(c in 0..<constants.size) { "illegal constant $c" }
-        constants[c]
+        check(c in 0..<enumValues.size) { "illegal constant $c" }
+        enumValues[c]
     }
 )
 

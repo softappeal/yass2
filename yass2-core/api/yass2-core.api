@@ -272,7 +272,6 @@ public final class ch/softappeal/yass2/core/serialize/string/StringSerializerKt 
 	public static final field RPAREN I
 	public static final field SP I
 	public static final fun fromString (Lch/softappeal/yass2/core/serialize/string/StringSerializer;Ljava/lang/String;)Ljava/lang/Object;
-	public static final fun isWhitespace (I)Z
 	public static final fun toString (Lch/softappeal/yass2/core/serialize/string/StringSerializer;Ljava/lang/Object;)Ljava/lang/String;
 }
 
@@ -285,7 +284,6 @@ public abstract class ch/softappeal/yass2/core/serialize/string/StringWriter : c
 	public final fun writeByte (I)V
 	public fun writeByteArray ([B)V
 	public final fun writeIndent ()V
-	public final fun writeIndentMinus1 ()V
 	protected abstract fun writeList (Ljava/util/List;)V
 	public final fun writeNewLine ()V
 	public abstract fun writeProperty (Ljava/lang/String;Ljava/lang/Object;)V

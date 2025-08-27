@@ -1,10 +1,10 @@
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.ContractSerializer
-import ch.softappeal.yass2.core.remote.test
-import ch.softappeal.yass2.core.remote.tunnel
+import ch.softappeal.yass2.core.remote.invoke
 import ch.softappeal.yass2.coroutines.session.acceptorSessionFactory
 import ch.softappeal.yass2.coroutines.session.initiatorSessionFactory
+import ch.softappeal.yass2.coroutines.session.tunnelWithContext
 import io.ktor.network.selector.SelectorManager
 import io.ktor.network.sockets.ServerSocket
 import io.ktor.network.sockets.TcpSocketBuilder
@@ -30,15 +30,11 @@ private const val IGNORE = false // TODO: spurious failures in SocketTest
 
 private fun runServer(block: suspend CoroutineScope.(tcp: TcpSocketBuilder, serverSocket: ServerSocket) -> Unit) {
     if (IGNORE) return
-    try {
-        runBlocking {
-            SelectorManager().use { selector ->
-                val tcp = aSocket(selector).tcp()
-                tcp.bind(LOCAL_HOST, PORT).use { serverSocket -> block(tcp, serverSocket) }
-            }
+    runBlocking {
+        SelectorManager().use { selector ->
+            val tcp = aSocket(selector).tcp()
+            tcp.bind(LOCAL_HOST, PORT).use { serverSocket -> block(tcp, serverSocket) }
         }
-    } catch (e: CancellationException) {
-        println(e)
     }
 }
 
@@ -63,17 +59,21 @@ class SocketTest {
     fun socket() {
         runServer { tcp, serverSocket ->
             val listenerJob = launch {
-                val serverTunnel = tunnel { currentCoroutineContext()[SocketCce]!!.socket.remoteAddress }
+                val serverTunnel = tunnelWithContext { currentCoroutineContext()[SocketCce]!!.socket.remoteAddress }
                 while (true) {
                     val socket = serverSocket.accept()
                     launch {
-                        socket.handleRequest(ContractSerializer, serverTunnel)
+                        try {
+                            socket.handleRequest(ContractSerializer, serverTunnel)
+                        } catch (e: Exception) {
+                            println(e)
+                        }
                     }
                 }
             }
             try {
                 val clientTunnel = ContractSerializer.tunnel { tcp.connect(serverSocket.localAddress) }
-                clientTunnel.test()
+                clientTunnel.invoke()
             } finally {
                 listenerJob.cancel()
             }

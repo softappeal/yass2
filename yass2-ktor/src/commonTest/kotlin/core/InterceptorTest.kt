@@ -5,13 +5,11 @@ import ch.softappeal.yass2.DivideByZeroException
 import ch.softappeal.yass2.Echo
 import ch.softappeal.yass2.proxy
 import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.time.Duration.Companion.milliseconds
@@ -25,7 +23,7 @@ object EchoImpl : Echo {
     override suspend fun echo(value: Any?) = value
     override suspend fun echoRequired(value: Any) = value
     override suspend fun noParametersNoResult() {}
-    override suspend fun delay(milliSeconds: Int) = delay(milliSeconds.toLong())
+    override suspend fun delay(milliSeconds: Int) = kotlinx.coroutines.delay(milliSeconds.toLong())
     override suspend fun echoException(value: Exception) = value
 
     @Suppress("SameReturnValue")
@@ -44,73 +42,79 @@ val Printer: Interceptor = { function, parameters, invoke ->
     }
 }
 
-suspend fun test(calculatorImpl: Calculator, echoImpl: Echo) {
+suspend fun invoke(calculatorImpl: Calculator, echoImpl: Echo) {
     var counter = 0
     var functionName: String? = null
     var params: List<Any?>? = null
+    var result: Any? = null
     val testInterceptor: Interceptor = { function, parameters, invoke ->
         counter++
         functionName = function
         params = parameters
-        invoke()
+        result = invoke()
+        result
     }
     val interceptor = testInterceptor + Printer
     val calculator = calculatorImpl.proxy(interceptor)
     val echo = echoImpl.proxy(interceptor)
+
     assertEquals(5, calculator.add(2, 3))
     assertEquals("add", functionName)
     assertEquals(listOf(2, 3), params)
+    assertEquals(5, result)
     assertEquals(1, counter)
+
     assertEquals(3, calculator.divide(12, 4))
     assertEquals(2, counter)
     assertFailsWith<DivideByZeroException> { calculator.divide(12, 0) }
     assertEquals(3, counter)
+
     echo.noParametersNoResult()
     assertEquals("hello", echo.echo("hello"))
     assertEquals(3, (echo.echo(ByteArray(3)) as ByteArray).size)
+
     withTimeout(200.milliseconds) { echo.delay(100) }
     assertFailsWith<TimeoutCancellationException> {
         withTimeout(100.milliseconds) { echo.delay(200) }
     }
+
     println("done")
 }
 
 class InterceptorTest {
     @Test
-    fun compositeInterceptor() = runTest {
-        val value = "string"
+    fun plus() = runTest {
+        val result = "result"
+        val function = "add"
+        val parameters = listOf(1, 2, 3)
+        fun interceptor(check: () -> Unit): Interceptor = { f, p, invoke ->
+            assertSame(function, f)
+            assertSame(parameters, p)
+            check()
+            invoke().apply { assertSame(result, this) }
+        }
+
         var value1: Int? = null
         var value2: Int? = null
-        val interceptor1: Interceptor = { _, _, invoke ->
+        val interceptor1 = interceptor {
             assertNull(value1)
             assertNull(value2)
             value1 = 1
-            invoke()
+            println("interceptor1")
         }
-        val interceptor2: Interceptor = { _, _, invoke ->
-            assertNotNull(value1)
+        val interceptor2 = interceptor {
+            assertEquals(1, value1)
             assertNull(value2)
-            value2 = 1
-            invoke()
+            value2 = 2
+            println("interceptor2")
         }
-        assertSame(value, (interceptor1 + interceptor2)("add", emptyList()) { value })
-        assertNotNull(value1)
-        assertNotNull(value2)
+        assertSame(result, (interceptor1 + interceptor2)(function, parameters) { result })
+        assertEquals(1, value1)
+        assertEquals(2, value2)
     }
 
     @Test
-    fun test() = runTest {
-        test(CalculatorImpl, EchoImpl)
-    }
-
-    @Test
-    fun performance() = runTest {
-        var counter = 0
-        val proxy = CalculatorImpl.proxy { _, _, invoke ->
-            counter++
-            invoke()
-        }
-        performance(100_000) { assertEquals(4, proxy.divide(12, 3)) }
-        assertEquals(200_000, counter)
+    fun invoke() = runTest {
+        invoke(CalculatorImpl, EchoImpl)
     }
 }

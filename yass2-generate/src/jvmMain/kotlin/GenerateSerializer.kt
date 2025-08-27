@@ -152,7 +152,6 @@ public fun CodeWriter.generateStringEncoders(
 
         fun propertyEncoderId() = "\"$name\" to ${
             if (
-                encoderId != STRING_NO_ENCODER_ID &&
                 encoderId != STRING_STRING_ENCODER_ID &&
                 encoderId != STRING_BOOLEAN_ENCODER_ID &&
                 encoderId != STRING_LIST_ENCODER_ID

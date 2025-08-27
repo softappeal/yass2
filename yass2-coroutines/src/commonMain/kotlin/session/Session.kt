@@ -9,7 +9,6 @@ import ch.softappeal.yass2.core.tryFinally
 import ch.softappeal.yass2.coroutines.AtomicBoolean
 import ch.softappeal.yass2.coroutines.AtomicInt
 import ch.softappeal.yass2.coroutines.ThreadSafeMap
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -46,11 +45,7 @@ public abstract class Session<C : Connection> {
         try {
             block()
         } catch (e: Exception) {
-            try {
-                close(e)
-            } finally {
-                if (e is CancellationException) throw e
-            }
+            close(e)
         }
     }
 

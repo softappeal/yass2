@@ -1,6 +1,7 @@
 package ch.softappeal.yass2.core.serialize.binary
 
-import ch.softappeal.yass2.core.assertFailsMessage
+import ch.softappeal.yass2.Gender
+import ch.softappeal.yass2.assertFailsWithMessage
 import ch.softappeal.yass2.core.serialize.ByteArrayReader
 import ch.softappeal.yass2.core.serialize.ByteArrayWriter
 import ch.softappeal.yass2.core.serialize.checkDrained
@@ -8,9 +9,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 
-private enum class Color { Red, Green }
-
-private val ColorEncoder = EnumBinaryEncoder(Color::class, enumValues())
+val GenderEncoder = EnumBinaryEncoder(Gender::class, enumValues())
 
 private data class OptionalString(val s: String?)
 
@@ -88,11 +87,11 @@ class BinaryEncodersTest {
             check(byteArrayOf(), 0)
             check(byteArrayOf(0, 1, -1, 127, -128), 5, 0, 1, -1, 127, -128)
         }
-        with(ColorEncoder) {
-            check(Color.Red, 0)
-            check(Color.Green, 1)
-            assertFailsMessage<IllegalStateException>("illegal constant 2") { read(ByteArrayReader(byteArrayOf(2))) }
-            assertFailsMessage<IllegalStateException>("illegal constant -1") {
+        with(GenderEncoder) {
+            check(Gender.Female, 0)
+            check(Gender.Male, 1)
+            assertFailsWithMessage<IllegalStateException>("illegal constant 2") { read(ByteArrayReader(byteArrayOf(2))) }
+            assertFailsWithMessage<IllegalStateException>("illegal constant -1") {
                 read(ByteArrayReader(byteArrayOf(-1, -1, -1, -1, 15)))
             }
         }

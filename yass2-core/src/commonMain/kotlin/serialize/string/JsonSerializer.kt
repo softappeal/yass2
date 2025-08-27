@@ -149,7 +149,7 @@ public class JsonSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
                 if (type.length > 1) {
                     val className = type.substring(1)
                     val encoder = encoder(className)
-                    check(encoder !is ClassStringEncoder) { "is ClassStringEncoder" }
+                    check(encoder !is ClassStringEncoder) { "'$className' is ClassStringEncoder" }
                     val value = encoder.read(this)
                     checkExpectedCodePoint(QUOTE)
                     readNextCodePointAndSkipWhitespace()

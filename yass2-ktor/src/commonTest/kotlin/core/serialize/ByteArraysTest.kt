@@ -1,38 +1,68 @@
+@file:OptIn(InternalApi::class)
+
 package ch.softappeal.yass2.core.serialize
 
-import ch.softappeal.yass2.core.assertFailsMessage
+import ch.softappeal.yass2.assertFailsWithMessage
+import ch.softappeal.yass2.core.InternalApi
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-
-fun check(write: Writer.() -> Unit, vararg bytes: Int, read: Reader.() -> Unit) {
-    val writer = ByteArrayWriter()
-    writer.write()
-    val byteArray = writer.toyByteArray()
-    assertEquals(bytes.map { it.toByte() }, byteArray.toList())
-    with(ByteArrayReader(byteArray)) {
-        assertFalse(isDrained)
-        read()
-        checkDrained()
-    }
-}
+import kotlin.test.assertTrue
 
 class ByteArraysTest {
     @Test
-    fun byte() {
-        check({ writeByte(1) }, 1) { assertEquals(1, readByte()) }
-        check({ writeByte(-1) }, -1) { assertEquals(-1, readByte()) }
-        assertFailsMessage<IllegalArgumentException>("'readByte()' called when buffer is empty") {
-            ByteArrayReader(byteArrayOf()).readByte()
+    fun test() {
+        val byteArray: ByteArray
+        with(ByteArrayWriter()) {
+            writeByte(13)
+            writeByteArray(byteArrayOf(1, 2, 3))
+            writeByte(31)
+            byteArray = toyByteArray()
+        }
+        assertContentEquals(byteArrayOf(13, 1, 2, 3, 31), byteArray)
+        with(ByteArrayReader(byteArray)) {
+            assertFalse(isDrained)
+            assertFailsWithMessage<IllegalStateException>("buffer not drained") { checkDrained() }
+            assertEquals(13, readByte())
+            assertContentEquals(byteArrayOf(1, 2, 3), readByteArray(3))
+            assertEquals(31, readByte())
+            assertTrue(isDrained)
+            checkDrained()
+            assertFailsWithMessage<IllegalArgumentException>("'readByte()' called when buffer is empty") { readByte() }
+            assertFailsWithMessage<IllegalArgumentException>("'readByteArray(1)' called when buffer is empty") { readByteArray(1) }
         }
     }
 
     @Test
-    fun byteArray() {
-        check({ writeByteArray(byteArrayOf(1, -1)) }, 1, -1) { assertContentEquals(byteArrayOf(1, -1), readByteArray(2)) }
-        assertFailsMessage<IllegalArgumentException>("'readByteArray(3)' called when buffer is empty") {
-            ByteArrayReader(byteArrayOf()).readByteArray(3)
+    fun enlarge() {
+        with(ByteArrayWriter(1)) {
+            assertEquals(1, byteArray.size)
+            writeByte(13)
+            assertEquals(1, byteArray.size)
+            writeByte(31)
+            assertEquals(1000, byteArray.size)
+            assertContentEquals(byteArrayOf(13, 31), toyByteArray())
+            writeByteArray(ByteArray(998))
+            assertEquals(1000, byteArray.size)
+            writeByte(99)
+            assertEquals(2000, byteArray.size)
+            assertEquals(13, byteArray[0])
+            assertEquals(31, byteArray[1])
+            assertEquals(99, byteArray[1000])
+        }
+        with(ByteArrayWriter(2)) {
+            writeByteArray(byteArrayOf(1))
+            assertEquals(2, byteArray.size)
+            writeByteArray(byteArrayOf(2, 3))
+            assertEquals(1003, byteArray.size)
+            writeByteArray(ByteArray(1000))
+            writeByteArray(byteArrayOf(4))
+            assertEquals(2006, byteArray.size)
+            assertEquals(1, byteArray[0])
+            assertEquals(2, byteArray[1])
+            assertEquals(3, byteArray[2])
+            assertEquals(4, byteArray[1003])
         }
     }
 }

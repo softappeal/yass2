@@ -43,17 +43,14 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
                 writeByte(LPAREN)
                 if (encoder is ClassStringEncoder) {
                     writeNewLine()
-                    with(nested()) {
-                        encoder.write(this, value)
-                        writeIndentMinus1()
-                        writeByte(RPAREN)
-                    }
+                    with(nested()) { encoder.write(this, value) }
+                    writeIndent()
                 } else {
                     writeByte(QUOTE)
                     encoder.write(this, value)
                     writeByte(QUOTE)
-                    writeByte(RPAREN)
                 }
+                writeByte(RPAREN)
             }
         }
 

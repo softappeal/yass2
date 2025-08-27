@@ -1,7 +1,5 @@
 package ch.softappeal.yass2.core.remote
 
-import kotlin.coroutines.cancellation.CancellationException
-
 public class ServiceId<@Suppress("unused") S : Any>(public val id: String)
 
 public class Service(
@@ -19,8 +17,6 @@ public fun tunnel(vararg services: Service): Tunnel {
         try {
             val result = service.tunnel(request.function, request.parameters)
             ValueReply(if (result === Unit) null else result)
-        } catch (e: CancellationException) {
-            throw e
         } catch (e: Exception) {
             ExceptionReply(e)
         }

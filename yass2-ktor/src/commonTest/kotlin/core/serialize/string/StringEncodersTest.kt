@@ -1,14 +1,16 @@
 package ch.softappeal.yass2.core.serialize.string
 
 import ch.softappeal.yass2.Gender
-import ch.softappeal.yass2.core.assertFailsMessage
+import ch.softappeal.yass2.assertFailsWithMessage
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertTrue
 
-private fun <T : Any> BaseStringEncoder<T>.test(value: T, vararg results: String) {
+val GenderEncoder = EnumStringEncoder(Gender::class, Gender::valueOf)
+
+private fun <T : Any> BaseStringEncoder<T>.check(value: T, vararg results: String) {
     results.forEach { assertEquals(value, read(it)) }
     assertTrue(results.any { it == write(value) })
 }
@@ -16,9 +18,9 @@ private fun <T : Any> BaseStringEncoder<T>.test(value: T, vararg results: String
 class StringEncodersTest {
     @Test
     fun gender() {
-        with(EnumStringEncoder(Gender::class, Gender::valueOf)) {
-            test(Gender.Female, "Female")
-            test(Gender.Male, "Male")
+        with(GenderEncoder) {
+            check(Gender.Male, "Male")
+            check(Gender.Female, "Female")
             assertFails { read("Unknown") }
         }
     }
@@ -26,11 +28,11 @@ class StringEncodersTest {
     @Test
     fun int() {
         with(IntStringEncoder) {
-            test(0, "0")
-            test(1, "1")
-            test(-1, "-1")
-            test(Int.MAX_VALUE, "2147483647")
-            test(Int.MIN_VALUE, "-2147483648")
+            check(0, "0")
+            check(1, "1")
+            check(-1, "-1")
+            check(Int.MAX_VALUE, "2147483647")
+            check(Int.MIN_VALUE, "-2147483648")
             assertFails { read("Unknown") }
             assertFails { read("4123456789") }
         }
@@ -39,11 +41,11 @@ class StringEncodersTest {
     @Test
     fun long() {
         with(LongStringEncoder) {
-            test(0L, "0")
-            test(1L, "1")
-            test(-1L, "-1")
-            test(Long.MAX_VALUE, "9223372036854775807")
-            test(Long.MIN_VALUE, "-9223372036854775808")
+            check(0L, "0")
+            check(1L, "1")
+            check(-1L, "-1")
+            check(Long.MAX_VALUE, "9223372036854775807")
+            check(Long.MIN_VALUE, "-9223372036854775808")
             assertFails { read("Unknown") }
             assertFails { read("51515131515131515154") }
         }
@@ -96,7 +98,7 @@ class StringEncodersTest {
         test("\ra", "\"\\ra\"", "225c726122")
         println(serializer.fromString("\"a\tb\""))
         println(serializer.fromString("\"c\nd\""))
-        assertFailsMessage<IllegalStateException>("illegal escape with codePoint 97") { serializer.fromString("\"\\a\"") }
+        assertFailsWithMessage<IllegalStateException>("illegal escape with codePoint 97") { serializer.fromString("\"\\a\"") }
         println(assertFails { serializer.fromString("invalid") })
         println(assertFails { serializer.fromString("\"a") })
     }
@@ -106,25 +108,25 @@ class StringEncodersTest {
     // @Test
     fun doubleNotJsPlatform() {
         with(DoubleStringEncoder) {
-            test(0.0, "0.0")
-            test(1.0, "1.0")
-            test(-1.0, "-1.0")
+            check(0.0, "0.0")
+            check(1.0, "1.0")
+            check(-1.0, "-1.0")
         }
     }
 
     @Test
     fun double() {
         with(DoubleStringEncoder) {
-            test(123.456, "123.456")
-            test(Double.POSITIVE_INFINITY, "Infinity")
-            test(Double.NEGATIVE_INFINITY, "-Infinity")
-            test(Double.NaN, "NaN")
-            test(
+            check(123.456, "123.456")
+            check(Double.POSITIVE_INFINITY, "Infinity")
+            check(Double.NEGATIVE_INFINITY, "-Infinity")
+            check(Double.NaN, "NaN")
+            check(
                 -9.87654321E-123,
                 "-9.87654321E-123",
                 "-9.87654321e-123",
             )
-            test(
+            check(
                 9.87654321E123,
                 "9.87654321E123",
                 "9.87654321e123",
@@ -132,7 +134,7 @@ class StringEncodersTest {
                 "9.87654321e+123",
                 "+9.87654321e+123",
             )
-            test(
+            check(
                 Double.MAX_VALUE,
                 "1.7976931348623157E308",
                 "1.7976931348623157e308",
@@ -140,14 +142,14 @@ class StringEncodersTest {
                 "1.7976931348623157e+308",
                 "+1.7976931348623157e+308",
             )
-            test(
+            check(
                 -Double.MAX_VALUE,
                 "-1.7976931348623157E308",
                 "-1.7976931348623157e308",
                 "-1.7976931348623157E+308",
                 "-1.7976931348623157e+308",
             )
-            test(
+            check(
                 1E-300,
                 "1.0E-300",
                 "1.0e-300",
@@ -155,7 +157,7 @@ class StringEncodersTest {
                 "1e-300",
                 "+1e-300",
             )
-            test(
+            check(
                 -1E-300,
                 "-1.0E-300",
                 "-1.0e-300",

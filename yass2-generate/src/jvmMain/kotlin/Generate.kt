@@ -22,8 +22,7 @@ internal fun KType.toType() = toString() // TODO: see file 'KTypeToTypeTest.kt'
     .replace("kotlin.Exception /* = java.lang.Exception */", "kotlin.Exception")
 
 public class CodeWriter private constructor(private val appendable: Appendable, private val indent: String) {
-    @InternalApi
-    public constructor(appendable: Appendable) : this(appendable, "")
+    @InternalApi public constructor(appendable: Appendable) : this(appendable, "")
 
     internal fun writeLine() {
         appendable.append('\n')

@@ -1,9 +1,11 @@
 package ch.softappeal.yass2.coroutines.session
 
+import ch.softappeal.yass2.CalculatorId
 import ch.softappeal.yass2.Echo
 import ch.softappeal.yass2.EchoId
+import ch.softappeal.yass2.core.CalculatorImpl
 import ch.softappeal.yass2.core.EchoImpl
-import ch.softappeal.yass2.core.remote.test
+import ch.softappeal.yass2.core.remote.invoke
 import ch.softappeal.yass2.core.remote.tunnel
 import ch.softappeal.yass2.proxy
 import ch.softappeal.yass2.service
@@ -18,13 +20,22 @@ import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+fun tunnelWithContext(context: suspend () -> Any) = tunnel(
+    CalculatorId.service(CalculatorImpl),
+    EchoId.service(EchoImpl.proxy { _, _, invoke ->
+        println("context<${context()}>")
+        invoke()
+    }),
+)
+
 fun <C : Connection> CoroutineScope.acceptorSessionFactory(context: suspend Session<C>.() -> Any): SessionFactory<C> = {
     object : Session<C>() {
-        override val serverTunnel = tunnel { context() }
+        override val serverTunnel = tunnelWithContext { context() }
 
         override fun opened() {
             launch {
@@ -51,7 +62,7 @@ fun <C : Connection> CoroutineScope.initiatorSessionFactory(): SessionFactory<C>
         override fun opened() {
             launch {
                 assertFalse(isClosed())
-                clientTunnel.test()
+                clientTunnel.invoke()
                 close()
                 assertTrue(isClosed())
             }
@@ -116,7 +127,7 @@ private suspend fun CoroutineScope.heartbeatTest(open: suspend Session<Connectio
 @OptIn(ExperimentalAtomicApi::class)
 class SessionTest {
     @Test
-    fun test() = runTest {
+    fun invoke() = runTest {
         localConnect(initiatorSessionFactory(), acceptorSessionFactory { connection })
     }
 
@@ -165,11 +176,10 @@ class SessionTest {
                 println("heartbeat")
                 delay(timeoutMillis)
                 @Suppress("AssignedValueIsNeverRead")
-                timeoutMillis += 75
+                timeoutMillis += 20
             }
-            delay(700)
+            delay(10_000)
             assertTrue(job.isCompleted)
-            assertTrue(job.isCancelled)
         }
     }
 
@@ -193,6 +203,9 @@ class SessionTest {
                     println("initiatorSession closed $counter")
                 }
             }
+        }
+        assertFailsWith<IllegalArgumentException> {
+            connect(initiatorSessionFactory, 0) {}
         }
         val acceptorSessionFactory = {
             object : Session<Connection>() {

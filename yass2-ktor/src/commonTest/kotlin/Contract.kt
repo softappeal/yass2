@@ -64,6 +64,15 @@ class ThrowableFake(
     val message: String,
 )
 
+data class Example(
+    val int: Int,
+    val intOptional: Int?,
+    val any: Any,
+    val anyOptional: Any?,
+    val list: List<Int>,
+    val listOptional: List<Int>?,
+)
+
 interface AddCalculator {
     suspend fun add(a: Int, b: Int): Int
 }
@@ -86,6 +95,10 @@ interface Echo {
     suspend fun echoException(value: Exception): Exception
 }
 
+interface GenericService<A, B, C> {
+    suspend fun service(a: A, b: B): C
+}
+
 internal val ConcreteAndEnumClasses = listOf(
     Gender::class,
     A::class,
@@ -97,6 +110,7 @@ internal val ConcreteAndEnumClasses = listOf(
     Types::class,
     Request::class, ValueReply::class, ExceptionReply::class,
     Packet::class,
+    Example::class,
 )
 
 internal val BinaryEncoderObjects = listOf(
@@ -120,4 +134,8 @@ val ContractSerializer = TextSerializer(StringEncoders)
 val CalculatorId = ServiceId<Calculator>("calc")
 val EchoId = ServiceId<Echo>("echo")
 
-internal val Services = listOf(Calculator::class, Echo::class)
+internal val Services = listOf(
+    Calculator::class,
+    Echo::class,
+    GenericService::class,
+)

@@ -24,7 +24,7 @@ private const val NULL = "null"
 private const val TRUE = "true"
 private const val FALSE = "false"
 
-public fun Int.isWhitespace(): Boolean = this == SP || this == TAB || this == NL || this == CR
+private fun Int.isWhitespace(): Boolean = this == SP || this == TAB || this == NL || this == CR
 
 private const val S_BS = BS.toChar().toString()
 private const val S_BS_BS = S_BS + S_BS
@@ -94,10 +94,6 @@ public abstract class StringWriter(
 
     public fun writeIndent() {
         repeat(indent) { writeByteArray(Tab) }
-    }
-
-    public fun writeIndentMinus1() {
-        repeat(indent - 1) { writeByteArray(Tab) }
     }
 
     public fun writeNewLine() {
