@@ -37,10 +37,8 @@ public fun <F, I> FlowService<F, I>.createFlow(flowId: I): Flow<F> =
         }
     }
 
-public typealias FlowFactory<F, I> = (flowId: I) -> Flow<F>
-
 @ExperimentalApi
-public fun <F, I> flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I> {
+public fun <F, I> flowService(flowFactory: (flowId: I) -> Flow<F>): FlowService<F, I> {
     val nextCollectId = AtomicInt(0)
     val collectIdToChannel = ThreadSafeMap<Int, Channel<Reply?>>(16)
     return object : FlowService<F, I> {

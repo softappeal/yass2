@@ -21,7 +21,7 @@ import kotlin.test.assertFailsWith
 private val range1 = 1..3
 private val range2 = 11..12
 
-private val flowFactory: FlowFactory<Int, Int> = { flowId ->
+private val flowFactory = { flowId: Int ->
     when (flowId) {
         1 -> range1.asFlow()
         2 -> range2.asFlow()
