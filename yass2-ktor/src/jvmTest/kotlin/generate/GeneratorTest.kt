@@ -58,7 +58,7 @@ class GeneratorTest {
         assertFailsWithMessage<IllegalStateException>(
             "class ch.softappeal.yass2.generate.NoPrimaryConstructor must hava a primary constructor"
         ) { generateBinarySerializer(NoPrimaryConstructor::class) }
-        assertFailsWithMessage<IllegalArgumentException>(
+        assertFailsWithMessage<IllegalStateException>(
             "primary constructor parameter x of class ch.softappeal.yass2.generate.ConstructorParameterIsNotProperty must be a property"
         ) { generateBinarySerializer(ConstructorParameterIsNotProperty::class) }
         assertFailsWithMessage<IllegalArgumentException>(

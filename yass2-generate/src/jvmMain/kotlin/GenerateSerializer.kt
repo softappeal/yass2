@@ -56,23 +56,15 @@ private abstract class Property(property: KProperty1<out Any, *>) {
 
 private fun <P : Property> KClass<*>.properties(createProperty: (property: KProperty1<out Any, *>) -> P): List<P> {
     require(!isAbstract) { "class $qualifiedName must be concrete" }
-    val properties = memberProperties
-        .filterNot { (it.name == "cause" || it.name == "message") && isSubclassOf(Throwable::class) }
-        .sortedBy { it.name }
+    val properties = memberProperties.filterNot { (it.name == "cause" || it.name == "message") && isSubclassOf(Throwable::class) }
         .map { createProperty(it) }
-    val parameters = buildList {
-        val propertyNames = properties.map { it.name }
-        val parameterNames = (primaryConstructor ?: error("class $qualifiedName must hava a primary constructor"))
-            .valueParameters.map { it.name }
-        parameterNames.forEach { parameterName ->
-            require(propertyNames.contains(parameterName)) {
-                "primary constructor parameter $parameterName of class $qualifiedName must be a property"
-            }
-            add(properties.first { it.name == parameterName })
-        }
+    val parameters = (primaryConstructor ?: error("class $qualifiedName must hava a primary constructor")).valueParameters
+    val constructorProperties = parameters.map { parameter ->
+        properties.firstOrNull { it.name == parameter.name }
+            ?: error("primary constructor parameter ${parameter.name} of class $qualifiedName must be a property")
     }
-    require(properties.all { it in parameters }) { "$qualifiedName must not have body properties" }
-    return parameters
+    require(properties.all { it in constructorProperties }) { "$qualifiedName must not have body properties" }
+    return constructorProperties
 }
 
 public fun CodeWriter.generateBinarySerializer(
@@ -174,8 +166,8 @@ public fun CodeWriter.generateStringEncoders(
         }
         concreteClasses.forEach { type ->
             writeNestedLine("${ClassStringEncoder::class.qualifiedName}(", "),") {
-                val properties = type.properties { StringProperty(it) }
                 writeNestedLine("${type.qualifiedName}::class, // ${encoderId++}")
+                val properties = type.properties { StringProperty(it) }
                 writeNestedLine("{ i ->", "},") {
                     properties.forEach { writeNestedLine(it.writeProperty("i.${it.name}")) }
                 }
