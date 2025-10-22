@@ -1,12 +1,12 @@
 [versions]
 
 # API
-kotlin     = "2.2.20"        # https://github.com/JetBrains/kotlin
+kotlin     = "2.2.21"        # https://github.com/JetBrains/kotlin
 coroutines = "1.10.2"        # https://github.com/Kotlin/kotlinx.coroutines
-ktor       = "3.2.3"         # https://github.com/ktorio/ktor
+ktor       = "3.3.1"         # https://github.com/ktorio/ktor
 
 # build
-dokka      = "2.1.0-Beta"    # https://github.com/Kotlin/dokka
+dokka      = "2.1.0"         # https://github.com/Kotlin/dokka
 publish    = "0.34.0"        # https://github.com/vanniktech/gradle-maven-publish-plugin
 
 [libraries]
