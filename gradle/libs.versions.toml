@@ -1,7 +1,7 @@
 [versions]
 
 # API
-kotlin     = "2.2.21"        # https://github.com/JetBrains/kotlin
+kotlin     = "2.3.0-Beta2"   # https://github.com/JetBrains/kotlin
 coroutines = "1.10.2"        # https://github.com/Kotlin/kotlinx.coroutines
 ktor       = "3.3.1"         # https://github.com/ktorio/ktor
 
