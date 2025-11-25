@@ -1,26 +1,29 @@
 public final class ch/softappeal/yass2/generate/CodeWriter {
 }
 
-public final class ch/softappeal/yass2/generate/GenerateKt {
+public final class ch/softappeal/yass2/generate/SharedKt {
 	public static final field GENERATED_BY_YASS Ljava/lang/String;
-	public static final fun generateFile (Ljava/lang/Object;Ljava/lang/String;Lch/softappeal/yass2/generate/GenerateMode;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun generateFile$default (Ljava/lang/Object;Ljava/lang/String;Lch/softappeal/yass2/generate/GenerateMode;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+}
+
+public final class ch/softappeal/yass2/generate/reflect/GenerateKt {
+	public static final fun generateFile (Ljava/lang/Object;Ljava/lang/String;Lch/softappeal/yass2/generate/reflect/GenerateMode;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun generateFile$default (Ljava/lang/Object;Ljava/lang/String;Lch/softappeal/yass2/generate/reflect/GenerateMode;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public static final fun generateProxies (Lch/softappeal/yass2/generate/CodeWriter;Ljava/util/List;)V
 }
 
-public final class ch/softappeal/yass2/generate/GenerateMode : java/lang/Enum {
-	public static final field Check Lch/softappeal/yass2/generate/GenerateMode;
-	public static final field Update Lch/softappeal/yass2/generate/GenerateMode;
+public final class ch/softappeal/yass2/generate/reflect/GenerateMode : java/lang/Enum {
+	public static final field Check Lch/softappeal/yass2/generate/reflect/GenerateMode;
+	public static final field Update Lch/softappeal/yass2/generate/reflect/GenerateMode;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lch/softappeal/yass2/generate/GenerateMode;
-	public static fun values ()[Lch/softappeal/yass2/generate/GenerateMode;
+	public static fun valueOf (Ljava/lang/String;)Lch/softappeal/yass2/generate/reflect/GenerateMode;
+	public static fun values ()[Lch/softappeal/yass2/generate/reflect/GenerateMode;
 }
 
-public final class ch/softappeal/yass2/generate/GenerateProxyKt {
+public final class ch/softappeal/yass2/generate/reflect/GenerateProxyKt {
 	public static final fun generateProxy (Lch/softappeal/yass2/generate/CodeWriter;Lkotlin/reflect/KClass;)V
 }
 
-public final class ch/softappeal/yass2/generate/GenerateSerializerKt {
+public final class ch/softappeal/yass2/generate/reflect/GenerateSerializerKt {
 	public static final fun generateBinarySerializer (Lch/softappeal/yass2/generate/CodeWriter;Ljava/util/List;Ljava/util/List;)V
 	public static final fun generateStringEncoders (Lch/softappeal/yass2/generate/CodeWriter;Ljava/util/List;Ljava/util/List;)V
 }

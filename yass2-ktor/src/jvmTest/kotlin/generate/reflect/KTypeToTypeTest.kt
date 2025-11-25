@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.generate
+package ch.softappeal.yass2.generate.reflect
 
 import kotlin.reflect.KCallable
 import kotlin.reflect.KClass

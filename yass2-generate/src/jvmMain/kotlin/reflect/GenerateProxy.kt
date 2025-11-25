@@ -1,8 +1,12 @@
-package ch.softappeal.yass2.generate
+package ch.softappeal.yass2.generate.reflect
 
 import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.Service
 import ch.softappeal.yass2.core.remote.ServiceId
+import ch.softappeal.yass2.generate.CSY
+import ch.softappeal.yass2.generate.CodeWriter
+import ch.softappeal.yass2.generate.duplicates
+import ch.softappeal.yass2.generate.hasNoDuplicates
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.memberFunctions
