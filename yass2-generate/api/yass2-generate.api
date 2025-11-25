@@ -1,17 +1,17 @@
 public final class ch/softappeal/yass2/generate/CodeWriter {
 }
 
-public final class ch/softappeal/yass2/generate/GenerateKt {
+public final class ch/softappeal/yass2/generate/reflect/GenerateKt {
 	public static final field GENERATED_BY_YASS Ljava/lang/String;
 	public static final fun generateFile (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public static final fun generateProxies (Lch/softappeal/yass2/generate/CodeWriter;Ljava/util/List;)V
 }
 
-public final class ch/softappeal/yass2/generate/GenerateProxyKt {
+public final class ch/softappeal/yass2/generate/reflect/GenerateProxyKt {
 	public static final fun generateProxy (Lch/softappeal/yass2/generate/CodeWriter;Lkotlin/reflect/KClass;)V
 }
 
-public final class ch/softappeal/yass2/generate/GenerateSerializerKt {
+public final class ch/softappeal/yass2/generate/reflect/GenerateSerializerKt {
 	public static final fun generateBinarySerializer (Lch/softappeal/yass2/generate/CodeWriter;Ljava/util/List;Ljava/util/List;)V
 	public static final fun generateStringEncoders (Lch/softappeal/yass2/generate/CodeWriter;Ljava/util/List;Ljava/util/List;)V
 }
