@@ -1,12 +1,11 @@
 @file:OptIn(InternalApi::class)
 
-package ch.softappeal.yass2.generate.reflect
+package ch.softappeal.yass2.generate
 
 import ch.softappeal.yass2.assertFailsWithMessage
 import ch.softappeal.yass2.core.InternalApi
 import ch.softappeal.yass2.core.serialize.binary.BinaryEncoder
 import ch.softappeal.yass2.core.serialize.binary.IntBinaryEncoder
-import ch.softappeal.yass2.generate.CodeWriter
 import kotlin.reflect.KClass
 import kotlin.test.Test
 
@@ -54,28 +53,28 @@ class GeneratorTest {
             codeWriter().generateBinarySerializer(listOf(), listOf(klass))
         }
         assertFailsWithMessage<IllegalArgumentException>(
-            "ch.softappeal.yass2.generate.reflect.BodyProperty must not have body properties"
+            "ch.softappeal.yass2.generate.BodyProperty must not have body properties"
         ) { generateBinarySerializer(BodyProperty::class) }
         assertFailsWithMessage<IllegalStateException>(
-            "class ch.softappeal.yass2.generate.reflect.NoPrimaryConstructor must hava a primary constructor"
+            "class ch.softappeal.yass2.generate.NoPrimaryConstructor must hava a primary constructor"
         ) { generateBinarySerializer(NoPrimaryConstructor::class) }
         assertFailsWithMessage<IllegalStateException>(
-            "primary constructor parameter x of class ch.softappeal.yass2.generate.reflect.ConstructorParameterIsNotProperty must be a property"
+            "primary constructor parameter x of class ch.softappeal.yass2.generate.ConstructorParameterIsNotProperty must be a property"
         ) { generateBinarySerializer(ConstructorParameterIsNotProperty::class) }
         assertFailsWithMessage<IllegalArgumentException>(
-            "class ch.softappeal.yass2.generate.reflect.NotRegularClass must be concrete"
+            "class ch.softappeal.yass2.generate.NotRegularClass must be concrete"
         ) { generateBinarySerializer(NotRegularClass::class) }
         assertFailsWithMessage<IllegalArgumentException>(
-            "class ch.softappeal.yass2.generate.reflect.AbstractClass must be concrete"
+            "class ch.softappeal.yass2.generate.AbstractClass must be concrete"
         ) { generateBinarySerializer(AbstractClass::class) }
         assertFailsWithMessage<IllegalStateException>(
-            "enum class ch.softappeal.yass2.generate.reflect.Enum belongs to ConcreteAndEnumClasses"
+            "enum class ch.softappeal.yass2.generate.Enum belongs to ConcreteAndEnumClasses"
         ) { codeWriter().generateBinarySerializer(listOf(MyEnumEncoder::class), listOf()) }
         assertFailsWithMessage<IllegalArgumentException>(
             "classes [kotlin.Int] are duplicated"
         ) { codeWriter().generateBinarySerializer(listOf(IntBinaryEncoder::class), listOf(Int::class)) }
         assertFailsWithMessage<IllegalArgumentException>(
-            "classes [ch.softappeal.yass2.generate.reflect.Enum] are duplicated"
+            "classes [ch.softappeal.yass2.generate.Enum] are duplicated"
         ) {
             codeWriter().generateBinarySerializer(listOf(), listOf(Enum::class, Enum::class))
         }
@@ -84,13 +83,13 @@ class GeneratorTest {
     @Test
     fun proxy() {
         assertFailsWithMessage<IllegalArgumentException>(
-            "ch.softappeal.yass2.generate.reflect.NotAnInterface must be an interface"
+            "ch.softappeal.yass2.generate.NotAnInterface must be an interface"
         ) { codeWriter().generateProxy(NotAnInterface::class) }
         assertFailsWithMessage<IllegalArgumentException>(
-            "interface ch.softappeal.yass2.generate.reflect.Overloaded has overloaded methods [f]"
+            "interface ch.softappeal.yass2.generate.Overloaded has overloaded methods [f]"
         ) { codeWriter().generateProxy(Overloaded::class) }
         assertFailsWithMessage<IllegalArgumentException>(
-            "method ch.softappeal.yass2.generate.reflect.NoSuspend.noSuspend must be suspend"
+            "method ch.softappeal.yass2.generate.NoSuspend.noSuspend must be suspend"
         ) { codeWriter().generateProxy(NoSuspend::class) }
     }
 }

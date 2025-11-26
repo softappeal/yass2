@@ -1,7 +1,7 @@
 package ch.softappeal.yass2.coroutines.flow
 
-import ch.softappeal.yass2.generate.reflect.generateFile
-import ch.softappeal.yass2.generate.reflect.generateProxy
+import ch.softappeal.yass2.generate.generateFile
+import ch.softappeal.yass2.generate.generateProxy
 import kotlin.test.Test
 
 class GenerateTest {

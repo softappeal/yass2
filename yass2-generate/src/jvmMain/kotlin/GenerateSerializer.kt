@@ -1,6 +1,6 @@
 @file:OptIn(InternalApi::class)
 
-package ch.softappeal.yass2.generate.reflect
+package ch.softappeal.yass2.generate
 
 import ch.softappeal.yass2.core.InternalApi
 import ch.softappeal.yass2.core.serialize.binary.BINARY_FIRST_ENCODER_ID
@@ -18,7 +18,6 @@ import ch.softappeal.yass2.core.serialize.string.STRING_LIST_ENCODER_ID
 import ch.softappeal.yass2.core.serialize.string.STRING_NO_ENCODER_ID
 import ch.softappeal.yass2.core.serialize.string.STRING_STRING_ENCODER_ID
 import ch.softappeal.yass2.core.serialize.string.StringEncoder
-import ch.softappeal.yass2.generate.CodeWriter
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.isSubclassOf
