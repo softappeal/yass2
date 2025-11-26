@@ -33,7 +33,7 @@ allprojects {
 
     kotlin {
         jvm()
-        if (project.name in setOf("yass2-core", "yass2-coroutines", "yass2-ktor")) {
+        if (project.name in setOf("yass2-core", "yass2-generate", "yass2-coroutines", "yass2-ktor")) {
             @OptIn(ExperimentalAbiValidation::class)
             abiValidation {
                 enabled.set(true)
@@ -43,25 +43,27 @@ allprojects {
                     }
                 }
             }
-            if (webPlatform) {
-                js {
-                    outputModuleName.set(project.name)
-                    nodejs()
-                    binaries.executable()
-                    compilerOptions {
-                        target.set("es2015")
+            if (project.name != "yass2-generate") {
+                if (webPlatform) {
+                    js {
+                        outputModuleName.set(project.name)
+                        nodejs()
+                        binaries.executable()
+                        compilerOptions {
+                            target.set("es2015")
+                        }
+                    }
+                    @OptIn(ExperimentalWasmDsl::class)
+                    wasmJs {
+                        outputModuleName.set(project.name)
+                        nodejs()
+                        binaries.executable()
                     }
                 }
-                @OptIn(ExperimentalWasmDsl::class)
-                wasmJs {
-                    outputModuleName.set(project.name)
-                    nodejs()
-                    binaries.executable()
+                if (linuxPlatform) {
+                    linuxX64()
+                    linuxArm64()
                 }
-            }
-            if (linuxPlatform) {
-                linuxX64()
-                linuxArm64()
             }
         }
         if (project.name != "tutorial") explicitApi()
