@@ -1,5 +1,6 @@
 package ch.softappeal.yass2
 
+import ch.softappeal.yass2.generate.GenerateMode
 import ch.softappeal.yass2.generate.generateBinarySerializer
 import ch.softappeal.yass2.generate.generateFile
 import ch.softappeal.yass2.generate.generateProxies
@@ -12,6 +13,7 @@ class GenerateTest {
         generateFile(
             "src/commonTest/kotlin",
             "ch.softappeal.yass2",
+            GenerateMode.Check,
         ) {
             generateProxies(Services)
             generateBinarySerializer(BinaryEncoderObjects, ConcreteAndEnumClasses)

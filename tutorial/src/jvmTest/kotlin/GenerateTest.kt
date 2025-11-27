@@ -1,5 +1,6 @@
 package tutorial
 
+import ch.softappeal.yass2.generate.GenerateMode
 import ch.softappeal.yass2.generate.generateFile
 import ch.softappeal.yass2.generate.generateProxies
 import ch.softappeal.yass2.generate.generateStringEncoders
@@ -11,6 +12,7 @@ class GenerateTest {
         generateFile(
             "src/commonMain/kotlin",
             "tutorial",
+            GenerateMode.Check, // or GenerateMode.Update
         ) {
             generateProxies(Services)
             generateStringEncoders(StringEncoderObjects, ConcreteAndEnumClasses)

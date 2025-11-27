@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.coroutines.flow
 
+import ch.softappeal.yass2.generate.GenerateMode
 import ch.softappeal.yass2.generate.generateFile
 import ch.softappeal.yass2.generate.generateProxy
 import kotlin.test.Test
@@ -10,6 +11,7 @@ class GenerateTest {
         generateFile(
             "src/commonMain/kotlin/flow",
             "ch.softappeal.yass2.coroutines.flow",
+            GenerateMode.Check,
         ) {
             generateProxy(FlowService::class)
         }

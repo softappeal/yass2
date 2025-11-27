@@ -9,4 +9,4 @@ jobs:
       - uses: gradle/actions/wrapper-validation@v4
       - run: |
           docker image     build --tag project-image .
-          docker container run         project-image ./gradlew build
+          docker container run         project-image ./gradlew markers checkLegacyAbi build

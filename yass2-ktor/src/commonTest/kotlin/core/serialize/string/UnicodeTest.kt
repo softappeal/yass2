@@ -15,7 +15,7 @@ private fun readCodePoint(vararg bytes: Int): Int {
 class UnicodeTest {
     @Test
     fun addCodePoint() {
-        fun string(codePoint: Int) = StringBuilder().apply { addCodePoint(codePoint) }.toString()
+        fun string(codePoint: Int) = buildString { addCodePoint(codePoint) }
         string(Char.MAX_VALUE.code).apply {
             assertEquals(1, this.length)
             assertEquals(Char.MAX_VALUE, this[0])

@@ -5,9 +5,12 @@ package ch.softappeal.yass2.generate
 import ch.softappeal.yass2.core.InternalApi
 import java.nio.file.Files
 import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
+import kotlin.test.assertEquals
 
 internal fun <T> List<T>.hasNoDuplicates() = size == toSet().size
 
@@ -63,34 +66,53 @@ public class CodeWriter private constructor(private val appendable: Appendable, 
     }
 }
 
-public const val GENERATED_BY_YASS: String = "GeneratedByYass"
+public const val GENERATED_BY_YASS: String = "GeneratedByYass.kt"
 
-public fun generateFile(generatedDir: String, packageName: String, write: CodeWriter.() -> Unit) {
-    val builder = StringBuilder()
-    builder.append(
-        """
-            @file:Suppress(
-                "unused",
-                "UNCHECKED_CAST",
-                "USELESS_CAST",
-                "PARAMETER_NAME_CHANGED_ON_OVERRIDE",
-                "RemoveRedundantQualifierName",
-                "SpellCheckingInspection",
-                "RedundantVisibilityModifier",
-                "REDUNDANT_VISIBILITY_MODIFIER",
-                "RedundantSuppression",
-                "UNUSED_ANONYMOUS_PARAMETER",
-                "KotlinRedundantDiagnosticSuppress",
+public enum class GenerateMode { Update, Check }
+
+public fun generateFile(
+    generatedDir: String,
+    packageName: String,
+    mode: GenerateMode = GenerateMode.Update,
+    write: CodeWriter.() -> Unit,
+) {
+    val generatedCode = buildString {
+        append(
+            """
+                @file:Suppress(
+                    "unused",
+                    "UNCHECKED_CAST",
+                    "USELESS_CAST",
+                    "PARAMETER_NAME_CHANGED_ON_OVERRIDE",
+                    "RemoveRedundantQualifierName",
+                    "SpellCheckingInspection",
+                    "RedundantVisibilityModifier",
+                    "REDUNDANT_VISIBILITY_MODIFIER",
+                    "RedundantSuppression",
+                    "UNUSED_ANONYMOUS_PARAMETER",
+                    "KotlinRedundantDiagnosticSuppress",
+                )
+
+                package $packageName
+
+            """.trimIndent()
+        )
+        CodeWriter(this).write()
+    }
+    val generatedFile = Path(generatedDir).resolve(GENERATED_BY_YASS)
+    when (mode) {
+        GenerateMode.Update -> {
+            Files.createDirectories(generatedFile.parent)
+            generatedFile.writeText(generatedCode)
+        }
+        GenerateMode.Check -> {
+            val existingCode = generatedFile.readText().replace("\r\n", "\n")
+            assertEquals(
+                generatedCode, existingCode, // enables convenient diff in IntelliJ IDEA
+                "outdated generated file '${generatedFile.absolutePathString()}' (use generateFile with GenerateMode.Update)",
             )
-
-            package $packageName
-
-        """.trimIndent()
-    )
-    CodeWriter(builder).write()
-    val generatedFile = Path(generatedDir).resolve("$GENERATED_BY_YASS.kt")
-    Files.createDirectories(generatedFile.parent)
-    generatedFile.writeText(builder.toString())
+        }
+    }
 }
 
 public fun CodeWriter.generateProxies(services: List<KClass<*>>) {
