@@ -9,11 +9,7 @@ import kotlin.test.Test
 class GenerateTest {
     @Test
     fun generate() {
-        generateFile(
-            "src/commonMain/kotlin",
-            "tutorial",
-            GenerateMode.Check, // or GenerateMode.Update
-        ) {
+        generateFile("src/commonMain/kotlin", GenerateMode.Check) {
             generateProxies(Services)
             generateStringEncoders(StringEncoderObjects, ConcreteAndEnumClasses)
         }

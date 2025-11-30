@@ -68,14 +68,28 @@ public class CodeWriter private constructor(private val appendable: Appendable, 
 
 public const val GENERATED_BY_YASS: String = "GeneratedByYass.kt"
 
-public enum class GenerateMode { Update, Check }
+public enum class GenerateMode {
+    /** Create/Overwrite the generated file. */
+    Update,
 
-public fun generateFile(
-    generatedDir: String,
-    packageName: String,
-    mode: GenerateMode = GenerateMode.Update,
-    write: CodeWriter.() -> Unit,
-) {
+    /** Fail if generated the file differs from existing. */
+    Check,
+}
+
+/**
+ * Generates a file with name [GENERATED_BY_YASS]  at [generatedDir] with the package of the receiver.
+ *
+ * Usage: Add a test in the package of the generated file.
+ * ```
+ * class GenerateTest {
+ *     @Test
+ *     fun generate() {
+ *         generateFile("src/commonMain/kotlin", GenerateMode.Check) { ... }
+ *     }
+ * }
+ * ```
+ */
+public fun Any.generateFile(generatedDir: String, mode: GenerateMode = GenerateMode.Update, write: CodeWriter.() -> Unit) {
     val generatedCode = buildString {
         append(
             """
@@ -93,7 +107,7 @@ public fun generateFile(
                     "KotlinRedundantDiagnosticSuppress",
                 )
 
-                package $packageName
+                package ${this@generateFile::class.java.`package`.name}
 
             """.trimIndent()
         )

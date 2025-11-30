@@ -8,11 +8,7 @@ import kotlin.test.Test
 class GenerateTest {
     @Test
     fun generate() {
-        generateFile(
-            "src/commonMain/kotlin/flow",
-            "ch.softappeal.yass2.coroutines.flow",
-            GenerateMode.Check,
-        ) {
+        generateFile("src/commonMain/kotlin/flow", GenerateMode.Check) {
             generateProxy(FlowService::class)
         }
     }

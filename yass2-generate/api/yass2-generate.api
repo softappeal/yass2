@@ -3,8 +3,8 @@ public final class ch/softappeal/yass2/generate/CodeWriter {
 
 public final class ch/softappeal/yass2/generate/GenerateKt {
 	public static final field GENERATED_BY_YASS Ljava/lang/String;
-	public static final fun generateFile (Ljava/lang/String;Ljava/lang/String;Lch/softappeal/yass2/generate/GenerateMode;Lkotlin/jvm/functions/Function1;)V
-	public static synthetic fun generateFile$default (Ljava/lang/String;Ljava/lang/String;Lch/softappeal/yass2/generate/GenerateMode;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static final fun generateFile (Ljava/lang/Object;Ljava/lang/String;Lch/softappeal/yass2/generate/GenerateMode;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun generateFile$default (Ljava/lang/Object;Ljava/lang/String;Lch/softappeal/yass2/generate/GenerateMode;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public static final fun generateProxies (Lch/softappeal/yass2/generate/CodeWriter;Ljava/util/List;)V
 }
 
