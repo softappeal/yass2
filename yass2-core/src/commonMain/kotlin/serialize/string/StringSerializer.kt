@@ -284,3 +284,5 @@ public abstract class StringSerializer(stringEncoders: List<StringEncoder<*>>) :
 public fun StringSerializer.toString(value: Any?): String = toByteArray(value).decodeToString(throwOnInvalidSequence = true)
 public fun StringSerializer.fromString(string: String): Any? =
     fromByteArray(string.encodeToByteArray(throwOnInvalidSequence = true))
+
+public annotation class StringEncoderObjects(vararg val value: KClass<out BaseStringEncoder<*>>)

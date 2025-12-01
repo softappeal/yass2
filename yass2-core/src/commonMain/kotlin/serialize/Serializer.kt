@@ -1,5 +1,7 @@
 package ch.softappeal.yass2.core.serialize
 
+import kotlin.reflect.KClass
+
 public interface Writer {
     public fun writeByte(byte: Byte)
     public fun writeByteArray(byteArray: ByteArray)
@@ -23,3 +25,9 @@ public fun Serializer.toByteArray(value: Any?): ByteArray = with(ByteArrayWriter
 public fun Serializer.fromByteArray(byteArray: ByteArray): Any? = with(ByteArrayReader(byteArray)) {
     read(this).apply { checkDrained() }
 }
+
+/**
+ * Concrete classes must have a primary constructor and all its parameters must be properties.
+ * Inheritance is supported.
+ */
+public annotation class ConcreteAndEnumClasses(vararg val value: KClass<*>)

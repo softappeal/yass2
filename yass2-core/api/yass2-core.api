@@ -3,6 +3,10 @@ public final class ch/softappeal/yass2/core/CleanupKt {
 	public static final fun tryFinally (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
 }
 
+public final class ch/softappeal/yass2/core/CollectionsKt {
+	public static final fun forEachSeparator (Ljava/lang/Iterable;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;)V
+}
+
 public abstract interface annotation class ch/softappeal/yass2/core/ExperimentalApi : java/lang/annotation/Annotation {
 }
 
@@ -11,6 +15,10 @@ public final class ch/softappeal/yass2/core/InterceptorKt {
 }
 
 public abstract interface annotation class ch/softappeal/yass2/core/InternalApi : java/lang/annotation/Annotation {
+}
+
+public abstract interface annotation class ch/softappeal/yass2/core/Proxies : java/lang/annotation/Annotation {
+	public abstract fun value ()[Ljava/lang/Class;
 }
 
 public final class ch/softappeal/yass2/core/remote/ExceptionReply : ch/softappeal/yass2/core/remote/Reply {
@@ -73,6 +81,10 @@ public final class ch/softappeal/yass2/core/serialize/ByteArraysKt {
 	public static final fun checkDrained (Lch/softappeal/yass2/core/serialize/ByteArrayReader;)V
 }
 
+public abstract interface annotation class ch/softappeal/yass2/core/serialize/ConcreteAndEnumClasses : java/lang/annotation/Annotation {
+	public abstract fun value ()[Ljava/lang/Class;
+}
+
 public abstract interface class ch/softappeal/yass2/core/serialize/Reader {
 	public abstract fun readByte ()B
 	public abstract fun readByteArray (I)[B
@@ -97,6 +109,10 @@ public class ch/softappeal/yass2/core/serialize/binary/BinaryEncoder {
 	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;)V
 	public final fun read (Lch/softappeal/yass2/core/serialize/Reader;)Ljava/lang/Object;
 	public final fun write (Lch/softappeal/yass2/core/serialize/Writer;Ljava/lang/Object;)V
+}
+
+public abstract interface annotation class ch/softappeal/yass2/core/serialize/binary/BinaryEncoderObjects : java/lang/annotation/Annotation {
+	public abstract fun value ()[Ljava/lang/Class;
 }
 
 public final class ch/softappeal/yass2/core/serialize/binary/BinaryEncodersKt {
@@ -197,6 +213,10 @@ public class ch/softappeal/yass2/core/serialize/string/StringEncoder {
 	public final fun getType ()Lkotlin/reflect/KClass;
 	public final fun read (Lch/softappeal/yass2/core/serialize/string/StringReader;)Ljava/lang/Object;
 	public final fun write (Lch/softappeal/yass2/core/serialize/string/StringWriter;Ljava/lang/Object;)V
+}
+
+public abstract interface annotation class ch/softappeal/yass2/core/serialize/string/StringEncoderObjects : java/lang/annotation/Annotation {
+	public abstract fun value ()[Ljava/lang/Class;
 }
 
 public abstract class ch/softappeal/yass2/core/serialize/string/StringReader : ch/softappeal/yass2/core/serialize/Reader {

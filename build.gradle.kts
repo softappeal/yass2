@@ -18,6 +18,7 @@ println("webPlatform: $webPlatform")
 
 plugins {
     alias(libs.plugins.multiplatform)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.dokka)
     alias(libs.plugins.publish)
 }
@@ -113,6 +114,7 @@ val generateProject = project(":yass2-generate") {
                 dependencies {
                     api(coreProject)
                     implementation(kotlin("reflect"))
+                    implementation(libraries.ksp)
                     implementation(kotlin("test"))
                 }
             }
@@ -140,6 +142,7 @@ val coroutinesProject = project(":yass2-coroutines") {
 }
 
 val ktorProject = project(":yass2-ktor") {
+    apply(plugin = "com.google.devtools.ksp")
     kotlin {
         sourceSets {
             commonMain {
@@ -158,9 +161,13 @@ val ktorProject = project(":yass2-ktor") {
                 dependencies {
                     implementation(generateProject)
                     implementation(libraries.bundles.ktor.cio)
+                    implementation(libraries.kct)
                 }
             }
         }
+    }
+    dependencies {
+        ksp(generateProject)
     }
 }
 
@@ -172,9 +179,10 @@ dependencies {
 }
 
 project(":tutorial") {
+    apply(plugin = "com.google.devtools.ksp")
     kotlin {
         sourceSets {
-            commonMain {
+            jvmMain {
                 dependencies {
                     implementation(ktorProject)
                     implementation(libraries.bundles.ktor.cio)
@@ -182,11 +190,13 @@ project(":tutorial") {
             }
             jvmTest {
                 dependencies {
-                    implementation(generateProject)
                     implementation(kotlin("test"))
                 }
             }
         }
+    }
+    dependencies {
+        add("kspJvm", generateProject)
     }
 }
 
@@ -202,6 +212,7 @@ tasks.register("markers") {
             .exclude("/.kotlin/")
             .exclude("/kotlin-js-store/")
             .exclude(".DS_Store")
+            .exclude("/ai.code.quality.review.md")
         fun search(marker: String, help: String, abort: Boolean = false) {
             divider('=')
             println("= $marker - $help")

@@ -1,17 +1,7 @@
 package ch.softappeal.yass2
 
-import ch.softappeal.yass2.core.remote.ExceptionReply
-import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.ServiceId
-import ch.softappeal.yass2.core.remote.ValueReply
-import ch.softappeal.yass2.core.serialize.binary.BooleanBinaryEncoder
-import ch.softappeal.yass2.core.serialize.binary.ByteArrayBinaryEncoder
-import ch.softappeal.yass2.core.serialize.binary.IntBinaryEncoder
-import ch.softappeal.yass2.core.serialize.binary.StringBinaryEncoder
-import ch.softappeal.yass2.core.serialize.string.ByteArrayStringEncoder
-import ch.softappeal.yass2.core.serialize.string.IntStringEncoder
 import ch.softappeal.yass2.core.serialize.string.TextSerializer
-import ch.softappeal.yass2.coroutines.session.Packet
 
 enum class Gender { Female, Male }
 
@@ -91,39 +81,7 @@ interface GenericService<A, B, C> {
     suspend fun service(a: A, b: B): C
 }
 
-internal val ConcreteAndEnumClasses = listOf(
-    Gender::class,
-    A::class,
-    B::class,
-    Poly::class,
-    ManyProperties::class,
-    DivideByZeroException::class,
-    ThrowableFake::class,
-    Types::class,
-    Request::class, ValueReply::class, ExceptionReply::class,
-    Packet::class,
-    Example::class,
-)
-
-internal val BinaryEncoderObjects = listOf(
-    BooleanBinaryEncoder::class,
-    IntBinaryEncoder::class,
-    StringBinaryEncoder::class,
-    ByteArrayBinaryEncoder::class,
-)
-
-internal val StringEncoderObjects = listOf(
-    IntStringEncoder::class,
-    ByteArrayStringEncoder::class,
-)
-
 val ContractSerializer = TextSerializer(StringEncoders)
 
 val CalculatorId = ServiceId<Calculator>("calc")
 val EchoId = ServiceId<Echo>("echo")
-
-internal val Services = listOf(
-    Calculator::class,
-    Echo::class,
-    GenericService::class,
-)

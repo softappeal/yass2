@@ -3,6 +3,7 @@
 package ch.softappeal.yass2.core.serialize.string
 
 import ch.softappeal.yass2.core.InternalApi
+import ch.softappeal.yass2.core.forEachSeparator
 import ch.softappeal.yass2.core.serialize.Reader
 import ch.softappeal.yass2.core.serialize.Writer
 
@@ -18,8 +19,7 @@ public class JsonSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
         override fun writeList(list: List<*>) {
             writeByte(LBRACKET)
             with(nested()) {
-                list.forEachIndexed { index, element ->
-                    if (index != 0) writeByte(COMMA)
+                list.forEachSeparator({ writeByte(COMMA) }) { element ->
                     writeNewLine()
                     writeIndent()
                     writeObject(element)

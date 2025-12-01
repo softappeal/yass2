@@ -76,5 +76,5 @@ internal fun <T> List<T>.duplicates(): List<T> {
 
 internal const val CSY = "ch.softappeal.yass2"
 
-/** Name of the generated file. */
-public const val GENERATED_BY_YASS: String = "GeneratedByYass.kt"
+/** Name of the generated file (without `.kt` extension). */
+public const val GENERATED_BY_YASS: String = "GeneratedByYass"

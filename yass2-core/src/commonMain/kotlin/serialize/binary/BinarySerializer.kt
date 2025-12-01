@@ -91,3 +91,5 @@ public abstract class BinarySerializer : Serializer {
 private const val BINARY_NULL_ENCODER_ID: Int = 0
 @InternalApi public const val BINARY_LIST_ENCODER_ID: Int = 1
 @InternalApi public const val BINARY_FIRST_ENCODER_ID: Int = 2
+
+public annotation class BinaryEncoderObjects(vararg val value: KClass<out BinaryEncoder<*>>)

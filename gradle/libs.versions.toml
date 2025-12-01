@@ -1,11 +1,13 @@
 [versions]
 
 # API
-kotlin     = "2.3.0-RC"      # https://github.com/JetBrains/kotlin TODO
+kotlin     = "2.3.0-RC2"     # https://github.com/JetBrains/kotlin TODO
 coroutines = "1.10.2"        # https://github.com/Kotlin/kotlinx.coroutines
-ktor       = "3.3.2"         # https://github.com/ktorio/ktor
+ktor       = "3.3.3"         # https://github.com/ktorio/ktor
+ksp        = "2.3.3"         # https://github.com/google/ksp
 
 # build
+kct        = "0.11.0"        # https://github.com/ZacSweers/kotlin-compile-testing
 dokka      = "2.1.0"         # https://github.com/Kotlin/dokka
 publish    = "0.35.0"        # https://github.com/vanniktech/gradle-maven-publish-plugin
 
@@ -22,6 +24,10 @@ server-cio        = { module = "io.ktor:ktor-server-cio"       , version.ref = "
 server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
 network           = { module = "io.ktor:ktor-network"          , version.ref = "ktor" }
 
+ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+
+kct = { module = "dev.zacsweers.kctfork:ksp", version.ref = "kct" }
+
 [bundles]
 
 ktor     = [ "client-core", "server-core", "client-websockets", "network" ]
@@ -30,5 +36,6 @@ ktor-cio = [ "client-cio" , "server-cio" , "server-websockets"            ]
 [plugins]
 
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 publish = { id = "com.vanniktech.maven.publish", version.ref = "publish" }

@@ -54,7 +54,7 @@ class GeneratorTest {
             codeWriter().generateBinarySerializer(listOf(), listOf(klass))
         }
         assertFailsWithMessage<IllegalArgumentException>(
-            "ch.softappeal.yass2.generate.reflect.BodyProperty must not have body properties"
+            "class ch.softappeal.yass2.generate.reflect.BodyProperty must not have body properties"
         ) { generateBinarySerializer(BodyProperty::class) }
         assertFailsWithMessage<IllegalStateException>(
             "class ch.softappeal.yass2.generate.reflect.NoPrimaryConstructor must hava a primary constructor"
@@ -76,9 +76,7 @@ class GeneratorTest {
         ) { codeWriter().generateBinarySerializer(listOf(IntBinaryEncoder::class), listOf(Int::class)) }
         assertFailsWithMessage<IllegalArgumentException>(
             "classes [ch.softappeal.yass2.generate.reflect.Enum] are duplicated"
-        ) {
-            codeWriter().generateBinarySerializer(listOf(), listOf(Enum::class, Enum::class))
-        }
+        ) { codeWriter().generateBinarySerializer(listOf(), listOf(Enum::class, Enum::class)) }
     }
 
     @Test

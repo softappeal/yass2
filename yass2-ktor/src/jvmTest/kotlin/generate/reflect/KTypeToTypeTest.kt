@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.generate.reflect
 
+import ch.softappeal.yass2.core.forEachSeparator
 import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -13,8 +14,7 @@ private fun KType.toType(): String {
     fun Appendable.appendGenerics() {
         if (arguments.isEmpty()) return
         append('<')
-        arguments.forEachIndexed { argumentIndex, argument ->
-            if (argumentIndex != 0) append(", ")
+        arguments.forEachSeparator({ append(", ") }) { argument ->
             when (argument.variance) {
                 null -> append('*')
                 KVariance.INVARIANT -> {}
