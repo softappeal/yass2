@@ -31,27 +31,11 @@
 +----------------------------------+       +----------------------------------------------+
 ```
 
-* provides unidirectional and session-based bidirectional remoting
-
-* provides [Ktor](https://ktor.io) transport adaptors for Http, WebSocket and Socket
-
 * generates code (works on any platform and is fast) either with
   [KSP](https://kotlinlang.org/docs/ksp-overview.html) or with reflection
     * fast, compact and extendable binary serializer for high throughput and low latency
     * extendable string-based serializers: TextSerializer, JsonSerializer and KotlinSerializer (serializes Kotlin source code)
     * interceptor (around advice, aspect-oriented programming)
-
-* yass2 has multiple modules with the following dependencies
-
-```
-yass2-core <-- yass2-generate
-     ^
-     |
-yass2-coroutines --> kotlinx-coroutines-core
-     ^
-     |
-yass2-ktor --> Ktor
-```
 
 * artifacts on [Maven Central](https://central.sonatype.com/search?q=g:ch.softappeal.yass2) (GroupId: ch.softappeal.yass2)
 

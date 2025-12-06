@@ -18,163 +18,98 @@ println("webPlatform: $webPlatform")
 
 plugins {
     alias(libs.plugins.multiplatform)
-    alias(libs.plugins.ksp)
     alias(libs.plugins.dokka)
     alias(libs.plugins.publish)
 }
 
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
-    apply(plugin = "org.jetbrains.dokka")
-    apply(plugin = "com.vanniktech.maven.publish")
-
     repositories {
         mavenCentral()
     }
-
     kotlin {
         jvm()
-        if (project.name in setOf("yass2-core", "yass2-generate", "yass2-coroutines", "yass2-ktor")) {
-            @OptIn(ExperimentalAbiValidation::class)
-            abiValidation {
-                enabled.set(true)
-                filters {
-                    excluded {
-                        annotatedWith.add("ch.softappeal.yass2.core.InternalApi")
-                    }
+        if (webPlatform) {
+            js {
+                outputModuleName.set(project.name)
+                nodejs()
+                binaries.executable()
+                compilerOptions {
+                    target.set("es2015")
                 }
             }
-            if (project.name != "yass2-generate") {
-                if (webPlatform) {
-                    js {
-                        outputModuleName.set(project.name)
-                        nodejs()
-                        binaries.executable()
-                        compilerOptions {
-                            target.set("es2015")
-                        }
-                    }
-                    @OptIn(ExperimentalWasmDsl::class)
-                    wasmJs {
-                        outputModuleName.set(project.name)
-                        nodejs()
-                        binaries.executable()
-                    }
-                }
-                if (linuxPlatform) {
-                    linuxX64()
-                    linuxArm64()
-                }
+            @OptIn(ExperimentalWasmDsl::class)
+            wasmJs {
+                outputModuleName.set(project.name)
+                nodejs()
+                binaries.executable()
             }
         }
-        explicitApi()
+        if (linuxPlatform) {
+            linuxX64()
+            linuxArm64()
+        }
         compilerOptions {
             allWarningsAsErrors.set(true)
             extraWarnings.set(true)
         }
     }
-
-    dokka {
-        dokkaPublications.html {
-            failOnWarning.set(true)
-        }
-        dokkaSourceSets {
-            configureEach {
-                documentedVisibilities(VisibilityModifier.Public, VisibilityModifier.Protected)
-            }
-        }
-    }
-
-    mavenPublishing { // includes the root project (needed for doc over all modules)
-        publishToMavenCentral()
-        signAllPublications()
-        group = "ch.softappeal.yass2"
-        pom {
-            name.set(project.name)
-            description.set("Yet Another Service Solution")
-            url.set("https://github.com/softappeal/yass2")
-            licenses { license { name.set("BSD-3-Clause") } }
-            scm { url.set("https://github.com/softappeal/yass2") }
-            organization { name.set("softappeal GmbH Switzerland") }
-            developers { developer { name.set("Angelo Salvade") } }
-        }
-    }
-
 }
 
-val libraries = libs
-
-val coreProject = project(":yass2-core")
-
-val generateProject = project(":yass2-generate") {
-    kotlin {
-        sourceSets {
-            jvmMain {
-                dependencies {
-                    api(coreProject)
-                    implementation(kotlin("reflect"))
-                    implementation(libraries.ksp)
-                    implementation(kotlin("test"))
-                }
+kotlin {
+    @OptIn(ExperimentalAbiValidation::class)
+    abiValidation {
+        enabled.set(true)
+    }
+    explicitApi()
+    sourceSets {
+        jvmMain {
+            dependencies {
+                implementation(kotlin("reflect"))
+                implementation(libs.ksp)
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation(libs.coroutines.core)
+                implementation(libs.bundles.ktor)
+                implementation(kotlin("test"))
+                implementation(libs.coroutines.test)
+            }
+        }
+        jvmTest {
+            dependencies {
+                implementation(libs.bundles.ktor.cio)
+                implementation(libs.kct)
             }
         }
     }
 }
 
-val coroutinesProject = project(":yass2-coroutines") {
-    kotlin {
-        sourceSets {
-            commonMain {
-                dependencies {
-                    api(coreProject)
-                    api(libraries.coroutines.core)
-                }
-            }
-            jvmTest {
-                dependencies {
-                    implementation(generateProject)
-                    implementation(kotlin("test"))
-                }
-            }
+dokka {
+    dokkaPublications.html {
+        failOnWarning.set(true)
+    }
+    dokkaSourceSets {
+        configureEach {
+            documentedVisibilities(VisibilityModifier.Public, VisibilityModifier.Protected)
         }
     }
 }
 
-val ktorProject = project(":yass2-ktor") {
-    apply(plugin = "com.google.devtools.ksp")
-    kotlin {
-        sourceSets {
-            commonMain {
-                dependencies {
-                    api(coroutinesProject)
-                    api(libraries.bundles.ktor)
-                }
-            }
-            commonTest { // tests are here due to https://youtrack.jetbrains.com/issue/KT-35073
-                dependencies {
-                    implementation(kotlin("test"))
-                    implementation(libraries.coroutines.test)
-                }
-            }
-            jvmTest {
-                dependencies {
-                    implementation(generateProject)
-                    implementation(libraries.bundles.ktor.cio)
-                    implementation(libraries.kct)
-                }
-            }
-        }
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
+    group = "ch.softappeal.yass2"
+    pom {
+        name.set(project.name)
+        description.set("Yet Another Service Solution")
+        url.set("https://github.com/softappeal/yass2")
+        licenses { license { name.set("BSD-3-Clause") } }
+        scm { url.set("https://github.com/softappeal/yass2") }
+        organization { name.set("softappeal GmbH Switzerland") }
+        developers { developer { name.set("Angelo Salvade") } }
     }
-    dependencies {
-        ksp(generateProject)
-    }
-}
-
-dependencies {
-    dokka(coreProject)
-    dokka(coroutinesProject)
-    dokka(ktorProject)
-    dokka(generateProject)
 }
 
 tasks.register("markers") {
@@ -189,7 +124,6 @@ tasks.register("markers") {
             .exclude("/.kotlin/")
             .exclude("/kotlin-js-store/")
             .exclude(".DS_Store")
-            .exclude("/ai.code.quality.review.md")
         fun search(marker: String, help: String, abort: Boolean = false) {
             divider('=')
             println("= $marker - $help")
