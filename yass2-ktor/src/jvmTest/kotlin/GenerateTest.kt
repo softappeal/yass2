@@ -10,6 +10,7 @@ import ch.softappeal.yass2.generate.reflect.generateFile
 import ch.softappeal.yass2.generate.reflect.generateProxies
 import ch.softappeal.yass2.generate.reflect.generateStringEncoders
 import ch.softappeal.yass2.ksp.Generate
+import java.io.File
 import kotlin.io.path.Path
 import kotlin.io.path.readText
 import kotlin.test.Test
@@ -21,6 +22,8 @@ private fun CodeWriter.write() {
     generateStringEncoders(Generate::class)
 }
 
+private fun path(platform: String) = "build/generated/ksp/$platform/${platform}Test/kotlin/ch/softappeal/yass2/ksp"
+
 class GenerateTest {
     @Test
     fun generateReflect() {
@@ -31,31 +34,18 @@ class GenerateTest {
 
     @Test
     fun generateKsp() {
-        Generate
-            .generateFile("build/generated/ksp/jvm/jvmTest/kotlin/ch/softappeal/yass2/ksp", GenerateMode.Check, CodeWriter::write)
+        Generate.generateFile(path("jvm"), GenerateMode.Check, CodeWriter::write)
     }
 
     @Test
     fun generatePlatform() {
-        fun read(path: String) =
-            Path("build/generated/ksp/$path/kotlin/ch/softappeal/yass2/ksp").resolve("$GENERATED_BY_YASS.kt").readText()
-
-        val jvm = read("jvm/jvmTest")
-
-        fun assert(path: String) {
-            val platform = try {
-                read(path)
-            } catch (_: Exception) {
-                println("no platform $path")
-                return
-            }
-            assertEquals(jvm, platform)
-            println("platform $path ok")
+        fun read(platform: String) = Path(path(platform)).resolve("$GENERATED_BY_YASS.kt").readText()
+        val jvm = read("jvm")
+        File("build/generated/ksp").listFiles()?.forEach { file ->
+            val platform = file.name
+            if (platform == "metadata") return@forEach
+            println("platform $platform")
+            assertEquals(jvm, read(platform))
         }
-        // TODO: don't forget to add new platforms
-        assert("js/jsTest")
-        assert("wasmJs/wasmJsTest")
-        assert("linuxArm64/linuxArm64Test")
-        assert("linuxX64/linuxX64Test")
     }
 }
