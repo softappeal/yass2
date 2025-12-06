@@ -80,6 +80,12 @@ interface NewsListener {
     suspend fun notify(news: String)
 }
 
+@MustBeImplementedByAcceptor
+val CalculatorId = ServiceId<Calculator>("calc")
+
+@MustBeImplementedByInitiator
+val NewsListenerId = ServiceId<NewsListener>("news")
+
 // The following annotations generate the proxies and serializers.
 // They can be added to anything in the package.
 
@@ -87,6 +93,7 @@ interface NewsListener {
     Calculator::class,
     NewsListener::class,
 )
+
 // Define all the additional base encoders needed by the contract (including own base types and types used in services).
 @StringEncoderObjects(
     // String and Boolean is built-in
@@ -103,9 +110,3 @@ interface NewsListener {
     Packet::class, // needed by ch.softappeal.yass2.coroutines.session (also needs Int)
 )
 val TutorialSerializer = TextSerializer(StringEncoders)
-
-@MustBeImplementedByAcceptor
-val CalculatorId = ServiceId<Calculator>("calc")
-
-@MustBeImplementedByInitiator
-val NewsListenerId = ServiceId<NewsListener>("news")

@@ -27,6 +27,12 @@ import ch.softappeal.yass2.core.serialize.string.IntStringEncoder
 import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
 import ch.softappeal.yass2.coroutines.session.Packet
 
+@Proxies(
+    Calculator::class,
+    Echo::class,
+    GenericService::class,
+)
+
 @ConcreteAndEnumClasses(
     Gender::class,
     A::class,
@@ -49,11 +55,6 @@ import ch.softappeal.yass2.coroutines.session.Packet
 @StringEncoderObjects(
     IntStringEncoder::class,
     ByteArrayStringEncoder::class,
-)
-@Proxies(
-    Calculator::class,
-    Echo::class,
-    GenericService::class,
 )
 object Generate
 
@@ -87,6 +88,12 @@ import ch.softappeal.yass2.core.serialize.string.IntStringEncoder
 import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
 import ch.softappeal.yass2.coroutines.session.Packet
 
+@Proxies(
+    Calculator::class,
+    Echo::class,
+    GenericService::class,
+)
+
 @ConcreteAndEnumClasses(
     Gender::class,
     A::class,
@@ -110,10 +117,5 @@ import ch.softappeal.yass2.coroutines.session.Packet
     IntStringEncoder::class,
     ByteArrayStringEncoder::class,
 )
-@Proxies(
-    Calculator::class,
-    Echo::class,
-    GenericService::class,
-)
-class KSP
+object Generate
 """
