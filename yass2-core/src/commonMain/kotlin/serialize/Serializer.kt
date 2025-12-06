@@ -28,6 +28,8 @@ public fun Serializer.fromByteArray(byteArray: ByteArray): Any? = with(ByteArray
 
 /**
  * Concrete classes must have a primary constructor and all its parameters must be properties.
+ * Properties can be optional.
  * Inheritance is supported.
+ * Exceptions are supported but [Throwable.message] and [Throwable.cause] aren't serialized.
  */
 public annotation class ConcreteAndEnumClasses(vararg val value: KClass<*>)

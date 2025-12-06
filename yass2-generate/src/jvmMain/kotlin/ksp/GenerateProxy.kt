@@ -43,9 +43,7 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
         .sortedBy { it.name }
         .apply {
             val methodNames = map { it.name }
-            require(methodNames.hasNoDuplicates()) {
-                "interface ${service.qualifiedName()} has overloaded methods ${methodNames.duplicates()}" // NOTE: support for overloading is not worth it, it's even not possible in JavaScript
-            }
+            require(methodNames.hasNoDuplicates()) { "interface ${service.qualifiedName()} has overloaded methods ${methodNames.duplicates()}" }
         }
 
     writeLine()

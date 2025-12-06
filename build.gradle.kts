@@ -67,7 +67,7 @@ allprojects {
                 }
             }
         }
-        if (project.name != "tutorial") explicitApi()
+        explicitApi()
         compilerOptions {
             allWarningsAsErrors.set(true)
             extraWarnings.set(true)
@@ -85,22 +85,21 @@ allprojects {
         }
     }
 
-    if (project.name != "tutorial") { // includes the root project (needed for doc over all modules)
-        mavenPublishing {
-            publishToMavenCentral()
-            signAllPublications()
-            group = "ch.softappeal.yass2"
-            pom {
-                name.set(project.name)
-                description.set("Yet Another Service Solution")
-                url.set("https://github.com/softappeal/yass2")
-                licenses { license { name.set("BSD-3-Clause") } }
-                scm { url.set("https://github.com/softappeal/yass2") }
-                organization { name.set("softappeal GmbH Switzerland") }
-                developers { developer { name.set("Angelo Salvade") } }
-            }
+    mavenPublishing { // includes the root project (needed for doc over all modules)
+        publishToMavenCentral()
+        signAllPublications()
+        group = "ch.softappeal.yass2"
+        pom {
+            name.set(project.name)
+            description.set("Yet Another Service Solution")
+            url.set("https://github.com/softappeal/yass2")
+            licenses { license { name.set("BSD-3-Clause") } }
+            scm { url.set("https://github.com/softappeal/yass2") }
+            organization { name.set("softappeal GmbH Switzerland") }
+            developers { developer { name.set("Angelo Salvade") } }
         }
     }
+
 }
 
 val libraries = libs
@@ -176,28 +175,6 @@ dependencies {
     dokka(coroutinesProject)
     dokka(ktorProject)
     dokka(generateProject)
-}
-
-project(":tutorial") {
-    apply(plugin = "com.google.devtools.ksp")
-    kotlin {
-        sourceSets {
-            jvmMain {
-                dependencies {
-                    implementation(ktorProject)
-                    implementation(libraries.bundles.ktor.cio)
-                }
-            }
-            jvmTest {
-                dependencies {
-                    implementation(kotlin("test"))
-                }
-            }
-        }
-    }
-    dependencies {
-        add("kspJvm", generateProject)
-    }
 }
 
 tasks.register("markers") {

@@ -59,8 +59,6 @@ yass2-ktor --> Ktor
 
 * uses [Semantic Versioning](https://semver.org)
 
-* [Tutorial](tutorial/src)
-
 * Open Source ([BSD-3-Clause license](license.txt))
 
 * supersedes [yass](https://github.com/softappeal/yass/)

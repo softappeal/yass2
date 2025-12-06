@@ -5,5 +5,4 @@ include(
     ":yass2-coroutines",
     ":yass2-ktor",
     ":yass2-generate",
-    ":tutorial",
 )
