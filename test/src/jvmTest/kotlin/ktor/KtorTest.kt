@@ -1,0 +1,60 @@
+@file:OptIn(ExperimentalApi::class)
+
+package ch.softappeal.yass2.ktor
+
+import ch.softappeal.yass2.ContractSerializer
+import ch.softappeal.yass2.core.ExperimentalApi
+import ch.softappeal.yass2.coroutines.session.acceptorSessionFactory
+import ch.softappeal.yass2.coroutines.session.tunnelWithContext
+import io.ktor.server.application.install
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.http.content.staticFiles
+import io.ktor.server.routing.routing
+import io.ktor.server.websocket.WebSocketServerSession
+import io.ktor.server.websocket.WebSockets
+import io.ktor.server.websocket.webSocket
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.runBlocking
+import java.io.File
+import kotlin.test.Test
+
+val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
+    install(WebSockets)
+    routing {
+        route(
+            ContractSerializer,
+            PATH,
+            tunnelWithContext {
+                currentCoroutineContext()[CallCce]!!.call.request.headers[DEMO_HEADER_KEY] ?: "no-header"
+            }
+        )
+        webSocket(PATH) {
+            receiveLoop(
+                ContractSerializer,
+                acceptorSessionFactory {
+                    (connection.session as WebSocketServerSession).call.request.headers[DEMO_HEADER_KEY] ?: "no-header"
+                }
+            )
+        }
+        // code
+        staticFiles("/js", File("./build/js/packages/test-test/kotlin"))
+        staticFiles("/wasm", File("./build/wasm/packages/test-test/kotlin"))
+        // sources
+        staticFiles("/wasm", File(".")) // wasm
+        staticFiles("/", File("."))     // js
+    }
+}
+
+class KtorTest {
+    @Test
+    fun test() {
+        Server.start()
+        try {
+            runBlocking {
+                clientTest(io.ktor.client.engine.cio.CIO)
+            }
+        } finally {
+            Server.stop()
+        }
+    }
+}
