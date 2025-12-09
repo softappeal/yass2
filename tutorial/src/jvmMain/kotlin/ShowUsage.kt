@@ -10,6 +10,7 @@ import ch.softappeal.yass2.core.serialize.string.fromString
 import ch.softappeal.yass2.core.serialize.string.toString
 import ch.softappeal.yass2.coroutines.session.Connection
 import ch.softappeal.yass2.coroutines.session.Session
+import ch.softappeal.yass2.coroutines.session.SessionFactory
 import ch.softappeal.yass2.ktor.WebSocketConnection
 import ch.softappeal.yass2.ktor.receiveLoop
 import ch.softappeal.yass2.ktor.route
@@ -68,7 +69,7 @@ class NewsListenerImpl<C : Connection>(val session: InitiatorSession<C>) : NewsL
     }
 }
 
-fun CoroutineScope.initiatorSessionFactory() = {
+fun CoroutineScope.initiatorSessionFactory(): SessionFactory<WebSocketConnection> = {
     object : InitiatorSession<WebSocketConnection>() {
         override val serverTunnel = tunnel(
             NewsListenerId.service(NewsListenerImpl(this)),
@@ -88,7 +89,7 @@ fun CoroutineScope.initiatorSessionFactory() = {
     }
 }
 
-fun CoroutineScope.acceptorSessionFactory() = {
+fun CoroutineScope.acceptorSessionFactory(): SessionFactory<WebSocketConnection> = {
     object : Session<WebSocketConnection>() {
         override val serverTunnel = tunnel(
             CalculatorId.service(CalculatorImpl),

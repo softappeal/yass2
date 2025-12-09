@@ -10,16 +10,15 @@ import ch.softappeal.yass2.core.tryFinally
 import ch.softappeal.yass2.coroutines.AtomicBoolean
 import ch.softappeal.yass2.coroutines.AtomicInt
 import ch.softappeal.yass2.coroutines.ThreadSafeMap
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 public class Packet(public val requestNumber: Int, public val message: Message)
 
@@ -53,13 +52,14 @@ public class Packet(public val requestNumber: Int, public val message: Message)
     protected val clientTunnel: Tunnel = { request ->
         check(!isClosed()) { "session '$this' is closed" }
         val requestNumber = nextRequestNumber.incrementAndFetch()
-        suspendCoroutine { continuation ->
-            CoroutineScope(continuation.context).launch {
-                closeOnException {
-                    requestNumberToContinuation.put(requestNumber, continuation)
-                    write(Packet(requestNumber, request))
-                }
-            }
+        val deferred = CompletableDeferred<Reply>(currentCoroutineContext()[Job]!!)
+        requestNumberToDeferred.put(requestNumber, deferred)
+        try {
+            write(Packet(requestNumber, request))
+            deferred.await()
+        } catch (e: Exception) {
+            requestNumberToDeferred.remove(requestNumber)
+            throw e
         }
     }
 
@@ -74,7 +74,7 @@ public class Packet(public val requestNumber: Int, public val message: Message)
 
     private val closed = AtomicBoolean(false)
     private val nextRequestNumber = AtomicInt(0)
-    private val requestNumberToContinuation = ThreadSafeMap<Int, Continuation<Reply>>(16)
+    private val requestNumberToDeferred = ThreadSafeMap<Int, CompletableDeferred<Reply>>(16)
     private val writeMutex = Mutex()
 
     private suspend fun write(packet: Packet?): Unit = writeMutex.withLock { connection.write(packet) }
@@ -97,7 +97,7 @@ public class Packet(public val requestNumber: Int, public val message: Message)
         check(!isClosed()) { "session '$this' is closed" }
         when (val message = packet.message) {
             is Request -> write(Packet(packet.requestNumber, serverTunnel(message)))
-            is Reply -> requestNumberToContinuation.remove(packet.requestNumber)!!.resume(message)
+            is Reply -> requestNumberToDeferred.remove(packet.requestNumber)!!.complete(message)
         }
     }
 

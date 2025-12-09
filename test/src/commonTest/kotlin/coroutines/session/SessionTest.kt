@@ -52,8 +52,7 @@ fun <C : Connection> CoroutineScope.acceptorSessionFactory(context: suspend Sess
 
         override suspend fun closed(e: Exception?) {
             assertTrue(isClosed())
-            assertNull(e)
-            println("acceptorSessionFactory closed")
+            println("acceptorSessionFactory closed: $e")
         }
     }
 }

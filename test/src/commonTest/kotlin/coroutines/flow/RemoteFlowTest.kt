@@ -21,16 +21,14 @@ import kotlin.test.assertFailsWith
 private val range1 = 1..3
 private val range2 = 11..12
 
-private val flowFactory = { flowId: Int ->
-    when (flowId) {
-        1 -> range1.asFlow()
-        2 -> range2.asFlow()
-        3 -> flow { throw DivideByZeroException() }
-        else -> error("unexpected flowId $flowId")
-    }
+private fun flowFactory(flowId: Int) = when (flowId) {
+    1 -> range1.asFlow()
+    2 -> range2.asFlow()
+    3 -> flow { throw DivideByZeroException() }
+    else -> error("unexpected flowId $flowId")
 }
 
-private val flowService = flowService(flowFactory).proxy(Printer)
+private val flowService = flowService(::flowFactory).proxy(Printer)
 
 private val flowServiceId = ServiceId<FlowService<Int, Int>>("flow")
 private val remoteFlowService = flowServiceId.proxy(tunnel(flowServiceId.service(flowService)))

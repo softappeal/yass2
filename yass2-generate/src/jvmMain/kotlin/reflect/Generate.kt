@@ -10,7 +10,6 @@ import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import ch.softappeal.yass2.generate.appendPackage
-import java.nio.file.Files
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.readText
@@ -52,10 +51,7 @@ public fun Any.generateFile(generatedDir: String, mode: GenerateMode = GenerateM
     val generatedCode = generateCode(write)
     val generatedFile = Path(generatedDir).resolve("$GENERATED_BY_YASS.kt")
     when (mode) {
-        GenerateMode.Update -> {
-            Files.createDirectories(generatedFile.parent)
-            generatedFile.writeText(generatedCode)
-        }
+        GenerateMode.Update -> generatedFile.writeText(generatedCode)
         GenerateMode.Check -> {
             val existingCode = generatedFile.readText().replace("\r\n", "\n")
             check(generatedCode == existingCode) {
