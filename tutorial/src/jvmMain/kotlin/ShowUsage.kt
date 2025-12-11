@@ -84,7 +84,7 @@ fun CoroutineScope.initiatorSessionFactory(): SessionFactory<WebSocketConnection
         }
 
         override suspend fun closed(e: Exception?) {
-            println("initiatorSessionFactory closed: $e")
+            println("initiatorSession closed: $e")
         }
     }
 }
@@ -104,7 +104,7 @@ fun CoroutineScope.acceptorSessionFactory(): SessionFactory<WebSocketConnection>
         }
 
         override suspend fun closed(e: Exception?) {
-            println("acceptorSessionFactory closed: $e")
+            println("acceptorSession closed: $e")
         }
     }
 }

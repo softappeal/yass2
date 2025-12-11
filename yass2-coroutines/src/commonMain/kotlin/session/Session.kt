@@ -83,7 +83,10 @@ public class Packet(public val requestNumber: Int, public val message: Message)
         if (closed.exchange(true)) return
         tryFinally({
             closed(e)
-            if (sendEnd) write(null)
+            if (sendEnd) {
+                write(null)
+                delay(1000) // give some time to send the packet before close
+            }
         }) {
             connection.closed()
         }
