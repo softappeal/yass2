@@ -11,12 +11,13 @@ import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import ch.softappeal.yass2.generate.appendPackage
-import com.google.devtools.ksp.processing.CodeGenerator
+import ch.softappeal.yass2.generate.fixLines
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
+import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
@@ -25,11 +26,12 @@ import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSTypeParameter
 import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.Variance
+import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.notExists
+import kotlin.io.path.readText
+import kotlin.io.path.writeText
 import kotlin.reflect.KClass
-
-// NOTE: KSP works only for platform code (see https://github.com/google/ksp/issues/2233).
-//       Common/intermediate (= none-platform) code cannot reference generated code in the compilation of platform code.
-//       Generated code is treated as platform code (you'll have to use expect/actual).
 
 internal fun KSDeclaration.qualifiedName() = qualifiedName!!.asString()
 internal val KSDeclaration.name get() = simpleName.asString()
@@ -62,7 +64,22 @@ internal fun KSTypeReference.toType(): String {
 @Suppress("UNCHECKED_CAST")
 private fun KSAnnotation.value() = arguments.first { it.name!!.asString() == "value" }.value as List<KSType>
 
-private fun processPackage(name: String, declarations: Set<KSDeclaration>, codeGenerator: CodeGenerator) {
+// TODO: KSP works only for platform code (see https://github.com/google/ksp/issues/2233).
+//       Common/intermediate (= none-platform) code cannot reference generated code in the compilation of platform code.
+//       Generated code is treated as platform code (you'll have to use expect/actual).
+public const val USE_EXPECT: String = "yass.useExpect"
+
+internal fun CodeWriter.writeFun(signature: String, expectWriter: CodeWriter?, body: CodeWriter.() -> Unit) {
+    expectWriter?.apply {
+        writeLine()
+        writeNestedLine("public expect fun$signature")
+    }
+    writeLine()
+    writeNestedLine("public ${if (expectWriter == null) "" else "actual "}fun$signature =")
+    nested { body() }
+}
+
+private fun processPackage(name: String, declarations: Set<KSDeclaration>, environment: SymbolProcessorEnvironment) {
     fun annotationOrNull(annotation: KClass<*>) = declarations
         .mapNotNull { declaration ->
             declaration.annotations.firstOrNull { it.annotationType.resolve().declaration.qualifiedName() == annotation.qualifiedName }
@@ -76,8 +93,11 @@ private fun processPackage(name: String, declarations: Set<KSDeclaration>, codeG
     code.appendPackage(name)
     val writer = CodeWriter(code)
 
+    val expectCode = StringBuilder()
+    val expectWriter = if (environment.options[USE_EXPECT].toBoolean()) CodeWriter(expectCode) else null
+
     annotationOrNull(Proxies::class)?.let {
-        it.value().forEach { type -> writer.generateProxy(type.declaration as KSClassDeclaration) }
+        it.value().forEach { type -> writer.generateProxy(type.declaration as KSClassDeclaration, expectWriter) }
     }
 
     val concreteAndEnumClasses = annotationOrNull(ConcreteAndEnumClasses::class)
@@ -91,11 +111,24 @@ private fun processPackage(name: String, declarations: Set<KSDeclaration>, codeG
         require(binaryEncoderObjects != null || stringEncoderObjects != null) {
             "missing annotations ${BinaryEncoderObjects::class.qualifiedName} or ${StringEncoderObjects::class.qualifiedName} in package $name"
         }
-        binaryEncoderObjects?.let { writer.generateBinarySerializer(it.value(), concreteAndEnumClasses.value()) }
-        stringEncoderObjects?.let { writer.generateStringEncoders(it.value(), concreteAndEnumClasses.value()) }
+        binaryEncoderObjects?.let { writer.generateBinarySerializer(it.value(), concreteAndEnumClasses.value(), expectWriter) }
+        stringEncoderObjects?.let { writer.generateStringEncoders(it.value(), concreteAndEnumClasses.value(), expectWriter) }
     }
 
-    codeGenerator.createNewFile(Dependencies.ALL_FILES, name, GENERATED_BY_YASS).writer().use { it.append(code) }
+    environment.codeGenerator.createNewFile(Dependencies.ALL_FILES, name, GENERATED_BY_YASS).writer().use { it.append(code) }
+
+    if (expectWriter == null) return
+    val generatedCode = buildString {
+        appendPackage(name)
+        append(expectCode)
+    }
+    val generatedFile = Path((declarations.first().location as FileLocation).filePath).parent.resolve("$GENERATED_BY_YASS.kt")
+    if (generatedFile.notExists()) generatedFile.writeText(generatedCode) else {
+        val existingCode = generatedFile.readText().fixLines()
+        check(generatedCode == existingCode) {
+            "outdated generated file '${generatedFile.absolutePathString()}' (delete file to regenerate it)"
+        }
+    }
 }
 
 @InternalApi public class Yass2Provider : SymbolProcessorProvider {
@@ -110,7 +143,7 @@ private fun processPackage(name: String, declarations: Set<KSDeclaration>, codeG
                 .flatMap { annotation -> resolver.getSymbolsWithAnnotation(annotation.qualifiedName!!) }
                 .map { annotated -> annotated as KSDeclaration }
                 .groupBy { declaration -> declaration.packageName.asString() }
-                .forEach { (name, declarations) -> processPackage(name, declarations.toSet(), environment.codeGenerator) }
+                .forEach { (name, declarations) -> processPackage(name, declarations.toSet(), environment) }
             return emptyList()
         }
     }

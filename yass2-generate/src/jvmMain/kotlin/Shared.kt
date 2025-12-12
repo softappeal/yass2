@@ -74,6 +74,8 @@ internal fun <T> List<T>.duplicates(): List<T> {
     return filter { !seen.add(it) }
 }
 
+internal fun String.fixLines() = replace("\r\n", "\n")
+
 internal const val CSY = "ch.softappeal.yass2"
 
 /** Name of the generated file (without `.kt` extension). */

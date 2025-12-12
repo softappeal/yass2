@@ -34,7 +34,9 @@ private val KClass<*>.withTypeParameters get() = "<${typeParameters.joinToString
 private val KClass<*>.withTypes get() = "$qualifiedName${if (typeParameters.isEmpty()) "" else withTypeParameters}"
 private val KClass<*>.types get() = if (typeParameters.isEmpty()) "" else " $withTypeParameters"
 
-@InternalApi public fun CodeWriter.generateProxy(service: KClass<*>) {
+@InternalApi public fun CodeWriter.generateProxy(
+    service: KClass<*>,
+) {
     require(service.java.isInterface) { "${service.qualifiedName} must be an interface" }
 
     val functions = service.memberFunctions
@@ -48,32 +50,30 @@ private val KClass<*>.types get() = if (typeParameters.isEmpty()) "" else " $wit
             require(methodNames.hasNoDuplicates()) { "interface ${service.qualifiedName} has overloaded methods ${methodNames.duplicates()}" }
         }
 
-    writeLine()
-    writeNestedLine("public fun${service.types} ${service.withTypes}.proxy(") {
-        writeNestedLine("intercept: $CSY.core.Interceptor,")
-    }
-    writeNestedLine("): ${service.withTypes} = object : ${service.withTypes} {", "}") {
-        functions.forEachSeparator({ writeLine() }) { function ->
-            val hasResult = function.hasResult()
-            writeSignature(function)
-            if (hasResult) write(": ${function.returnType.toType()}")
-            writeLine(" {") {
-                writeNestedLine("${if (hasResult) "return " else ""}intercept(\"${function.name}\", listOf(${function.parameters()})) {") {
-                    writeNestedLine("this@proxy.${function.name}(${function.parameters()})")
+    writeFun(
+        "${service.types} ${service.withTypes}.proxy(intercept: $CSY.core.Interceptor): ${service.withTypes}",
+    ) {
+        writeNestedLine("object : ${service.withTypes} {", "}") {
+            functions.forEachSeparator({ writeLine() }) { function ->
+                val hasResult = function.hasResult()
+                writeSignature(function)
+                if (hasResult) write(": ${function.returnType.toType()}")
+                writeLine(" {") {
+                    writeNestedLine("${if (hasResult) "return " else ""}intercept(\"${function.name}\", listOf(${function.parameters()})) {") {
+                        writeNestedLine("this@proxy.${function.name}(${function.parameters()})")
+                    }
+                    writeNested("}")
                 }
-                writeNested("}")
+                if (hasResult) write(" as ${function.returnType.toType()}")
+                writeLine()
+                writeNestedLine("}")
             }
-            if (hasResult) write(" as ${function.returnType.toType()}")
-            writeLine()
-            writeNestedLine("}")
         }
     }
 
-    writeLine()
-    writeNestedLine("public fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.proxy(") {
-        writeNestedLine("tunnel: $CSY.core.remote.Tunnel,")
-    }
-    writeNestedLine("): ${service.withTypes} =") {
+    writeFun(
+        "${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.proxy(tunnel: $CSY.core.remote.Tunnel): ${service.withTypes}",
+    ) {
         writeNestedLine("object : ${service.withTypes} {", "}") {
             functions.forEachSeparator({ writeLine() }) { function ->
                 val hasResult = function.hasResult()
@@ -90,11 +90,9 @@ private val KClass<*>.types get() = if (typeParameters.isEmpty()) "" else " $wit
         }
     }
 
-    writeLine()
-    writeNestedLine("public fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.service(") {
-        writeNestedLine("implementation: ${service.withTypes},")
-    }
-    writeNestedLine("): ${Service::class.qualifiedName} =") {
+    writeFun(
+        "${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.service(implementation: ${service.withTypes}): ${Service::class.qualifiedName}",
+    ) {
         writeNestedLine("${Service::class.qualifiedName}(id) { function, parameters ->", "}") {
             writeNestedLine("when (function) {", "}") {
                 functions.forEach { function ->

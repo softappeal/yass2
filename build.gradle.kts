@@ -192,8 +192,19 @@ project("test-ksp") {
             }
         }
     }
+    ksp {
+        arg("yass.useExpect", "true")
+    }
     dependencies {
-        ksp(generateProject)
+        add("kspJvm", generateProject)
+        if (webPlatform) {
+            add("kspJs", generateProject)
+            add("kspWasmJs", generateProject)
+        }
+        if (linuxPlatform) {
+            add("kspLinuxX64", generateProject)
+            add("kspLinuxArm64", generateProject)
+        }
     }
 }
 

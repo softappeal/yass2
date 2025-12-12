@@ -10,6 +10,7 @@ import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import ch.softappeal.yass2.generate.appendPackage
+import ch.softappeal.yass2.generate.fixLines
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.readText
@@ -20,6 +21,12 @@ import kotlin.reflect.full.findAnnotation
 
 internal fun KType.toType() = toString() // TODO: see file 'KTypeToTypeTest.kt'
     .replace("kotlin.Exception /* = java.lang.Exception */", "kotlin.Exception")
+
+internal fun CodeWriter.writeFun(signature: String, body: CodeWriter.() -> Unit) {
+    writeLine()
+    writeNestedLine("public fun$signature =")
+    nested { body() }
+}
 
 public enum class GenerateMode {
     /** Create/Overwrite the generated file. */
@@ -53,9 +60,9 @@ public fun Any.generateFile(generatedDir: String, mode: GenerateMode = GenerateM
     when (mode) {
         GenerateMode.Update -> generatedFile.writeText(generatedCode)
         GenerateMode.Check -> {
-            val existingCode = generatedFile.readText().replace("\r\n", "\n")
+            val existingCode = generatedFile.readText().fixLines()
             check(generatedCode == existingCode) {
-                "outdated generated file '${generatedFile.absolutePathString()}' (use generateFile with GenerateMode.Update)"
+                "outdated generated file '${generatedFile.absolutePathString()}' (use generateFile with GenerateMode.Update to update it)"
             }
         }
     }

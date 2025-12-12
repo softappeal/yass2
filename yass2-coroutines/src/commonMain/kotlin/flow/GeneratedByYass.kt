@@ -14,37 +14,34 @@
 
 package ch.softappeal.yass2.coroutines.flow
 
-public fun <F, I> ch.softappeal.yass2.coroutines.flow.FlowService<F, I>.proxy(
-    intercept: ch.softappeal.yass2.core.Interceptor,
-): ch.softappeal.yass2.coroutines.flow.FlowService<F, I> = object : ch.softappeal.yass2.coroutines.flow.FlowService<F, I> {
-    override suspend fun cancel(
-        p1: kotlin.Int,
-    ) {
-        intercept("cancel", listOf(p1)) {
-            this@proxy.cancel(p1)
+public fun <F, I> ch.softappeal.yass2.coroutines.flow.FlowService<F, I>.proxy(intercept: ch.softappeal.yass2.core.Interceptor): ch.softappeal.yass2.coroutines.flow.FlowService<F, I> =
+    object : ch.softappeal.yass2.coroutines.flow.FlowService<F, I> {
+        override suspend fun cancel(
+            p1: kotlin.Int,
+        ) {
+            intercept("cancel", listOf(p1)) {
+                this@proxy.cancel(p1)
+            }
+        }
+
+        override suspend fun create(
+            p1: I,
+        ): kotlin.Int {
+            return intercept("create", listOf(p1)) {
+                this@proxy.create(p1)
+            } as kotlin.Int
+        }
+
+        override suspend fun next(
+            p1: kotlin.Int,
+        ): F? {
+            return intercept("next", listOf(p1)) {
+                this@proxy.next(p1)
+            } as F?
         }
     }
 
-    override suspend fun create(
-        p1: I,
-    ): kotlin.Int {
-        return intercept("create", listOf(p1)) {
-            this@proxy.create(p1)
-        } as kotlin.Int
-    }
-
-    override suspend fun next(
-        p1: kotlin.Int,
-    ): F? {
-        return intercept("next", listOf(p1)) {
-            this@proxy.next(p1)
-        } as F?
-    }
-}
-
-public fun <F, I> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.coroutines.flow.FlowService<F, I>>.proxy(
-    tunnel: ch.softappeal.yass2.core.remote.Tunnel,
-): ch.softappeal.yass2.coroutines.flow.FlowService<F, I> =
+public fun <F, I> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.coroutines.flow.FlowService<F, I>>.proxy(tunnel: ch.softappeal.yass2.core.remote.Tunnel): ch.softappeal.yass2.coroutines.flow.FlowService<F, I> =
     object : ch.softappeal.yass2.coroutines.flow.FlowService<F, I> {
         override suspend fun cancel(
             p1: kotlin.Int,
@@ -66,9 +63,7 @@ public fun <F, I> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.
                 .process() as F?
     }
 
-public fun <F, I> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.coroutines.flow.FlowService<F, I>>.service(
-    implementation: ch.softappeal.yass2.coroutines.flow.FlowService<F, I>,
-): ch.softappeal.yass2.core.remote.Service =
+public fun <F, I> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.coroutines.flow.FlowService<F, I>>.service(implementation: ch.softappeal.yass2.coroutines.flow.FlowService<F, I>): ch.softappeal.yass2.core.remote.Service =
     ch.softappeal.yass2.core.remote.Service(id) { function, parameters ->
         when (function) {
             "cancel" -> implementation.cancel(

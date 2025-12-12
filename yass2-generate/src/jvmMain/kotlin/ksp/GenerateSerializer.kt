@@ -79,6 +79,7 @@ private fun <P : Property> KSClassDeclaration.properties(createProperty: (proper
 internal fun CodeWriter.generateBinarySerializer(
     encoderObjects: List<KSType>,
     concreteAndEnumClasses: List<KSType>,
+    expectWriter: CodeWriter?,
 ) {
     val (baseClasses, enumClasses, concreteClasses) = getClasses(encoderObjects, concreteAndEnumClasses)
 
@@ -102,9 +103,10 @@ internal fun CodeWriter.generateBinarySerializer(
             "write${suffix()}($reference${if (encoderId == BINARY_NO_ENCODER_ID) "" else ", $encoderId"})"
     }
 
-    writeLine()
-    writeNestedLine("public fun binarySerializer(): ${BinarySerializer::class.qualifiedName} =")
-    nested {
+    writeFun(
+        " binarySerializer(): ${BinarySerializer::class.qualifiedName}",
+        expectWriter,
+    ) {
         writeNestedLine("object : ${BinarySerializer::class.qualifiedName}() {", "}") {
             writeNestedLine("init {", "}") {
                 writeNestedLine("initialize(", ")") {
@@ -139,6 +141,7 @@ internal fun CodeWriter.generateBinarySerializer(
 internal fun CodeWriter.generateStringEncoders(
     encoderObjects: List<KSType>,
     concreteAndEnumClasses: List<KSType>,
+    expectWriter: CodeWriter?,
 ) {
     val (baseClasses, enumClasses, concreteClasses) = getClasses(encoderObjects, concreteAndEnumClasses)
 
@@ -165,32 +168,36 @@ internal fun CodeWriter.generateStringEncoders(
         }"
     }
 
-    writeLine()
-    writeNestedLine("public fun stringEncoders(): List<${StringEncoder::class.qualifiedName}<*>> = listOf(", ")") {
-        writeNestedLine("// ${String::class.qualifiedName}: $STRING_STRING_ENCODER_ID")
-        writeNestedLine("// ${Boolean::class.qualifiedName}: $STRING_BOOLEAN_ENCODER_ID")
-        writeNestedLine("// ${List::class.qualifiedName}: $STRING_LIST_ENCODER_ID")
-        var encoderId = STRING_FIRST_ENCODER_ID
-        encoderObjects.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
-        enumClasses.forEach { type ->
-            writeNestedLine("${EnumStringEncoder::class.qualifiedName}(", "),") {
-                writeNestedLine("${type.qualifiedName}::class, // ${encoderId++}")
-                writeNestedLine("${type.qualifiedName}::valueOf,")
+    writeFun(
+        " stringEncoders(): List<${StringEncoder::class.qualifiedName}<*>>",
+        expectWriter,
+    ) {
+        writeNestedLine("listOf(", ")") {
+            writeNestedLine("// ${String::class.qualifiedName}: $STRING_STRING_ENCODER_ID")
+            writeNestedLine("// ${Boolean::class.qualifiedName}: $STRING_BOOLEAN_ENCODER_ID")
+            writeNestedLine("// ${List::class.qualifiedName}: $STRING_LIST_ENCODER_ID")
+            var encoderId = STRING_FIRST_ENCODER_ID
+            encoderObjects.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
+            enumClasses.forEach { type ->
+                writeNestedLine("${EnumStringEncoder::class.qualifiedName}(", "),") {
+                    writeNestedLine("${type.qualifiedName}::class, // ${encoderId++}")
+                    writeNestedLine("${type.qualifiedName}::valueOf,")
+                }
             }
-        }
-        concreteClasses.forEach { type ->
-            writeNestedLine("${ClassStringEncoder::class.qualifiedName}(", "),") {
-                writeNestedLine("${type.qualifiedName}::class, // ${encoderId++}")
-                val properties = (type.declaration as KSClassDeclaration).properties { StringProperty(it) }
-                writeNestedLine("{ i ->", "},") {
-                    properties.forEach { writeNestedLine(it.writeProperty("i.${it.name}")) }
-                }
-                writeNestedLine("{", "},") {
-                    writeNestedLine("${type.qualifiedName}(", ")") {
-                        properties.forEach { writeNestedLine("getProperty(\"${it.name}\") as ${it.returnType.toType()},") }
+            concreteClasses.forEach { type ->
+                writeNestedLine("${ClassStringEncoder::class.qualifiedName}(", "),") {
+                    writeNestedLine("${type.qualifiedName}::class, // ${encoderId++}")
+                    val properties = (type.declaration as KSClassDeclaration).properties { StringProperty(it) }
+                    writeNestedLine("{ i ->", "},") {
+                        properties.forEach { writeNestedLine(it.writeProperty("i.${it.name}")) }
                     }
+                    writeNestedLine("{", "},") {
+                        writeNestedLine("${type.qualifiedName}(", ")") {
+                            properties.forEach { writeNestedLine("getProperty(\"${it.name}\") as ${it.returnType.toType()},") }
+                        }
+                    }
+                    properties.forEach { writeNestedLine("${it.propertyEncoderId()},") }
                 }
-                properties.forEach { writeNestedLine("${it.propertyEncoderId()},") }
             }
         }
     }

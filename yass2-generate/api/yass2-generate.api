@@ -5,6 +5,10 @@ public final class ch/softappeal/yass2/generate/SharedKt {
 	public static final field GENERATED_BY_YASS Ljava/lang/String;
 }
 
+public final class ch/softappeal/yass2/generate/ksp/GenerateKt {
+	public static final field USE_EXPECT Ljava/lang/String;
+}
+
 public final class ch/softappeal/yass2/generate/reflect/GenerateKt {
 	public static final fun generateBinarySerializer (Lch/softappeal/yass2/generate/CodeWriter;Lkotlin/reflect/KAnnotatedElement;)V
 	public static final fun generateCode (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;)Ljava/lang/String;

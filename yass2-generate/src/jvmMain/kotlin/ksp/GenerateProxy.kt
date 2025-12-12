@@ -32,7 +32,10 @@ private val KSClassDeclaration.withTypeParameters get() = "<${typeParameters.joi
 private val KSClassDeclaration.withTypes get() = "${qualifiedName()}${if (typeParameters.isEmpty()) "" else withTypeParameters}"
 private val KSClassDeclaration.types get() = if (typeParameters.isEmpty()) "" else " $withTypeParameters"
 
-internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
+internal fun CodeWriter.generateProxy(
+    service: KSClassDeclaration,
+    expectWriter: CodeWriter?,
+) {
     require(service.classKind == ClassKind.INTERFACE) { "${service.qualifiedName()} must be an interface" }
 
     val functions = service.getAllFunctions().toList()
@@ -46,32 +49,32 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
             require(methodNames.hasNoDuplicates()) { "interface ${service.qualifiedName()} has overloaded methods ${methodNames.duplicates()}" }
         }
 
-    writeLine()
-    writeNestedLine("public fun${service.types} ${service.withTypes}.proxy(") {
-        writeNestedLine("intercept: $CSY.core.Interceptor,")
-    }
-    writeNestedLine("): ${service.withTypes} = object : ${service.withTypes} {", "}") {
-        functions.forEachSeparator({ writeLine() }) { function ->
-            val hasResult = function.hasResult()
-            writeSignature(function)
-            if (hasResult) write(": ${function.returnType!!.toType()}")
-            writeLine(" {") {
-                writeNestedLine("${if (hasResult) "return " else ""}intercept(\"${function.name}\", listOf(${function.parameters()})) {") {
-                    writeNestedLine("this@proxy.${function.name}(${function.parameters()})")
+    writeFun(
+        "${service.types} ${service.withTypes}.proxy(intercept: $CSY.core.Interceptor): ${service.withTypes}",
+        expectWriter,
+    ) {
+        writeNestedLine("object : ${service.withTypes} {", "}") {
+            functions.forEachSeparator({ writeLine() }) { function ->
+                val hasResult = function.hasResult()
+                writeSignature(function)
+                if (hasResult) write(": ${function.returnType!!.toType()}")
+                writeLine(" {") {
+                    writeNestedLine("${if (hasResult) "return " else ""}intercept(\"${function.name}\", listOf(${function.parameters()})) {") {
+                        writeNestedLine("this@proxy.${function.name}(${function.parameters()})")
+                    }
+                    writeNested("}")
                 }
-                writeNested("}")
+                if (hasResult) write(" as ${function.returnType!!.toType()}")
+                writeLine()
+                writeNestedLine("}")
             }
-            if (hasResult) write(" as ${function.returnType!!.toType()}")
-            writeLine()
-            writeNestedLine("}")
         }
     }
 
-    writeLine()
-    writeNestedLine("public fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.proxy(") {
-        writeNestedLine("tunnel: $CSY.core.remote.Tunnel,")
-    }
-    writeNestedLine("): ${service.withTypes} =") {
+    writeFun(
+        "${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.proxy(tunnel: $CSY.core.remote.Tunnel): ${service.withTypes}",
+        expectWriter,
+    ) {
         writeNestedLine("object : ${service.withTypes} {", "}") {
             functions.forEachSeparator({ writeLine() }) { function ->
                 val hasResult = function.hasResult()
@@ -88,11 +91,10 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
         }
     }
 
-    writeLine()
-    writeNestedLine("public fun${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.service(") {
-        writeNestedLine("implementation: ${service.withTypes},")
-    }
-    writeNestedLine("): ${Service::class.qualifiedName} =") {
+    writeFun(
+        "${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.service(implementation: ${service.withTypes}): ${Service::class.qualifiedName}",
+        expectWriter,
+    ) {
         writeNestedLine("${Service::class.qualifiedName}(id) { function, parameters ->", "}") {
             writeNestedLine("when (function) {", "}") {
                 functions.forEach { function ->

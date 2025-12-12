@@ -55,11 +55,7 @@ private fun getClasses(encoderObjects: List<KClass<*>>, concreteAndEnumClasses: 
 private abstract class Property(property: KProperty1<out Any, *>) {
     val name = property.name
     val returnType = property.returnType
-
-
-    // spacer
     protected val nullable = returnType.isMarkedNullable
-
     protected val classifier = returnType.classifier
 }
 
@@ -67,7 +63,6 @@ private fun <P : Property> KClass<*>.properties(createProperty: (property: KProp
     require(!isAbstract) { "class $qualifiedName must be concrete" }
     val properties = memberProperties
         .filterNot { (it.name == "cause" || it.name == "message") && isSubclassOf(Throwable::class) }
-
         .map { createProperty(it) }
     val parameters = (primaryConstructor ?: error("class $qualifiedName must hava a primary constructor")).valueParameters
     val constructorProperties = parameters.map { parameter ->
@@ -104,9 +99,9 @@ private fun <P : Property> KClass<*>.properties(createProperty: (property: KProp
             "write${suffix()}($reference${if (encoderId == BINARY_NO_ENCODER_ID) "" else ", $encoderId"})"
     }
 
-    writeLine()
-    writeNestedLine("public fun binarySerializer(): ${BinarySerializer::class.qualifiedName} =")
-    nested {
+    writeFun(
+        " binarySerializer(): ${BinarySerializer::class.qualifiedName}",
+    ) {
         writeNestedLine("object : ${BinarySerializer::class.qualifiedName}() {", "}") {
             writeNestedLine("init {", "}") {
                 writeNestedLine("initialize(", ")") {
@@ -167,32 +162,35 @@ private fun <P : Property> KClass<*>.properties(createProperty: (property: KProp
         }"
     }
 
-    writeLine()
-    writeNestedLine("public fun stringEncoders(): List<${StringEncoder::class.qualifiedName}<*>> = listOf(", ")") {
-        writeNestedLine("// ${String::class.qualifiedName}: $STRING_STRING_ENCODER_ID")
-        writeNestedLine("// ${Boolean::class.qualifiedName}: $STRING_BOOLEAN_ENCODER_ID")
-        writeNestedLine("// ${List::class.qualifiedName}: $STRING_LIST_ENCODER_ID")
-        var encoderId = STRING_FIRST_ENCODER_ID
-        encoderObjects.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
-        enumClasses.forEach { type ->
-            writeNestedLine("${EnumStringEncoder::class.qualifiedName}(", "),") {
-                writeNestedLine("${type.qualifiedName}::class, // ${encoderId++}")
-                writeNestedLine("${type.qualifiedName}::valueOf,")
+    writeFun(
+        " stringEncoders(): List<${StringEncoder::class.qualifiedName}<*>>",
+    ) {
+        writeNestedLine("listOf(", ")") {
+            writeNestedLine("// ${String::class.qualifiedName}: $STRING_STRING_ENCODER_ID")
+            writeNestedLine("// ${Boolean::class.qualifiedName}: $STRING_BOOLEAN_ENCODER_ID")
+            writeNestedLine("// ${List::class.qualifiedName}: $STRING_LIST_ENCODER_ID")
+            var encoderId = STRING_FIRST_ENCODER_ID
+            encoderObjects.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
+            enumClasses.forEach { type ->
+                writeNestedLine("${EnumStringEncoder::class.qualifiedName}(", "),") {
+                    writeNestedLine("${type.qualifiedName}::class, // ${encoderId++}")
+                    writeNestedLine("${type.qualifiedName}::valueOf,")
+                }
             }
-        }
-        concreteClasses.forEach { type ->
-            writeNestedLine("${ClassStringEncoder::class.qualifiedName}(", "),") {
-                writeNestedLine("${type.qualifiedName}::class, // ${encoderId++}")
-                val properties = type.properties { StringProperty(it) }
-                writeNestedLine("{ i ->", "},") {
-                    properties.forEach { writeNestedLine(it.writeProperty("i.${it.name}")) }
-                }
-                writeNestedLine("{", "},") {
-                    writeNestedLine("${type.qualifiedName}(", ")") {
-                        properties.forEach { writeNestedLine("getProperty(\"${it.name}\") as ${it.returnType.toType()},") }
+            concreteClasses.forEach { type ->
+                writeNestedLine("${ClassStringEncoder::class.qualifiedName}(", "),") {
+                    writeNestedLine("${type.qualifiedName}::class, // ${encoderId++}")
+                    val properties = type.properties { StringProperty(it) }
+                    writeNestedLine("{ i ->", "},") {
+                        properties.forEach { writeNestedLine(it.writeProperty("i.${it.name}")) }
                     }
+                    writeNestedLine("{", "},") {
+                        writeNestedLine("${type.qualifiedName}(", ")") {
+                            properties.forEach { writeNestedLine("getProperty(\"${it.name}\") as ${it.returnType.toType()},") }
+                        }
+                    }
+                    properties.forEach { writeNestedLine("${it.propertyEncoderId()},") }
                 }
-                properties.forEach { writeNestedLine("${it.propertyEncoderId()},") }
             }
         }
     }
