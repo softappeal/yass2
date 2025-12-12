@@ -2,11 +2,11 @@ package ch.softappeal.yass2.core.serialize.string
 
 import ch.softappeal.yass2.Example
 import ch.softappeal.yass2.Gender
-import ch.softappeal.yass2.StringEncoders
 import ch.softappeal.yass2.core.assertFailsWithMessage
+import ch.softappeal.yass2.stringEncoders
 import kotlin.test.Test
 
-private val SERIALIZER = KotlinSerializer(StringEncoders)
+private val SERIALIZER = KotlinSerializer(stringEncoders())
 
 private fun check(value: Any?, serialized: String, vararg others: String) = SERIALIZER.check(value, serialized, *others)
 

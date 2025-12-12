@@ -2,6 +2,7 @@ package ch.softappeal.yass2.core.serialize.binary
 
 import ch.softappeal.yass2.Example
 import ch.softappeal.yass2.Gender
+import ch.softappeal.yass2.binarySerializer
 import ch.softappeal.yass2.core.serialize.fromByteArray
 import ch.softappeal.yass2.core.serialize.toByteArray
 import kotlin.test.Test
@@ -9,7 +10,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
-private val SERIALIZER = ch.softappeal.yass2.BinarySerializer
+private val SERIALIZER = binarySerializer()
 
 private fun check(value: Any?, vararg bytes: Int) {
     val byteArray = SERIALIZER.toByteArray(value)

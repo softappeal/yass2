@@ -105,27 +105,30 @@ private fun <P : Property> KClass<*>.properties(createProperty: (property: KProp
     }
 
     writeLine()
-    writeNestedLine("public object BinarySerializer : ${BinarySerializer::class.qualifiedName}() {", "}") {
-        writeNestedLine("init {", "}") {
-            writeNestedLine("initialize(", ")") {
-                writeNestedLine("// ${List::class.qualifiedName}: $BINARY_LIST_ENCODER_ID")
-                var encoderId = BINARY_FIRST_ENCODER_ID
-                encoderObjects.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
-                enumClasses.forEach { type ->
-                    writeNestedLine("${EnumBinaryEncoder::class.qualifiedName}(", "),") {
-                        writeNestedLine("${type.qualifiedName}::class, enumValues(), // ${encoderId++}")
-                    }
-                }
-                concreteClasses.forEach { type ->
-                    writeNestedLine("${BinaryEncoder::class.qualifiedName}(", "),") {
-                        writeNestedLine("${type.qualifiedName}::class, // ${encoderId++}")
-                        val properties = type.properties { BinaryProperty(it) }
-                        writeNestedLine("{ i ->", "},") {
-                            properties.forEach { writeNestedLine(it.writeObject("i.${it.name}")) }
+    writeNestedLine("public fun binarySerializer(): ${BinarySerializer::class.qualifiedName} =")
+    nested {
+        writeNestedLine("object : ${BinarySerializer::class.qualifiedName}() {", "}") {
+            writeNestedLine("init {", "}") {
+                writeNestedLine("initialize(", ")") {
+                    writeNestedLine("// ${List::class.qualifiedName}: $BINARY_LIST_ENCODER_ID")
+                    var encoderId = BINARY_FIRST_ENCODER_ID
+                    encoderObjects.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
+                    enumClasses.forEach { type ->
+                        writeNestedLine("${EnumBinaryEncoder::class.qualifiedName}(", "),") {
+                            writeNestedLine("${type.qualifiedName}::class, enumValues(), // ${encoderId++}")
                         }
-                        writeNestedLine("{", "}") {
-                            writeNestedLine("${type.qualifiedName}(", ")") {
-                                properties.forEach { writeNestedLine("${it.name} = ${it.readObject()} as ${it.returnType.toType()},") }
+                    }
+                    concreteClasses.forEach { type ->
+                        writeNestedLine("${BinaryEncoder::class.qualifiedName}(", "),") {
+                            writeNestedLine("${type.qualifiedName}::class, // ${encoderId++}")
+                            val properties = type.properties { BinaryProperty(it) }
+                            writeNestedLine("{ i ->", "},") {
+                                properties.forEach { writeNestedLine(it.writeObject("i.${it.name}")) }
+                            }
+                            writeNestedLine("{", "}") {
+                                writeNestedLine("${type.qualifiedName}(", ")") {
+                                    properties.forEach { writeNestedLine("${it.name} = ${it.readObject()} as ${it.returnType.toType()},") }
+                                }
                             }
                         }
                     }
@@ -165,7 +168,7 @@ private fun <P : Property> KClass<*>.properties(createProperty: (property: KProp
     }
 
     writeLine()
-    writeNestedLine("public val StringEncoders: List<${StringEncoder::class.qualifiedName}<*>> = listOf(", ")") {
+    writeNestedLine("public fun stringEncoders(): List<${StringEncoder::class.qualifiedName}<*>> = listOf(", ")") {
         writeNestedLine("// ${String::class.qualifiedName}: $STRING_STRING_ENCODER_ID")
         writeNestedLine("// ${Boolean::class.qualifiedName}: $STRING_BOOLEAN_ENCODER_ID")
         writeNestedLine("// ${List::class.qualifiedName}: $STRING_LIST_ENCODER_ID")

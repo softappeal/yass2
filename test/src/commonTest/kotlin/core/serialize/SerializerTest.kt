@@ -7,8 +7,8 @@ import ch.softappeal.yass2.DivideByZeroException
 import ch.softappeal.yass2.Gender
 import ch.softappeal.yass2.ManyProperties
 import ch.softappeal.yass2.Poly
-import ch.softappeal.yass2.StringEncoders
 import ch.softappeal.yass2.Types
+import ch.softappeal.yass2.binarySerializer
 import ch.softappeal.yass2.core.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.core.serialize.string.ByteArray
 import ch.softappeal.yass2.core.serialize.string.Int
@@ -19,6 +19,7 @@ import ch.softappeal.yass2.core.serialize.string.TextSerializer
 import ch.softappeal.yass2.core.serialize.string.fromString
 import ch.softappeal.yass2.core.serialize.string.invoke
 import ch.softappeal.yass2.core.serialize.string.toString
+import ch.softappeal.yass2.stringEncoders
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -117,7 +118,7 @@ private fun BinarySerializer.check(serialized: ByteArray) {
 class SerializerTest {
     @Test
     fun kotlinSerializer() {
-        KotlinSerializer(StringEncoders).check(
+        KotlinSerializer(stringEncoders()).check(
             """
                 Types(
                     boolean = false,
@@ -203,7 +204,7 @@ class SerializerTest {
 
     @Test
     fun textSerializer() {
-        TextSerializer(StringEncoders).check(
+        TextSerializer(stringEncoders()).check(
             """
                 Types(
                     boolean: false
@@ -282,7 +283,7 @@ class SerializerTest {
 
     @Test
     fun jsonSerializer() {
-        JsonSerializer(StringEncoders).check(
+        JsonSerializer(stringEncoders()).check(
             """
                 {
                     "#": "Types",
@@ -370,8 +371,8 @@ class SerializerTest {
     }
 
     @Test
-    fun binarySerializer() {
-        ch.softappeal.yass2.BinarySerializer.check(
+    fun binarySerializerTest() {
+        binarySerializer().check(
             "13, 0, 2, 5, 104, 101, 108, 108, 111, 3, 0, 1, 2, 0, 12, 0, 2, 0, 2, 1, 3, 1, 4, 5, 104, 101, 108, 108, 111, 5, 3, 0, 1, 2, 6, 1, 1, 2, 3, 2, 1, 2, 4, 5, 104, 101, 108, 108, 111, 4, 5, 119, 111, 114, 108, 100, 13, 1, -1, -120, 15, 5, 104, 101, 108, 108, 111, 3, 0, 1, 2, 0, 0, 2, 4, 0, 0, 0, 0, 0, 0, 0, 11, 9, 8, 20, 40, 2, 4, 10, 16, 8, 12, 14, 4, 20, 40, 1, 1, 1, 2, 1, 5, 104, 101, 108, 108, 111, 1, 3, 0, 1, 2, 1, 0, 1, 1, 4, 5, 104, 101, 108, 108, 111, 1, 60, 80"
                 .split(", ").map { it.toByte() }.toByteArray()
         )

@@ -95,7 +95,7 @@ interface GenericService<A, B, C> {
     suspend fun service(a: A, b: B): C
 }
 
-val ContractSerializer = TextSerializer(StringEncoders)
+val ContractSerializer = TextSerializer(stringEncoders())
 
 val CalculatorId = ServiceId<Calculator>("calc")
 val EchoId = ServiceId<Echo>("echo")

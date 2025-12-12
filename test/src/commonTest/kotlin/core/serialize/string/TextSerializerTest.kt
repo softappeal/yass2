@@ -2,10 +2,10 @@ package ch.softappeal.yass2.core.serialize.string
 
 import ch.softappeal.yass2.Example
 import ch.softappeal.yass2.Gender
-import ch.softappeal.yass2.StringEncoders
 import ch.softappeal.yass2.ThrowableFake
 import ch.softappeal.yass2.core.assertFailsWithMessage
 import ch.softappeal.yass2.core.serialize.toByteArray
+import ch.softappeal.yass2.stringEncoders
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -21,7 +21,7 @@ fun StringSerializer.check(value: Any?, serialized: String, vararg others: Strin
     others.forEach { write(fromString(it)) }
 }
 
-private val SERIALIZER = TextSerializer(StringEncoders)
+private val SERIALIZER = TextSerializer(stringEncoders())
 
 private fun check(value: Any?, serialized: String, vararg others: String) = SERIALIZER.check(value, serialized, *others)
 
