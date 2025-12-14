@@ -69,9 +69,13 @@ private fun KSAnnotation.value() = arguments.first { it.name!!.asString() == "va
 //       Generated code is treated as platform code (you'll have to use expect/actual).
 public const val USE_EXPECT: String = "yass.useExpect"
 
-internal fun CodeWriter.writeFun(signature: String, expectWriter: CodeWriter?, body: CodeWriter.() -> Unit) {
+internal fun CodeWriter.writeFun(
+    signature: String,
+    expectWriter: CodeWriter?, expectLine: Boolean = true,
+    body: CodeWriter.() -> Unit,
+) {
     expectWriter?.apply {
-        writeLine()
+        if (expectLine) writeLine()
         writeNestedLine("public expect fun$signature")
     }
     writeLine()

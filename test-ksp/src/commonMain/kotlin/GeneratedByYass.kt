@@ -15,10 +15,12 @@
 package test
 
 public expect fun test.Calculator.proxy(intercept: ch.softappeal.yass2.core.Interceptor): test.Calculator
-
 public expect fun ch.softappeal.yass2.core.remote.ServiceId<test.Calculator>.proxy(tunnel: ch.softappeal.yass2.core.remote.Tunnel): test.Calculator
-
 public expect fun ch.softappeal.yass2.core.remote.ServiceId<test.Calculator>.service(implementation: test.Calculator): ch.softappeal.yass2.core.remote.Service
+
+public expect fun test.News.proxy(intercept: ch.softappeal.yass2.core.Interceptor): test.News
+public expect fun ch.softappeal.yass2.core.remote.ServiceId<test.News>.proxy(tunnel: ch.softappeal.yass2.core.remote.Tunnel): test.News
+public expect fun ch.softappeal.yass2.core.remote.ServiceId<test.News>.service(implementation: test.News): ch.softappeal.yass2.core.remote.Service
 
 public expect fun binarySerializer(): ch.softappeal.yass2.core.serialize.binary.BinarySerializer
 

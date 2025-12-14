@@ -73,7 +73,7 @@ internal fun CodeWriter.generateProxy(
 
     writeFun(
         "${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.proxy(tunnel: $CSY.core.remote.Tunnel): ${service.withTypes}",
-        expectWriter,
+        expectWriter, false,
     ) {
         writeNestedLine("object : ${service.withTypes} {", "}") {
             functions.forEachSeparator({ writeLine() }) { function ->
@@ -93,7 +93,7 @@ internal fun CodeWriter.generateProxy(
 
     writeFun(
         "${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.service(implementation: ${service.withTypes}): ${Service::class.qualifiedName}",
-        expectWriter,
+        expectWriter, false,
     ) {
         writeNestedLine("${Service::class.qualifiedName}(id) { function, parameters ->", "}") {
             writeNestedLine("when (function) {", "}") {

@@ -16,8 +16,13 @@ interface Calculator {
     suspend fun add(a: Int, b: Int): Int
 }
 
+interface News {
+    suspend fun news(news: String)
+}
+
 @Proxies(
     Calculator::class,
+    News::class,
 )
 
 @BinaryEncoderObjects(
