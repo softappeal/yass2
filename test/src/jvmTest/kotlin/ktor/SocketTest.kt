@@ -30,7 +30,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-private const val IGNORE = false // TODO: spurious failures in SocketTest
+private const val IGNORE = false // TODO: spurious failures
 
 private fun runServer(block: suspend CoroutineScope.(tcp: TcpSocketBuilder, serverSocket: ServerSocket) -> Unit) {
     if (IGNORE) return
