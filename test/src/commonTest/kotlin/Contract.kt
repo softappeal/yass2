@@ -77,12 +77,7 @@ interface Calculator : AddCalculator {
     suspend fun divide(a: Int, b: Int): Int
 }
 
-@Target(AnnotationTarget.FUNCTION)
-@MustBeDocumented
-annotation class TestAnnotation
-
 interface Echo {
-    @TestAnnotation
     suspend fun echo(value: Any?): Any?
     suspend fun echoRequired(value: Any): Any
     suspend fun noParametersNoResult()

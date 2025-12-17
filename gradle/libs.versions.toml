@@ -4,10 +4,10 @@
 kotlin     = "2.3.0"         # https://github.com/JetBrains/kotlin
 coroutines = "1.10.2"        # https://github.com/Kotlin/kotlinx.coroutines
 ktor       = "3.3.3"         # https://github.com/ktorio/ktor
-ksp        = "2.3.3"         # https://github.com/google/ksp
+ksp        = "2.3.4"         # https://github.com/google/ksp
 
 # build
-kct        = "0.11.0"        # https://github.com/ZacSweers/kotlin-compile-testing
+kct        = "0.12.0"        # https://github.com/ZacSweers/kotlin-compile-testing
 dokka      = "2.1.0"         # https://github.com/Kotlin/dokka
 publish    = "0.35.0"        # https://github.com/vanniktech/gradle-maven-publish-plugin
 
