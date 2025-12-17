@@ -10,7 +10,6 @@ import ch.softappeal.yass2.coroutines.AtomicInt
 import ch.softappeal.yass2.coroutines.ThreadSafeMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
@@ -38,7 +37,7 @@ public interface FlowService<out F, I> {
 
 @ExperimentalApi public typealias FlowFactory<F, I> = (flowId: I) -> Flow<F>
 
-@ExperimentalApi public fun <F, I> flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I> {
+@ExperimentalApi public fun <F, I> CoroutineScope.flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I> {
     val nextCollectId = AtomicInt(0)
     val collectIdToChannel = ThreadSafeMap<Int, Channel<Reply?>>(16)
     return object : FlowService<F, I> {
@@ -47,17 +46,16 @@ public interface FlowService<out F, I> {
             val collectId = nextCollectId.incrementAndFetch()
             val channel = Channel<Reply?>()
             collectIdToChannel.put(collectId, channel)
-
-            suspend fun collect() = tryFinally({
-                try {
-                    flow.collect { channel.send(ValueReply(it)) }
-                    channel.send(null)
-                } catch (e: Exception) {
-                    channel.send(ExceptionReply(e))
-                }
-            }) { collectIdToChannel.remove(collectId) }
-
-            CoroutineScope(currentCoroutineContext()).launch { collect() }
+            launch {
+                tryFinally({
+                    try {
+                        flow.collect { channel.send(ValueReply(it)) }
+                        channel.send(null)
+                    } catch (e: Exception) {
+                        channel.send(ExceptionReply(e))
+                    }
+                }) { collectIdToChannel.remove(collectId) }
+            }
             return collectId
         }
 

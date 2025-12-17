@@ -12,7 +12,7 @@ public final class ch/softappeal/yass2/coroutines/flow/GeneratedByYassKt {
 
 public final class ch/softappeal/yass2/coroutines/flow/RemoteFlowKt {
 	public static final fun createFlow (Lch/softappeal/yass2/coroutines/flow/FlowService;Ljava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
-	public static final fun flowService (Lkotlin/jvm/functions/Function1;)Lch/softappeal/yass2/coroutines/flow/FlowService;
+	public static final fun flowService (Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function1;)Lch/softappeal/yass2/coroutines/flow/FlowService;
 }
 
 public abstract interface class ch/softappeal/yass2/coroutines/session/Connection {
