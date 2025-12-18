@@ -1,0 +1,8 @@
+// Klib ABI Dump
+// Targets: [js, linuxArm64, linuxX64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <ch.softappeal.yass2:yass2-generate>

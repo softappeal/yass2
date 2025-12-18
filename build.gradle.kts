@@ -34,27 +34,25 @@ allprojects {
 
     kotlin {
         jvm()
-        if (project.name != "yass2-generate") {
-            if (webPlatform) {
-                js {
-                    outputModuleName.set(project.name)
-                    nodejs()
-                    binaries.executable()
-                    compilerOptions {
-                        target.set("es2015")
-                    }
-                }
-                @OptIn(ExperimentalWasmDsl::class)
-                wasmJs {
-                    outputModuleName.set(project.name)
-                    nodejs()
-                    binaries.executable()
+        if (webPlatform) {
+            js {
+                outputModuleName.set(project.name)
+                nodejs()
+                binaries.executable()
+                compilerOptions {
+                    target.set("es2015")
                 }
             }
-            if (linuxPlatform) {
-                linuxX64()
-                linuxArm64()
+            @OptIn(ExperimentalWasmDsl::class)
+            wasmJs {
+                outputModuleName.set(project.name)
+                nodejs()
+                binaries.executable()
             }
+        }
+        if (linuxPlatform) {
+            linuxX64()
+            linuxArm64()
         }
         compilerOptions {
             allWarningsAsErrors.set(true)
