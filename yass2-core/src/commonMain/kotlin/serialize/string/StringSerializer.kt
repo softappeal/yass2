@@ -196,7 +196,7 @@ public abstract class StringReader(
 
     protected fun ClassStringEncoder<*>.checkMissingProperties() {
         val missingProperties = propertyToEncoderId.keys - propertyNameToValue.keys
-        check(missingProperties.isEmpty()) { "missing properties '${missingProperties.sorted()}' for '${type.simpleName}'" }
+        check(missingProperties.isEmpty()) { "missing properties ${missingProperties.sorted()} for '${type.simpleName}'" }
     }
 }
 

@@ -37,17 +37,17 @@ private val KClass<*>.types get() = if (typeParameters.isEmpty()) "" else " $wit
 @InternalApi public fun CodeWriter.generateProxy(
     service: KClass<*>,
 ) {
-    require(service.java.isInterface) { "${service.qualifiedName} must be an interface" }
+    require(service.java.isInterface) { "'${service.qualifiedName}' must be an interface" }
 
     val functions = service.memberFunctions
         .filter { it.javaMethod!!.declaringClass != Any::class.java }
         .onEach {
-            require(it.isSuspend) { "method ${service.qualifiedName}.${it.name} must be suspend" }
+            require(it.isSuspend) { "method '${service.qualifiedName}.${it.name}' must be suspend" }
         }
         .sortedBy { it.name }
         .apply {
             val methodNames = map { it.name }
-            require(methodNames.hasNoDuplicates()) { "interface ${service.qualifiedName} has overloaded methods ${methodNames.duplicates()}" }
+            require(methodNames.hasNoDuplicates()) { "interface '${service.qualifiedName}' has overloaded methods ${methodNames.duplicates()}" }
         }
 
     writeFun(

@@ -70,6 +70,11 @@ allprojects {
                 }
             }
         }
+        if (!project.file("src/commonMain/kotlin").exists()) sourceSets { /* TODO */
+            commonMain {
+                kotlin.srcDir(rootProject.projectDir.resolve("publish.workaround"))
+            }
+        }
     }
 
     if (project.name.startsWith("yass2")) { // includes the root project (needed for doc over all modules)
@@ -83,7 +88,6 @@ allprojects {
                 }
             }
         }
-
         mavenPublishing {
             publishToMavenCentral()
             signAllPublications()

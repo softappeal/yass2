@@ -36,17 +36,17 @@ internal fun CodeWriter.generateProxy(
     service: KSClassDeclaration,
     expectWriter: CodeWriter?,
 ) {
-    require(service.classKind == ClassKind.INTERFACE) { "${service.qualifiedName()} must be an interface" }
+    require(service.classKind == ClassKind.INTERFACE) { "'${service.qualifiedName()}' must be an interface" }
 
     val functions = service.getAllFunctions().toList()
         .filter { it.name !in AnyFunctions }
         .onEach {
-            require(Modifier.SUSPEND in it.modifiers) { "method ${service.qualifiedName()}.${it.name} must be suspend" }
+            require(Modifier.SUSPEND in it.modifiers) { "method '${service.qualifiedName()}.${it.name}' must be suspend" }
         }
         .sortedBy { it.name }
         .apply {
             val methodNames = map { it.name }
-            require(methodNames.hasNoDuplicates()) { "interface ${service.qualifiedName()} has overloaded methods ${methodNames.duplicates()}" }
+            require(methodNames.hasNoDuplicates()) { "interface '${service.qualifiedName()}' has overloaded methods ${methodNames.duplicates()}" }
         }
 
     writeFun(

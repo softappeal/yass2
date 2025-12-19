@@ -140,7 +140,7 @@ class KotlinSerializerTest {
         assertFailsWithMessage<IllegalStateException>("no property 'A.noSuchProperty'") {
             SERIALIZER.fromString("A(noSuchProperty=1,)")
         }
-        assertFailsWithMessage<IllegalStateException>("missing properties '[a, b]' for 'B'") {
+        assertFailsWithMessage<IllegalStateException>("missing properties [a, b] for 'B'") {
             SERIALIZER.fromString("B()")
         }
         assertFailsWithMessage<IllegalStateException>("duplicated property 'A.a'") {

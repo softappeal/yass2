@@ -35,7 +35,7 @@ class GeneratorTest {
     @Test
     fun binarySerializer() {
         executeTest(
-            "class test.BodyProperty must not have body properties",
+            "class 'test.BodyProperty' must not have body properties",
             """
                 package test
                 @ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses(BodyProperty::class)
@@ -46,7 +46,7 @@ class GeneratorTest {
             """,
         )
         executeTest(
-            "class test.NoPrimaryConstructor must hava a primary constructor",
+            "class 'test.NoPrimaryConstructor' must hava a primary constructor",
             """
                 package test
                 @ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses(NoPrimaryConstructor::class)
@@ -57,7 +57,7 @@ class GeneratorTest {
             """,
         )
         executeTest(
-            "primary constructor parameter x of class test.ConstructorParameterIsNotProperty must be a property",
+            "primary constructor parameter 'x' of class 'test.ConstructorParameterIsNotProperty' must be a property",
             """
                 package test
                 @ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses(ConstructorParameterIsNotProperty::class)
@@ -66,7 +66,7 @@ class GeneratorTest {
             """,
         )
         executeTest(
-            "class test.NotRegularClass must be concrete",
+            "class 'test.NotRegularClass' must be concrete",
             """
                 package test
                 @ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses(NotRegularClass::class)
@@ -75,7 +75,7 @@ class GeneratorTest {
             """,
         )
         executeTest(
-            "class test.AbstractClass must be concrete",
+            "class 'test.AbstractClass' must be concrete",
             """
                 package test
                 @ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses(AbstractClass::class)
@@ -84,7 +84,7 @@ class GeneratorTest {
             """,
         )
         executeTest(
-            "enum class test.Enum belongs to ConcreteAndEnumClasses",
+            "enum class 'test.Enum' belongs to 'ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses'",
             """
                 package test
                 enum class Enum { One }
@@ -116,7 +116,7 @@ class GeneratorTest {
     @Test
     fun proxy() {
         executeTest(
-            "test.NotAnInterface must be an interface",
+            "'test.NotAnInterface' must be an interface",
             """
                 package test
                 @ch.softappeal.yass2.core.Proxies(NotAnInterface::class)
@@ -124,7 +124,7 @@ class GeneratorTest {
             """,
         )
         executeTest(
-            "interface test.Overloaded has overloaded methods [f]",
+            "interface 'test.Overloaded' has overloaded methods [f]",
             """
                 package test
                 @ch.softappeal.yass2.core.Proxies(Overloaded::class)
@@ -135,7 +135,7 @@ class GeneratorTest {
             """,
         )
         executeTest(
-            "method test.NoSuspend.noSuspend must be suspend",
+            "method 'test.NoSuspend.noSuspend' must be suspend",
             """
                 package test
                 @ch.softappeal.yass2.core.Proxies(NoSuspend::class)
@@ -149,7 +149,7 @@ class GeneratorTest {
     @Test
     fun annotations() {
         executeTest(
-            "there can be at most one annotation ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses in package test",
+            "there can be at most one annotation 'ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses' in package 'test'",
             """
                 package test
                 @ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses()
@@ -159,7 +159,7 @@ class GeneratorTest {
             """,
         )
         executeTest(
-            "missing annotation ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses in package test",
+            "missing annotation 'ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses' in package 'test'",
             """
                 package test
                 @ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects()
@@ -167,7 +167,7 @@ class GeneratorTest {
             """,
         )
         executeTest(
-            "missing annotations ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects or ch.softappeal.yass2.core.serialize.string.StringEncoderObjects in package test",
+            "missing annotations 'ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects' or 'ch.softappeal.yass2.core.serialize.string.StringEncoderObjects' in package 'test'",
             """
                 package test
                 @ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses()

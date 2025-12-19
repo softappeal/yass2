@@ -4,6 +4,7 @@
 package ch.softappeal.yass2.generate.reflect
 
 import ch.softappeal.yass2.core.InternalApi
+import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses
 import ch.softappeal.yass2.core.serialize.binary.BINARY_FIRST_ENCODER_ID
 import ch.softappeal.yass2.core.serialize.binary.BINARY_LIST_ENCODER_ID
 import ch.softappeal.yass2.core.serialize.binary.BINARY_NO_ENCODER_ID
@@ -48,7 +49,7 @@ private fun getClasses(encoderObjects: List<KClass<*>>, concreteAndEnumClasses: 
         require(hasNoDuplicates()) { "classes ${duplicates().map { it.qualifiedName }} are duplicated" }
     }
     (encoderTypes + concreteClasses).firstOrNull { it.isEnum() }
-        ?.let { error("enum class ${it.qualifiedName} belongs to ConcreteAndEnumClasses") }
+        ?.let { error("enum class '${it.qualifiedName}' belongs to '${ConcreteAndEnumClasses::class.qualifiedName}'") }
     return Classes(baseClasses, enumClasses, concreteClasses)
 }
 
@@ -60,16 +61,16 @@ private abstract class Property(property: KProperty1<out Any, *>) {
 }
 
 private fun <P : Property> KClass<*>.properties(createProperty: (property: KProperty1<out Any, *>) -> P): List<P> {
-    require(!isAbstract) { "class $qualifiedName must be concrete" }
+    require(!isAbstract) { "class '$qualifiedName' must be concrete" }
     val properties = memberProperties
         .filterNot { (it.name == "cause" || it.name == "message") && isSubclassOf(Throwable::class) }
         .map { createProperty(it) }
-    val parameters = (primaryConstructor ?: error("class $qualifiedName must hava a primary constructor")).valueParameters
+    val parameters = (primaryConstructor ?: error("class '$qualifiedName' must hava a primary constructor")).valueParameters
     val constructorProperties = parameters.map { parameter ->
         properties.firstOrNull { it.name == parameter.name }
-            ?: error("primary constructor parameter ${parameter.name} of class $qualifiedName must be a property")
+            ?: error("primary constructor parameter '${parameter.name}' of class '$qualifiedName' must be a property")
     }
-    require(properties.all { it in constructorProperties }) { "class $qualifiedName must not have body properties" }
+    require(properties.all { it in constructorProperties }) { "class '$qualifiedName' must not have body properties" }
     return constructorProperties
 }
 

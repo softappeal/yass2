@@ -4,6 +4,7 @@
 package ch.softappeal.yass2.generate.ksp
 
 import ch.softappeal.yass2.core.InternalApi
+import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses
 import ch.softappeal.yass2.core.serialize.binary.BINARY_FIRST_ENCODER_ID
 import ch.softappeal.yass2.core.serialize.binary.BINARY_LIST_ENCODER_ID
 import ch.softappeal.yass2.core.serialize.binary.BINARY_NO_ENCODER_ID
@@ -46,7 +47,7 @@ private fun getClasses(encoderObjects: List<KSType>, concreteAndEnumClasses: Lis
         require(hasNoDuplicates()) { "classes ${duplicates().map { it.qualifiedName }} are duplicated" }
     }
     (encoderTypes + concreteClasses).firstOrNull { it.isEnum() }
-        ?.let { error("enum class ${it.qualifiedName} belongs to ConcreteAndEnumClasses") }
+        ?.let { error("enum class '${it.qualifiedName}' belongs to '${ConcreteAndEnumClasses::class.qualifiedName}'") }
     return Classes(baseClasses, enumClasses, concreteClasses)
 }
 
@@ -62,17 +63,17 @@ private abstract class Property(property: KSPropertyDeclaration) {
 }
 
 private fun <P : Property> KSClassDeclaration.properties(createProperty: (property: KSPropertyDeclaration) -> P): List<P> {
-    require(!isAbstract()) { "class ${qualifiedName()} must be concrete" }
+    require(!isAbstract()) { "class '${qualifiedName()}' must be concrete" }
     val properties = getAllProperties().toList()
         .filterNot { (it.name == "cause" || it.name == "message") && ("kotlin.Throwable" == it.parentDeclaration!!.qualifiedName()) }
         .filter { it.isPublic() } // TODO: see https://github.com/google/ksp/issues/2443
         .map { createProperty(it) }
-    val parameters = (primaryConstructor ?: error("class ${qualifiedName()} must hava a primary constructor")).parameters
+    val parameters = (primaryConstructor ?: error("class '${qualifiedName()}' must hava a primary constructor")).parameters
     val constructorProperties = parameters.map { parameter ->
         properties.firstOrNull { it.name == parameter.name!!.asString() }
-            ?: error("primary constructor parameter ${parameter.name!!.asString()} of class ${qualifiedName()} must be a property")
+            ?: error("primary constructor parameter '${parameter.name!!.asString()}' of class '${qualifiedName()}' must be a property")
     }
-    require(properties.all { it in constructorProperties }) { "class ${qualifiedName()} must not have body properties" }
+    require(properties.all { it in constructorProperties }) { "class '${qualifiedName()}' must not have body properties" }
     return constructorProperties
 }
 

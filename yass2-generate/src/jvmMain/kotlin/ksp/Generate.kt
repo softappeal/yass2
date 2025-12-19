@@ -89,7 +89,7 @@ private fun processPackage(name: String, declarations: Set<KSDeclaration>, envir
             declaration.annotations.firstOrNull { it.annotationType.resolve().declaration.qualifiedName() == annotation.qualifiedName }
         }
         .also { annotations ->
-            require(annotations.size <= 1) { "there can be at most one annotation ${annotation.qualifiedName} in package $name" }
+            require(annotations.size <= 1) { "there can be at most one annotation '${annotation.qualifiedName}' in package '$name'" }
         }
         .firstOrNull()
 
@@ -109,11 +109,11 @@ private fun processPackage(name: String, declarations: Set<KSDeclaration>, envir
     val stringEncoderObjects = annotationOrNull(StringEncoderObjects::class)
     if (concreteAndEnumClasses == null) {
         require(binaryEncoderObjects == null && stringEncoderObjects == null) {
-            "missing annotation ${ConcreteAndEnumClasses::class.qualifiedName} in package $name"
+            "missing annotation '${ConcreteAndEnumClasses::class.qualifiedName}' in package '$name'"
         }
     } else {
         require(binaryEncoderObjects != null || stringEncoderObjects != null) {
-            "missing annotations ${BinaryEncoderObjects::class.qualifiedName} or ${StringEncoderObjects::class.qualifiedName} in package $name"
+            "missing annotations '${BinaryEncoderObjects::class.qualifiedName}' or '${StringEncoderObjects::class.qualifiedName}' in package '$name'"
         }
         binaryEncoderObjects?.let { writer.generateBinarySerializer(it.value(), concreteAndEnumClasses.value(), expectWriter) }
         stringEncoderObjects?.let { writer.generateStringEncoders(it.value(), concreteAndEnumClasses.value(), expectWriter) }

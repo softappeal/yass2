@@ -62,7 +62,7 @@ public fun Any.generateFile(generatedDir: String, mode: GenerateMode = GenerateM
         GenerateMode.Check -> {
             val existingCode = generatedFile.readText().fixLines()
             check(generatedCode == existingCode) {
-                "outdated generated file '${generatedFile.absolutePathString()}' (use generateFile with GenerateMode.Update to update it)"
+                "outdated generated file '${generatedFile.absolutePathString()}' (use 'generateFile' with 'GenerateMode.Update' to update it)"
             }
         }
     }
