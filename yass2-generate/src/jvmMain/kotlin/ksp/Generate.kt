@@ -64,10 +64,30 @@ internal fun KSTypeReference.toType(): String {
 @Suppress("UNCHECKED_CAST")
 private fun KSAnnotation.value() = arguments.first { it.name!!.asString() == "value" }.value as List<KSType>
 
-// TODO: KSP works only for platform code (see https://github.com/google/ksp/issues/2233).
-//       Common/intermediate (= none-platform) code cannot reference generated code in the compilation of platform code.
-//       Generated code is treated as platform code (you'll have to use expect/actual).
-public const val USE_EXPECT: String = "yass.useExpect"
+public enum class GenerateMode {
+    /**
+     * Generate the code in the build directory. That's the normal KSP way.
+     * ```
+     * TODO: KSP works only for platform code (see https://github.com/google/ksp/issues/2233).
+     *       Common/intermediate (= none-platform) code cannot reference generated code in the compilation of platform code.
+     *       Generated code is treated as platform code (you'll have to use expect/actual).
+     * ```
+     * see [WithExpectAndActual]
+     */
+    InBuildDir,
+
+    /** Generate the code in the code repository. */
+    InRepository,
+
+    /** Generate the `expect` code in the code repository and the `actual` code in the build directory. */
+    WithExpectAndActual,
+}
+
+/**
+ * KSP argument for setting the [GenerateMode].
+ * Uses [GenerateMode.InBuildDir] if not specified.
+ */
+public const val GENERATE_MODE: String = "yass.GenerateMode"
 
 internal fun CodeWriter.writeFun(
     signature: String,
@@ -84,6 +104,8 @@ internal fun CodeWriter.writeFun(
 }
 
 private fun processPackage(name: String, declarations: Set<KSDeclaration>, environment: SymbolProcessorEnvironment) {
+    val generateMode = GenerateMode.valueOf(environment.options[GENERATE_MODE] ?: GenerateMode.InBuildDir.name)
+
     fun annotationOrNull(annotation: KClass<*>) = declarations
         .mapNotNull { declaration ->
             declaration.annotations.firstOrNull { it.annotationType.resolve().declaration.qualifiedName() == annotation.qualifiedName }
@@ -98,7 +120,7 @@ private fun processPackage(name: String, declarations: Set<KSDeclaration>, envir
     val writer = CodeWriter(code)
 
     val expectCode = StringBuilder()
-    val expectWriter = if (environment.options[USE_EXPECT].toBoolean()) CodeWriter(expectCode) else null
+    val expectWriter = if (generateMode == GenerateMode.WithExpectAndActual) CodeWriter(expectCode) else null
 
     annotationOrNull(Proxies::class)?.let {
         it.value().forEach { type -> writer.generateProxy(type.declaration as KSClassDeclaration, expectWriter) }
@@ -119,18 +141,20 @@ private fun processPackage(name: String, declarations: Set<KSDeclaration>, envir
         stringEncoderObjects?.let { writer.generateStringEncoders(it.value(), concreteAndEnumClasses.value(), expectWriter) }
     }
 
-    environment.codeGenerator.createNewFile(Dependencies.ALL_FILES, name, GENERATED_BY_YASS).writer().use { it.append(code) }
-
-    if (expectWriter == null) return
-    val generatedCode = buildString {
-        appendPackage(name)
-        append(expectCode)
+    if (generateMode == GenerateMode.InBuildDir || generateMode == GenerateMode.WithExpectAndActual) {
+        environment.codeGenerator.createNewFile(Dependencies.ALL_FILES, name, GENERATED_BY_YASS).writer().use { it.append(code) }
     }
-    val generatedFile = Path((declarations.first().location as FileLocation).filePath).parent.resolve("$GENERATED_BY_YASS.kt")
-    if (generatedFile.notExists()) generatedFile.writeText(generatedCode) else {
-        val existingCode = generatedFile.readText().fixLines()
-        check(generatedCode == existingCode) {
-            "outdated generated file '${generatedFile.absolutePathString()}' (delete file to regenerate it)"
+    if (generateMode == GenerateMode.InRepository || generateMode == GenerateMode.WithExpectAndActual) {
+        val repositoryFile = Path((declarations.first().location as FileLocation).filePath).parent.resolve("$GENERATED_BY_YASS.kt")
+        val repositoryCode = if (generateMode == GenerateMode.InRepository) code.toString() else buildString {
+            appendPackage(name)
+            append(expectCode)
+        }
+        if (repositoryFile.notExists()) repositoryFile.writeText(repositoryCode) else {
+            val existingCode = repositoryFile.readText().fixLines()
+            check(repositoryCode == existingCode) {
+                "outdated generated file '${repositoryFile.absolutePathString()}' (delete file to regenerate it)"
+            }
         }
     }
 }

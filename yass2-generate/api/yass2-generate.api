@@ -6,7 +6,16 @@ public final class ch/softappeal/yass2/generate/SharedKt {
 }
 
 public final class ch/softappeal/yass2/generate/ksp/GenerateKt {
-	public static final field USE_EXPECT Ljava/lang/String;
+	public static final field GENERATE_MODE Ljava/lang/String;
+}
+
+public final class ch/softappeal/yass2/generate/ksp/GenerateMode : java/lang/Enum {
+	public static final field InBuildDir Lch/softappeal/yass2/generate/ksp/GenerateMode;
+	public static final field InRepository Lch/softappeal/yass2/generate/ksp/GenerateMode;
+	public static final field WithExpectAndActual Lch/softappeal/yass2/generate/ksp/GenerateMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lch/softappeal/yass2/generate/ksp/GenerateMode;
+	public static fun values ()[Lch/softappeal/yass2/generate/ksp/GenerateMode;
 }
 
 public final class ch/softappeal/yass2/generate/reflect/GenerateKt {

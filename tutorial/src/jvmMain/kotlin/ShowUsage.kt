@@ -62,7 +62,7 @@ abstract class InitiatorSession<C : Connection> : Session<C>() {
     }
 }
 
-// Shows how to pass session to service implementation.
+// Shows how to pass a session to service implementation.
 class NewsListenerImpl<C : Connection>(val session: InitiatorSession<C>) : NewsListener {
     override suspend fun notify(news: String) {
         session.printNews(news)

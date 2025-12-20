@@ -195,7 +195,7 @@ project("test-ksp") {
         }
     }
     ksp {
-        arg("yass.useExpect", "true")
+        arg("yass.GenerateMode", "WithExpectAndActual")
     }
     dependencies {
         add("kspJvm", generateProject)
@@ -227,8 +227,11 @@ project(":tutorial") {
             }
         }
     }
+    ksp {
+        arg("yass.GenerateMode", "InRepository") // or remove line for default InBuildDir
+    }
     dependencies {
-        add("kspJvm", generateProject)
+        ksp(generateProject)
     }
 }
 
