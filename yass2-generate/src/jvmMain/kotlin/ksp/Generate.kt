@@ -159,6 +159,7 @@ private fun processPackage(name: String, declarations: Set<KSDeclaration>, envir
     }
 }
 
+/** @suppress */
 @InternalApi public class Yass2Provider : SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor = object : SymbolProcessor {
         override fun process(resolver: Resolver): List<KSAnnotated> {

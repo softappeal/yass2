@@ -34,6 +34,7 @@ private val KClass<*>.withTypeParameters get() = "<${typeParameters.joinToString
 private val KClass<*>.withTypes get() = "$qualifiedName${if (typeParameters.isEmpty()) "" else withTypeParameters}"
 private val KClass<*>.types get() = if (typeParameters.isEmpty()) "" else " $withTypeParameters"
 
+/** @suppress */
 @InternalApi public fun CodeWriter.generateProxy(
     service: KClass<*>,
 ) {

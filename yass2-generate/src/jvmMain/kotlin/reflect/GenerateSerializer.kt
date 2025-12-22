@@ -74,6 +74,7 @@ private fun <P : Property> KClass<*>.properties(createProperty: (property: KProp
     return constructorProperties
 }
 
+/** @suppress */
 @InternalApi public fun CodeWriter.generateBinarySerializer(
     encoderObjects: List<KClass<out BinaryEncoder<*>>>,
     concreteAndEnumClasses: List<KClass<*>>,
@@ -134,6 +135,7 @@ private fun <P : Property> KClass<*>.properties(createProperty: (property: KProp
     }
 }
 
+/** @suppress */
 @InternalApi public fun CodeWriter.generateStringEncoders(
     encoderObjects: List<KClass<out BaseStringEncoder<*>>>,
     concreteAndEnumClasses: List<KClass<*>>,

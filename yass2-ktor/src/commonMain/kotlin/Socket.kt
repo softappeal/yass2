@@ -36,6 +36,7 @@ private suspend fun ByteWriteChannel.write(serializer: Serializer, value: Any?) 
     writeFully(byteArray)
 }
 
+/** @suppress */
 @InternalApi public suspend fun readByteArray(
     length: Int,
     readByteArray: suspend (byteArray: ByteArray, offset: Int, length: Int) -> Unit,

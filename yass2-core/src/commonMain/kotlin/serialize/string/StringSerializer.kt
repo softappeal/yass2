@@ -275,10 +275,19 @@ public abstract class StringSerializer(stringEncoders: List<StringEncoder<*>>) :
         classNameToEncoder[className] ?: error("missing encoder for class '$className'")
 }
 
+/** @suppress */
 @InternalApi public const val STRING_NO_ENCODER_ID: Int = -1
+
+/** @suppress */
 @InternalApi public const val STRING_STRING_ENCODER_ID: Int = 0
+
+/** @suppress */
 @InternalApi public const val STRING_BOOLEAN_ENCODER_ID: Int = 1
+
+/** @suppress */
 @InternalApi public const val STRING_LIST_ENCODER_ID: Int = 2
+
+/** @suppress */
 @InternalApi public const val STRING_FIRST_ENCODER_ID: Int = 3
 
 public fun StringSerializer.toString(value: Any?): String = toByteArray(value).decodeToString(throwOnInvalidSequence = true)

@@ -87,9 +87,15 @@ public abstract class BinarySerializer : Serializer {
     override fun read(reader: Reader): Any? = reader.readObject()
 }
 
+/** @suppress */
 @InternalApi public const val BINARY_NO_ENCODER_ID: Int = -1
+
 private const val BINARY_NULL_ENCODER_ID: Int = 0
+
+/** @suppress */
 @InternalApi public const val BINARY_LIST_ENCODER_ID: Int = 1
+
+/** @suppress */
 @InternalApi public const val BINARY_FIRST_ENCODER_ID: Int = 2
 
 public annotation class BinaryEncoderObjects(vararg val value: KClass<out BinaryEncoder<*>>)

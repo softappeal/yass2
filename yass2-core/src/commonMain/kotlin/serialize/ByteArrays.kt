@@ -5,7 +5,9 @@ package ch.softappeal.yass2.core.serialize
 import ch.softappeal.yass2.core.InternalApi
 
 public class ByteArrayWriter(initialCapacity: Int = 1000) : Writer {
+    /** @suppress */
     @InternalApi public var byteArray: ByteArray = ByteArray(initialCapacity)
+
     private var current = 0
 
     override fun writeByte(byte: Byte) {
