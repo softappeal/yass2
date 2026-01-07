@@ -57,14 +57,14 @@ internal fun CodeWriter.generateProxy(
             functions.forEachSeparator({ writeLine() }) { function ->
                 val hasResult = function.hasResult()
                 writeSignature(function)
-                if (hasResult) write(": ${function.returnType!!.toType()}")
+                if (hasResult) write(": ${function.returnType.toType()}")
                 writeLine(" {") {
                     writeNestedLine("${if (hasResult) "return " else ""}intercept(\"${function.name}\", listOf(${function.parameters()})) {") {
                         writeNestedLine("this@proxy.${function.name}(${function.parameters()})")
                     }
                     writeNested("}")
                 }
-                if (hasResult) write(" as ${function.returnType!!.toType()}")
+                if (hasResult) write(" as ${function.returnType.toType()}")
                 writeLine()
                 writeNestedLine("}")
             }
@@ -82,7 +82,7 @@ internal fun CodeWriter.generateProxy(
                 writeLine(" ${if (hasResult) "=" else "{"}") {
                     writeNestedLine("tunnel(${Request::class.qualifiedName}(id, \"${function.name}\", listOf(${function.parameters()})))") {
                         writeNested(".process()")
-                        if (hasResult) write(" as ${function.returnType!!.toType()}") else writeLine()
+                        if (hasResult) write(" as ${function.returnType.toType()}") else writeLine()
                     }
                 }
                 if (!hasResult) writeNested("}")

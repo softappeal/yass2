@@ -37,7 +37,8 @@ internal fun KSDeclaration.qualifiedName() = qualifiedName!!.asString()
 internal val KSDeclaration.name get() = simpleName.asString()
 internal val KSType.qualifiedName get() = declaration.qualifiedName()
 
-internal fun KSTypeReference.toType(): String {
+internal fun KSTypeReference?.toType(): String {
+    checkNotNull(this)
     fun Appendable.appendGenerics() {
         val typeArguments = element!!.typeArguments
         if (typeArguments.isEmpty()) return
@@ -50,7 +51,7 @@ internal fun KSTypeReference.toType(): String {
                 Variance.INVARIANT -> {}
                 Variance.COVARIANT, Variance.CONTRAVARIANT -> append(' ')
             }
-            append(typeArgument.type!!.toType())
+            append(typeArgument.type.toType())
         }
         append('>')
     }
