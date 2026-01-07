@@ -227,9 +227,6 @@ project(":tutorial") {
             }
         }
     }
-    ksp {
-        arg("yass.GenerateMode", "InRepository") // or remove line for default InBuildDir
-    }
     dependencies {
         ksp(generateProject)
     }
