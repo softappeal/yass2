@@ -54,8 +54,7 @@ private fun getClasses(encoderObjects: List<KSType>, concreteAndEnumClasses: Lis
 private abstract class Property(property: KSPropertyDeclaration) {
     val name = property.simpleName.asString()
     val returnType = property.type
-    val parentDeclaration = property.parentDeclaration
-    protected val type = returnType.resolve()
+    private val type = returnType.resolve()
     protected val nullable = type.isMarkedNullable
     protected val typeNotNullable = type.makeNotNullable()
     protected val typeQualifiedName = typeNotNullable.qualifiedName
