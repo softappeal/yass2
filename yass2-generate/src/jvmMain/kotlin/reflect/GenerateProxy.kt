@@ -1,4 +1,5 @@
 @file:Suppress("DuplicatedCode")
+@file:OptIn(InternalApi::class)
 
 package ch.softappeal.yass2.generate.reflect
 

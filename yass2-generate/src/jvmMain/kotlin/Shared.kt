@@ -2,9 +2,9 @@ package ch.softappeal.yass2.generate
 
 import ch.softappeal.yass2.core.InternalApi
 
-public class CodeWriter private constructor(private val appendable: Appendable, private val indent: String) {
-    /** @suppress */
-    @InternalApi public constructor(appendable: Appendable) : this(appendable, "")
+/** @suppress */
+@InternalApi public class CodeWriter private constructor(private val appendable: Appendable, private val indent: String) {
+    public constructor(appendable: Appendable) : this(appendable, "")
 
     internal fun writeLine() {
         appendable.append('\n')

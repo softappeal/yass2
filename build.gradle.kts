@@ -25,6 +25,7 @@ plugins {
 
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
+    apply(plugin = "com.google.devtools.ksp")
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "com.vanniktech.maven.publish")
 
@@ -109,6 +110,20 @@ val libraries = libs
 
 val coreProject = project(":yass2-core")
 
+val generateProject = project(":yass2-generate") {
+    kotlin {
+        sourceSets {
+            jvmMain {
+                dependencies {
+                    api(coreProject)
+                    implementation(kotlin("reflect"))
+                    implementation(libraries.ksp)
+                }
+            }
+        }
+    }
+}
+
 val coroutinesProject = project(":yass2-coroutines") {
     kotlin {
         sourceSets {
@@ -120,6 +135,12 @@ val coroutinesProject = project(":yass2-coroutines") {
             }
         }
     }
+    ksp {
+        arg("yass.GenerateMode", "InRepository")
+    }
+    dependencies {
+        ksp(generateProject)
+    }
 }
 
 val ktorProject = project(":yass2-ktor") {
@@ -129,20 +150,6 @@ val ktorProject = project(":yass2-ktor") {
                 dependencies {
                     api(coroutinesProject)
                     api(libraries.bundles.ktor)
-                }
-            }
-        }
-    }
-}
-
-val generateProject = project(":yass2-generate") {
-    kotlin {
-        sourceSets {
-            jvmMain {
-                dependencies {
-                    api(coreProject)
-                    implementation(kotlin("reflect"))
-                    implementation(libraries.ksp)
                 }
             }
         }
@@ -175,43 +182,15 @@ project(":test") { // tests are here due to https://youtrack.jetbrains.com/issue
             }
         }
     }
-}
-
-project("test-ksp") {
-    apply(plugin = "com.google.devtools.ksp")
-    kotlin {
-        sourceSets {
-            commonMain {
-                dependencies {
-                    api(coreProject)
-                }
-            }
-            jvmTest {
-                dependencies {
-                    implementation(generateProject)
-                    implementation(kotlin("test"))
-                }
-            }
-        }
-    }
     ksp {
         arg("yass.GenerateMode", "WithExpectAndActual")
     }
     dependencies {
-        add("kspJvm", generateProject)
-        if (webPlatform) {
-            add("kspJs", generateProject)
-            add("kspWasmJs", generateProject)
-        }
-        if (linuxPlatform) {
-            add("kspLinuxX64", generateProject)
-            add("kspLinuxArm64", generateProject)
-        }
+        ksp(generateProject)
     }
 }
 
 project(":tutorial") {
-    apply(plugin = "com.google.devtools.ksp")
     kotlin {
         sourceSets {
             jvmMain {

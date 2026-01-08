@@ -6,10 +6,9 @@
 package ch.softappeal.yass2.generate.ksp
 
 import ch.softappeal.yass2.core.InternalApi
-import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
-import com.tschuchort.compiletesting.sourcesGeneratedBySymbolProcessor
+import com.tschuchort.compiletesting.kspProcessorOptions
 import com.tschuchort.compiletesting.symbolProcessorProviders
 import com.tschuchort.compiletesting.useKsp2
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
@@ -18,15 +17,16 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-private fun compile(source: String, vararg classPaths: String) = KotlinCompilation().apply {
+fun compile(source: String, generateMode: GenerateMode?, vararg classPaths: String) = KotlinCompilation().apply {
     useKsp2()
     classpaths = classPaths.map { File(it) }
     sources = listOf(SourceFile.kotlin("Source.kt", source))
+    if (generateMode != null) kspProcessorOptions[GENERATE_MODE] = generateMode.name
     symbolProcessorProviders += Yass2Provider()
 }.compile()
 
 private fun executeTest(message: String, source: String) {
-    val result = compile(source, "../yass2-core/build/classes/kotlin/jvm/main")
+    val result = compile(source, null, "../yass2-core/build/classes/kotlin/jvm/main")
     assertEquals(KotlinCompilation.ExitCode.INTERNAL_ERROR, result.exitCode)
     assertTrue(result.messages.contains("Exception: $message\n"))
 }
@@ -174,20 +174,5 @@ class GeneratorTest {
                 class Generate
             """,
         )
-    }
-
-    @Test
-    fun generate() {
-        val result = compile(
-            File("src/commonTest/kotlin/Contract.kt").readText(),
-            "../yass2-core/build/classes/kotlin/jvm/main",
-            "../yass2-coroutines/build/classes/kotlin/jvm/main",
-            "build/classes/kotlin/jvm/test",
-        )
-        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
-        assertEquals(1, result.sourcesGeneratedBySymbolProcessor.count())
-        val generated = result.sourcesGeneratedBySymbolProcessor.first()
-        println(generated)
-        assertEquals(File("src/commonTest/kotlin/$GENERATED_BY_YASS.kt").readText(), generated.readText())
     }
 }

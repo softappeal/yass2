@@ -36,9 +36,27 @@ public enum class GenerateMode {
     Check,
 }
 
-public fun Any.generateCode(write: CodeWriter.() -> Unit): String = buildString {
+public fun Any.generateCode(annotatedElement: KAnnotatedElement): String = buildString {
     appendPackage(this@generateCode::class.java.`package`.name)
-    CodeWriter(this).write()
+    with(CodeWriter(this)) {
+        val services = annotatedElement.findAnnotation<Proxies>()
+        services?.value?.forEach(::generateProxy)
+
+        val concreteAndEnumClasses = annotatedElement.findAnnotation<ConcreteAndEnumClasses>()
+        val binaryEncoderObjects = annotatedElement.findAnnotation<BinaryEncoderObjects>()
+        val stringEncoderObjects = annotatedElement.findAnnotation<StringEncoderObjects>()
+        if (concreteAndEnumClasses == null) {
+            require(binaryEncoderObjects == null && stringEncoderObjects == null) {
+                "missing annotation '${ConcreteAndEnumClasses::class.qualifiedName}'"
+            }
+        } else {
+            require(binaryEncoderObjects != null || stringEncoderObjects != null) {
+                "missing annotations '${BinaryEncoderObjects::class.qualifiedName}' or '${StringEncoderObjects::class.qualifiedName}'"
+            }
+            binaryEncoderObjects?.let { generateBinarySerializer(it.value.toList(), concreteAndEnumClasses.value.toList()) }
+            stringEncoderObjects?.let { generateStringEncoders(it.value.toList(), concreteAndEnumClasses.value.toList()) }
+        }
+    }
 }
 
 /**
@@ -49,13 +67,13 @@ public fun Any.generateCode(write: CodeWriter.() -> Unit): String = buildString 
  * class GenerateTest {
  *     @Test
  *     fun generate() {
- *         generateFile("src/commonMain/kotlin", GenerateMode.Check) { ... }
+ *         generateFile(...)
  *     }
  * }
  * ```
  */
-public fun Any.generateFile(generatedDir: String, mode: GenerateMode = GenerateMode.Update, write: CodeWriter.() -> Unit) {
-    val generatedCode = generateCode(write)
+public fun Any.generateFile(generatedDir: String, mode: GenerateMode = GenerateMode.Update, annotatedElement: KAnnotatedElement) {
+    val generatedCode = generateCode(annotatedElement)
     val generatedFile = Path(generatedDir).resolve("$GENERATED_BY_YASS.kt")
     when (mode) {
         GenerateMode.Update -> generatedFile.writeText(generatedCode)
@@ -66,26 +84,4 @@ public fun Any.generateFile(generatedDir: String, mode: GenerateMode = GenerateM
             }
         }
     }
-}
-
-/** [annotatedElement] must be annotated with [Proxies]. */
-public fun CodeWriter.generateProxies(annotatedElement: KAnnotatedElement) {
-    val services = annotatedElement.findAnnotation<Proxies>()!!.value.toList()
-    services.forEach(::generateProxy)
-}
-
-/** [annotatedElement] must be annotated with [BinaryEncoderObjects] and [ConcreteAndEnumClasses]. */
-public fun CodeWriter.generateBinarySerializer(annotatedElement: KAnnotatedElement) {
-    generateBinarySerializer(
-        annotatedElement.findAnnotation<BinaryEncoderObjects>()!!.value.toList(),
-        annotatedElement.findAnnotation<ConcreteAndEnumClasses>()!!.value.toList(),
-    )
-}
-
-/** [annotatedElement] must be annotated with [StringEncoderObjects] and [ConcreteAndEnumClasses]. */
-public fun CodeWriter.generateStringEncoders(annotatedElement: KAnnotatedElement) {
-    generateStringEncoders(
-        annotatedElement.findAnnotation<StringEncoderObjects>()!!.value.toList(),
-        annotatedElement.findAnnotation<ConcreteAndEnumClasses>()!!.value.toList(),
-    )
 }
