@@ -65,7 +65,7 @@ allprojects {
             abiValidation {
                 enabled.set(true)
                 filters {
-                    excluded {
+                    exclude {
                         annotatedWith.add("ch.softappeal.yass2.core.InternalApi")
                     }
                 }
