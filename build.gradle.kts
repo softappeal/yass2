@@ -139,7 +139,7 @@ val coroutinesProject = project(":yass2-coroutines") {
         arg("yass.GenerateMode", "InRepository")
     }
     dependencies {
-        ksp(generateProject)
+        add("kspJvm", generateProject)
     }
 }
 
@@ -207,7 +207,7 @@ project(":tutorial") {
         }
     }
     dependencies {
-        ksp(generateProject)
+        add("kspJvm", generateProject)
     }
 }
 

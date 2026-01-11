@@ -1,11 +1,13 @@
 package ch.softappeal.yass2.core.serialize.string
 
+import ch.softappeal.yass2.core.InternalApi
 import ch.softappeal.yass2.core.serialize.Reader
 
 // see https://docs.oracle.com/javase/tutorial/i18n/text/unicode.html
 
 // see https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates
-public fun StringBuilder.addCodePoint(codePoint: Int) {
+/** @suppress */
+@InternalApi public fun StringBuilder.addCodePoint(codePoint: Int) {
     if (codePoint <= Char.MAX_VALUE.code) append(codePoint.toChar()) else {
         val cp = codePoint - (Char.MAX_VALUE.code + 1)
         append(((cp ushr 10) + Char.MIN_HIGH_SURROGATE.code).toChar())
@@ -14,7 +16,8 @@ public fun StringBuilder.addCodePoint(codePoint: Int) {
 }
 
 // see https://en.wikipedia.org/wiki/UTF-8#Description
-public fun Reader.readCodePoint(): Int {
+/** @suppress */
+@InternalApi public fun Reader.readCodePoint(): Int {
     val firstByte = readByte().toInt()
     fun followByte() = readByte().toInt().apply {
         check(this and 0b1100_0000 == 0b1000_0000) { "invalid follow byte ${toUByte()}" }

@@ -24,7 +24,7 @@ import ch.softappeal.yass2.coroutines.session.Packet
 data class MyDate(val currentTimeMillis: Long)
 internal object MyDateEncoder : BaseStringEncoder<MyDate>(
     MyDate::class,
-    { value -> value.currentTimeMillis.toString() },
+    { currentTimeMillis.toString() },
     { MyDate(toLong()) }
 )
 

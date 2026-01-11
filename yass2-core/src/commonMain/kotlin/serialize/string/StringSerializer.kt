@@ -10,11 +10,11 @@ import ch.softappeal.yass2.core.serialize.fromByteArray
 import ch.softappeal.yass2.core.serialize.toByteArray
 import kotlin.reflect.KClass
 
-public const val QUOTE: Int = '"'.code
-public const val COMMA: Int = ','.code
-public const val LPAREN: Int = '('.code
-public const val RPAREN: Int = ')'.code
-public const val SP: Int = ' '.code
+internal const val QUOTE = '"'.code
+internal const val COMMA = ','.code
+internal const val LPAREN = '('.code
+internal const val RPAREN = ')'.code
+internal const val SP = ' '.code
 private const val BS = '\\'.code
 private const val NL = '\n'.code
 private const val CR = '\r'.code
@@ -43,10 +43,10 @@ private val Tab = ByteArray(4) { SP.toByte() }
 
 public abstract class StringWriter(
     private val writer: Writer,
-    protected val indent: Int,
+    internal val indent: Int,
     private val escapeDollar: Boolean = false,
 ) : Writer by writer {
-    protected abstract fun writeList(list: List<*>)
+    internal abstract fun writeList(list: List<*>)
 
     private fun writeStringBuiltIn(string: String) {
         writeByte(QUOTE)
@@ -62,7 +62,7 @@ public abstract class StringWriter(
         writeByte(QUOTE)
     }
 
-    protected fun writeBuiltIn(value: Any?): Boolean {
+    internal fun writeBuiltIn(value: Any?): Boolean {
         when (value) {
             null -> writeString(NULL)
             false -> writeString(FALSE)
@@ -74,7 +74,7 @@ public abstract class StringWriter(
         return true
     }
 
-    protected fun writePropertyBuiltIn(value: Any?, encoderId: Int): Boolean {
+    internal fun writePropertyBuiltIn(value: Any?, encoderId: Int): Boolean {
         when (encoderId) {
             STRING_STRING_ENCODER_ID -> writeStringBuiltIn(value as String)
             STRING_BOOLEAN_ENCODER_ID -> writeString(if (value as Boolean) TRUE else FALSE)
@@ -84,19 +84,19 @@ public abstract class StringWriter(
         return false
     }
 
-    public fun writeByte(asciiCodePoint: Int) {
+    internal fun writeByte(asciiCodePoint: Int) {
         writeByte(asciiCodePoint.toByte())
     }
 
-    public fun writeString(string: String) {
+    internal fun writeString(string: String) {
         writeByteArray(string.encodeToByteArray(throwOnInvalidSequence = true))
     }
 
-    public fun writeIndent() {
+    internal fun writeIndent() {
         repeat(indent) { writeByteArray(Tab) }
     }
 
-    public fun writeNewLine() {
+    internal fun writeNewLine() {
         writeByte(NL)
     }
 
@@ -109,7 +109,7 @@ public abstract class StringReader(
     private var _nextCodePoint: Int,
     private val escapeDollar: Boolean = false,
 ) : Reader by reader {
-    public fun readStringBuiltIn(): String = buildString {
+    internal fun readStringBuiltIn() = buildString {
         while (true) {
             readNextCodePoint()
             when {
@@ -131,32 +131,30 @@ public abstract class StringReader(
         }
     }
 
-    public val nextCodePoint: Int get() = _nextCodePoint
-    public fun expectedCodePoint(codePoint: Int): Boolean = _nextCodePoint == codePoint
-    public fun readNextCodePoint() {
+    internal val nextCodePoint get() = _nextCodePoint
+    internal fun expectedCodePoint(codePoint: Int) = _nextCodePoint == codePoint
+    internal fun readNextCodePoint() {
         _nextCodePoint = readCodePoint()
     }
 
-    public fun checkExpectedCodePoint(codePoint: Int) {
+    internal fun checkExpectedCodePoint(codePoint: Int) {
         check(expectedCodePoint(codePoint)) { "'${codePoint.toChar()}' expected instead of '${nextCodePoint.toChar()}'" }
     }
 
     private fun isWhitespace() = nextCodePoint.isWhitespace()
 
-    public fun skipWhitespace() {
+    internal fun skipWhitespace() {
         while (isWhitespace()) readNextCodePoint()
     }
 
-    public fun readNextCodePointAndSkipWhitespace() {
+    internal fun readNextCodePointAndSkipWhitespace() {
         readNextCodePoint()
         skipWhitespace()
     }
 
-    /** @see BaseStringEncoder */
-    public fun readBaseString(): String =
-        readUntil { expectedCodePoint(QUOTE) || expectedCodePoint(COMMA) || expectedCodePoint(RPAREN) }
+    internal fun readBaseString() = readUntil { expectedCodePoint(QUOTE) || expectedCodePoint(COMMA) || expectedCodePoint(RPAREN) }
 
-    public fun readUntil(isEnd: () -> Boolean): String = buildString {
+    internal fun readUntil(isEnd: () -> Boolean) = buildString {
         while (!isEnd() && !isWhitespace()) {
             addCodePoint(nextCodePoint)
             readNextCodePoint()
@@ -164,9 +162,9 @@ public abstract class StringReader(
         skipWhitespace()
     }
 
-    public data class ReadUntilBuiltInResult(val handled: Boolean, val result: Boolean?, val className: String)
+    internal data class ReadUntilBuiltInResult(val handled: Boolean, val result: Boolean?, val className: String)
 
-    public fun readUntilBuiltIn(isEnd: () -> Boolean): ReadUntilBuiltInResult {
+    internal fun readUntilBuiltIn(isEnd: () -> Boolean): ReadUntilBuiltInResult {
         val className = buildString {
             while (!isEnd() && !isWhitespace()) {
                 addCodePoint(nextCodePoint)
@@ -187,36 +185,33 @@ public abstract class StringReader(
 
     private val propertyNameToValue = mutableMapOf<String, Any?>()
 
-    protected fun ClassStringEncoder<*>.addProperty(name: String, value: Any?) {
+    internal fun ClassStringEncoder<*>.addProperty(name: String, value: Any?) {
         check(!propertyNameToValue.containsKey(name)) { "duplicated property '${type.simpleName}.$name'" }
         propertyNameToValue[name] = value
     }
 
     public fun getProperty(name: String): Any? = propertyNameToValue[name]
 
-    protected fun ClassStringEncoder<*>.checkMissingProperties() {
+    internal fun ClassStringEncoder<*>.checkMissingProperties() {
         val missingProperties = propertyToEncoderId.keys - propertyNameToValue.keys
         check(missingProperties.isEmpty()) { "missing properties ${missingProperties.sorted()} for '${type.simpleName}'" }
     }
 }
 
 public open class StringEncoder<T : Any>(
-    public val type: KClass<T>,
+    internal val type: KClass<T>,
     private val write: StringWriter.(value: T) -> Unit,
     private val read: StringReader.() -> T,
 ) {
-    public fun write(writer: StringWriter, value: Any?): Unit = writer.write(@Suppress("UNCHECKED_CAST") (value as T))
-    public fun read(reader: StringReader): T = reader.read()
+    internal fun write(writer: StringWriter, value: Any?) = writer.write(@Suppress("UNCHECKED_CAST") (value as T))
+    internal fun read(reader: StringReader) = reader.read()
 }
 
 public abstract class BaseStringEncoder<T : Any>(
     type: KClass<T>,
-    /**
-     * Result string must not contain whitespace, `"`, `,` or `)`.
-     * @see StringReader.readBaseString
-     */
-    public val write: (value: T) -> String,
-    private val read: String.() -> T,
+    /** Result string must not contain whitespace, `"`, `,` or `)`. */
+    public val write: T.() -> String,
+    public val read: String.() -> T,
 ) : StringEncoder<T>(
     type,
     { value ->
@@ -227,9 +222,7 @@ public abstract class BaseStringEncoder<T : Any>(
         })
     },
     { readBaseString().read() }
-) {
-    public fun read(string: String): T = string.read()
-}
+)
 
 public class ClassStringEncoder<T : Any>(
     type: KClass<T>,
@@ -239,7 +232,7 @@ public class ClassStringEncoder<T : Any>(
     vararg propertyEncoderIds: Pair<String, Int>,
 ) : StringEncoder<T>(type, write, read) {
     internal val propertyToEncoderId = propertyEncoderIds.toMap()
-    public fun encoderId(property: String): Int {
+    internal fun encoderId(property: String): Int {
         val encoderId = propertyToEncoderId[property]
         check(encoderId != null) { "no property '${type.simpleName}.$property'" }
         return encoderId
@@ -269,10 +262,9 @@ public abstract class StringSerializer(stringEncoders: List<StringEncoder<*>>) :
         }
     }
 
-    protected fun encoder(encoderId: Int): StringEncoder<*> = encoders[encoderId]
-    protected fun encoder(type: KClass<*>): StringEncoder<*> = typeToEncoder[type] ?: error("missing type '$type'")
-    protected fun encoder(className: String): StringEncoder<*> =
-        classNameToEncoder[className] ?: error("missing encoder for class '$className'")
+    internal fun encoder(encoderId: Int) = encoders[encoderId]
+    internal fun encoder(type: KClass<*>) = typeToEncoder[type] ?: error("missing type '$type'")
+    internal fun encoder(className: String) = classNameToEncoder[className] ?: error("missing encoder for class '$className'")
 }
 
 /** @suppress */

@@ -1,5 +1,8 @@
+@file:OptIn(InternalApi::class)
+
 package ch.softappeal.yass2.core.serialize.string
 
+import ch.softappeal.yass2.core.InternalApi
 import ch.softappeal.yass2.core.assertFailsWithMessage
 import ch.softappeal.yass2.core.serialize.ByteArrayReader
 import ch.softappeal.yass2.core.serialize.checkDrained
