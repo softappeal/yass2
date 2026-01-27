@@ -66,7 +66,7 @@ private fun <P : Property> KSClassDeclaration.properties(createProperty: (proper
         .filterNot { (it.name == "cause" || it.name == "message") && ("kotlin.Throwable" == it.parentDeclaration!!.qualifiedName()) }
         .filter { it.isPublic() } // TODO: see https://github.com/google/ksp/issues/2443
         .map { createProperty(it) }
-    val parameters = (primaryConstructor ?: error("class '${qualifiedName()}' must hava a primary constructor")).parameters
+    val parameters = (primaryConstructor ?: error("class '${qualifiedName()}' must have a primary constructor")).parameters
     val constructorProperties = parameters.map { parameter ->
         properties.firstOrNull { it.name == parameter.name!!.asString() }
             ?: error("primary constructor parameter '${parameter.name!!.asString()}' of class '${qualifiedName()}' must be a property")
