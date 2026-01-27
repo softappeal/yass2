@@ -65,7 +65,7 @@ private fun <P : Property> KClass<*>.properties(createProperty: (property: KProp
     val properties = memberProperties
         .filterNot { (it.name == "cause" || it.name == "message") && isSubclassOf(Throwable::class) }
         .map { createProperty(it) }
-    val parameters = (primaryConstructor ?: error("class '$qualifiedName' must hava a primary constructor")).valueParameters
+    val parameters = (primaryConstructor ?: error("class '$qualifiedName' must have a primary constructor")).valueParameters
     val constructorProperties = parameters.map { parameter ->
         properties.firstOrNull { it.name == parameter.name }
             ?: error("primary constructor parameter '${parameter.name}' of class '$qualifiedName' must be a property")

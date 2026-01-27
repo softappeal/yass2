@@ -46,7 +46,7 @@ class GeneratorTest {
             """,
         )
         executeTest(
-            "class 'test.NoPrimaryConstructor' must hava a primary constructor",
+            "class 'test.NoPrimaryConstructor' must have a primary constructor",
             """
                 package test
                 @ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses(NoPrimaryConstructor::class)

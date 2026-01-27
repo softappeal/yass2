@@ -14,18 +14,18 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
     private inner class TheWriter(writer: Writer, indent: Int) : StringWriter(writer, indent, true) {
         override fun writeList(list: List<*>) {
             writeString(LIST) // NOTE: only empty lists 'listOf()' of properties work; others need 'list<T>()'
-            writeByte(LPAREN)
+            writeAsciiChar(LPAREN)
             with(nested()) {
                 list.forEach { element ->
                     writeNewLine()
                     writeIndent()
                     writeObject(element)
-                    writeByte(COMMA)
+                    writeAsciiChar(COMMA)
                 }
             }
             writeNewLine()
             writeIndent()
-            writeByte(RPAREN)
+            writeAsciiChar(RPAREN)
         }
 
         private fun nested() = TheWriter(this, indent + 1)
@@ -35,33 +35,33 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
             val encoder = encoder(value!!::class)
             writeString(encoder.type.simpleName!!)
             if (value is Enum<*>) {
-                writeByte(DOT)
+                writeAsciiChar(DOT)
                 writeString(value.name)
-                writeByte(LPAREN)
-                writeByte(RPAREN)
+                writeAsciiChar(LPAREN)
+                writeAsciiChar(RPAREN)
             } else {
-                writeByte(LPAREN)
+                writeAsciiChar(LPAREN)
                 if (encoder is ClassStringEncoder) {
                     writeNewLine()
                     with(nested()) { encoder.write(this, value) }
                     writeIndent()
                 } else {
-                    writeByte(QUOTE)
+                    writeAsciiChar(QUOTE)
                     encoder.write(this, value)
-                    writeByte(QUOTE)
+                    writeAsciiChar(QUOTE)
                 }
-                writeByte(RPAREN)
+                writeAsciiChar(RPAREN)
             }
         }
 
         private fun writeProperty(name: String, writeValue: () -> Unit) {
             writeIndent()
             writeString(name)
-            writeByte(SP)
-            writeByte(EQUALS)
-            writeByte(SP)
+            writeAsciiChar(SP)
+            writeAsciiChar(EQUALS)
+            writeAsciiChar(SP)
             writeValue()
-            writeByte(COMMA)
+            writeAsciiChar(COMMA)
             writeNewLine()
         }
 
@@ -92,7 +92,7 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
 
         fun readClass(encoder: ClassStringEncoder<*>): Any {
             while (!expectedCodePoint(RPAREN)) {
-                val name = readUntil { expectedCodePoint(EQUALS) }
+                val name = readString { expectedCodePoint(EQUALS) }
                 readNextCodePointAndSkipWhitespace()
                 val encoderId = encoder.encoderId(name)
                 val value = when (val propertyEncoder = if (encoderId != STRING_NO_ENCODER_ID) encoder(encoderId) else null) {
@@ -122,8 +122,8 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
 
     private fun readObject(reader: Reader, nextCodePoint: Int): Any? = with(TheReader(reader, nextCodePoint)) {
         skipWhitespace()
-        if (expectedCodePoint(QUOTE)) return readStringBuiltIn()
-        val (handled, result, className) = readUntilBuiltIn { expectedCodePoint(LPAREN) || expectedCodePoint(DOT) }
+        if (expectedCodePoint(QUOTE)) return readQuotedString()
+        val (handled, result, className) = readBuiltIn { expectedCodePoint(LPAREN) || expectedCodePoint(DOT) }
         if (handled) return result
         if (className == LIST) {
             checkExpectedCodePoint(LPAREN)
@@ -132,7 +132,7 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
         val encoder = encoder(className)
         if (expectedCodePoint(DOT)) {
             readNextCodePointAndSkipWhitespace()
-            return (encoder as EnumStringEncoder).read(readUntil { expectedCodePoint(LPAREN) }).apply {
+            return (encoder as EnumStringEncoder).read(readString { expectedCodePoint(LPAREN) }).apply {
                 checkExpectedCodePoint(LPAREN)
                 readNextCodePointAndSkipWhitespace()
                 checkExpectedCodePoint(RPAREN)

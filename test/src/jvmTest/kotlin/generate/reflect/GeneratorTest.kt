@@ -57,7 +57,7 @@ class GeneratorTest {
             "class 'ch.softappeal.yass2.generate.reflect.BodyProperty' must not have body properties"
         ) { generateBinarySerializer(BodyProperty::class) }
         assertFailsWithMessage<IllegalStateException>(
-            "class 'ch.softappeal.yass2.generate.reflect.NoPrimaryConstructor' must hava a primary constructor"
+            "class 'ch.softappeal.yass2.generate.reflect.NoPrimaryConstructor' must have a primary constructor"
         ) { generateBinarySerializer(NoPrimaryConstructor::class) }
         assertFailsWithMessage<IllegalStateException>(
             "primary constructor parameter 'x' of class 'ch.softappeal.yass2.generate.reflect.ConstructorParameterIsNotProperty' must be a property"

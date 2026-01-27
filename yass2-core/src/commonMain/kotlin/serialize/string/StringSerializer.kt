@@ -46,10 +46,24 @@ public abstract class StringWriter(
     internal val indent: Int,
     private val escapeDollar: Boolean = false,
 ) : Writer by writer {
-    internal abstract fun writeList(list: List<*>)
+    internal fun writeIndent() {
+        repeat(indent) { writeByteArray(Tab) }
+    }
 
-    private fun writeStringBuiltIn(string: String) {
-        writeByte(QUOTE)
+    internal fun writeNewLine() {
+        writeAsciiChar(NL)
+    }
+
+    internal fun writeAsciiChar(asciiCodePoint: Int) {
+        writeByte(asciiCodePoint.toByte())
+    }
+
+    internal fun writeString(string: String) {
+        writeByteArray(string.encodeToByteArray(throwOnInvalidSequence = true))
+    }
+
+    internal fun writeQuotedString(string: String) {
+        writeAsciiChar(QUOTE)
         writeString(
             string
                 .replace(S_BS, S_BS_BS) // must be first!
@@ -59,45 +73,22 @@ public abstract class StringWriter(
                 .replace(S_TAB, S_BS_TAB)
                 .run { if (escapeDollar) replace(S_DOLLAR, S_BS_DOLLAR) else this }
         )
-        writeByte(QUOTE)
+        writeAsciiChar(QUOTE)
     }
 
+    internal abstract fun writeList(list: List<*>)
+
+    /** @return [value] was handled as a built-in type */
     internal fun writeBuiltIn(value: Any?): Boolean {
         when (value) {
             null -> writeString(NULL)
             false -> writeString(FALSE)
             true -> writeString(TRUE)
-            is String -> writeStringBuiltIn(value)
+            is String -> writeQuotedString(value)
             is List<*> -> writeList(value)
             else -> return false
         }
         return true
-    }
-
-    internal fun writePropertyBuiltIn(value: Any?, encoderId: Int): Boolean {
-        when (encoderId) {
-            STRING_STRING_ENCODER_ID -> writeStringBuiltIn(value as String)
-            STRING_BOOLEAN_ENCODER_ID -> writeString(if (value as Boolean) TRUE else FALSE)
-            STRING_LIST_ENCODER_ID -> writeList(value as List<*>)
-            else -> return true
-        }
-        return false
-    }
-
-    internal fun writeByte(asciiCodePoint: Int) {
-        writeByte(asciiCodePoint.toByte())
-    }
-
-    internal fun writeString(string: String) {
-        writeByteArray(string.encodeToByteArray(throwOnInvalidSequence = true))
-    }
-
-    internal fun writeIndent() {
-        repeat(indent) { writeByteArray(Tab) }
-    }
-
-    internal fun writeNewLine() {
-        writeByte(NL)
     }
 
     public abstract fun writeProperty(name: String, value: Any?)
@@ -109,28 +100,6 @@ public abstract class StringReader(
     private var _nextCodePoint: Int,
     private val escapeDollar: Boolean = false,
 ) : Reader by reader {
-    internal fun readStringBuiltIn() = buildString {
-        while (true) {
-            readNextCodePoint()
-            when {
-                expectedCodePoint(QUOTE) -> break
-                expectedCodePoint(BS) -> {
-                    readNextCodePoint()
-                    when {
-                        expectedCodePoint(QUOTE) -> append(QUOTE.toChar())
-                        expectedCodePoint(BS) -> append(BS.toChar())
-                        expectedCodePoint('n'.code) -> append(NL.toChar())
-                        expectedCodePoint('r'.code) -> append(CR.toChar())
-                        expectedCodePoint('t'.code) -> append(TAB.toChar())
-                        escapeDollar && expectedCodePoint(DOLLAR) -> append(DOLLAR.toChar())
-                        else -> error("illegal escape with codePoint $nextCodePoint")
-                    }
-                }
-                else -> addCodePoint(nextCodePoint)
-            }
-        }
-    }
-
     internal val nextCodePoint get() = _nextCodePoint
     internal fun expectedCodePoint(codePoint: Int) = _nextCodePoint == codePoint
     internal fun readNextCodePoint() {
@@ -152,9 +121,29 @@ public abstract class StringReader(
         skipWhitespace()
     }
 
-    internal fun readBaseString() = readUntil { expectedCodePoint(QUOTE) || expectedCodePoint(COMMA) || expectedCodePoint(RPAREN) }
+    internal fun readQuotedString() = buildString {
+        while (true) {
+            readNextCodePoint()
+            when {
+                expectedCodePoint(QUOTE) -> break
+                expectedCodePoint(BS) -> {
+                    readNextCodePoint()
+                    when {
+                        expectedCodePoint(QUOTE) -> append(QUOTE.toChar())
+                        expectedCodePoint(BS) -> append(BS.toChar())
+                        expectedCodePoint('n'.code) -> append(NL.toChar())
+                        expectedCodePoint('r'.code) -> append(CR.toChar())
+                        expectedCodePoint('t'.code) -> append(TAB.toChar())
+                        escapeDollar && expectedCodePoint(DOLLAR) -> append(DOLLAR.toChar())
+                        else -> error("illegal escape with codePoint $nextCodePoint")
+                    }
+                }
+                else -> addCodePoint(nextCodePoint)
+            }
+        }
+    }
 
-    internal fun readUntil(isEnd: () -> Boolean) = buildString {
+    internal fun readString(isEnd: () -> Boolean) = buildString {
         while (!isEnd() && !isWhitespace()) {
             addCodePoint(nextCodePoint)
             readNextCodePoint()
@@ -162,9 +151,9 @@ public abstract class StringReader(
         skipWhitespace()
     }
 
-    internal data class ReadUntilBuiltInResult(val handled: Boolean, val result: Boolean?, val className: String)
+    internal data class ReadBuiltInResult(val handled: Boolean, val result: Boolean?, val className: String)
 
-    internal fun readUntilBuiltIn(isEnd: () -> Boolean): ReadUntilBuiltInResult {
+    internal fun readBuiltIn(isEnd: () -> Boolean): ReadBuiltInResult {
         val className = buildString {
             while (!isEnd() && !isWhitespace()) {
                 addCodePoint(nextCodePoint)
@@ -176,10 +165,10 @@ public abstract class StringReader(
         }
         @Suppress("BooleanLiteralArgument")
         return when (className) {
-            NULL -> ReadUntilBuiltInResult(true, null, className)
-            FALSE -> ReadUntilBuiltInResult(true, false, className)
-            TRUE -> ReadUntilBuiltInResult(true, true, className)
-            else -> ReadUntilBuiltInResult(false, null, className)
+            NULL -> ReadBuiltInResult(true, null, className)
+            FALSE -> ReadBuiltInResult(true, false, className)
+            TRUE -> ReadBuiltInResult(true, true, className)
+            else -> ReadBuiltInResult(false, null, className)
         }
     }
 
@@ -221,7 +210,7 @@ public abstract class BaseStringEncoder<T : Any>(
             }
         })
     },
-    { readBaseString().read() }
+    { readString { expectedCodePoint(QUOTE) || expectedCodePoint(COMMA) || expectedCodePoint(RPAREN) }.read() }
 )
 
 public class ClassStringEncoder<T : Any>(
