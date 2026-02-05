@@ -1,7 +1,7 @@
 [versions]
 
 # API
-kotlin     = "2.3.0"         # https://github.com/JetBrains/kotlin
+kotlin     = "2.3.10"        # https://github.com/JetBrains/kotlin
 coroutines = "1.10.2"        # https://github.com/Kotlin/kotlinx.coroutines
 ktor       = "3.4.0"         # https://github.com/ktorio/ktor
 ksp        = "2.3.5"         # https://github.com/google/ksp
