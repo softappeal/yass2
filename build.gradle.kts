@@ -7,14 +7,10 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import java.util.regex.Pattern
 
-val os = System.getProperty("os.name").lowercase()
+val allPlatforms = System.getProperty("os.name").lowercase().contains("linux")
 
-val linuxPlatform = os.contains("linux")
-val webPlatform = true
-
-println("os: '$os'")
-println("linuxPlatform: $linuxPlatform")
-println("webPlatform: $webPlatform")
+val linuxPlatform = allPlatforms
+val webPlatform = allPlatforms
 
 plugins {
     alias(libs.plugins.multiplatform)
