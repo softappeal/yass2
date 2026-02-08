@@ -3,6 +3,7 @@ package ch.softappeal.yass2.core
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
+import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
@@ -109,5 +110,25 @@ class CleanupTest {
         assertTrue(tryCalled)
         assertTrue(finallyCalled)
         assertEquals(listOf(finallyException), tryException.suppressedExceptions)
+    }
+
+    @Test
+    fun withTryErrorNoFinallyException() {
+        var tryCalled = false
+        val tryError = Error()
+        var finallyCalled = false
+        assertSame(
+            tryError,
+            assertFails {
+                tryFinally({
+                    tryCalled = true
+                    throw tryError
+                }) {
+                    finallyCalled = true
+                }
+            }
+        )
+        assertTrue(tryCalled)
+        assertFalse(finallyCalled)
     }
 }

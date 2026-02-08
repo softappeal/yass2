@@ -10,18 +10,16 @@ public inline fun <E : Exception> E.addSuppressed(block: () -> Unit): E {
 }
 
 public inline fun <R> tryFinally(tryBlock: () -> R, finallyBlock: () -> Unit): R {
-    var tryException: Exception? = null
-    return try {
+    val result = try {
         tryBlock()
-    } catch (e: Exception) {
-        tryException = e
-        throw tryException
-    } finally {
+    } catch (tryException: Exception) {
         try {
             finallyBlock()
         } catch (finallyException: Exception) {
-            if (tryException == null) throw finallyException
             tryException.addSuppressed(finallyException)
         }
+        throw tryException
     }
+    finallyBlock()
+    return result
 }
