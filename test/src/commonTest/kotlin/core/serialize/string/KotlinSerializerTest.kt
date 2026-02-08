@@ -68,6 +68,9 @@ class KotlinSerializerTest {
             "a\${b",
             "\"a\\\${b\"",
         )
+        assertFailsWithMessage<IllegalStateException>("illegal escape with codePoint 120") {
+            SERIALIZER.fromString("\"\\x\"")
+        }
         check(
             "hello",
             """"hello"""",

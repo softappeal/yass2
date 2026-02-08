@@ -97,6 +97,13 @@ class TextSerializerTest {
             """"hello"""",
             "\t\n\r \"hello\"",
         )
+        check(
+            "$",
+            """"$"""",
+        )
+        assertFailsWithMessage<IllegalStateException>("illegal escape with codePoint 36") {
+            SERIALIZER.fromString("\"\\$\"")
+        }
 
         check(
             Gender.Male,
