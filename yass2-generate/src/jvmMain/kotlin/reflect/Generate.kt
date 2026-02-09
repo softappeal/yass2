@@ -19,7 +19,7 @@ import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KType
 import kotlin.reflect.full.findAnnotation
 
-internal fun KType.toType() = toString() // TODO: see file 'KTypeToTypeTest.kt'
+internal fun KType.toType() = toString() // NOTE: see file 'KTypeToTypeTest.kt'
     .replace("kotlin.Exception /* = java.lang.Exception */", "kotlin.Exception")
 
 internal fun CodeWriter.writeFun(signature: String, body: CodeWriter.() -> Unit) {

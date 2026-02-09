@@ -67,7 +67,7 @@ allprojects {
                 }
             }
         }
-        if (!project.file("src/commonMain/kotlin").exists()) sourceSets { /* TODO */
+        if (!project.file("src/commonMain/kotlin").exists()) sourceSets { /* NOTE */
             commonMain {
                 kotlin.srcDir(rootProject.projectDir.resolve("publish.workaround"))
             }

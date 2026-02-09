@@ -64,7 +64,7 @@ private fun <P : Property> KSClassDeclaration.properties(createProperty: (proper
     require(!isAbstract()) { "class '${qualifiedName()}' must be concrete" }
     val properties = getAllProperties().toList()
         .filterNot { (it.name == "cause" || it.name == "message") && ("kotlin.Throwable" == it.parentDeclaration!!.qualifiedName()) }
-        .filter { it.isPublic() } // TODO: see https://github.com/google/ksp/issues/2443
+        .filter { it.isPublic() } // NOTE: see https://github.com/google/ksp/issues/2443
         .map { createProperty(it) }
     val parameters = (primaryConstructor ?: error("class '${qualifiedName()}' must have a primary constructor")).parameters
     val constructorProperties = parameters.map { parameter ->

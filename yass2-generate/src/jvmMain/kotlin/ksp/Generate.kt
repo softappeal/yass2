@@ -69,7 +69,7 @@ public enum class GenerateMode {
     /**
      * Generate the code in the build directory. That's the normal KSP way.
      * ```
-     * TODO: KSP works only for platform code (see https://github.com/google/ksp/issues/2233).
+     * NOTE: KSP works only for platform code (see https://github.com/google/ksp/issues/2233).
      *       Common/intermediate (= none-platform) code cannot reference generated code in the compilation of platform code.
      *       Generated code is treated as platform code (you'll have to use expect/actual).
      * ```
