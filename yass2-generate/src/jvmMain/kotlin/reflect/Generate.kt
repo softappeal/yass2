@@ -37,7 +37,8 @@ public enum class GenerateMode {
 }
 
 public fun Any.generateCode(annotatedElement: KAnnotatedElement): String = buildString {
-    appendPackage(this@generateCode::class.java.`package`.name)
+    val packageName = this@generateCode::class.java.`package`.name
+    appendPackage(packageName)
     with(CodeWriter(this)) {
         val services = annotatedElement.findAnnotation<Proxies>()
         services?.value?.forEach(::generateProxy)
@@ -47,11 +48,11 @@ public fun Any.generateCode(annotatedElement: KAnnotatedElement): String = build
         val stringEncoderObjects = annotatedElement.findAnnotation<StringEncoderObjects>()
         if (concreteAndEnumClasses == null) {
             require(binaryEncoderObjects == null && stringEncoderObjects == null) {
-                "missing annotation '${ConcreteAndEnumClasses::class.qualifiedName}'"
+                "missing annotation '${ConcreteAndEnumClasses::class.qualifiedName}' in package '$packageName'"
             }
         } else {
             require(binaryEncoderObjects != null || stringEncoderObjects != null) {
-                "missing annotations '${BinaryEncoderObjects::class.qualifiedName}' or '${StringEncoderObjects::class.qualifiedName}'"
+                "missing annotations '${BinaryEncoderObjects::class.qualifiedName}' or '${StringEncoderObjects::class.qualifiedName}' in package '$packageName'"
             }
             binaryEncoderObjects?.let { generateBinarySerializer(it.value.toList(), concreteAndEnumClasses.value.toList()) }
             stringEncoderObjects?.let { generateStringEncoders(it.value.toList(), concreteAndEnumClasses.value.toList()) }
