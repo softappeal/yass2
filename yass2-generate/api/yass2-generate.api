@@ -16,9 +16,8 @@ public final class ch/softappeal/yass2/generate/ksp/GenerateMode : java/lang/Enu
 }
 
 public final class ch/softappeal/yass2/generate/reflect/GenerateKt {
-	public static final fun generateCode (Ljava/lang/Object;Lkotlin/reflect/KAnnotatedElement;)Ljava/lang/String;
-	public static final fun generateFile (Ljava/lang/Object;Ljava/lang/String;Lch/softappeal/yass2/generate/reflect/GenerateMode;Lkotlin/reflect/KAnnotatedElement;)V
-	public static synthetic fun generateFile$default (Ljava/lang/Object;Ljava/lang/String;Lch/softappeal/yass2/generate/reflect/GenerateMode;Lkotlin/reflect/KAnnotatedElement;ILjava/lang/Object;)V
+	public static final fun generateFile (Ljava/lang/Object;Ljava/lang/String;Lkotlin/reflect/KAnnotatedElement;Lch/softappeal/yass2/generate/reflect/GenerateMode;)V
+	public static synthetic fun generateFile$default (Ljava/lang/Object;Ljava/lang/String;Lkotlin/reflect/KAnnotatedElement;Lch/softappeal/yass2/generate/reflect/GenerateMode;ILjava/lang/Object;)V
 }
 
 public final class ch/softappeal/yass2/generate/reflect/GenerateMode : java/lang/Enum {

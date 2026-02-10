@@ -36,9 +36,9 @@ public enum class GenerateMode {
     Check,
 }
 
-public fun Any.generateCode(annotatedElement: KAnnotatedElement): String = buildString {
-    val packageName = this@generateCode::class.java.`package`.name
-    appendPackage(packageName)
+/** @suppress */
+@InternalApi public fun Any.generateCode(annotatedElement: KAnnotatedElement): String = buildString {
+    appendPackage(this@generateCode::class.java.`package`.name)
     with(CodeWriter(this)) {
         val services = annotatedElement.findAnnotation<Proxies>()
         services?.value?.forEach(::generateProxy)
@@ -48,11 +48,11 @@ public fun Any.generateCode(annotatedElement: KAnnotatedElement): String = build
         val stringEncoderObjects = annotatedElement.findAnnotation<StringEncoderObjects>()
         if (concreteAndEnumClasses == null) {
             require(binaryEncoderObjects == null && stringEncoderObjects == null) {
-                "missing annotation '${ConcreteAndEnumClasses::class.qualifiedName}' in package '$packageName'"
+                "missing annotation '${ConcreteAndEnumClasses::class.qualifiedName}'"
             }
         } else {
             require(binaryEncoderObjects != null || stringEncoderObjects != null) {
-                "missing annotations '${BinaryEncoderObjects::class.qualifiedName}' or '${StringEncoderObjects::class.qualifiedName}' in package '$packageName'"
+                "missing annotations '${BinaryEncoderObjects::class.qualifiedName}' or '${StringEncoderObjects::class.qualifiedName}'"
             }
             binaryEncoderObjects?.let { generateBinarySerializer(it.value.toList(), concreteAndEnumClasses.value.toList()) }
             stringEncoderObjects?.let { generateStringEncoders(it.value.toList(), concreteAndEnumClasses.value.toList()) }
@@ -73,7 +73,7 @@ public fun Any.generateCode(annotatedElement: KAnnotatedElement): String = build
  * }
  * ```
  */
-public fun Any.generateFile(generatedDir: String, mode: GenerateMode = GenerateMode.Update, annotatedElement: KAnnotatedElement) {
+public fun Any.generateFile(generatedDir: String, annotatedElement: KAnnotatedElement, mode: GenerateMode = GenerateMode.Update) {
     val generatedCode = generateCode(annotatedElement)
     val generatedFile = Path(generatedDir).resolve("$GENERATED_BY_YASS.kt")
     when (mode) {

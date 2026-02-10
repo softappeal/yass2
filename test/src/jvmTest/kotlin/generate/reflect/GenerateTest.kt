@@ -1,8 +1,11 @@
 // TODO: run tests with coverage manually in IntelliJ
 
+@file:OptIn(InternalApi::class)
+
 package ch.softappeal.yass2.generate.reflect
 
 import ch.softappeal.yass2.Generate
+import ch.softappeal.yass2.core.InternalApi
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import java.io.File
 import kotlin.test.Test
@@ -24,6 +27,6 @@ class GenerateTest {
             GenerateMode.Check,
             GenerateMode.Update,
             GenerateMode.Check,
-        ).forEach { generateFile(REFLECT_DIR, it, Generate::class) }
+        ).forEach { generateFile(REFLECT_DIR, Generate::class, it) }
     }
 }
