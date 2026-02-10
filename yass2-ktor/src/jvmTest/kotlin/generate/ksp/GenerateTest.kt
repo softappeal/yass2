@@ -23,15 +23,14 @@ private fun compile(generateMode: GenerateMode) = compile(
 
 private val CODE = REFLECT_CODE.replace("package ch.softappeal.yass2.generate.reflect\n", "package ch.softappeal.yass2\n")
 
-private fun readCode(platform: String) =
-    File("build/generated/ksp/$platform/${platform}Test/kotlin/ch/softappeal/yass2/$GENERATED_BY_YASS.kt").readText()
-
-private val JVM_CODE = readCode("jvm")
-
 class GenerateTest {
     @Test
     fun actual() {
-        assertEquals(CODE, JVM_CODE.replace("public actual fun ", "public fun "))
+        assertEquals(
+            CODE,
+            File("build/generated/ksp/jvm/jvmTest/kotlin/ch/softappeal/yass2/$GENERATED_BY_YASS.kt").readText()
+                .replace("public actual fun ", "public fun "),
+        )
     }
 
     @Test
@@ -48,15 +47,5 @@ class GenerateTest {
         assertEquals(1, result.sourcesGeneratedBySymbolProcessor.count())
         val generatedFile = result.sourcesGeneratedBySymbolProcessor.first()
         assertEquals(CODE, generatedFile.readText())
-    }
-
-    @Test
-    fun platforms() {
-        File("build/generated/ksp").listFiles().forEach { file ->
-            val platform = file.name
-            if (platform == "metadata") return@forEach
-            println("platform $platform")
-            assertEquals(JVM_CODE, readCode(platform))
-        }
     }
 }

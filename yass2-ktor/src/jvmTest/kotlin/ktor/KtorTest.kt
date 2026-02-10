@@ -37,8 +37,8 @@ val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
             )
         }
         // code
-        staticFiles("/wasm", File("./build/wasm/packages/test-test/kotlin"))
-        staticFiles("/js", File("./build/js/packages/test-test/kotlin"))
+        staticFiles("/wasm", File("./build/wasm/packages/yass2-ktor-test/kotlin"))
+        staticFiles("/js", File("./build/js/packages/yass2-ktor-test/kotlin"))
         // sources
         staticFiles("/wasm", File(".")) // wasm
         staticFiles("/", File("."))     // js

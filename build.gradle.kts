@@ -148,23 +148,8 @@ val ktorProject = project(":yass2-ktor") {
                     api(libraries.bundles.ktor)
                 }
             }
-        }
-    }
-}
-
-dependencies {
-    dokka(coreProject)
-    dokka(coroutinesProject)
-    dokka(ktorProject)
-    dokka(generateProject)
-}
-
-project(":test") { // tests are here due to https://youtrack.jetbrains.com/issue/KT-35073
-    kotlin {
-        sourceSets {
             commonTest {
                 dependencies {
-                    implementation(ktorProject)
                     implementation(kotlin("test"))
                     implementation(libraries.coroutines.test)
                 }
@@ -184,6 +169,13 @@ project(":test") { // tests are here due to https://youtrack.jetbrains.com/issue
     dependencies {
         ksp(generateProject)
     }
+}
+
+dependencies {
+    dokka(coreProject)
+    dokka(coroutinesProject)
+    dokka(ktorProject)
+    dokka(generateProject)
 }
 
 project(":tutorial") {

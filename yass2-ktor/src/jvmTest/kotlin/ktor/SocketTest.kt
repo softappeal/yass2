@@ -1,10 +1,9 @@
-@file:OptIn(InternalApi::class, ExperimentalApi::class)
+@file:OptIn(ExperimentalApi::class)
 
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.ContractSerializer
 import ch.softappeal.yass2.core.ExperimentalApi
-import ch.softappeal.yass2.core.InternalApi
 import ch.softappeal.yass2.core.remote.invoke
 import ch.softappeal.yass2.coroutines.session.acceptorSessionFactory
 import ch.softappeal.yass2.coroutines.session.initiatorSessionFactory
