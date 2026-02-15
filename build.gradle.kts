@@ -69,7 +69,7 @@ allprojects {
         }
         if (!project.file("src/commonMain/kotlin").exists()) sourceSets { /* NOTE */
             commonMain {
-                kotlin.srcDir(rootProject.projectDir.resolve("publish.workaround"))
+                kotlin.srcDir(rootProject.projectDir.resolve("gradle/publish.workaround"))
             }
         }
     }
