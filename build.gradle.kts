@@ -113,7 +113,7 @@ val generateProject = project(":yass2-generate") {
                 dependencies {
                     api(coreProject)
                     implementation(kotlin("reflect"))
-                    implementation(libraries.ksp)
+                    compileOnly(libraries.ksp)
                 }
             }
         }
