@@ -17,7 +17,7 @@ jobs:
           printenv MAVEN_CENTRAL_KEY | base64 -d > ~/maven.central.key.gpg
           printenv GRADLE_PROPERTIES             > ~/gradle.properties
           docker image     build                                    --tag project-image .
-          docker container create                --name project-container project-image ./gradlew -Pversion=`git describe` markers checkLegacyAbi build publishToMavenCentral
+          docker container create                --name project-container project-image ./gradlew -Pversion=`git describe` markers build publishToMavenCentral
           docker container cp ~/maven.central.key.gpg   project-container:/root/.gradle/maven.central.key.gpg
           docker container cp ~/gradle.properties       project-container:/root/.gradle/gradle.properties
           docker container start --attach --interactive project-container

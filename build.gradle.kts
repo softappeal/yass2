@@ -59,9 +59,9 @@ allprojects {
             explicitApi()
             @OptIn(ExperimentalAbiValidation::class)
             abiValidation {
-                enabled.set(true)
+                enabled.set(allPlatforms)
                 filters {
-                    excluded {
+                    exclude {
                         annotatedWith.add("ch.softappeal.yass2.core.InternalApi")
                     }
                 }

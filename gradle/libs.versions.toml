@@ -1,10 +1,10 @@
 [versions]
 
 # API
-kotlin     = "2.3.10"        # https://github.com/JetBrains/kotlin
+kotlin     = "2.3.20-RC"     # https://github.com/JetBrains/kotlin
 coroutines = "1.10.2"        # https://github.com/Kotlin/kotlinx.coroutines
 ktor       = "3.4.0"         # https://github.com/ktorio/ktor
-ksp        = "2.3.5"         # https://github.com/google/ksp
+ksp        = "2.3.6"         # https://github.com/google/ksp
 
 # build
 kct        = "0.12.1"        # https://github.com/ZacSweers/kotlin-compile-testing
