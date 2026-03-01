@@ -121,9 +121,9 @@ suspend fun useKtor() {
             install(io.ktor.client.plugins.websocket.WebSockets)
         }.use { client ->
             @Suppress("HttpUrlsUsage") useTunnel(
-                client.tunnel(TutorialSerializer, "http://$localHost:$port$path")
+                client.tunnel(ContractSerializer, "http://$localHost:$port$path")
             )
-            client.ws("ws://$localHost:$port$path") { receiveLoop(TutorialSerializer, initiatorSessionFactory()) }
+            client.ws("ws://$localHost:$port$path") { receiveLoop(ContractSerializer, initiatorSessionFactory()) }
         }
     }
 
@@ -131,13 +131,13 @@ suspend fun useKtor() {
         install(io.ktor.server.websocket.WebSockets)
         routing {
             route(
-                TutorialSerializer,
+                ContractSerializer,
                 path,
                 tunnel(
                     CalculatorId.service(CalculatorImpl),
                 )
             )
-            webSocket(path) { receiveLoop(TutorialSerializer, acceptorSessionFactory()) }
+            webSocket(path) { receiveLoop(ContractSerializer, acceptorSessionFactory()) }
         }
     }
 
@@ -150,7 +150,7 @@ suspend fun useKtor() {
 }
 
 suspend fun main() {
-    useSerializer(TutorialSerializer)
+    useSerializer(ContractSerializer)
     useInterceptor()
     useKtor()
 }

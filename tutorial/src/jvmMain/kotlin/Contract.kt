@@ -97,19 +97,19 @@ val NewsListenerId = ServiceId<NewsListener>("news")
     NewsListener::class,
 )
 
-// Define all the additional base encoders needed by the contract (including own base types and types used in services).
+// Define all the encoders needed by the contract.
 @StringEncoderObjects(
     // String and Boolean is built-in
     IntStringEncoder::class,
     MyDateEncoder::class,
 )
 @ConcreteAndEnumClasses(
+    Packet::class, // needed by ch.softappeal.yass2.coroutines.session (also needs Int)
+    Request::class, ValueReply::class, ExceptionReply::class, // needed by ch.softappeal.yass2.core.remote (also needs String)
     Gender::class,
     Address::class,
     Person::class,
     DivideByZeroException::class,
     SubClass::class,
-    Request::class, ValueReply::class, ExceptionReply::class, // needed by ch.softappeal.yass2.core.remote (also needs String)
-    Packet::class, // needed by ch.softappeal.yass2.coroutines.session (also needs Int)
 )
-val TutorialSerializer = TextSerializer(stringEncoders())
+val ContractSerializer = TextSerializer(stringEncoders())
