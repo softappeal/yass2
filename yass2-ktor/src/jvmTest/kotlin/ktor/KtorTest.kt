@@ -1,11 +1,8 @@
-@file:OptIn(ExperimentalApi::class)
-
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.ContractSerializer
-import ch.softappeal.yass2.core.ExperimentalApi
+import ch.softappeal.yass2.core.remote.tunnel
 import ch.softappeal.yass2.coroutines.session.acceptorSessionFactory
-import ch.softappeal.yass2.coroutines.session.tunnelWithContext
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.http.content.staticFiles
@@ -24,16 +21,12 @@ val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
         route(
             ContractSerializer,
             PATH,
-            tunnelWithContext {
-                currentCoroutineContext()[CallCce]!!.call.request.headers[DEMO_HEADER_KEY] ?: "no-header"
-            }
+            tunnel { "http-${currentCoroutineContext()[CallCce]!!.call.request.local.remotePort}" },
         )
         webSocket(PATH) {
             receiveLoop(
                 ContractSerializer,
-                acceptorSessionFactory {
-                    (connection.session as WebSocketServerSession).call.request.headers[DEMO_HEADER_KEY] ?: "no-header"
-                }
+                acceptorSessionFactory { "ws-${(connection.session as WebSocketServerSession).call.request.local.remotePort}" },
             )
         }
         // code

@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.ktor
 
-import ch.softappeal.yass2.core.ExperimentalApi
 import ch.softappeal.yass2.core.remote.Reply
 import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.Tunnel
@@ -54,31 +53,34 @@ private suspend fun ByteReadChannel.read(serializer: Serializer): Any? {
     return serializer.fromByteArray(byteArray)
 }
 
-@ExperimentalApi public typealias SocketConnector = suspend () -> Socket
+public typealias SocketConnector = suspend () -> Socket
 
-@ExperimentalApi public fun Serializer.tunnel(socketConnector: SocketConnector): Tunnel = { request ->
-    socketConnector().use { socket ->
-        val writeChannel = socket.openWriteChannel()
-        writeChannel.write(this, request)
-        writeChannel.flush()
-        socket.openReadChannel().read(this) as Reply
-    }
+public fun Serializer.tunnel(socketConnector: SocketConnector): Tunnel = { request ->
+    socketConnector()
+        .use { socket ->
+            val writeChannel = socket.openWriteChannel()
+            writeChannel.write(this, request)
+            writeChannel.flush()
+            socket.openReadChannel().read(this) as Reply
+        }
 }
 
-@ExperimentalApi public class SocketCce(public val socket: Socket) : AbstractCoroutineContextElement(SocketCce) {
+public class SocketCce(public val socket: Socket) : AbstractCoroutineContextElement(SocketCce) {
     public companion object Key : CoroutineContext.Key<SocketCce>
 }
 
-@ExperimentalApi public suspend fun Socket.handleRequest(serializer: Serializer, tunnel: Tunnel): Unit = use {
-    withContext(SocketCce(this)) {
-        val reply = tunnel(openReadChannel().read(serializer) as Request)
-        val writeChannel = openWriteChannel()
-        writeChannel.write(serializer, reply)
-        writeChannel.flush()
+public suspend fun Socket.handleRequest(serializer: Serializer, tunnel: Tunnel) {
+    use {
+        withContext(SocketCce(this)) {
+            val reply = tunnel(openReadChannel().read(serializer) as Request)
+            val writeChannel = openWriteChannel()
+            writeChannel.write(serializer, reply)
+            writeChannel.flush()
+        }
     }
 }
 
-@ExperimentalApi public class SocketConnection internal constructor(
+public class SocketConnection internal constructor(
     private val serializer: Serializer,
     public val socket: Socket,
 ) : Connection {
@@ -93,9 +95,10 @@ private suspend fun ByteReadChannel.read(serializer: Serializer): Any? {
     }
 }
 
-@ExperimentalApi public suspend fun Socket.receiveLoop(
-    serializer: Serializer, sessionFactory: SessionFactory<SocketConnection>
-): Unit = use {
-    val readChannel = openReadChannel()
-    SocketConnection(serializer, this).receiveLoop(sessionFactory) { readChannel.read(serializer) as Packet? }
+public suspend fun Socket.receiveLoop(serializer: Serializer, sessionFactory: SessionFactory<SocketConnection>) {
+    use {
+        val readChannel = openReadChannel()
+        SocketConnection(serializer, this)
+            .receiveLoop(sessionFactory) { readChannel.read(serializer) as Packet? }
+    }
 }

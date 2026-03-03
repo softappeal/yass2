@@ -56,7 +56,9 @@ public interface FlowService<out F, I> {
                     } catch (e: Exception) {
                         channel.send(ExceptionReply(e))
                     }
-                }) { collectIdToChannel.remove(collectId) }
+                }) {
+                    collectIdToChannel.remove(collectId)
+                }
             }
             return collectId
         }

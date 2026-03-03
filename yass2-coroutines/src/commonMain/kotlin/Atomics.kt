@@ -7,8 +7,8 @@ import kotlinx.coroutines.sync.withLock
 
 internal class AtomicBoolean(private var value: Boolean) {
     private val mutex = Mutex()
-    suspend fun load(): Boolean = mutex.withLock { value }
-    suspend fun exchange(value: Boolean): Boolean = mutex.withLock {
+    suspend fun load() = mutex.withLock { value }
+    suspend fun exchange(value: Boolean) = mutex.withLock {
         val oldValue = this.value
         this.value = value
         oldValue
@@ -17,5 +17,5 @@ internal class AtomicBoolean(private var value: Boolean) {
 
 internal class AtomicInt(private var value: Int) {
     private val mutex = Mutex()
-    suspend fun incrementAndFetch(): Int = mutex.withLock { ++value }
+    suspend fun incrementAndFetch() = mutex.withLock { ++value }
 }

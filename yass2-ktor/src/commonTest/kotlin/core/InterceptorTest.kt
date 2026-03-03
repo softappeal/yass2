@@ -117,4 +117,9 @@ class InterceptorTest {
     fun invoke() = runTest {
         invoke(CalculatorImpl, EchoImpl)
     }
+
+    @Test
+    fun passThroughInterceptor() = runTest {
+        assertEquals(5, CalculatorImpl.proxy(PassThroughInterceptor).add(2, 3))
+    }
 }

@@ -1,13 +1,10 @@
-@file:OptIn(ExperimentalApi::class)
-
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.ContractSerializer
-import ch.softappeal.yass2.core.ExperimentalApi
 import ch.softappeal.yass2.core.remote.invoke
+import ch.softappeal.yass2.core.remote.tunnel
 import ch.softappeal.yass2.coroutines.session.acceptorSessionFactory
 import ch.softappeal.yass2.coroutines.session.initiatorSessionFactory
-import ch.softappeal.yass2.coroutines.session.tunnelWithContext
 import io.ktor.network.selector.SelectorManager
 import io.ktor.network.sockets.ServerSocket
 import io.ktor.network.sockets.TcpSocketBuilder
@@ -62,7 +59,7 @@ class SocketTest {
     fun socket() {
         runServer { tcp, serverSocket ->
             val listenerJob = launch {
-                val serverTunnel = tunnelWithContext { currentCoroutineContext()[SocketCce]!!.socket.remoteAddress }
+                val serverTunnel = tunnel { "socket-${currentCoroutineContext()[SocketCce]!!.socket.remoteAddress}" }
                 while (true) {
                     val socket = serverSocket.accept()
                     launch {
@@ -92,13 +89,14 @@ class SocketTest {
                     launch {
                         socket.receiveLoop(
                             ContractSerializer,
-                            acceptorSessionFactory { connection.socket.remoteAddress }
+                            acceptorSessionFactory { "socketSession-${connection.socket.remoteAddress}" },
                         )
                     }
                 }
             }
             try {
-                tcp.connect(serverSocket.localAddress)
+                tcp
+                    .connect(serverSocket.localAddress)
                     .receiveLoop(ContractSerializer, initiatorSessionFactory())
             } finally {
                 acceptorJob.cancel()

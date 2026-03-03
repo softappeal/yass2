@@ -5,6 +5,8 @@ import ch.softappeal.yass2.Echo
 import ch.softappeal.yass2.EchoId
 import ch.softappeal.yass2.core.CalculatorImpl
 import ch.softappeal.yass2.core.EchoImpl
+import ch.softappeal.yass2.core.Interceptor
+import ch.softappeal.yass2.core.PassThroughInterceptor
 import ch.softappeal.yass2.core.assertFailsWithMessage
 import ch.softappeal.yass2.core.invoke
 import ch.softappeal.yass2.proxy
@@ -20,6 +22,16 @@ import kotlin.test.fail
 suspend fun Tunnel.invoke() {
     invoke(CalculatorId.proxy(this), EchoId.proxy(this))
 }
+
+fun tunnel(context: suspend () -> Any) = tunnel { _, _, invoke ->
+    println("context<${context()}>")
+    invoke()
+}
+
+fun tunnel(contextInterceptor: Interceptor = PassThroughInterceptor) = tunnel(
+    CalculatorId.service(CalculatorImpl),
+    EchoId.service(EchoImpl.proxy(contextInterceptor)),
+)
 
 class RemoteTest {
     @Test
@@ -37,7 +49,7 @@ class RemoteTest {
     }
 
     @Test
-    fun tunnel() = runTest {
+    fun tunnelTest() = runTest {
         val exception = Exception()
         val tunnel = tunnel(
             Service("service1") { function, parameters ->
@@ -69,6 +81,6 @@ class RemoteTest {
 
     @Test
     fun invoke() = runTest {
-        tunnel(CalculatorId.service(CalculatorImpl), EchoId.service(EchoImpl)).invoke()
+        tunnel().invoke()
     }
 }

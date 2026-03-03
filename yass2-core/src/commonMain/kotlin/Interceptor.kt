@@ -11,4 +11,6 @@ public operator fun Interceptor.plus(intercept: Interceptor): Interceptor = { fu
     this(function, parameters) { intercept(function, parameters, invoke) }
 }
 
+public val PassThroughInterceptor: Interceptor = { _, _, invoke -> invoke() }
+
 public annotation class Proxies(vararg val value: KClass<*>)

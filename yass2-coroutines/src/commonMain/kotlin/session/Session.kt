@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.coroutines.session
 
-import ch.softappeal.yass2.core.ExperimentalApi
 import ch.softappeal.yass2.core.remote.Message
 import ch.softappeal.yass2.core.remote.Reply
 import ch.softappeal.yass2.core.remote.Request
@@ -22,22 +21,26 @@ import kotlinx.coroutines.withTimeout
 
 public class Packet(public val requestNumber: Int, public val message: Message)
 
-@ExperimentalApi public interface Connection {
+public interface Connection {
     public suspend fun write(packet: Packet?)
     public suspend fun closed()
 }
 
-@ExperimentalApi public abstract class Session<C : Connection> {
+public abstract class Session<C : Connection> {
     public open fun opened() {}
 
     /** [e] is `null` for regular close. */
     protected open suspend fun closed(e: Exception?) {}
 
     /** Is idempotent. */
-    public suspend fun close(): Unit = close(true, null)
+    public suspend fun close() {
+        close(true, null)
+    }
 
     /** Is idempotent. */
-    public suspend fun close(e: Exception): Unit = close(false, e)
+    public suspend fun close(e: Exception) {
+        close(false, e)
+    }
 
     public suspend fun isClosed(): Boolean = closed.load()
 
@@ -77,7 +80,9 @@ public class Packet(public val requestNumber: Int, public val message: Message)
     private val requestNumberToDeferred = ThreadSafeMap<Int, CompletableDeferred<Reply>>(16)
     private val writeMutex = Mutex()
 
-    private suspend fun write(packet: Packet?): Unit = writeMutex.withLock { connection.write(packet) }
+    private suspend fun write(packet: Packet?) {
+        writeMutex.withLock { connection.write(packet) }
+    }
 
     private suspend fun close(sendEnd: Boolean, e: Exception?) {
         if (closed.exchange(true)) return
@@ -131,11 +136,9 @@ public class Packet(public val requestNumber: Int, public val message: Message)
     }
 }
 
-@ExperimentalApi public typealias SessionFactory<C> = () -> Session<C>
+public typealias SessionFactory<C> = () -> Session<C>
 
-@ExperimentalApi public suspend fun <C : Connection> C.receiveLoop(
-    sessionFactory: SessionFactory<C>, receive: suspend () -> Packet?
-) {
+public suspend fun <C : Connection> C.receiveLoop(sessionFactory: SessionFactory<C>, receive: suspend () -> Packet?) {
     sessionFactory()
         .apply { connection = this@receiveLoop }
         .receiveLoop(receive)
@@ -144,9 +147,9 @@ public class Packet(public val requestNumber: Int, public val message: Message)
 @Target(AnnotationTarget.PROPERTY)
 @MustBeDocumented
 /** Documents a [ServiceId] that must be implemented by initiator. */
-@ExperimentalApi public annotation class MustBeImplementedByInitiator
+public annotation class MustBeImplementedByInitiator
 
 @Target(AnnotationTarget.PROPERTY)
 @MustBeDocumented
 /** Documents a [ServiceId] that must be implemented by acceptor. */
-@ExperimentalApi public annotation class MustBeImplementedByAcceptor
+public annotation class MustBeImplementedByAcceptor

@@ -95,7 +95,8 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
                 val name = readString { expectedCodePoint(EQUALS) }
                 readNextCodePointAndSkipWhitespace()
                 val encoderId = encoder.encoderId(name)
-                val value = when (val propertyEncoder = if (encoderId != STRING_NO_ENCODER_ID) encoder(encoderId) else null) {
+                val propertyEncoder = if (encoderId != STRING_NO_ENCODER_ID) encoder(encoderId) else null
+                val value = when (propertyEncoder) {
                     is IntStringEncoder -> {
                         if (expectedCodePoint('n'.code)) {
                             readNextCodePoint()
@@ -151,7 +152,10 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
         }
     }
 
-    override fun write(writer: Writer, value: Any?): Unit = TheWriter(writer, 0).writeObject(value)
+    override fun write(writer: Writer, value: Any?) {
+        TheWriter(writer, 0).writeObject(value)
+    }
+
     override fun read(reader: Reader): Any? = readObject(reader, reader.readCodePoint())
 }
 

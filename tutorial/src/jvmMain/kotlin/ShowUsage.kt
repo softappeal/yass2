@@ -1,8 +1,5 @@
-@file:OptIn(ExperimentalApi::class)
-
 package tutorial
 
-import ch.softappeal.yass2.core.ExperimentalApi
 import ch.softappeal.yass2.core.remote.Tunnel
 import ch.softappeal.yass2.core.remote.tunnel
 import ch.softappeal.yass2.core.serialize.string.StringSerializer
@@ -120,9 +117,7 @@ suspend fun useKtor() {
         HttpClient(io.ktor.client.engine.cio.CIO) {
             install(io.ktor.client.plugins.websocket.WebSockets)
         }.use { client ->
-            @Suppress("HttpUrlsUsage") useTunnel(
-                client.tunnel(ContractSerializer, "http://$localHost:$port$path")
-            )
+            @Suppress("HttpUrlsUsage") useTunnel(client.tunnel(ContractSerializer, "http://$localHost:$port$path"))
             client.ws("ws://$localHost:$port$path") { receiveLoop(ContractSerializer, initiatorSessionFactory()) }
         }
     }
@@ -133,9 +128,7 @@ suspend fun useKtor() {
             route(
                 ContractSerializer,
                 path,
-                tunnel(
-                    CalculatorId.service(CalculatorImpl),
-                )
+                tunnel(CalculatorId.service(CalculatorImpl)),
             )
             webSocket(path) { receiveLoop(ContractSerializer, acceptorSessionFactory()) }
         }

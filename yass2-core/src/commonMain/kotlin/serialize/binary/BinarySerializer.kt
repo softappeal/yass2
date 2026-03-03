@@ -13,7 +13,10 @@ public open class BinaryEncoder<T : Any>(
     private val write: Writer.(value: T) -> Unit,
     private val read: Reader.() -> T,
 ) {
-    public fun write(writer: Writer, value: Any): Unit = writer.write(@Suppress("UNCHECKED_CAST") (value as T))
+    public fun write(writer: Writer, value: Any) {
+        writer.write(@Suppress("UNCHECKED_CAST") (value as T))
+    }
+
     public fun read(reader: Reader): T = reader.read()
 }
 
@@ -50,7 +53,7 @@ public abstract class BinarySerializer : Serializer {
                 ArrayList<Any?>(minOf(size, 100)).apply { // prevents easy out-of-memory attack
                     while (size-- > 0) add(readObject())
                 }
-            }
+            },
         )
     )
 
@@ -67,12 +70,15 @@ public abstract class BinarySerializer : Serializer {
         encoder.write(this, value)
     }
 
-    protected fun Writer.writeRequired(value: Any, encoderId: Int): Unit = encoders[encoderId].write(this, value)
-    protected fun Writer.writeOptional(value: Any?, encoderId: Int): Unit = if (value == null) {
-        writeBinaryBoolean(false)
-    } else {
-        writeBinaryBoolean(true)
-        writeRequired(value, encoderId)
+    protected fun Writer.writeRequired(value: Any, encoderId: Int) {
+        encoders[encoderId].write(this, value)
+    }
+
+    protected fun Writer.writeOptional(value: Any?, encoderId: Int) {
+        if (value == null) writeBinaryBoolean(false) else {
+            writeBinaryBoolean(true)
+            writeRequired(value, encoderId)
+        }
     }
 
     protected fun Reader.readObject(): Any? {
@@ -83,7 +89,10 @@ public abstract class BinarySerializer : Serializer {
     protected fun Reader.readRequired(encoderId: Int): Any = encoders[encoderId].read(this)
     protected fun Reader.readOptional(encoderId: Int): Any? = if (readBinaryBoolean()) readRequired(encoderId) else null
 
-    override fun write(writer: Writer, value: Any?): Unit = writer.writeObject(value)
+    override fun write(writer: Writer, value: Any?) {
+        writer.writeObject(value)
+    }
+
     override fun read(reader: Reader): Any? = reader.readObject()
 }
 

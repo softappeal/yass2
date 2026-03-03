@@ -1,15 +1,14 @@
 package ch.softappeal.yass2.coroutines.session
 
-import ch.softappeal.yass2.core.ExperimentalApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@ExperimentalApi public typealias SessionConnector<C> = suspend (sessionFactory: SessionFactory<C>) -> Unit
+public typealias SessionConnector<C> = suspend (sessionFactory: SessionFactory<C>) -> Unit
 
 /** Launches a new coroutine that maintains a session. */
-@ExperimentalApi public fun <C : Connection> CoroutineScope.connect(
+public fun <C : Connection> CoroutineScope.connect(
     sessionFactory: SessionFactory<C>,
     intervalMillis: Long,
     sessionConnector: SessionConnector<C>,

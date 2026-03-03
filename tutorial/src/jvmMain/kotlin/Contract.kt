@@ -1,8 +1,5 @@
-@file:OptIn(ExperimentalApi::class)
-
 package tutorial
 
-import ch.softappeal.yass2.core.ExperimentalApi
 import ch.softappeal.yass2.core.Proxies
 import ch.softappeal.yass2.core.remote.ExceptionReply
 import ch.softappeal.yass2.core.remote.Request
@@ -25,7 +22,7 @@ data class MyDate(val currentTimeMillis: Long)
 internal object MyDateEncoder : BaseStringEncoder<MyDate>(
     MyDate::class,
     { currentTimeMillis.toString() },
-    { MyDate(toLong()) }
+    { MyDate(toLong()) },
 )
 
 /**

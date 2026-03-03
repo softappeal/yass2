@@ -162,6 +162,9 @@ public class JsonSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
         }
     }
 
-    override fun write(writer: Writer, value: Any?): Unit = TheWriter(writer, 0).writeObject(value)
+    override fun write(writer: Writer, value: Any?) {
+        TheWriter(writer, 0).writeObject(value)
+    }
+
     override fun read(reader: Reader): Any? = readObject(reader, reader.readCodePoint())
 }

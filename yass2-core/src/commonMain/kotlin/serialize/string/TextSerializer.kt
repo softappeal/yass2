@@ -99,6 +99,9 @@ public class TextSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
         if (encoder is ClassStringEncoder) readClass(encoder) else encoder.read(this)
     }
 
-    override fun write(writer: Writer, value: Any?): Unit = TheWriter(writer, 0).writeObject(value)
+    override fun write(writer: Writer, value: Any?) {
+        TheWriter(writer, 0).writeObject(value)
+    }
+
     override fun read(reader: Reader): Any? = readObject(reader, reader.readCodePoint())
 }

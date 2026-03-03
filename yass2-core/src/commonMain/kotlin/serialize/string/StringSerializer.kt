@@ -24,7 +24,7 @@ private const val NULL = "null"
 private const val TRUE = "true"
 private const val FALSE = "false"
 
-private fun Int.isWhitespace(): Boolean = this == SP || this == TAB || this == NL || this == CR
+private fun Int.isWhitespace() = this == SP || this == TAB || this == NL || this == CR
 
 private const val S_BS = BS.toChar().toString()
 private const val S_BS_BS = S_BS + S_BS
@@ -210,7 +210,9 @@ public abstract class BaseStringEncoder<T : Any>(
             }
         })
     },
-    { readString { expectedCodePoint(QUOTE) || expectedCodePoint(COMMA) || expectedCodePoint(RPAREN) }.read() }
+    {
+        readString { expectedCodePoint(QUOTE) || expectedCodePoint(COMMA) || expectedCodePoint(RPAREN) }.read()
+    },
 )
 
 public class ClassStringEncoder<T : Any>(

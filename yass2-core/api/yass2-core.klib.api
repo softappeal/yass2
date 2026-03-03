@@ -221,6 +221,9 @@ final object ch.softappeal.yass2.core.serialize.string/ByteArrayStringEncoder : 
 
 final object ch.softappeal.yass2.core.serialize.string/IntStringEncoder : ch.softappeal.yass2.core.serialize.string/BaseStringEncoder<kotlin/Int> // ch.softappeal.yass2.core.serialize.string/IntStringEncoder|null[0]
 
+final val ch.softappeal.yass2.core/PassThroughInterceptor // ch.softappeal.yass2.core/PassThroughInterceptor|{}PassThroughInterceptor[0]
+    final fun <get-PassThroughInterceptor>(): kotlin.coroutines/SuspendFunction3<kotlin/String, kotlin.collections/List<kotlin/Any?>, kotlin.coroutines/SuspendFunction0<kotlin/Any?>, kotlin/Any?> // ch.softappeal.yass2.core/PassThroughInterceptor.<get-PassThroughInterceptor>|<get-PassThroughInterceptor>(){}[0]
+
 final fun (ch.softappeal.yass2.core.serialize.string/StringSerializer).ch.softappeal.yass2.core.serialize.string/fromString(kotlin/String): kotlin/Any? // ch.softappeal.yass2.core.serialize.string/fromString|fromString@ch.softappeal.yass2.core.serialize.string.StringSerializer(kotlin.String){}[0]
 final fun (ch.softappeal.yass2.core.serialize.string/StringSerializer).ch.softappeal.yass2.core.serialize.string/toString(kotlin/Any?): kotlin/String // ch.softappeal.yass2.core.serialize.string/toString|toString@ch.softappeal.yass2.core.serialize.string.StringSerializer(kotlin.Any?){}[0]
 final fun (ch.softappeal.yass2.core.serialize/ByteArrayReader).ch.softappeal.yass2.core.serialize/checkDrained() // ch.softappeal.yass2.core.serialize/checkDrained|checkDrained@ch.softappeal.yass2.core.serialize.ByteArrayReader(){}[0]
