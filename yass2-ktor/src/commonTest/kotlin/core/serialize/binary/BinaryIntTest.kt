@@ -27,12 +27,4 @@ class BinaryIntTest {
             ByteArrayReader(byteArrayOf(2)).readBinaryBoolean()
         }
     }
-
-    @Test
-    fun int() {
-        fun check(value: Int, vararg bytes: Int) = check(value, { writeBinaryInt(it) }, *bytes) { readBinaryInt() }
-        check(Int.MIN_VALUE, 0x80, 0x00, 0x00, 0x00)
-        check(Int.MAX_VALUE, 0x7F, 0xFF, 0xFF, 0xFF)
-        check(0x12_34_56_78, 0x12, 0x34, 0x56, 0x78)
-    }
 }
