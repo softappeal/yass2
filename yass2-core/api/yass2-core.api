@@ -108,17 +108,12 @@ public abstract interface class ch/softappeal/yass2/core/serialize/Writer {
 
 public class ch/softappeal/yass2/core/serialize/binary/BinaryEncoder {
 	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;)V
-	public final fun read (Lch/softappeal/yass2/core/serialize/Reader;)Ljava/lang/Object;
-	public final fun write (Lch/softappeal/yass2/core/serialize/Writer;Ljava/lang/Object;)V
+	public final fun getRead ()Lkotlin/jvm/functions/Function1;
+	public final fun getWrite ()Lkotlin/jvm/functions/Function2;
 }
 
 public abstract interface annotation class ch/softappeal/yass2/core/serialize/binary/BinaryEncoderObjects : java/lang/annotation/Annotation {
 	public abstract fun value ()[Ljava/lang/Class;
-}
-
-public final class ch/softappeal/yass2/core/serialize/binary/BinaryEncodersKt {
-	public static final fun readBinaryOptional (Lch/softappeal/yass2/core/serialize/Reader;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
-	public static final fun writeBinaryOptional (Lch/softappeal/yass2/core/serialize/Writer;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;)V
 }
 
 public final class ch/softappeal/yass2/core/serialize/binary/BinaryPrimitivesKt {
@@ -141,6 +136,11 @@ public abstract class ch/softappeal/yass2/core/serialize/binary/BinarySerializer
 	protected final fun writeObject (Lch/softappeal/yass2/core/serialize/Writer;Ljava/lang/Object;)V
 	protected final fun writeOptional (Lch/softappeal/yass2/core/serialize/Writer;Ljava/lang/Object;I)V
 	protected final fun writeRequired (Lch/softappeal/yass2/core/serialize/Writer;Ljava/lang/Object;I)V
+}
+
+public final class ch/softappeal/yass2/core/serialize/binary/BinarySerializerKt {
+	public static final fun readBinaryOptional (Lch/softappeal/yass2/core/serialize/Reader;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public static final fun writeBinaryOptional (Lch/softappeal/yass2/core/serialize/Writer;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;)V
 }
 
 public final class ch/softappeal/yass2/core/serialize/binary/BooleanBinaryEncoder : ch/softappeal/yass2/core/serialize/binary/BinaryEncoder {

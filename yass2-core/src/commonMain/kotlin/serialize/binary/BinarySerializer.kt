@@ -10,15 +10,22 @@ import kotlin.reflect.KClass
 
 public open class BinaryEncoder<T : Any>(
     internal val type: KClass<T>,
-    private val write: Writer.(value: T) -> Unit,
-    private val read: Reader.() -> T,
-) {
-    public fun write(writer: Writer, value: Any) {
-        writer.write(@Suppress("UNCHECKED_CAST") (value as T))
-    }
+    public val write: Writer.(value: T) -> Unit,
+    public val read: Reader.() -> T,
+)
 
-    public fun read(reader: Reader): T = reader.read()
+private fun Writer.write(encoder: BinaryEncoder<*>, value: Any) {
+    @Suppress("UNCHECKED_CAST") (encoder as BinaryEncoder<Any>).write(this, value)
 }
+
+public inline fun <T : Any> Writer.writeBinaryOptional(value: T?, write: Writer.(value: T) -> Unit) {
+    if (value == null) writeBinaryBoolean(false) else {
+        writeBinaryBoolean(true)
+        write(value)
+    }
+}
+
+public inline fun <T : Any> Reader.readBinaryOptional(read: Reader.() -> T): T? = if (readBinaryBoolean()) read() else null
 
 /** Has built-in encoders for `null` and [List]. */
 public abstract class BinarySerializer : Serializer {
@@ -67,27 +74,24 @@ public abstract class BinarySerializer : Serializer {
             else -> typeToEncoderId[value::class] ?: error("missing type '${value::class}'")
         }
         writeVarInt(encoderId)
-        encoder.write(this, value)
+        write(encoder, value)
     }
 
     protected fun Writer.writeRequired(value: Any, encoderId: Int) {
-        encoders[encoderId].write(this, value)
+        write(encoders[encoderId], value)
     }
 
     protected fun Writer.writeOptional(value: Any?, encoderId: Int) {
-        if (value == null) writeBinaryBoolean(false) else {
-            writeBinaryBoolean(true)
-            writeRequired(value, encoderId)
-        }
+        writeBinaryOptional(value) { writeRequired(it, encoderId) }
     }
 
     protected fun Reader.readObject(): Any? {
         val encoderId = readVarInt()
-        return if (encoderId == BINARY_NULL_ENCODER_ID) null else encoders[encoderId].read(this)
+        return if (encoderId == BINARY_NULL_ENCODER_ID) null else readRequired(encoderId)
     }
 
     protected fun Reader.readRequired(encoderId: Int): Any = encoders[encoderId].read(this)
-    protected fun Reader.readOptional(encoderId: Int): Any? = if (readBinaryBoolean()) readRequired(encoderId) else null
+    protected fun Reader.readOptional(encoderId: Int): Any? = readBinaryOptional { readRequired(encoderId) }
 
     override fun write(writer: Writer, value: Any?) {
         writer.writeObject(value)

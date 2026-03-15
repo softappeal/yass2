@@ -1,7 +1,5 @@
 package ch.softappeal.yass2.core.serialize.binary
 
-import ch.softappeal.yass2.core.serialize.Reader
-import ch.softappeal.yass2.core.serialize.Writer
 import kotlin.reflect.KClass
 
 public object BooleanBinaryEncoder : BinaryEncoder<Boolean>(
@@ -40,12 +38,3 @@ public class EnumBinaryEncoder<T : Enum<T>>(type: KClass<T>, enumValues: Array<T
         enumValues[c]
     },
 )
-
-public fun <T : Any> Writer.writeBinaryOptional(value: T?, write: Writer.(value: T) -> Unit) {
-    if (value == null) writeBinaryBoolean(false) else {
-        writeBinaryBoolean(true)
-        write(value)
-    }
-}
-
-public fun <T : Any> Reader.readBinaryOptional(read: Reader.() -> T): T? = if (readBinaryBoolean()) read() else null

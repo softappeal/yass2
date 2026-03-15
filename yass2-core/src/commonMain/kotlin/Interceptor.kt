@@ -7,7 +7,7 @@ import kotlin.reflect.KClass
 public typealias Invocation = suspend () -> Any?
 public typealias Interceptor = suspend (function: String, parameters: List<Any?>, invoke: Invocation) -> Any?
 
-public operator fun Interceptor.plus(intercept: Interceptor): Interceptor = { function, parameters, invoke ->
+public inline operator fun Interceptor.plus(crossinline intercept: Interceptor): Interceptor = { function, parameters, invoke ->
     this(function, parameters) { intercept(function, parameters, invoke) }
 }
 
