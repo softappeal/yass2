@@ -165,8 +165,8 @@ public final class ch/softappeal/yass2/core/serialize/binary/StringBinaryEncoder
 
 public abstract class ch/softappeal/yass2/core/serialize/string/BaseStringEncoder : ch/softappeal/yass2/core/serialize/string/StringEncoder {
 	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
-	public final fun getRead ()Lkotlin/jvm/functions/Function1;
-	public final fun getWrite ()Lkotlin/jvm/functions/Function1;
+	public final fun getReadBase ()Lkotlin/jvm/functions/Function1;
+	public final fun getWriteBase ()Lkotlin/jvm/functions/Function1;
 }
 
 public final class ch/softappeal/yass2/core/serialize/string/ByteArrayStringEncoder : ch/softappeal/yass2/core/serialize/string/BaseStringEncoder {

@@ -43,11 +43,11 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
                 writeAsciiChar(LPAREN)
                 if (encoder is ClassStringEncoder) {
                     writeNewLine()
-                    with(nested()) { encoder.write(this, value) }
+                    nested().write(encoder, value)
                     writeIndent()
                 } else {
                     writeAsciiChar(QUOTE)
-                    encoder.write(this, value)
+                    write(encoder, value)
                     writeAsciiChar(QUOTE)
                 }
                 writeAsciiChar(RPAREN)
@@ -72,7 +72,7 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
         override fun writeProperty(name: String, value: Any?, encoderId: Int) {
             writeProperty(name) {
                 when (value) {
-                    is Int -> encoder(encoderId).write(this, value)
+                    is Int -> write(encoder(encoderId), value)
                     else -> writeObject(value)
                 }
             }
@@ -83,7 +83,7 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
         fun readList() = buildList {
             readNextCodePointAndSkipWhitespace()
             while (!expectedCodePoint(RPAREN)) {
-                add(readObject(this@TheReader, nextCodePoint))
+                add(readObject(nextCodePoint))
                 readNextCodePointAndSkipWhitespace()
                 checkExpectedCodePoint(COMMA)
                 readNextCodePointAndSkipWhitespace()
@@ -109,7 +109,7 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
                             null
                         } else propertyEncoder.read(this)
                     }
-                    else -> readObject(this, nextCodePoint).apply { readNextCodePoint() }
+                    else -> readObject(nextCodePoint).apply { readNextCodePoint() }
                 }
                 skipWhitespace()
                 encoder.addProperty(name, value)
@@ -121,7 +121,7 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
         }
     }
 
-    private fun readObject(reader: Reader, nextCodePoint: Int): Any? = with(TheReader(reader, nextCodePoint)) {
+    private fun Reader.readObject(nextCodePoint: Int): Any? = with(TheReader(this, nextCodePoint)) {
         skipWhitespace()
         if (expectedCodePoint(QUOTE)) return readQuotedString()
         val (handled, result, className) = readBuiltIn { expectedCodePoint(LPAREN) || expectedCodePoint(DOT) }
@@ -133,7 +133,7 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
         val encoder = encoder(className)
         if (expectedCodePoint(DOT)) {
             readNextCodePointAndSkipWhitespace()
-            return (encoder as EnumStringEncoder).read(readString { expectedCodePoint(LPAREN) }).apply {
+            return (encoder as EnumStringEncoder).readBase(readString { expectedCodePoint(LPAREN) }).apply {
                 checkExpectedCodePoint(LPAREN)
                 readNextCodePointAndSkipWhitespace()
                 checkExpectedCodePoint(RPAREN)
@@ -152,15 +152,15 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
         }
     }
 
-    override fun write(writer: Writer, value: Any?) {
-        TheWriter(writer, 0).writeObject(value)
+    override fun Writer.write(value: Any?) {
+        TheWriter(this, 0).writeObject(value)
     }
 
-    override fun read(reader: Reader): Any? = readObject(reader, reader.readCodePoint())
+    override fun Reader.read(): Any? = readObject(readCodePoint())
 }
 
 public operator fun <E : Enum<E>> E.invoke(): E = this // NOTE: needed for easy parsing of enums
 
 /** NOTE: Provide a `constructor` for each [BaseStringEncoder] (needed for easy parsing of base types). */
-public fun Int(string: String): Int = IntStringEncoder.read(string)
-public fun ByteArray(string: String): ByteArray = ByteArrayStringEncoder.read(string)
+public fun Int(string: String): Int = IntStringEncoder.readBase(string)
+public fun ByteArray(string: String): ByteArray = ByteArrayStringEncoder.readBase(string)

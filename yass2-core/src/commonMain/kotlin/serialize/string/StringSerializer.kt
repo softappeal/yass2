@@ -189,29 +189,30 @@ public abstract class StringReader(
 
 public open class StringEncoder<T : Any>(
     internal val type: KClass<T>,
-    private val write: StringWriter.(value: T) -> Unit,
-    private val read: StringReader.() -> T,
-) {
-    internal fun write(writer: StringWriter, value: Any?) = writer.write(@Suppress("UNCHECKED_CAST") (value as T))
-    internal fun read(reader: StringReader) = reader.read()
+    internal val write: StringWriter.(value: T) -> Unit,
+    internal val read: StringReader.() -> T,
+)
+
+internal fun StringWriter.write(encoder: StringEncoder<*>, value: Any) {
+    @Suppress("UNCHECKED_CAST") (encoder as StringEncoder<Any>).write(this, value)
 }
 
 public abstract class BaseStringEncoder<T : Any>(
     type: KClass<T>,
     /** Result string must not contain whitespace, `"`, `,` or `)`. */
-    public val write: T.() -> String,
-    public val read: String.() -> T,
+    public val writeBase: T.() -> String,
+    public val readBase: String.() -> T,
 ) : StringEncoder<T>(
     type,
     { value ->
-        writeString(write(value).apply {
+        writeString(writeBase(value).apply {
             check(indexOfFirst { it.code.isWhitespace() || it.code == QUOTE || it.code == COMMA || it.code == RPAREN } < 0) {
                 "'$this' must not contain whitespace, '${QUOTE.toChar()}', '${COMMA.toChar()}' or '${RPAREN.toChar()}'"
             }
         })
     },
     {
-        readString { expectedCodePoint(QUOTE) || expectedCodePoint(COMMA) || expectedCodePoint(RPAREN) }.read()
+        readString { expectedCodePoint(QUOTE) || expectedCodePoint(COMMA) || expectedCodePoint(RPAREN) }.readBase()
     },
 )
 

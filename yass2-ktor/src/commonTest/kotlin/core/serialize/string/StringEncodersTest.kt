@@ -11,8 +11,8 @@ import kotlin.test.assertTrue
 val GenderEncoder = EnumStringEncoder(Gender::class, Gender::valueOf)
 
 private fun <T : Any> BaseStringEncoder<T>.check(value: T, vararg results: String) {
-    results.forEach { assertEquals(value, read(it)) }
-    assertTrue(results.any { it == write(value) })
+    results.forEach { assertEquals(value, readBase(it)) }
+    assertTrue(results.any { it == writeBase(value) })
 }
 
 class StringEncodersTest {
@@ -21,7 +21,7 @@ class StringEncodersTest {
         with(GenderEncoder) {
             check(Gender.Male, "Male")
             check(Gender.Female, "Female")
-            assertFails { read("Unknown") }
+            assertFails { readBase("Unknown") }
         }
     }
 
@@ -33,8 +33,8 @@ class StringEncodersTest {
             check(-1, "-1")
             check(Int.MAX_VALUE, "2147483647")
             check(Int.MIN_VALUE, "-2147483648")
-            assertFails { read("Unknown") }
-            assertFails { read("4123456789") }
+            assertFails { readBase("Unknown") }
+            assertFails { readBase("4123456789") }
         }
     }
 
@@ -42,17 +42,17 @@ class StringEncodersTest {
     @Test
     fun byteArray() {
         fun test(value: ByteArray, result: String) {
-            assertEquals(result, ByteArrayStringEncoder.write(value))
-            assertContentEquals(value, ByteArrayStringEncoder.read(result))
+            assertEquals(result, ByteArrayStringEncoder.writeBase(value))
+            assertContentEquals(value, ByteArrayStringEncoder.readBase(result))
         }
         test(byteArrayOf(), "")
         test(byteArrayOf(0), "AA==")
         test(byteArrayOf(0, 1), "AAE=")
         test(byteArrayOf(0, 1, 2), "AAEC")
         test(byteArrayOf(0, 1, 2, 3), "AAECAw==")
-        assertFails { ByteArrayStringEncoder.read("AA==x") }
-        assertFails { ByteArrayStringEncoder.read("*A==") }
-        assertFails { ByteArrayStringEncoder.read("A*==") }
+        assertFails { ByteArrayStringEncoder.readBase("AA==x") }
+        assertFails { ByteArrayStringEncoder.readBase("*A==") }
+        assertFails { ByteArrayStringEncoder.readBase("A*==") }
     }
 
     @Suppress("SpellCheckingInspection")

@@ -93,11 +93,11 @@ public abstract class BinarySerializer : Serializer {
     protected fun Reader.readRequired(encoderId: Int): Any = encoders[encoderId].read(this)
     protected fun Reader.readOptional(encoderId: Int): Any? = readBinaryOptional { readRequired(encoderId) }
 
-    override fun write(writer: Writer, value: Any?) {
-        writer.writeObject(value)
+    override fun Writer.write(value: Any?) {
+        writeObject(value)
     }
 
-    override fun read(reader: Reader): Any? = reader.readObject()
+    override fun Reader.read(): Any? = readObject()
 }
 
 /** @suppress */

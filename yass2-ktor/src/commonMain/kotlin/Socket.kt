@@ -26,7 +26,7 @@ import kotlin.coroutines.CoroutineContext
 
 private suspend fun ByteWriteChannel.write(serializer: Serializer, value: Any?) {
     val writer = ByteArrayWriter()
-    serializer.write(writer, value)
+    with(serializer) { writer.write(value) }
     val byteArray = writer.toyByteArray()
     writeInt(byteArray.size)
     writeFully(byteArray)

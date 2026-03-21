@@ -13,17 +13,17 @@ public interface Reader {
 }
 
 public interface Serializer {
-    public fun write(writer: Writer, value: Any?)
-    public fun read(reader: Reader): Any?
+    public fun Writer.write(value: Any?)
+    public fun Reader.read(): Any?
 }
 
 public fun Serializer.toByteArray(value: Any?): ByteArray = with(ByteArrayWriter()) {
-    write(this, value)
+    write(value)
     toyByteArray()
 }
 
 public fun Serializer.fromByteArray(byteArray: ByteArray): Any? = with(ByteArrayReader(byteArray)) {
-    read(this).apply { checkDrained() }
+    read().apply { checkDrained() }
 }
 
 /**

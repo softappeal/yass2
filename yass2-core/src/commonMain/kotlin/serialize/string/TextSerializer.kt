@@ -33,9 +33,9 @@ public class TextSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
             val encoder = encoder(value!!::class)
             writeString(encoder.type.simpleName!!)
             writeAsciiChar(LPAREN)
-            if (encoder !is ClassStringEncoder) encoder.write(this, value) else {
+            if (encoder !is ClassStringEncoder) write(encoder, value) else {
                 writeNewLine()
-                encoder.write(nested(), value)
+                nested().write(encoder, value)
                 writeIndent()
             }
             writeAsciiChar(RPAREN)
@@ -57,7 +57,7 @@ public class TextSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
 
         override fun writeProperty(name: String, value: Any?, encoderId: Int) {
             writeProperty(name, value) {
-                if (!writeBuiltIn(value)) encoder(encoderId).write(this, value)
+                if (!writeBuiltIn(value)) write(encoder(encoderId), value!!)
             }
         }
     }
@@ -66,7 +66,7 @@ public class TextSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
         fun readList() = buildList {
             readNextCodePointAndSkipWhitespace()
             while (!expectedCodePoint(RBRACKET)) {
-                add(readObject(this@TheReader, nextCodePoint))
+                add(readObject(nextCodePoint))
                 readNextCodePointAndSkipWhitespace()
                 if (expectedCodePoint(COMMA)) readNextCodePointAndSkipWhitespace()
             }
@@ -78,7 +78,7 @@ public class TextSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
                 readNextCodePointAndSkipWhitespace()
                 val encoderId = encoder.encoderId(name)
                 val value = if (encoderId != STRING_NO_ENCODER_ID) encoder(encoderId).read(this) else {
-                    readObject(this, nextCodePoint).apply { readNextCodePoint() }
+                    readObject(nextCodePoint).apply { readNextCodePoint() }
                 }
                 skipWhitespace()
                 encoder.addProperty(name, value)
@@ -88,7 +88,7 @@ public class TextSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
         }
     }
 
-    private fun readObject(reader: Reader, nextCodePoint: Int): Any? = with(TheReader(reader, nextCodePoint)) {
+    private fun Reader.readObject(nextCodePoint: Int): Any? = with(TheReader(this, nextCodePoint)) {
         skipWhitespace()
         if (expectedCodePoint(QUOTE)) return readQuotedString()
         if (expectedCodePoint(LBRACKET)) return readList()
@@ -99,9 +99,9 @@ public class TextSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
         if (encoder is ClassStringEncoder) readClass(encoder) else encoder.read(this)
     }
 
-    override fun write(writer: Writer, value: Any?) {
-        TheWriter(writer, 0).writeObject(value)
+    override fun Writer.write(value: Any?) {
+        TheWriter(this, 0).writeObject(value)
     }
 
-    override fun read(reader: Reader): Any? = readObject(reader, reader.readCodePoint())
+    override fun Reader.read(): Any? = readObject(readCodePoint())
 }
