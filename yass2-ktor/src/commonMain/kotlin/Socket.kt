@@ -6,6 +6,7 @@ import ch.softappeal.yass2.core.remote.Tunnel
 import ch.softappeal.yass2.core.serialize.ByteArrayWriter
 import ch.softappeal.yass2.core.serialize.Serializer
 import ch.softappeal.yass2.core.serialize.fromByteArray
+import ch.softappeal.yass2.core.serialize.write
 import ch.softappeal.yass2.coroutines.session.Connection
 import ch.softappeal.yass2.coroutines.session.Packet
 import ch.softappeal.yass2.coroutines.session.SessionFactory
@@ -26,7 +27,7 @@ import kotlin.coroutines.CoroutineContext
 
 private suspend fun ByteWriteChannel.write(serializer: Serializer, value: Any?) {
     val writer = ByteArrayWriter()
-    with(serializer) { writer.write(value) }
+    serializer.write(writer, value)
     val byteArray = writer.toyByteArray()
     writeInt(byteArray.size)
     writeFully(byteArray)
