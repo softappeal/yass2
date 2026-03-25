@@ -9,6 +9,12 @@ public object IntStringEncoder : BaseStringEncoder<Int>(
     { toInt() },
 )
 
+public object LongStringEncoder : BaseStringEncoder<Long>(
+    Long::class,
+    { toString() },
+    { toLong() }
+)
+
 private val B64 = Base64.Default // uses A-Za-z0-9+/=
 
 public object ByteArrayStringEncoder : BaseStringEncoder<ByteArray>(

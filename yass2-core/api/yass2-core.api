@@ -120,11 +120,15 @@ public abstract interface annotation class ch/softappeal/yass2/core/serialize/bi
 
 public final class ch/softappeal/yass2/core/serialize/binary/BinaryPrimitivesKt {
 	public static final fun fromZigZag (I)I
+	public static final fun fromZigZag (J)J
 	public static final fun readBinaryBoolean (Lch/softappeal/yass2/core/serialize/Reader;)Z
 	public static final fun readVarInt (Lch/softappeal/yass2/core/serialize/Reader;)I
+	public static final fun readVarLong (Lch/softappeal/yass2/core/serialize/Reader;)J
 	public static final fun toZigZag (I)I
+	public static final fun toZigZag (J)J
 	public static final fun writeBinaryBoolean (Lch/softappeal/yass2/core/serialize/Writer;Z)V
 	public static final fun writeVarInt (Lch/softappeal/yass2/core/serialize/Writer;I)V
+	public static final fun writeVarLong (Lch/softappeal/yass2/core/serialize/Writer;J)V
 }
 
 public abstract class ch/softappeal/yass2/core/serialize/binary/BinarySerializer : ch/softappeal/yass2/core/serialize/Serializer {
@@ -159,6 +163,10 @@ public final class ch/softappeal/yass2/core/serialize/binary/EnumBinaryEncoder :
 
 public final class ch/softappeal/yass2/core/serialize/binary/IntBinaryEncoder : ch/softappeal/yass2/core/serialize/binary/BinaryEncoder {
 	public static final field INSTANCE Lch/softappeal/yass2/core/serialize/binary/IntBinaryEncoder;
+}
+
+public final class ch/softappeal/yass2/core/serialize/binary/LongBinaryEncoder : ch/softappeal/yass2/core/serialize/binary/BinaryEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/core/serialize/binary/LongBinaryEncoder;
 }
 
 public final class ch/softappeal/yass2/core/serialize/binary/StringBinaryEncoder : ch/softappeal/yass2/core/serialize/binary/BinaryEncoder {
@@ -202,7 +210,12 @@ public final class ch/softappeal/yass2/core/serialize/string/KotlinSerializer : 
 public final class ch/softappeal/yass2/core/serialize/string/KotlinSerializerKt {
 	public static final fun ByteArray (Ljava/lang/String;)[B
 	public static final fun Int (Ljava/lang/String;)I
+	public static final fun Long (Ljava/lang/String;)J
 	public static final fun invoke (Ljava/lang/Enum;)Ljava/lang/Enum;
+}
+
+public final class ch/softappeal/yass2/core/serialize/string/LongStringEncoder : ch/softappeal/yass2/core/serialize/string/BaseStringEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/core/serialize/string/LongStringEncoder;
 }
 
 public class ch/softappeal/yass2/core/serialize/string/StringEncoder {

@@ -49,6 +49,13 @@ class BinaryEncodersTest {
             check(Int.MAX_VALUE, -2, -1, -1, -1, 15)
             check(Int.MIN_VALUE, -1, -1, -1, -1, 15)
         }
+        with(LongBinaryEncoder) {
+            check(0, 0)
+            check(-1, 1)
+            check(1, 2)
+            check(Long.MAX_VALUE, -2, -1, -1, -1, -1, -1, -1, -1, -1, 1)
+            check(Long.MIN_VALUE, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1)
+        }
         @Suppress("SpellCheckingInspection")
         with(StringBinaryEncoder) {
             check("", 0)

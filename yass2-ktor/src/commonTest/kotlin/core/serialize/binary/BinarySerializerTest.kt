@@ -40,7 +40,7 @@ class BinarySerializerTest {
                 list = listOf(12, 13),
                 listOptional = null,
             ),
-            18,              // Example
+            19,              // Example
             20,              // int
             0,               // intOptional
             3, 22,           // any
@@ -58,7 +58,7 @@ class BinarySerializerTest {
                 list = listOf(12, 13),
                 listOptional = listOf(16, 17),
             ),
-            18,                // Example
+            19,                // Example
             20,                // int
             1, 28,             // intOptional
             3, 22,             // any

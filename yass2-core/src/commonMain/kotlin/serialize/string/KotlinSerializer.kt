@@ -72,7 +72,9 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
         override fun writeProperty(name: String, value: Any?, encoderId: Int) {
             writeProperty(name) {
                 when (value) {
-                    is Int -> write(encoder(encoderId), value)
+                    is Int,
+                    is Long,
+                        -> write(encoder(encoderId), value)
                     else -> writeObject(value)
                 }
             }
@@ -97,7 +99,9 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
                 val encoderId = encoder.encoderId(name)
                 val propertyEncoder = if (encoderId != STRING_NO_ENCODER_ID) encoder(encoderId) else null
                 val value = when (propertyEncoder) {
-                    is IntStringEncoder -> {
+                    is IntStringEncoder,
+                    is LongStringEncoder,
+                        -> {
                         if (expectedCodePoint('n'.code)) {
                             readNextCodePoint()
                             checkExpectedCodePoint('u'.code)
@@ -163,4 +167,5 @@ public operator fun <E : Enum<E>> E.invoke(): E = this // NOTE: needed for easy 
 
 /** NOTE: Provide a `constructor` for each [BaseStringEncoder] (needed for easy parsing of base types). */
 public fun Int(string: String): Int = IntStringEncoder.readBase(string)
+public fun Long(string: String): Long = LongStringEncoder.readBase(string)
 public fun ByteArray(string: String): ByteArray = ByteArrayStringEncoder.readBase(string)

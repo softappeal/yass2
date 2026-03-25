@@ -14,6 +14,12 @@ public object IntBinaryEncoder : BinaryEncoder<Int>(
     { readVarInt().fromZigZag() },
 )
 
+public object LongBinaryEncoder : BinaryEncoder<Long>(
+    Long::class,
+    { value -> writeVarLong(value.toZigZag()) },
+    { readVarLong().fromZigZag() }
+)
+
 public object ByteArrayBinaryEncoder : BinaryEncoder<ByteArray>(
     ByteArray::class,
     { value ->

@@ -38,6 +38,19 @@ class StringEncodersTest {
         }
     }
 
+    @Test
+    fun long() {
+        with(LongStringEncoder) {
+            check(0L, "0")
+            check(1L, "1")
+            check(-1L, "-1")
+            check(Long.MAX_VALUE, "9223372036854775807")
+            check(Long.MIN_VALUE, "-9223372036854775808")
+            assertFails { readBase("Unknown") }
+            assertFails { readBase("51515131515131515154") }
+        }
+    }
+
     @Suppress("SpellCheckingInspection")
     @Test
     fun byteArray() {

@@ -10,9 +10,11 @@ import ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects
 import ch.softappeal.yass2.core.serialize.binary.BooleanBinaryEncoder
 import ch.softappeal.yass2.core.serialize.binary.ByteArrayBinaryEncoder
 import ch.softappeal.yass2.core.serialize.binary.IntBinaryEncoder
+import ch.softappeal.yass2.core.serialize.binary.LongBinaryEncoder
 import ch.softappeal.yass2.core.serialize.binary.StringBinaryEncoder
 import ch.softappeal.yass2.core.serialize.string.ByteArrayStringEncoder
 import ch.softappeal.yass2.core.serialize.string.IntStringEncoder
+import ch.softappeal.yass2.core.serialize.string.LongStringEncoder
 import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
 import ch.softappeal.yass2.core.serialize.string.TextSerializer
 import ch.softappeal.yass2.coroutines.session.Packet
@@ -22,6 +24,7 @@ enum class Gender { Female, Male }
 class Types(
     val boolean: Boolean,
     val int: Int,
+    val long: Long,
     val string: String,
     val bytes: ByteArray,
     val gender: Gender,
@@ -29,6 +32,7 @@ class Types(
     val b: B,
     val booleanOptional: Boolean?,
     val intOptional: Int?,
+    val longOptional: Long?,
     val stringOptional: String?,
     val bytesOptional: ByteArray?,
     val genderOptional: Gender?,
@@ -117,11 +121,13 @@ val EchoId = ServiceId<Echo>("echo")
 @BinaryEncoderObjects(
     BooleanBinaryEncoder::class,
     IntBinaryEncoder::class,
+    LongBinaryEncoder::class,
     StringBinaryEncoder::class,
     ByteArrayBinaryEncoder::class,
 )
 @StringEncoderObjects(
     IntStringEncoder::class,
+    LongStringEncoder::class,
     ByteArrayStringEncoder::class,
 )
 object Generate
