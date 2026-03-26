@@ -10,11 +10,8 @@ import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import ch.softappeal.yass2.generate.appendPackage
-import ch.softappeal.yass2.generate.fixLines
+import ch.softappeal.yass2.generate.writeGeneratedFile
 import kotlin.io.path.Path
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.readText
-import kotlin.io.path.writeText
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KType
 import kotlin.reflect.full.findAnnotation
@@ -28,16 +25,7 @@ internal fun CodeWriter.writeFun(signature: String, body: CodeWriter.() -> Unit)
     nested { body() }
 }
 
-public enum class GenerateMode {
-    /** Create/Overwrite the generated file. */
-    Update,
-
-    /** Fail if generated the file differs from existing. */
-    Check,
-}
-
-/** @suppress */
-@InternalApi public fun Any.generateCode(annotatedElement: KAnnotatedElement): String = buildString {
+private fun Any.generateCode(annotatedElement: KAnnotatedElement) = buildString {
     appendPackage(this@generateCode::class.java.`package`.name)
     with(CodeWriter(this)) {
         val services = annotatedElement.findAnnotation<Proxies>()
@@ -73,16 +61,6 @@ public enum class GenerateMode {
  * }
  * ```
  */
-public fun Any.generateFile(generatedDir: String, annotatedElement: KAnnotatedElement, mode: GenerateMode = GenerateMode.Update) {
-    val generatedCode = generateCode(annotatedElement)
-    val generatedFile = Path(generatedDir).resolve("$GENERATED_BY_YASS.kt")
-    when (mode) {
-        GenerateMode.Update -> generatedFile.writeText(generatedCode)
-        GenerateMode.Check -> {
-            val existingCode = generatedFile.readText().fixLines()
-            check(generatedCode == existingCode) {
-                "outdated generated file '${generatedFile.absolutePathString()}' (use 'generateFile' with 'GenerateMode.Update' to update it)"
-            }
-        }
-    }
+public fun Any.generateFile(generatedDir: String, annotatedElement: KAnnotatedElement) {
+    writeGeneratedFile(Path(generatedDir), generateCode(annotatedElement))
 }

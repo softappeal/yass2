@@ -1,32 +1,21 @@
 // TODO: run tests with coverage manually in IntelliJ
 
-@file:OptIn(InternalApi::class)
-
 package ch.softappeal.yass2.generate.reflect
 
 import ch.softappeal.yass2.Generate
-import ch.softappeal.yass2.core.InternalApi
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import java.io.File
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
-private const val REFLECT_DIR = "src/jvmTest/kotlin/generate/reflect"
+private const val DIR = "src/jvmTest/kotlin/generate/reflect"
 
-val REFLECT_CODE = File("$REFLECT_DIR/$GENERATED_BY_YASS.kt").readText()
+val CODE = File("$DIR/$GENERATED_BY_YASS.kt")
+    .readText()
+    .replace("package ch.softappeal.yass2.generate.reflect\n", "package ch.softappeal.yass2\n")
 
 class GenerateTest {
     @Test
-    fun generateCode() {
-        assertEquals(REFLECT_CODE, generateCode(Generate::class))
-    }
-
-    @Test
     fun generateFile() {
-        listOf(
-            GenerateMode.Check,
-            GenerateMode.Update,
-            GenerateMode.Check,
-        ).forEach { generateFile(REFLECT_DIR, Generate::class, it) }
+        generateFile(DIR, Generate::class)
     }
 }

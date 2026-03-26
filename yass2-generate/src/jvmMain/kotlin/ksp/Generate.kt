@@ -11,7 +11,7 @@ import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import ch.softappeal.yass2.generate.appendPackage
-import ch.softappeal.yass2.generate.fixLines
+import ch.softappeal.yass2.generate.writeGeneratedFile
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
@@ -27,10 +27,6 @@ import com.google.devtools.ksp.symbol.KSTypeParameter
 import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.Variance
 import kotlin.io.path.Path
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.notExists
-import kotlin.io.path.readText
-import kotlin.io.path.writeText
 import kotlin.reflect.KClass
 
 internal fun KSDeclaration.qualifiedName() = qualifiedName!!.asString()
@@ -68,12 +64,8 @@ private fun KSAnnotation.value() = arguments.first { it.name!!.asString() == "va
 public enum class GenerateMode {
     /**
      * Generate the code in the build directory. That's the normal KSP way.
-     * ```
-     * NOTE: KSP works only for platform code (see https://github.com/google/ksp/issues/2233).
-     *       Common/intermediate (= none-platform) code cannot reference generated code in the compilation of platform code.
-     *       Generated code is treated as platform code (you'll have to use expect/actual).
-     * ```
-     * see [WithExpectAndActual]
+     * KSP generated code is platform code (see https://github.com/google/ksp/issues/2233).
+     * This mode only works for platform code because common code cannot reference platform code.
      */
     InBuildDir,
 
@@ -146,17 +138,12 @@ private fun processPackage(name: String, declarations: Set<KSDeclaration>, envir
         environment.codeGenerator.createNewFile(Dependencies.ALL_FILES, name, GENERATED_BY_YASS).writer().use { it.append(code) }
     }
     if (generateMode == GenerateMode.InRepository || generateMode == GenerateMode.WithExpectAndActual) {
-        val repositoryFile = Path((declarations.first().location as FileLocation).filePath).parent.resolve("$GENERATED_BY_YASS.kt")
+        val repositoryDir = Path((declarations.first().location as FileLocation).filePath).parent
         val repositoryCode = if (generateMode == GenerateMode.InRepository) code.toString() else buildString {
             appendPackage(name)
             append(expectCode)
         }
-        if (repositoryFile.notExists()) repositoryFile.writeText(repositoryCode) else {
-            val existingCode = repositoryFile.readText().fixLines()
-            check(repositoryCode == existingCode) {
-                "outdated generated file '${repositoryFile.absolutePathString()}' (delete file to regenerate it)"
-            }
-        }
+        writeGeneratedFile(repositoryDir, repositoryCode)
     }
 }
 

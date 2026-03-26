@@ -1,6 +1,11 @@
 package ch.softappeal.yass2.generate
 
 import ch.softappeal.yass2.core.InternalApi
+import java.nio.file.Path
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.notExists
+import kotlin.io.path.readText
+import kotlin.io.path.writeText
 
 /** @suppress */
 @InternalApi public class CodeWriter private constructor(private val appendable: Appendable, private val indent: String) {
@@ -75,9 +80,19 @@ internal fun <T> List<T>.duplicates(): List<T> {
     return filter { !seen.add(it) }
 }
 
-internal fun String.fixLines() = replace("\r\n", "\n")
-
 internal const val CSY = "ch.softappeal.yass2"
 
 /** Name of the generated file (without `.kt` extension). */
 public const val GENERATED_BY_YASS: String = "GeneratedByYass"
+
+private fun String.fixLines() = replace("\r\n", "\n")
+
+internal fun writeGeneratedFile(generatedDir: Path, generatedCode: String) {
+    val generatedFile = generatedDir.resolve("$GENERATED_BY_YASS.kt")
+    if (generatedFile.notExists()) generatedFile.writeText(generatedCode) else {
+        val existingCode = generatedFile.readText().fixLines()
+        check(generatedCode == existingCode) {
+            "outdated generated file '${generatedFile.absolutePathString()}' (delete file to regenerate it)"
+        }
+    }
+}

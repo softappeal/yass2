@@ -3,7 +3,7 @@
 package ch.softappeal.yass2.generate.ksp
 
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
-import ch.softappeal.yass2.generate.reflect.REFLECT_CODE
+import ch.softappeal.yass2.generate.reflect.CODE
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.sourcesGeneratedBySymbolProcessor
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
@@ -20,8 +20,6 @@ private fun compile(generateMode: GenerateMode) = compile(
 ).apply {
     assertEquals(KotlinCompilation.ExitCode.OK, exitCode)
 }
-
-private val CODE = REFLECT_CODE.replace("package ch.softappeal.yass2.generate.reflect\n", "package ch.softappeal.yass2\n")
 
 class GenerateTest {
     @Test

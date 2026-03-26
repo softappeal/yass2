@@ -102,7 +102,7 @@ allprojects {
     }
 }
 
-val libraries = libs
+val libraries = libs // needed because libs is not available as an extension here
 
 val coreProject = project(":yass2-core")
 
