@@ -234,7 +234,7 @@ public fun binarySerializer(): ch.softappeal.yass2.core.serialize.binary.BinaryS
                 ch.softappeal.yass2.core.serialize.binary.StringBinaryEncoder, // 5
                 ch.softappeal.yass2.core.serialize.binary.ByteArrayBinaryEncoder, // 6
                 ch.softappeal.yass2.core.serialize.binary.EnumBinaryEncoder(
-                    ch.softappeal.yass2.Gender::class, enumValues(), // 7
+                    ch.softappeal.yass2.Gender::class, kotlin.enums.enumEntries(), // 7
                 ),
                 ch.softappeal.yass2.core.serialize.binary.BinaryEncoder(
                     ch.softappeal.yass2.A::class, // 8

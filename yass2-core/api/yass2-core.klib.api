@@ -113,7 +113,7 @@ final class <#A: kotlin/Any> ch.softappeal.yass2.core.serialize.string/ClassStri
 }
 
 final class <#A: kotlin/Enum<#A>> ch.softappeal.yass2.core.serialize.binary/EnumBinaryEncoder : ch.softappeal.yass2.core.serialize.binary/BinaryEncoder<#A> { // ch.softappeal.yass2.core.serialize.binary/EnumBinaryEncoder|null[0]
-    constructor <init>(kotlin.reflect/KClass<#A>, kotlin/Array<#A>) // ch.softappeal.yass2.core.serialize.binary/EnumBinaryEncoder.<init>|<init>(kotlin.reflect.KClass<1:0>;kotlin.Array<1:0>){}[0]
+    constructor <init>(kotlin.reflect/KClass<#A>, kotlin.enums/EnumEntries<#A>) // ch.softappeal.yass2.core.serialize.binary/EnumBinaryEncoder.<init>|<init>(kotlin.reflect.KClass<1:0>;kotlin.enums.EnumEntries<1:0>){}[0]
 }
 
 final class <#A: kotlin/Enum<#A>> ch.softappeal.yass2.core.serialize.string/EnumStringEncoder : ch.softappeal.yass2.core.serialize.string/BaseStringEncoder<#A> { // ch.softappeal.yass2.core.serialize.string/EnumStringEncoder|null[0]

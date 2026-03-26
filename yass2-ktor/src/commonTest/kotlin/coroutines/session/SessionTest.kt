@@ -18,10 +18,11 @@ import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 fun <C : Connection> CoroutineScope.acceptorSessionFactory(context: suspend Session<C>.() -> Any): SessionFactory<C> = {
     object : Session<C>() {
@@ -124,13 +125,13 @@ class SessionTest {
     @Test
     fun heartbeatClose() = runTest {
         heartbeatTest { echo ->
-            val job = heartbeat(200, 100) {
+            val job = heartbeat(200.milliseconds, 100.milliseconds) {
                 println("heartbeat")
                 echo.noParametersNoResult()
             }
-            delay(500)
+            delay(500.milliseconds)
             close()
-            delay(400)
+            delay(400.milliseconds)
             assertTrue(job.isCompleted)
             assertFalse(job.isCancelled)
         }
@@ -139,10 +140,10 @@ class SessionTest {
     @Test
     fun heartbeatCancel() = runTest {
         heartbeatTest {
-            val job = heartbeat(200, 100) { println("heartbeat") }
-            delay(500)
+            val job = heartbeat(200.milliseconds, 100.milliseconds) { println("heartbeat") }
+            delay(500.milliseconds)
             job.cancel()
-            delay(100)
+            delay(100.milliseconds)
             assertTrue(job.isCompleted)
             assertTrue(job.isCancelled)
         }
@@ -151,8 +152,8 @@ class SessionTest {
     @Test
     fun heartbeatException() = runTest {
         heartbeatTest {
-            val job = heartbeat(200, 100) { throw Exception("heartbeat") }
-            delay(100)
+            val job = heartbeat(200.milliseconds, 100.milliseconds) { throw Exception("heartbeat") }
+            delay(100.milliseconds)
             assertTrue(job.isCompleted)
             assertFalse(job.isCancelled)
         }
@@ -162,13 +163,13 @@ class SessionTest {
     @Test
     fun heartbeatTimeout() = runTest {
         heartbeatTest {
-            var timeoutMillis = 0L
-            val job = heartbeat(200, 100) {
+            var timeout = Duration.ZERO
+            val job = heartbeat(200.milliseconds, 100.milliseconds) {
                 println("heartbeat")
-                delay(timeoutMillis)
-                timeoutMillis += 20
+                delay(timeout)
+                timeout += 20.milliseconds
             }
-            delay(10_000)
+            delay(10_000.milliseconds)
             assertTrue(job.isCompleted)
         }
     }
@@ -182,7 +183,7 @@ class SessionTest {
                     launch {
                         counter.incrementAndFetch()
                         println(EchoId.proxy(clientTunnel).echo("opened $counter"))
-                        delay(if (counter.load() == 19) 1000 else 100)
+                        delay((if (counter.load() == 19) 1000 else 100).milliseconds)
                         close()
                     }
                 }
@@ -193,9 +194,6 @@ class SessionTest {
                     println("initiatorSession closed $counter")
                 }
             }
-        }
-        assertFailsWith<IllegalArgumentException> {
-            connect(initiatorSessionFactory, 0) {}
         }
         val acceptorSessionFactory = {
             object : Session<Connection>() {
@@ -209,18 +207,18 @@ class SessionTest {
         }
         val job = connect(
             initiatorSessionFactory,
-            200,
+            200.milliseconds,
         ) {
             counter.incrementAndFetch()
             println("connect $counter")
             if (counter.load() == 9) throw Exception("connect failed")
             launch { localConnect(it, acceptorSessionFactory) }
         }
-        delay(1300)
+        delay(1300.milliseconds)
         assertEquals(19, counter.load())
-        delay(600)
+        delay(600.milliseconds)
         assertEquals(19, counter.load())
-        delay(500)
+        delay(500.milliseconds)
         job.cancel()
         assertEquals(29, counter.load())
     }

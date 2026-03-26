@@ -19,6 +19,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.time.Duration.Companion.seconds
 
 private val range1 = 1..3
 private val range2 = 11..12
@@ -66,12 +67,12 @@ class RemoteFlowTest {
     fun multiple() = runTest {
         repeat(2) {
             launch {
-                delay(1_000)
-                assertEquals(range1.toList(), createFlow(1).onEach { delay(13_000) }.toList())
+                delay(1.seconds)
+                assertEquals(range1.toList(), createFlow(1).onEach { delay(13.seconds) }.toList())
             }
             launch {
-                delay(3_000)
-                assertEquals(range2.toList(), createFlow(2).onEach { delay(17_000) }.toList())
+                delay(3.seconds)
+                assertEquals(range2.toList(), createFlow(2).onEach { delay(17.seconds) }.toList())
             }
         }
     }

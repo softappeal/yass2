@@ -1,5 +1,3 @@
-@file:Suppress("SpellCheckingInspection")
-
 package ch.softappeal.yass2.core.serialize
 
 import ch.softappeal.yass2.B

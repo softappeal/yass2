@@ -81,5 +81,11 @@ class UnicodeTest {
             readCodePoint(0b1111_0000, 0b1000_1111, 0b1011_1111, 0b1011_1111)
         }
         read(0x10000, 0b1111_0000, 0b1001_0000, 0b1000_0000, 0b1000_0000)
+        assertFailsWithMessage<IllegalStateException>("code point ${0x110000} out of range") {
+            readCodePoint(0b1111_0100, 0b1001_0000, 0b1000_0000, 0b1000_0000)
+        }
+        assertFailsWithMessage<IllegalStateException>("code point ${0x110001} out of range") {
+            readCodePoint(0b1111_0100, 0b1001_0000, 0b1000_0000, 0b1000_0001)
+        }
     }
 }

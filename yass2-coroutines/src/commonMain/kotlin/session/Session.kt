@@ -18,6 +18,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 public class Packet(public val requestNumber: Int, public val message: Message)
 
@@ -90,7 +92,7 @@ public abstract class Session<C : Connection> {
             closed(e)
             if (sendEnd) {
                 write(null)
-                delay(1000) // give some time to send the packet before close
+                delay(1000.milliseconds) // give some time to send the packet before close
             }
         }) {
             connection.closed()
@@ -117,19 +119,17 @@ public abstract class Session<C : Connection> {
         } while (packet != null)
     }
 
-    /** Launches a new coroutine that closes the session if [heartbeat] throws an exception or doesn't return within [timeoutMillis]. */
+    /** Launches a new coroutine that closes the session if [heartbeat] throws an exception or doesn't return within [timeout]. */
     public fun CoroutineScope.heartbeat(
-        intervalMillis: Long,
-        timeoutMillis: Long,
+        interval: Duration,
+        timeout: Duration,
         heartbeat: suspend () -> Unit,
     ): Job {
-        require(intervalMillis > 0)
-        require(timeoutMillis > 0)
         return launch {
             closeOnException {
                 while (true) {
-                    withTimeout(timeoutMillis) { heartbeat() }
-                    delay(intervalMillis)
+                    withTimeout(timeout) { heartbeat() }
+                    delay(interval)
                 }
             }
         }

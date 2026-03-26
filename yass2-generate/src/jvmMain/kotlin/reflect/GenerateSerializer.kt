@@ -112,7 +112,7 @@ private fun <P : Property> KClass<*>.properties(createProperty: (property: KProp
                     encoderObjects.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
                     enumClasses.forEach { type ->
                         writeNestedLine("${EnumBinaryEncoder::class.qualifiedName}(", "),") {
-                            writeNestedLine("${type.qualifiedName}::class, enumValues(), // ${encoderId++}")
+                            writeNestedLine("${type.qualifiedName}::class, kotlin.enums.enumEntries(), // ${encoderId++}")
                         }
                     }
                     concreteClasses.forEach { type ->

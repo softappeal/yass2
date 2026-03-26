@@ -51,7 +51,7 @@ class StringEncodersTest {
         }
     }
 
-    @Suppress("SpellCheckingInspection")
+    @Suppress("SpellCheckingInspection", "GrazieInspectionRunner")
     @Test
     fun byteArray() {
         fun test(value: ByteArray, result: String) {
@@ -68,7 +68,7 @@ class StringEncodersTest {
         assertFails { ByteArrayStringEncoder.readBase("A*==") }
     }
 
-    @Suppress("SpellCheckingInspection")
+    @Suppress("SpellCheckingInspection", "GrazieInspectionRunner")
     @Test
     fun string() {
         println("\t\r\n\\\"")

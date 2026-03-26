@@ -45,6 +45,7 @@ import ch.softappeal.yass2.core.serialize.Reader
                 (followByte() and 0b0011_1111)
             ).apply {
                 check(this >= 0x10000) { "overlong 4 byte encoding of ${toUInt()}" }
+                check(this <= 0x10_FFFF) { "code point ${toUInt()} out of range" }
             }
         else -> error("invalid first byte ${firstByte.toUByte()}")
     }

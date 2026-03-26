@@ -5,11 +5,12 @@ import ch.softappeal.yass2.core.assertFailsWithMessage
 import ch.softappeal.yass2.core.serialize.ByteArrayReader
 import ch.softappeal.yass2.core.serialize.ByteArrayWriter
 import ch.softappeal.yass2.core.serialize.checkDrained
+import kotlin.enums.enumEntries
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 
-val GenderEncoder = EnumBinaryEncoder(Gender::class, enumValues())
+val GenderEncoder = EnumBinaryEncoder(Gender::class, enumEntries())
 
 private data class OptionalString(val s: String?)
 
@@ -56,7 +57,7 @@ class BinaryEncodersTest {
             check(Long.MAX_VALUE, -2, -1, -1, -1, -1, -1, -1, -1, -1, 1)
             check(Long.MIN_VALUE, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1)
         }
-        @Suppress("SpellCheckingInspection")
+        @Suppress("SpellCheckingInspection", "GrazieInspectionRunner")
         with(StringBinaryEncoder) {
             check("", 0)
             check("abc", 3, 97, 98, 99)

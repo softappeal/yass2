@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.core.serialize.binary
 
+import kotlin.enums.EnumEntries
 import kotlin.reflect.KClass
 
 public object BooleanBinaryEncoder : BinaryEncoder<Boolean>(
@@ -35,12 +36,12 @@ public object StringBinaryEncoder : BinaryEncoder<String>(
     { ByteArrayBinaryEncoder.read(this).decodeToString(throwOnInvalidSequence = true) },
 )
 
-public class EnumBinaryEncoder<T : Enum<T>>(type: KClass<T>, enumValues: Array<T>) : BinaryEncoder<T>(
+public class EnumBinaryEncoder<T : Enum<T>>(type: KClass<T>, enumEntries: EnumEntries<T>) : BinaryEncoder<T>(
     type,
     { value -> writeVarInt(value.ordinal) },
     {
         val c = readVarInt()
-        check(c in 0..<enumValues.size) { "illegal constant $c" }
-        enumValues[c]
+        check(c in enumEntries.indices) { "illegal constant $c" }
+        enumEntries[c]
     },
 )

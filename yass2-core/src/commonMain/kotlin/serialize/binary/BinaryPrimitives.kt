@@ -32,7 +32,7 @@ public fun Writer.writeVarInt(value: Int) {
     }
 }
 
-public fun Reader.readVarInt(): Int { // doesn't check for invalid input
+public fun Reader.readVarInt(): Int { // doesn't check for invalid input; it's not harmful
     var shift = 0
     var value = 0
     while (true) {
@@ -57,7 +57,7 @@ public fun Writer.writeVarLong(value: Long) {
     }
 }
 
-public fun Reader.readVarLong(): Long { // doesn't check for invalid input
+public fun Reader.readVarLong(): Long { // doesn't check for invalid input; it's not harmful
     var shift = 0
     var value = 0L
     while (true) {

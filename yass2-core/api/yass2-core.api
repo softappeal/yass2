@@ -158,7 +158,7 @@ public final class ch/softappeal/yass2/core/serialize/binary/ByteArrayBinaryEnco
 }
 
 public final class ch/softappeal/yass2/core/serialize/binary/EnumBinaryEncoder : ch/softappeal/yass2/core/serialize/binary/BinaryEncoder {
-	public fun <init> (Lkotlin/reflect/KClass;[Ljava/lang/Enum;)V
+	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/enums/EnumEntries;)V
 }
 
 public final class ch/softappeal/yass2/core/serialize/binary/IntBinaryEncoder : ch/softappeal/yass2/core/serialize/binary/BinaryEncoder {

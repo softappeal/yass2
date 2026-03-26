@@ -114,7 +114,7 @@ internal fun CodeWriter.generateBinarySerializer(
                     encoderObjects.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
                     enumClasses.forEach { type ->
                         writeNestedLine("${EnumBinaryEncoder::class.qualifiedName}(", "),") {
-                            writeNestedLine("${type.qualifiedName}::class, enumValues(), // ${encoderId++}")
+                            writeNestedLine("${type.qualifiedName}::class, kotlin.enums.enumEntries(), // ${encoderId++}")
                         }
                     }
                     concreteClasses.forEach { type ->

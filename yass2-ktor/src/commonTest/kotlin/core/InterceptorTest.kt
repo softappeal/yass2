@@ -23,7 +23,7 @@ object EchoImpl : Echo {
     override suspend fun echo(value: Any?) = value
     override suspend fun echoRequired(value: Any) = value
     override suspend fun noParametersNoResult() {}
-    override suspend fun delay(milliSeconds: Int) = kotlinx.coroutines.delay(milliSeconds.toLong())
+    override suspend fun delay(milliSeconds: Int) = kotlinx.coroutines.delay(milliSeconds.milliseconds)
     override suspend fun echoException(value: Exception) = value
 
     @Suppress("SameReturnValue")
