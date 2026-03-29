@@ -1,7 +1,8 @@
 package ch.softappeal.yass2.coroutines.session
 
-import ch.softappeal.yass2.Echo
+import ch.softappeal.yass2.CalculatorId
 import ch.softappeal.yass2.EchoId
+import ch.softappeal.yass2.core.CalculatorImpl
 import ch.softappeal.yass2.core.EchoImpl
 import ch.softappeal.yass2.core.remote.invoke
 import ch.softappeal.yass2.core.remote.tunnel
@@ -21,7 +22,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 fun <C : Connection> CoroutineScope.acceptorSessionFactory(context: suspend Session<C>.() -> Any): SessionFactory<C> = {
@@ -91,14 +91,14 @@ private suspend fun localConnect(
     }
 }
 
-private suspend fun CoroutineScope.heartbeatTest(open: suspend Session<Connection>.(echo: Echo) -> Unit) {
+private suspend fun CoroutineScope.keepAliveTest(keepAliveFun: suspend () -> Unit, open: suspend Session<Connection>.() -> Unit) {
     localConnect(
         {
             object : Session<Connection>() {
                 override fun opened() {
                     launch {
                         assertFalse(isClosed())
-                        open(EchoId.proxy(clientTunnel))
+                        open()
                         assertTrue(isClosed())
                     }
                 }
@@ -108,7 +108,13 @@ private suspend fun CoroutineScope.heartbeatTest(open: suspend Session<Connectio
         },
         {
             object : Session<Connection>() {
-                override val serverTunnel = tunnel(EchoId.service(EchoImpl))
+                override val serverTunnel = tunnel(KeepAliveId.service(object : KeepAlive {
+                    override suspend fun keepAlive() {
+                        println("keepAlive")
+                        keepAliveFun()
+                    }
+                }))
+
                 override suspend fun closed(e: Exception?) = println("session2 closed: $e")
             }
         },
@@ -123,59 +129,63 @@ class SessionTest {
     }
 
     @Test
-    fun heartbeatClose() = runTest {
-        heartbeatTest { echo ->
-            val job = heartbeat(200.milliseconds, 100.milliseconds) {
-                println("heartbeat")
-                echo.noParametersNoResult()
-            }
-            delay(500.milliseconds)
+    fun keepAliveClose() = runTest {
+        val counter = AtomicInt(0)
+        keepAliveTest({ counter.incrementAndFetch() }) {
+            val job = launchKeepAlive(this, 100.milliseconds, 200.milliseconds)
+            delay(450.milliseconds)
             close()
-            delay(400.milliseconds)
+            delay(50.milliseconds)
             assertTrue(job.isCompleted)
             assertFalse(job.isCancelled)
+            assertEquals(3, counter.load())
         }
     }
 
     @Test
-    fun heartbeatCancel() = runTest {
-        heartbeatTest {
-            val job = heartbeat(200.milliseconds, 100.milliseconds) { println("heartbeat") }
-            delay(500.milliseconds)
+    fun keepAliveCancel() = runTest {
+        val counter = AtomicInt(0)
+        keepAliveTest({ counter.incrementAndFetch() }) {
+            val job = launchKeepAlive(this, 100.milliseconds, 200.milliseconds)
+            delay(450.milliseconds)
             job.cancel()
-            delay(100.milliseconds)
+            delay(50.milliseconds)
             assertTrue(job.isCompleted)
             assertTrue(job.isCancelled)
+            assertEquals(3, counter.load())
         }
     }
 
     @Test
-    fun heartbeatException() = runTest {
-        heartbeatTest {
-            val job = heartbeat(200.milliseconds, 100.milliseconds) { throw Exception("heartbeat") }
-            delay(100.milliseconds)
+    fun keepAliveException() = runTest {
+        keepAliveTest({ throw Exception("keepAlive") }) {
+            val job = launchKeepAlive(this, 100.milliseconds, 200.milliseconds)
+            delay(50.milliseconds)
             assertTrue(job.isCompleted)
             assertFalse(job.isCancelled)
         }
     }
 
-    @Suppress("ASSIGNED_VALUE_IS_NEVER_READ")
     @Test
-    fun heartbeatTimeout() = runTest {
-        heartbeatTest {
-            var timeout = Duration.ZERO
-            val job = heartbeat(200.milliseconds, 100.milliseconds) {
-                println("heartbeat")
-                delay(timeout)
-                timeout += 20.milliseconds
-            }
-            delay(10_000.milliseconds)
+    fun keepAliveTimeout() = runTest {
+        keepAliveTest({ delay(150.milliseconds) }) {
+            val job = launchKeepAlive(this, 100.milliseconds, 200.milliseconds)
+            delay(200.milliseconds)
             assertTrue(job.isCompleted)
+            assertFalse(job.isCancelled)
         }
     }
 
     @Test
-    fun connect() = runTest {
+    fun keepAliveTunnel() = runTest {
+        val tunnel = keepAliveTunnel(EchoId.service(EchoImpl), CalculatorId.service(CalculatorImpl))
+        assertEquals("echo", EchoId.proxy(tunnel).echo("echo"))
+        assertEquals(3, CalculatorId.proxy(tunnel).add(1, 2))
+        KeepAliveId.proxy(tunnel).keepAlive()
+    }
+
+    @Test
+    fun connector() = runTest {
         val counter = AtomicInt(0)
         val initiatorSessionFactory = {
             object : Session<Connection>() {
@@ -205,7 +215,7 @@ class SessionTest {
                 }
             }
         }
-        val job = connect(
+        val job = launchConnector(
             initiatorSessionFactory,
             200.milliseconds,
         ) {

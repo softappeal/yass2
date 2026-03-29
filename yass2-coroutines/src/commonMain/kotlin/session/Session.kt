@@ -10,15 +10,11 @@ import ch.softappeal.yass2.coroutines.AtomicBoolean
 import ch.softappeal.yass2.coroutines.AtomicInt
 import ch.softappeal.yass2.coroutines.ThreadSafeMap
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withTimeout
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 public class Packet(public val requestNumber: Int, public val message: Message)
@@ -46,7 +42,7 @@ public abstract class Session<C : Connection> {
 
     public suspend fun isClosed(): Boolean = closed.load()
 
-    private suspend fun closeOnException(block: suspend () -> Unit) {
+    public suspend fun closeOnException(block: suspend () -> Unit) {
         try {
             block()
         } catch (e: Exception) {
@@ -54,7 +50,7 @@ public abstract class Session<C : Connection> {
         }
     }
 
-    protected val clientTunnel: Tunnel = { request ->
+    public val clientTunnel: Tunnel = { request ->
         check(!isClosed()) { "session '$this' is closed" }
         val requestNumber = nextRequestNumber.incrementAndFetch()
         val deferred = CompletableDeferred<Reply>(currentCoroutineContext()[Job]!!)
@@ -70,12 +66,8 @@ public abstract class Session<C : Connection> {
 
     protected open val serverTunnel: Tunnel = { throw UnsupportedOperationException() }
 
-    private lateinit var _connection: C
-    public var connection: C
-        get() = _connection
-        internal set(value) {
-            _connection = value
-        }
+    public lateinit var connection: C
+        internal set
 
     private val closed = AtomicBoolean(false)
     private val nextRequestNumber = AtomicInt(0)
@@ -100,11 +92,11 @@ public abstract class Session<C : Connection> {
     }
 
     private suspend fun received(packet: Packet?) {
+        check(!isClosed()) { "session '$this' is closed" }
         if (packet == null) {
             close(false, null)
             return
         }
-        check(!isClosed()) { "session '$this' is closed" }
         when (val message = packet.message) {
             is Request -> write(Packet(packet.requestNumber, serverTunnel(message)))
             is Reply -> requestNumberToDeferred.remove(packet.requestNumber)!!.complete(message)
@@ -117,22 +109,6 @@ public abstract class Session<C : Connection> {
             val packet = receive()
             received(packet)
         } while (packet != null)
-    }
-
-    /** Launches a new coroutine that closes the session if [heartbeat] throws an exception or doesn't return within [timeout]. */
-    public fun CoroutineScope.heartbeat(
-        interval: Duration,
-        timeout: Duration,
-        heartbeat: suspend () -> Unit,
-    ): Job {
-        return launch {
-            closeOnException {
-                while (true) {
-                    withTimeout(timeout) { heartbeat() }
-                    delay(interval)
-                }
-            }
-        }
     }
 }
 

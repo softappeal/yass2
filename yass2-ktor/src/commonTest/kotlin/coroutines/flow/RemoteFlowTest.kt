@@ -31,7 +31,7 @@ private fun flowFactory(flowId: Int) = when (flowId) {
     else -> error("unexpected flowId $flowId")
 }
 
-private val FlowServiceId = ServiceId<FlowService<Int, Int>>("flow")
+private val FlowServiceId = ServiceId<FlowService<Int, Int>>("FlowService")
 
 private fun CoroutineScope.createFlow(flowId: Int): Flow<Int> {
     val flowService = flowService(::flowFactory).proxy(Printer)

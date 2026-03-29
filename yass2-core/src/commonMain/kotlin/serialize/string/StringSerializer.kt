@@ -97,13 +97,12 @@ public abstract class StringWriter(
 
 public abstract class StringReader(
     private val reader: Reader,
-    private var _nextCodePoint: Int,
+    internal var nextCodePoint: Int,
     private val escapeDollar: Boolean = false,
 ) : Reader by reader {
-    internal val nextCodePoint get() = _nextCodePoint
-    internal fun expectedCodePoint(codePoint: Int) = _nextCodePoint == codePoint
+    internal fun expectedCodePoint(codePoint: Int) = nextCodePoint == codePoint
     internal fun readNextCodePoint() {
-        _nextCodePoint = readCodePoint()
+        nextCodePoint = readCodePoint()
     }
 
     internal fun checkExpectedCodePoint(codePoint: Int) {

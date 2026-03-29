@@ -81,10 +81,10 @@ interface NewsListener {
 }
 
 @MustBeImplementedByAcceptor
-val CalculatorId = ServiceId<Calculator>("calc")
+val CalculatorId = ServiceId<Calculator>("Calculator")
 
 @MustBeImplementedByInitiator
-val NewsListenerId = ServiceId<NewsListener>("news")
+val NewsListenerId = ServiceId<NewsListener>("NewsListener")
 
 // The following annotations generate the proxies and serializers.
 // They can be added to anything in the package.

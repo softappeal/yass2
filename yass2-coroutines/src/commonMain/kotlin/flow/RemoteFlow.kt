@@ -22,20 +22,19 @@ public interface FlowService<out F, I> {
     public suspend fun cancel(collectId: Int)
 }
 
-@ExperimentalApi public fun <F, I> FlowService<F, I>.createFlow(flowId: I): Flow<F> =
-    object : Flow<F> {
-        override suspend fun collect(collector: FlowCollector<F>) {
-            val collectId = create(flowId)
-            try {
-                while (true) {
-                    val value = next(collectId) ?: return
-                    collector.emit(value)
-                }
-            } catch (e: Exception) {
-                throw e.addSuppressed { cancel(collectId) }
+@ExperimentalApi public fun <F, I> FlowService<F, I>.createFlow(flowId: I): Flow<F> = object : Flow<F> {
+    override suspend fun collect(collector: FlowCollector<F>) {
+        val collectId = create(flowId)
+        try {
+            while (true) {
+                val value = next(collectId) ?: return
+                collector.emit(value)
             }
+        } catch (e: Exception) {
+            throw e.addSuppressed { cancel(collectId) }
         }
     }
+}
 
 @ExperimentalApi public typealias FlowFactory<F, I> = (flowId: I) -> Flow<F>
 

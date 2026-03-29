@@ -96,8 +96,8 @@ interface GenericService<A, B, C> {
 
 val ContractSerializer = TextSerializer(stringEncoders())
 
-val CalculatorId = ServiceId<Calculator>("calc")
-val EchoId = ServiceId<Echo>("echo")
+val CalculatorId = ServiceId<Calculator>("Calculator")
+val EchoId = ServiceId<Echo>("Echo")
 
 @Proxies(
     Calculator::class,
