@@ -23,15 +23,6 @@ public fun Serializer.write(writer: Writer, value: Any?) {
 
 public fun Serializer.read(reader: Reader): Any? = reader.read()
 
-public fun Serializer.toByteArray(value: Any?): ByteArray = with(ByteArrayWriter()) {
-    write(value)
-    toyByteArray()
-}
-
-public fun Serializer.fromByteArray(byteArray: ByteArray): Any? = with(ByteArrayReader(byteArray)) {
-    read().apply { checkDrained() }
-}
-
 /**
  * Concrete classes must have a primary constructor and all its parameters must be properties.
  * Properties can be optional.

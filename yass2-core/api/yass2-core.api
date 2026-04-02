@@ -80,6 +80,8 @@ public final class ch/softappeal/yass2/core/serialize/ByteArrayWriter : ch/softa
 
 public final class ch/softappeal/yass2/core/serialize/ByteArraysKt {
 	public static final fun checkDrained (Lch/softappeal/yass2/core/serialize/ByteArrayReader;)V
+	public static final fun fromByteArray (Lch/softappeal/yass2/core/serialize/Serializer;[B)Ljava/lang/Object;
+	public static final fun toByteArray (Lch/softappeal/yass2/core/serialize/Serializer;Ljava/lang/Object;)[B
 }
 
 public abstract interface annotation class ch/softappeal/yass2/core/serialize/ConcreteAndEnumClasses : java/lang/annotation/Annotation {
@@ -97,9 +99,7 @@ public abstract interface class ch/softappeal/yass2/core/serialize/Serializer {
 }
 
 public final class ch/softappeal/yass2/core/serialize/SerializerKt {
-	public static final fun fromByteArray (Lch/softappeal/yass2/core/serialize/Serializer;[B)Ljava/lang/Object;
 	public static final fun read (Lch/softappeal/yass2/core/serialize/Serializer;Lch/softappeal/yass2/core/serialize/Reader;)Ljava/lang/Object;
-	public static final fun toByteArray (Lch/softappeal/yass2/core/serialize/Serializer;Ljava/lang/Object;)[B
 	public static final fun write (Lch/softappeal/yass2/core/serialize/Serializer;Lch/softappeal/yass2/core/serialize/Writer;Ljava/lang/Object;)V
 }
 

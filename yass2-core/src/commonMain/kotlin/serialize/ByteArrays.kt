@@ -50,3 +50,12 @@ public class ByteArrayReader(private val byteArray: ByteArray) : Reader {
 public fun ByteArrayReader.checkDrained() {
     check(isDrained) { "buffer not drained" }
 }
+
+public fun Serializer.toByteArray(value: Any?): ByteArray = with(ByteArrayWriter()) {
+    write(value)
+    toyByteArray()
+}
+
+public fun Serializer.fromByteArray(byteArray: ByteArray): Any? = with(ByteArrayReader(byteArray)) {
+    read().apply { checkDrained() }
+}
