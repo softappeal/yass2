@@ -16,8 +16,13 @@ import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KType
 import kotlin.reflect.full.findAnnotation
 
-internal fun KType.toType() = toString() // NOTE: see file 'KTypeToTypeTest.kt'
-    .replace("kotlin.Exception /* = java.lang.Exception */", "kotlin.Exception")
+@Suppress("RegExpAnonymousGroup")
+private val RemoveComment = Regex("""(.*)/\*.*\*/""") // TODO: see file 'KTypeToTypeTest.kt'
+
+/** @suppress */
+@InternalApi public fun String.removeComment(): String = replace(RemoveComment, "$1").trim()
+
+internal fun KType.toType() = toString().removeComment()
 
 internal fun CodeWriter.writeFun(signature: String, body: CodeWriter.() -> Unit) {
     writeLine()

@@ -101,6 +101,7 @@ public abstract class StringReader(
     private val escapeDollar: Boolean = false,
 ) : Reader by reader {
     internal fun expectedCodePoint(codePoint: Int) = nextCodePoint == codePoint
+
     internal fun readNextCodePoint() {
         nextCodePoint = readCodePoint()
     }
@@ -274,6 +275,7 @@ public abstract class StringSerializer(stringEncoders: List<StringEncoder<*>>) :
 @InternalApi public const val STRING_FIRST_ENCODER_ID: Int = 3
 
 public fun StringSerializer.toString(value: Any?): String = toByteArray(value).decodeToString(throwOnInvalidSequence = true)
+
 public fun StringSerializer.fromString(string: String): Any? =
     fromByteArray(string.encodeToByteArray(throwOnInvalidSequence = true))
 

@@ -3,7 +3,7 @@ package ch.softappeal.yass2.coroutines
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-// NOTE: replace with kotlin.concurrent.atomics if no longer ExperimentalAtomicApi
+// TODO: replace with kotlin.concurrent.atomics if no longer ExperimentalAtomicApi
 
 internal class AtomicBoolean(private var value: Boolean) {
     private val mutex = Mutex()
