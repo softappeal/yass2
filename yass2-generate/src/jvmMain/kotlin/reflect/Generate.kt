@@ -16,7 +16,7 @@ import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KType
 import kotlin.reflect.full.findAnnotation
 
-private val RemoveComment = Regex(""" /\*.*?\*/""") // TODO: see file 'KTypeToTypeTest.kt'
+private val RemoveComment = Regex(""" *?/\*.*?\*/""") // TODO: see file 'KTypeToTypeTest.kt'
 
 /** @suppress */
 @InternalApi public fun String.removeComment(): String = replace(RemoveComment, "")

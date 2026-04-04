@@ -15,21 +15,22 @@ val CODE = File("$DIR/$GENERATED_BY_YASS.kt")
     .readText()
     .replace("package ch.softappeal.yass2.generate.reflect\n", "package ch.softappeal.yass2\n")
 
-private fun map(): Map<Exception, Exception>? = null
+private fun map(): Map<Exception, RuntimeException>? = null
 private const val MapType =
-    "kotlin.collections.Map<kotlin.Exception /* = java.lang.Exception */, kotlin.Exception /* = java.lang.Exception */>?"
+    "kotlin.collections.Map<kotlin.Exception /* = java.lang.Exception */, kotlin.RuntimeException /* = java.lang.RuntimeException */>?"
 
 class GenerateTest {
     @OptIn(InternalApi::class)
     @Test
     fun removeComment() {
-        assertEquals("/**/", "/**/".removeComment())
+        assertEquals("", "/**/".removeComment())
         assertEquals("", " /**/".removeComment())
+        assertEquals("", "  /**/".removeComment())
         assertEquals("12", "1 /*abc/**/2".removeComment())
         assertEquals("kotlin.Exception", "kotlin.Exception /* = java.lang.Exception */".removeComment())
         assertEquals(MapType, ::map.returnType.toString())
-        assertEquals("kotlin.collections.Map<kotlin.Exception, kotlin.Exception>?", MapType.removeComment())
-        assertEquals(" 1 2 ", " 1  /*abc/* a b c * / */2 ".removeComment())
+        assertEquals("kotlin.collections.Map<kotlin.Exception, kotlin.RuntimeException>?", MapType.removeComment())
+        assertEquals(" 12 ", " 1  /*abc/* a b c * / */2 ".removeComment())
     }
 
     @Test
