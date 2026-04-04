@@ -15,14 +15,21 @@ val CODE = File("$DIR/$GENERATED_BY_YASS.kt")
     .readText()
     .replace("package ch.softappeal.yass2.generate.reflect\n", "package ch.softappeal.yass2\n")
 
+private fun map(): Map<Exception, Exception>? = null
+private const val MapType =
+    "kotlin.collections.Map<kotlin.Exception /* = java.lang.Exception */, kotlin.Exception /* = java.lang.Exception */>?"
+
 class GenerateTest {
     @OptIn(InternalApi::class)
     @Test
     fun removeComment() {
+        assertEquals("/**/", "/**/".removeComment())
+        assertEquals("", " /**/".removeComment())
+        assertEquals("12", "1 /*abc/**/2".removeComment())
         assertEquals("kotlin.Exception", "kotlin.Exception /* = java.lang.Exception */".removeComment())
-        assertEquals("", "/**/".removeComment())
-        assertEquals("", "  /*  */  ".removeComment())
-        assertEquals("abc.123  xyz", "  abc.123  xyz  /*  d dkj 12 *  /  */  ".removeComment())
+        assertEquals(MapType, ::map.returnType.toString())
+        assertEquals("kotlin.collections.Map<kotlin.Exception, kotlin.Exception>?", MapType.removeComment())
+        assertEquals(" 1 2 ", " 1  /*abc/* a b c * / */2 ".removeComment())
     }
 
     @Test

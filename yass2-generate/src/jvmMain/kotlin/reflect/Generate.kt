@@ -16,11 +16,10 @@ import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KType
 import kotlin.reflect.full.findAnnotation
 
-@Suppress("RegExpAnonymousGroup")
-private val RemoveComment = Regex("""(.*)/\*.*\*/""") // TODO: see file 'KTypeToTypeTest.kt'
+private val RemoveComment = Regex(""" /\*.*?\*/""") // TODO: see file 'KTypeToTypeTest.kt'
 
 /** @suppress */
-@InternalApi public fun String.removeComment(): String = replace(RemoveComment, "$1").trim()
+@InternalApi public fun String.removeComment(): String = replace(RemoveComment, "")
 
 internal fun KType.toType() = toString().removeComment()
 
