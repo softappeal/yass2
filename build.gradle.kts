@@ -63,6 +63,8 @@ allprojects {
                 filters {
                     exclude {
                         annotatedWith.add("ch.softappeal.yass2.core.InternalApi")
+                        annotatedWith.add("ch.softappeal.yass2.core.ExperimentalApi")
+                        annotatedWith.add("ch.softappeal.yass2.core.TestingApi")
                     }
                 }
             }

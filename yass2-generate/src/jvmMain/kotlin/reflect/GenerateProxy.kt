@@ -1,9 +1,9 @@
 @file:Suppress("DuplicatedCode")
-@file:OptIn(InternalApi::class)
+@file:OptIn(TestingApi::class)
 
 package ch.softappeal.yass2.generate.reflect
 
-import ch.softappeal.yass2.core.InternalApi
+import ch.softappeal.yass2.core.TestingApi
 import ch.softappeal.yass2.core.forEachSeparator
 import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.Service
@@ -36,7 +36,7 @@ private val KClass<*>.withTypes get() = "$qualifiedName${if (typeParameters.isEm
 private val KClass<*>.types get() = if (typeParameters.isEmpty()) "" else " $withTypeParameters"
 
 /** @suppress */
-@InternalApi public fun CodeWriter.generateProxy(
+@TestingApi public fun CodeWriter.generateProxy(
     service: KClass<*>,
 ) {
     require(service.java.isInterface) { "'${service.qualifiedName}' must be an interface" }

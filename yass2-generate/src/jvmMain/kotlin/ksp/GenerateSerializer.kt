@@ -1,9 +1,10 @@
-@file:OptIn(InternalApi::class)
+@file:OptIn(InternalApi::class, TestingApi::class)
 @file:Suppress("DuplicatedCode")
 
 package ch.softappeal.yass2.generate.ksp
 
 import ch.softappeal.yass2.core.InternalApi
+import ch.softappeal.yass2.core.TestingApi
 import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses
 import ch.softappeal.yass2.core.serialize.binary.BINARY_FIRST_ENCODER_ID
 import ch.softappeal.yass2.core.serialize.binary.BINARY_LIST_ENCODER_ID

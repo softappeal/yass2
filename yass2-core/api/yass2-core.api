@@ -22,6 +22,9 @@ public abstract interface annotation class ch/softappeal/yass2/core/Proxies : ja
 	public abstract fun value ()[Ljava/lang/Class;
 }
 
+public abstract interface annotation class ch/softappeal/yass2/core/TestingApi : java/lang/annotation/Annotation {
+}
+
 public final class ch/softappeal/yass2/core/remote/ExceptionReply : ch/softappeal/yass2/core/remote/Reply {
 	public fun <init> (Ljava/lang/Exception;)V
 	public final fun getException ()Ljava/lang/Exception;

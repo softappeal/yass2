@@ -42,6 +42,10 @@ open annotation class ch.softappeal.yass2.core/Proxies : kotlin/Annotation { // 
         final fun <get-value>(): kotlin/Array<out kotlin.reflect/KClass<*>> // ch.softappeal.yass2.core/Proxies.value.<get-value>|<get-value>(){}[0]
 }
 
+open annotation class ch.softappeal.yass2.core/TestingApi : kotlin/Annotation { // ch.softappeal.yass2.core/TestingApi|null[0]
+    constructor <init>() // ch.softappeal.yass2.core/TestingApi.<init>|<init>(){}[0]
+}
+
 abstract interface ch.softappeal.yass2.core.serialize/Reader { // ch.softappeal.yass2.core.serialize/Reader|null[0]
     abstract fun readByte(): kotlin/Byte // ch.softappeal.yass2.core.serialize/Reader.readByte|readByte(){}[0]
     abstract fun readByteArray(kotlin/Int): kotlin/ByteArray // ch.softappeal.yass2.core.serialize/Reader.readByteArray|readByteArray(kotlin.Int){}[0]

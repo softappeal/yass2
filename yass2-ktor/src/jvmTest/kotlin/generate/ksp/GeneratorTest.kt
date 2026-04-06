@@ -1,11 +1,8 @@
-@file:OptIn(
-    InternalApi::class,
-    ExperimentalCompilerApi::class,
-)
+@file:OptIn(TestingApi::class, ExperimentalCompilerApi::class)
 
 package ch.softappeal.yass2.generate.ksp
 
-import ch.softappeal.yass2.core.InternalApi
+import ch.softappeal.yass2.core.TestingApi
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.kspProcessorOptions

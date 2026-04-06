@@ -1,12 +1,12 @@
-@file:OptIn(InternalApi::class)
+@file:OptIn(TestingApi::class)
 
 package ch.softappeal.yass2.core.serialize
 
-import ch.softappeal.yass2.core.InternalApi
+import ch.softappeal.yass2.core.TestingApi
 
 public class ByteArrayWriter(initialCapacity: Int = 1000) : Writer {
     /** @suppress */
-    @InternalApi public var byteArray: ByteArray = ByteArray(initialCapacity)
+    @TestingApi public var byteArray: ByteArray = ByteArray(initialCapacity)
 
     private var current = 0
 

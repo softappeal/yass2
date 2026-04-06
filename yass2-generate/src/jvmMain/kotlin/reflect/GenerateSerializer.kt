@@ -4,6 +4,7 @@
 package ch.softappeal.yass2.generate.reflect
 
 import ch.softappeal.yass2.core.InternalApi
+import ch.softappeal.yass2.core.TestingApi
 import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses
 import ch.softappeal.yass2.core.serialize.binary.BINARY_FIRST_ENCODER_ID
 import ch.softappeal.yass2.core.serialize.binary.BINARY_LIST_ENCODER_ID
@@ -75,7 +76,7 @@ private fun <P : Property> KClass<*>.properties(createProperty: (property: KProp
 }
 
 /** @suppress */
-@InternalApi public fun CodeWriter.generateBinarySerializer(
+@TestingApi public fun CodeWriter.generateBinarySerializer(
     encoderObjects: List<KClass<out BinaryEncoder<*>>>,
     concreteAndEnumClasses: List<KClass<*>>,
 ) {
@@ -136,7 +137,7 @@ private fun <P : Property> KClass<*>.properties(createProperty: (property: KProp
 }
 
 /** @suppress */
-@InternalApi public fun CodeWriter.generateStringEncoders(
+@TestingApi public fun CodeWriter.generateStringEncoders(
     encoderObjects: List<KClass<out BaseStringEncoder<*>>>,
     concreteAndEnumClasses: List<KClass<*>>,
 ) {
