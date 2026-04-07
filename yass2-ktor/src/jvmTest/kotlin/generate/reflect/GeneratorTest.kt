@@ -1,8 +1,8 @@
-@file:OptIn(TestingApi::class)
+@file:OptIn(TestingYassApi::class)
 
 package ch.softappeal.yass2.generate.reflect
 
-import ch.softappeal.yass2.core.TestingApi
+import ch.softappeal.yass2.core.TestingYassApi
 import ch.softappeal.yass2.core.assertFailsWithMessage
 import ch.softappeal.yass2.core.serialize.binary.BinaryEncoder
 import ch.softappeal.yass2.core.serialize.binary.IntBinaryEncoder

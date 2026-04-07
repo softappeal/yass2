@@ -62,9 +62,9 @@ allprojects {
                 enabled.set(allPlatforms)
                 filters {
                     exclude {
-                        annotatedWith.add("ch.softappeal.yass2.core.InternalApi")
-                        annotatedWith.add("ch.softappeal.yass2.core.ExperimentalApi")
-                        annotatedWith.add("ch.softappeal.yass2.core.TestingApi")
+                        annotatedWith.add("ch.softappeal.yass2.core.InternalYassApi")
+                        annotatedWith.add("ch.softappeal.yass2.core.ExperimentalYassApi")
+                        annotatedWith.add("ch.softappeal.yass2.core.TestingYassApi")
                     }
                 }
             }

@@ -3,7 +3,7 @@
 package ch.softappeal.yass2.generate.reflect
 
 import ch.softappeal.yass2.Generate
-import ch.softappeal.yass2.core.TestingApi
+import ch.softappeal.yass2.core.TestingYassApi
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import java.io.File
 import kotlin.test.Test
@@ -20,7 +20,7 @@ private const val MapType =
     "kotlin.collections.Map<kotlin.Exception /* = java.lang.Exception */, kotlin.RuntimeException /* = java.lang.RuntimeException */>?"
 
 class GenerateTest {
-    @OptIn(TestingApi::class)
+    @OptIn(TestingYassApi::class)
     @Test
     fun removeComment() {
         assertEquals("", "/**/".removeComment())

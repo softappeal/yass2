@@ -1,9 +1,9 @@
-@file:OptIn(ExperimentalApi::class)
+@file:OptIn(ExperimentalYassApi::class)
 
 package ch.softappeal.yass2.coroutines.flow
 
 import ch.softappeal.yass2.DivideByZeroException
-import ch.softappeal.yass2.core.ExperimentalApi
+import ch.softappeal.yass2.core.ExperimentalYassApi
 import ch.softappeal.yass2.core.Printer
 import ch.softappeal.yass2.core.remote.ServiceId
 import ch.softappeal.yass2.core.remote.tunnel

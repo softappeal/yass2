@@ -1,10 +1,10 @@
 @file:Suppress("DuplicatedCode")
-@file:OptIn(InternalApi::class, TestingApi::class)
+@file:OptIn(InternalYassApi::class, TestingYassApi::class)
 
 package ch.softappeal.yass2.generate.ksp
 
-import ch.softappeal.yass2.core.InternalApi
-import ch.softappeal.yass2.core.TestingApi
+import ch.softappeal.yass2.core.InternalYassApi
+import ch.softappeal.yass2.core.TestingYassApi
 import ch.softappeal.yass2.core.forEachSeparator
 import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.Service

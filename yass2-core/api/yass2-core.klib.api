@@ -27,12 +27,12 @@ open annotation class ch.softappeal.yass2.core.serialize/ConcreteAndEnumClasses 
         final fun <get-value>(): kotlin/Array<out kotlin.reflect/KClass<*>> // ch.softappeal.yass2.core.serialize/ConcreteAndEnumClasses.value.<get-value>|<get-value>(){}[0]
 }
 
-open annotation class ch.softappeal.yass2.core/ExperimentalApi : kotlin/Annotation { // ch.softappeal.yass2.core/ExperimentalApi|null[0]
-    constructor <init>() // ch.softappeal.yass2.core/ExperimentalApi.<init>|<init>(){}[0]
+open annotation class ch.softappeal.yass2.core/ExperimentalYassApi : kotlin/Annotation { // ch.softappeal.yass2.core/ExperimentalYassApi|null[0]
+    constructor <init>() // ch.softappeal.yass2.core/ExperimentalYassApi.<init>|<init>(){}[0]
 }
 
-open annotation class ch.softappeal.yass2.core/InternalApi : kotlin/Annotation { // ch.softappeal.yass2.core/InternalApi|null[0]
-    constructor <init>() // ch.softappeal.yass2.core/InternalApi.<init>|<init>(){}[0]
+open annotation class ch.softappeal.yass2.core/InternalYassApi : kotlin/Annotation { // ch.softappeal.yass2.core/InternalYassApi|null[0]
+    constructor <init>() // ch.softappeal.yass2.core/InternalYassApi.<init>|<init>(){}[0]
 }
 
 open annotation class ch.softappeal.yass2.core/Proxies : kotlin/Annotation { // ch.softappeal.yass2.core/Proxies|null[0]
@@ -42,8 +42,8 @@ open annotation class ch.softappeal.yass2.core/Proxies : kotlin/Annotation { // 
         final fun <get-value>(): kotlin/Array<out kotlin.reflect/KClass<*>> // ch.softappeal.yass2.core/Proxies.value.<get-value>|<get-value>(){}[0]
 }
 
-open annotation class ch.softappeal.yass2.core/TestingApi : kotlin/Annotation { // ch.softappeal.yass2.core/TestingApi|null[0]
-    constructor <init>() // ch.softappeal.yass2.core/TestingApi.<init>|<init>(){}[0]
+open annotation class ch.softappeal.yass2.core/TestingYassApi : kotlin/Annotation { // ch.softappeal.yass2.core/TestingYassApi|null[0]
+    constructor <init>() // ch.softappeal.yass2.core/TestingYassApi.<init>|<init>(){}[0]
 }
 
 abstract interface ch.softappeal.yass2.core.serialize/Reader { // ch.softappeal.yass2.core.serialize/Reader|null[0]

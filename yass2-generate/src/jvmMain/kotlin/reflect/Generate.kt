@@ -1,10 +1,10 @@
-@file:OptIn(InternalApi::class, TestingApi::class)
+@file:OptIn(InternalYassApi::class, TestingYassApi::class)
 
 package ch.softappeal.yass2.generate.reflect
 
-import ch.softappeal.yass2.core.InternalApi
+import ch.softappeal.yass2.core.InternalYassApi
 import ch.softappeal.yass2.core.Proxies
-import ch.softappeal.yass2.core.TestingApi
+import ch.softappeal.yass2.core.TestingYassApi
 import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses
 import ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects
 import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
@@ -20,7 +20,7 @@ import kotlin.reflect.full.findAnnotation
 private val RemoveComment = Regex(""" *?/\*.*?\*/""") // TODO: see file 'KTypeToTypeTest.kt'
 
 /** @suppress */
-@TestingApi public fun String.removeComment(): String = replace(RemoveComment, "")
+@TestingYassApi public fun String.removeComment(): String = replace(RemoveComment, "")
 
 internal fun KType.toType() = toString().removeComment()
 

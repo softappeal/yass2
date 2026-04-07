@@ -1,6 +1,6 @@
 package ch.softappeal.yass2.generate
 
-import ch.softappeal.yass2.core.TestingApi
+import ch.softappeal.yass2.core.TestingYassApi
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.notExists
@@ -8,7 +8,7 @@ import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 /** @suppress */
-@TestingApi public class CodeWriter private constructor(private val appendable: Appendable, private val indent: String) {
+@TestingYassApi public class CodeWriter private constructor(private val appendable: Appendable, private val indent: String) {
     public constructor(appendable: Appendable) : this(appendable, "")
 
     internal fun writeLine() {

@@ -1,9 +1,9 @@
-@file:OptIn(InternalApi::class, TestingApi::class)
+@file:OptIn(InternalYassApi::class, TestingYassApi::class)
 
 package ch.softappeal.yass2.core.serialize.string
 
-import ch.softappeal.yass2.core.InternalApi
-import ch.softappeal.yass2.core.TestingApi
+import ch.softappeal.yass2.core.InternalYassApi
+import ch.softappeal.yass2.core.TestingYassApi
 import ch.softappeal.yass2.core.serialize.Reader
 import ch.softappeal.yass2.core.serialize.Serializer
 import ch.softappeal.yass2.core.serialize.Writer
@@ -261,19 +261,19 @@ public abstract class StringSerializer(stringEncoders: List<StringEncoder<*>>) :
 }
 
 /** @suppress */
-@InternalApi public const val STRING_NO_ENCODER_ID: Int = -1
+@InternalYassApi public const val STRING_NO_ENCODER_ID: Int = -1
 
 /** @suppress */
-@InternalApi public const val STRING_STRING_ENCODER_ID: Int = 0
+@InternalYassApi public const val STRING_STRING_ENCODER_ID: Int = 0
 
 /** @suppress */
-@InternalApi public const val STRING_BOOLEAN_ENCODER_ID: Int = 1
+@InternalYassApi public const val STRING_BOOLEAN_ENCODER_ID: Int = 1
 
 /** @suppress */
-@InternalApi public const val STRING_LIST_ENCODER_ID: Int = 2
+@InternalYassApi public const val STRING_LIST_ENCODER_ID: Int = 2
 
 /** @suppress */
-@InternalApi public const val STRING_FIRST_ENCODER_ID: Int = 3
+@InternalYassApi public const val STRING_FIRST_ENCODER_ID: Int = 3
 
 public fun StringSerializer.toString(value: Any?): String = toByteArray(value).decodeToString(throwOnInvalidSequence = true)
 

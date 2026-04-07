@@ -1,6 +1,6 @@
 package ch.softappeal.yass2.coroutines.flow
 
-import ch.softappeal.yass2.core.ExperimentalApi
+import ch.softappeal.yass2.core.ExperimentalYassApi
 import ch.softappeal.yass2.core.Proxies
 import ch.softappeal.yass2.core.addSuppressed
 import ch.softappeal.yass2.core.remote.ExceptionReply
@@ -22,7 +22,7 @@ public interface FlowService<out F, I> {
     public suspend fun cancel(collectId: Int)
 }
 
-@ExperimentalApi public fun <F, I> FlowService<F, I>.createFlow(flowId: I): Flow<F> = object : Flow<F> {
+@ExperimentalYassApi public fun <F, I> FlowService<F, I>.createFlow(flowId: I): Flow<F> = object : Flow<F> {
     override suspend fun collect(collector: FlowCollector<F>) {
         val collectId = create(flowId)
         try {
@@ -36,9 +36,9 @@ public interface FlowService<out F, I> {
     }
 }
 
-@ExperimentalApi public typealias FlowFactory<F, I> = (flowId: I) -> Flow<F>
+@ExperimentalYassApi public typealias FlowFactory<F, I> = (flowId: I) -> Flow<F>
 
-@ExperimentalApi public fun <F, I> CoroutineScope.flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I> {
+@ExperimentalYassApi public fun <F, I> CoroutineScope.flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I> {
     val nextCollectId = AtomicInt(0)
     val collectIdToChannel = ThreadSafeMap<Int, Channel<Reply?>>(16)
     return object : FlowService<F, I> {

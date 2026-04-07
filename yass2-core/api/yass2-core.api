@@ -7,7 +7,7 @@ public final class ch/softappeal/yass2/core/CollectionsKt {
 	public static final fun forEachSeparator (Ljava/lang/Iterable;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;)V
 }
 
-public abstract interface annotation class ch/softappeal/yass2/core/ExperimentalApi : java/lang/annotation/Annotation {
+public abstract interface annotation class ch/softappeal/yass2/core/ExperimentalYassApi : java/lang/annotation/Annotation {
 }
 
 public final class ch/softappeal/yass2/core/InterceptorKt {
@@ -15,14 +15,14 @@ public final class ch/softappeal/yass2/core/InterceptorKt {
 	public static final fun plus (Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;)Lkotlin/jvm/functions/Function4;
 }
 
-public abstract interface annotation class ch/softappeal/yass2/core/InternalApi : java/lang/annotation/Annotation {
+public abstract interface annotation class ch/softappeal/yass2/core/InternalYassApi : java/lang/annotation/Annotation {
 }
 
 public abstract interface annotation class ch/softappeal/yass2/core/Proxies : java/lang/annotation/Annotation {
 	public abstract fun value ()[Ljava/lang/Class;
 }
 
-public abstract interface annotation class ch/softappeal/yass2/core/TestingApi : java/lang/annotation/Annotation {
+public abstract interface annotation class ch/softappeal/yass2/core/TestingYassApi : java/lang/annotation/Annotation {
 }
 
 public final class ch/softappeal/yass2/core/remote/ExceptionReply : ch/softappeal/yass2/core/remote/Reply {

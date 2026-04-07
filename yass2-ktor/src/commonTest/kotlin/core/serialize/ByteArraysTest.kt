@@ -1,8 +1,8 @@
-@file:OptIn(TestingApi::class)
+@file:OptIn(TestingYassApi::class)
 
 package ch.softappeal.yass2.core.serialize
 
-import ch.softappeal.yass2.core.TestingApi
+import ch.softappeal.yass2.core.TestingYassApi
 import ch.softappeal.yass2.core.assertFailsWithMessage
 import kotlin.test.Test
 import kotlin.test.assertContentEquals

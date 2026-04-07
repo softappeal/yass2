@@ -1,8 +1,8 @@
-@file:OptIn(InternalApi::class)
+@file:OptIn(InternalYassApi::class)
 
 package ch.softappeal.yass2.core.serialize.binary
 
-import ch.softappeal.yass2.core.InternalApi
+import ch.softappeal.yass2.core.InternalYassApi
 import ch.softappeal.yass2.core.serialize.Reader
 import ch.softappeal.yass2.core.serialize.Serializer
 import ch.softappeal.yass2.core.serialize.Writer
@@ -101,14 +101,14 @@ public abstract class BinarySerializer : Serializer {
 }
 
 /** @suppress */
-@InternalApi public const val BINARY_NO_ENCODER_ID: Int = -1
+@InternalYassApi public const val BINARY_NO_ENCODER_ID: Int = -1
 
 private const val BINARY_NULL_ENCODER_ID: Int = 0
 
 /** @suppress */
-@InternalApi public const val BINARY_LIST_ENCODER_ID: Int = 1
+@InternalYassApi public const val BINARY_LIST_ENCODER_ID: Int = 1
 
 /** @suppress */
-@InternalApi public const val BINARY_FIRST_ENCODER_ID: Int = 2
+@InternalYassApi public const val BINARY_FIRST_ENCODER_ID: Int = 2
 
 public annotation class BinaryEncoderObjects(vararg val value: KClass<out BinaryEncoder<*>>)

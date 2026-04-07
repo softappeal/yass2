@@ -1,8 +1,8 @@
-@file:OptIn(TestingApi::class, ExperimentalCompilerApi::class)
+@file:OptIn(TestingYassApi::class, ExperimentalCompilerApi::class)
 
 package ch.softappeal.yass2.generate.ksp
 
-import ch.softappeal.yass2.core.TestingApi
+import ch.softappeal.yass2.core.TestingYassApi
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.kspProcessorOptions
@@ -19,7 +19,7 @@ fun compile(source: String, generateMode: GenerateMode?, vararg classPaths: Stri
     classpaths = classPaths.map { File(it) }
     sources = listOf(SourceFile.kotlin("Source.kt", source))
     if (generateMode != null) kspProcessorOptions[GENERATE_MODE] = generateMode.name
-    symbolProcessorProviders += Yass2Provider()
+    symbolProcessorProviders += YassProvider()
 }.compile()
 
 private fun executeTest(message: String, source: String) {

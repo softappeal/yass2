@@ -2,12 +2,12 @@ package ch.softappeal.yass2.core
 
 /**
  * An internal API must not be used.
- * It's only necessary due to cross module dependencies.
+ * It's only necessary due to cross-module dependencies.
  */
 @MustBeDocumented
 @Retention(AnnotationRetention.BINARY)
 @RequiresOptIn(level = RequiresOptIn.Level.ERROR)
-public annotation class InternalApi
+public annotation class InternalYassApi
 
 /**
  * A testing API must not be used.
@@ -16,7 +16,7 @@ public annotation class InternalApi
 @MustBeDocumented
 @Retention(AnnotationRetention.BINARY)
 @RequiresOptIn(level = RequiresOptIn.Level.ERROR)
-public annotation class TestingApi
+public annotation class TestingYassApi
 
 /**
  * An experimental API may be changed or removed in future versions without any warnings and without providing any migration aids.
@@ -37,4 +37,4 @@ public annotation class TestingApi
 )
 @Retention(AnnotationRetention.BINARY)
 @RequiresOptIn(level = RequiresOptIn.Level.ERROR)
-public annotation class ExperimentalApi
+public annotation class ExperimentalYassApi

@@ -1,9 +1,9 @@
-@file:OptIn(TestingApi::class)
+@file:OptIn(TestingYassApi::class)
 
 package ch.softappeal.yass2.generate.ksp
 
 import ch.softappeal.yass2.core.Proxies
-import ch.softappeal.yass2.core.TestingApi
+import ch.softappeal.yass2.core.TestingYassApi
 import ch.softappeal.yass2.core.forEachSeparator
 import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses
 import ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects
@@ -148,7 +148,7 @@ private fun processPackage(name: String, declarations: Set<KSDeclaration>, envir
 }
 
 /** @suppress */
-@TestingApi public class Yass2Provider : SymbolProcessorProvider {
+@TestingYassApi public class YassProvider : SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor = object : SymbolProcessor {
         override fun process(resolver: Resolver): List<KSAnnotated> {
             listOf(
