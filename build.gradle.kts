@@ -3,6 +3,7 @@
 @file:Suppress("SpellCheckingInspection")
 
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import java.util.regex.Pattern
@@ -30,6 +31,10 @@ allprojects {
     }
 
     kotlin {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        dependencies {
+            testImplementation(kotlin("test"))
+        }
         jvm()
         if (webPlatform) {
             js {
@@ -152,14 +157,13 @@ val ktorProject = project(":yass2-ktor") {
             }
             commonTest {
                 dependencies {
-                    implementation(kotlin("test"))
                     implementation(libraries.coroutines.test)
                 }
             }
             jvmTest {
                 dependencies {
-                    implementation(libraries.bundles.ktor.cio)
                     implementation(generateProject)
+                    implementation(libraries.bundles.ktor.cio)
                     implementation(libraries.kct)
                 }
             }
@@ -187,11 +191,6 @@ project(":tutorial") {
                 dependencies {
                     implementation(ktorProject)
                     implementation(libraries.bundles.ktor.cio)
-                }
-            }
-            jvmTest {
-                dependencies {
-                    implementation(kotlin("test"))
                 }
             }
         }
