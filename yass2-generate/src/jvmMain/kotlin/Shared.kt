@@ -92,7 +92,7 @@ internal fun writeGeneratedFile(generatedDir: Path, generatedCode: String) {
     if (generatedFile.notExists()) generatedFile.writeText(generatedCode) else {
         val existingCode = generatedFile.readText().fixLines()
         check(generatedCode == existingCode) {
-            "outdated generated file '${generatedFile.absolutePathString()}' (delete file to regenerate it)"
+            "outdated generated file '${generatedFile.absolutePathString()}': delete file to regenerate it or replace it with >>>\n$generatedCode<<<"
         }
     }
 }
