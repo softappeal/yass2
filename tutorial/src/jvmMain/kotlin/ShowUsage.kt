@@ -41,9 +41,9 @@ suspend fun useCalculator(calculator: Calculator) {
 
 suspend fun useInterceptor() {
     println("*** useInterceptor ***")
-    val calculator = CalculatorImpl.proxy { function, _, invoke ->
+    val calculator = CalculatorImpl.proxy { function, _, invocation ->
         println("calling function '$function'")
-        invoke()
+        invocation()
     }
     useCalculator(calculator)
 }

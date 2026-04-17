@@ -14,12 +14,12 @@
 
 package ch.softappeal.yass2.coroutines.flow
 
-public fun <F, I> ch.softappeal.yass2.coroutines.flow.FlowService<F, I>.proxy(intercept: ch.softappeal.yass2.core.Interceptor): ch.softappeal.yass2.coroutines.flow.FlowService<F, I> =
+public fun <F, I> ch.softappeal.yass2.coroutines.flow.FlowService<F, I>.proxy(interceptor: ch.softappeal.yass2.core.Interceptor): ch.softappeal.yass2.coroutines.flow.FlowService<F, I> =
     object : ch.softappeal.yass2.coroutines.flow.FlowService<F, I> {
         override suspend fun cancel(
             p1: kotlin.Int,
         ) {
-            intercept("cancel", listOf(p1)) {
+            interceptor("cancel", listOf(p1)) {
                 this@proxy.cancel(p1)
             }
         }
@@ -27,7 +27,7 @@ public fun <F, I> ch.softappeal.yass2.coroutines.flow.FlowService<F, I>.proxy(in
         override suspend fun create(
             p1: I,
         ): kotlin.Int {
-            return intercept("create", listOf(p1)) {
+            return interceptor("create", listOf(p1)) {
                 this@proxy.create(p1)
             } as kotlin.Int
         }
@@ -35,7 +35,7 @@ public fun <F, I> ch.softappeal.yass2.coroutines.flow.FlowService<F, I>.proxy(in
         override suspend fun next(
             p1: kotlin.Int,
         ): F? {
-            return intercept("next", listOf(p1)) {
+            return interceptor("next", listOf(p1)) {
                 this@proxy.next(p1)
             } as F?
         }

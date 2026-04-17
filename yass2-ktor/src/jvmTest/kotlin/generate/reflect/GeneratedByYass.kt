@@ -14,13 +14,13 @@
 
 package ch.softappeal.yass2.generate.reflect
 
-public fun ch.softappeal.yass2.Calculator.proxy(intercept: ch.softappeal.yass2.core.Interceptor): ch.softappeal.yass2.Calculator =
+public fun ch.softappeal.yass2.Calculator.proxy(interceptor: ch.softappeal.yass2.core.Interceptor): ch.softappeal.yass2.Calculator =
     object : ch.softappeal.yass2.Calculator {
         override suspend fun add(
             p1: kotlin.Int,
             p2: kotlin.Int,
         ): kotlin.Int {
-            return intercept("add", listOf(p1, p2)) {
+            return interceptor("add", listOf(p1, p2)) {
                 this@proxy.add(p1, p2)
             } as kotlin.Int
         }
@@ -29,7 +29,7 @@ public fun ch.softappeal.yass2.Calculator.proxy(intercept: ch.softappeal.yass2.c
             p1: kotlin.Int,
             p2: kotlin.Int,
         ): kotlin.Int {
-            return intercept("divide", listOf(p1, p2)) {
+            return interceptor("divide", listOf(p1, p2)) {
                 this@proxy.divide(p1, p2)
             } as kotlin.Int
         }
@@ -67,12 +67,12 @@ public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.Calcula
         }
     }
 
-public fun ch.softappeal.yass2.Echo.proxy(intercept: ch.softappeal.yass2.core.Interceptor): ch.softappeal.yass2.Echo =
+public fun ch.softappeal.yass2.Echo.proxy(interceptor: ch.softappeal.yass2.core.Interceptor): ch.softappeal.yass2.Echo =
     object : ch.softappeal.yass2.Echo {
         override suspend fun delay(
             p1: kotlin.Int,
         ) {
-            intercept("delay", listOf(p1)) {
+            interceptor("delay", listOf(p1)) {
                 this@proxy.delay(p1)
             }
         }
@@ -80,7 +80,7 @@ public fun ch.softappeal.yass2.Echo.proxy(intercept: ch.softappeal.yass2.core.In
         override suspend fun echo(
             p1: kotlin.Any?,
         ): kotlin.Any? {
-            return intercept("echo", listOf(p1)) {
+            return interceptor("echo", listOf(p1)) {
                 this@proxy.echo(p1)
             } as kotlin.Any?
         }
@@ -88,7 +88,7 @@ public fun ch.softappeal.yass2.Echo.proxy(intercept: ch.softappeal.yass2.core.In
         override suspend fun echoException(
             p1: kotlin.Exception,
         ): kotlin.Exception {
-            return intercept("echoException", listOf(p1)) {
+            return interceptor("echoException", listOf(p1)) {
                 this@proxy.echoException(p1)
             } as kotlin.Exception
         }
@@ -99,7 +99,7 @@ public fun ch.softappeal.yass2.Echo.proxy(intercept: ch.softappeal.yass2.core.In
             p3: kotlin.collections.Map<out kotlin.Int, kotlin.String>,
             p4: kotlin.Pair<*, *>,
         ): kotlin.collections.Map<in kotlin.Int, kotlin.String>? {
-            return intercept("echoMonster", listOf(p1, p2, p3, p4)) {
+            return interceptor("echoMonster", listOf(p1, p2, p3, p4)) {
                 this@proxy.echoMonster(p1, p2, p3, p4)
             } as kotlin.collections.Map<in kotlin.Int, kotlin.String>?
         }
@@ -107,14 +107,14 @@ public fun ch.softappeal.yass2.Echo.proxy(intercept: ch.softappeal.yass2.core.In
         override suspend fun echoRequired(
             p1: kotlin.Any,
         ): kotlin.Any {
-            return intercept("echoRequired", listOf(p1)) {
+            return interceptor("echoRequired", listOf(p1)) {
                 this@proxy.echoRequired(p1)
             } as kotlin.Any
         }
 
         override suspend fun noParametersNoResult(
         ) {
-            intercept("noParametersNoResult", listOf()) {
+            interceptor("noParametersNoResult", listOf()) {
                 this@proxy.noParametersNoResult()
             }
         }
@@ -190,13 +190,13 @@ public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.Echo>.s
         }
     }
 
-public fun <A, B, C> ch.softappeal.yass2.GenericService<A, B, C>.proxy(intercept: ch.softappeal.yass2.core.Interceptor): ch.softappeal.yass2.GenericService<A, B, C> =
+public fun <A, B, C> ch.softappeal.yass2.GenericService<A, B, C>.proxy(interceptor: ch.softappeal.yass2.core.Interceptor): ch.softappeal.yass2.GenericService<A, B, C> =
     object : ch.softappeal.yass2.GenericService<A, B, C> {
         override suspend fun service(
             p1: A,
             p2: B,
         ): C {
-            return intercept("service", listOf(p1, p2)) {
+            return interceptor("service", listOf(p1, p2)) {
                 this@proxy.service(p1, p2)
             } as C
         }

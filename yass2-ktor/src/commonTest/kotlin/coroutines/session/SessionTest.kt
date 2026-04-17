@@ -4,7 +4,8 @@ import ch.softappeal.yass2.CalculatorId
 import ch.softappeal.yass2.EchoId
 import ch.softappeal.yass2.core.CalculatorImpl
 import ch.softappeal.yass2.core.EchoImpl
-import ch.softappeal.yass2.core.remote.invoke
+import ch.softappeal.yass2.core.remote.clientTest
+import ch.softappeal.yass2.core.remote.serverTunnel
 import ch.softappeal.yass2.core.remote.tunnel
 import ch.softappeal.yass2.proxy
 import ch.softappeal.yass2.service
@@ -24,9 +25,9 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
-fun <C : Connection> CoroutineScope.acceptorSessionFactory(context: suspend Session<C>.() -> Any): SessionFactory<C> = {
+fun <C : Connection> CoroutineScope.acceptorSessionFactory(context: Session<C>.() -> Any): SessionFactory<C> = {
     object : Session<C>() {
-        override val serverTunnel = tunnel { context() }
+        override val serverTunnel = serverTunnel({ context() })
 
         override fun opened() {
             launch {
@@ -53,7 +54,7 @@ fun <C : Connection> CoroutineScope.initiatorSessionFactory(): SessionFactory<C>
         override fun opened() {
             launch {
                 assertFalse(isClosed())
-                clientTunnel.invoke()
+                clientTunnel.clientTest()
                 close()
                 assertTrue(isClosed())
             }
@@ -124,7 +125,7 @@ private suspend fun CoroutineScope.keepAliveTest(keepAliveFun: suspend () -> Uni
 @OptIn(ExperimentalAtomicApi::class)
 class SessionTest {
     @Test
-    fun invoke() = runTest {
+    fun local() = runTest {
         localConnect(initiatorSessionFactory(), acceptorSessionFactory { connection })
     }
 

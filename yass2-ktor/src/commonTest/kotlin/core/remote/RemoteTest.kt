@@ -8,7 +8,7 @@ import ch.softappeal.yass2.core.EchoImpl
 import ch.softappeal.yass2.core.Interceptor
 import ch.softappeal.yass2.core.PassThroughInterceptor
 import ch.softappeal.yass2.core.assertFailsWithMessage
-import ch.softappeal.yass2.core.invoke
+import ch.softappeal.yass2.core.interceptorTest
 import ch.softappeal.yass2.proxy
 import ch.softappeal.yass2.service
 import kotlinx.coroutines.test.runTest
@@ -19,18 +19,18 @@ import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.fail
 
-suspend fun Tunnel.invoke() {
-    invoke(CalculatorId.proxy(this), EchoId.proxy(this))
+suspend fun Tunnel.clientTest(contextInterceptor: Interceptor = PassThroughInterceptor) {
+    interceptorTest(CalculatorId.proxy(this), EchoId.proxy(this).proxy(contextInterceptor))
 }
 
-fun tunnel(context: suspend () -> Any) = tunnel { _, _, invoke ->
-    println("context<${context()}>")
-    invoke()
-}
-
-fun tunnel(contextInterceptor: Interceptor = PassThroughInterceptor) = tunnel(
+fun serverTunnel(inContext: suspend () -> Any, outContext: suspend () -> Unit = {}) = tunnel(
     CalculatorId.service(CalculatorImpl),
-    EchoId.service(EchoImpl.proxy(contextInterceptor)),
+    EchoId.service(EchoImpl.proxy { _, _, invocation ->
+        println("context<${inContext()}>")
+        invocation().apply {
+            outContext()
+        }
+    }),
 )
 
 class RemoteTest {
@@ -80,7 +80,7 @@ class RemoteTest {
     }
 
     @Test
-    fun invoke() = runTest {
-        tunnel().invoke()
+    fun test() = runTest {
+        serverTunnel({}).clientTest()
     }
 }

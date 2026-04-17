@@ -14,11 +14,11 @@
 
 package ch.softappeal.yass2.coroutines.session
 
-public fun ch.softappeal.yass2.coroutines.session.KeepAlive.proxy(intercept: ch.softappeal.yass2.core.Interceptor): ch.softappeal.yass2.coroutines.session.KeepAlive =
+public fun ch.softappeal.yass2.coroutines.session.KeepAlive.proxy(interceptor: ch.softappeal.yass2.core.Interceptor): ch.softappeal.yass2.coroutines.session.KeepAlive =
     object : ch.softappeal.yass2.coroutines.session.KeepAlive {
         override suspend fun keepAlive(
         ) {
-            intercept("keepAlive", listOf()) {
+            interceptor("keepAlive", listOf()) {
                 this@proxy.keepAlive()
             }
         }

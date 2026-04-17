@@ -53,7 +53,7 @@ internal fun CodeWriter.generateProxy(
         }
 
     writeFun(
-        "${service.types} ${service.withTypes}.proxy(intercept: $CSY.core.Interceptor): ${service.withTypes}",
+        "${service.types} ${service.withTypes}.proxy(interceptor: $CSY.core.Interceptor): ${service.withTypes}",
         expectWriter,
     ) {
         writeNestedLine("object : ${service.withTypes} {", "}") {
@@ -62,7 +62,7 @@ internal fun CodeWriter.generateProxy(
                 writeSignature(function)
                 if (hasResult) write(": ${function.returnType.toType()}")
                 writeLine(" {") {
-                    writeNestedLine("${if (hasResult) "return " else ""}intercept(\"${function.name}\", listOf(${function.parameters()})) {") {
+                    writeNestedLine("${if (hasResult) "return " else ""}interceptor(\"${function.name}\", listOf(${function.parameters()})) {") {
                         writeNestedLine("this@proxy.${function.name}(${function.parameters()})")
                     }
                     writeNested("}")

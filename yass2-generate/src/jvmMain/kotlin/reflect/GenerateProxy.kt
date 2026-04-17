@@ -53,7 +53,7 @@ private val KClass<*>.types get() = if (typeParameters.isEmpty()) "" else " $wit
         }
 
     writeFun(
-        "${service.types} ${service.withTypes}.proxy(intercept: $CSY.core.Interceptor): ${service.withTypes}",
+        "${service.types} ${service.withTypes}.proxy(interceptor: $CSY.core.Interceptor): ${service.withTypes}",
     ) {
         writeNestedLine("object : ${service.withTypes} {", "}") {
             functions.forEachSeparator({ writeLine() }) { function ->
@@ -61,7 +61,7 @@ private val KClass<*>.types get() = if (typeParameters.isEmpty()) "" else " $wit
                 writeSignature(function)
                 if (hasResult) write(": ${function.returnType.toType()}")
                 writeLine(" {") {
-                    writeNestedLine("${if (hasResult) "return " else ""}intercept(\"${function.name}\", listOf(${function.parameters()})) {") {
+                    writeNestedLine("${if (hasResult) "return " else ""}interceptor(\"${function.name}\", listOf(${function.parameters()})) {") {
                         writeNestedLine("this@proxy.${function.name}(${function.parameters()})")
                     }
                     writeNested("}")

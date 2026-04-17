@@ -1,7 +1,7 @@
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.ContractSerializer
-import ch.softappeal.yass2.core.remote.tunnel
+import ch.softappeal.yass2.core.remote.serverTunnel
 import ch.softappeal.yass2.coroutines.session.acceptorSessionFactory
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
@@ -14,6 +14,8 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
     install(WebSockets)
@@ -21,12 +23,25 @@ val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
         route(
             ContractSerializer,
             PATH,
-            tunnel { "http-${currentCoroutineContext()[CallCce]!!.call.request.local.remotePort}" },
+            serverTunnel(
+                {
+                    val context = currentCoroutineContext()[CallCce]!!.call.request.headers[CONTEXT_HEADER]!!
+                    assertTrue(context.startsWith(CONTEXT_VALUE))
+                    "http-$context"
+                },
+                {
+                    currentCoroutineContext()[CallCce]!!.call.response.headers.append(CONTEXT_HEADER, CONTEXT_VALUE)
+                },
+            ),
         )
         webSocket(PATH) {
             receiveLoop(
                 ContractSerializer,
-                acceptorSessionFactory { "ws-${(connection.session as WebSocketServerSession).call.request.local.remotePort}" },
+                acceptorSessionFactory {
+                    val context = (connection.session as WebSocketServerSession).call.request.headers[CONTEXT_HEADER]!!
+                    assertEquals(CONTEXT_VALUE, context)
+                    "ws-$context"
+                },
             )
         }
         // code
