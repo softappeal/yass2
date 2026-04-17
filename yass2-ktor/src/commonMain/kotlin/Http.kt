@@ -7,6 +7,7 @@ import ch.softappeal.yass2.core.serialize.Serializer
 import ch.softappeal.yass2.core.serialize.fromByteArray
 import ch.softappeal.yass2.core.serialize.toByteArray
 import io.ktor.client.HttpClient
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsBytes
@@ -20,8 +21,15 @@ import kotlinx.coroutines.withContext
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
-public fun HttpClient.tunnel(serializer: Serializer, url: String): Tunnel = { request ->
-    val response = post(url) { setBody(serializer.toByteArray(request)) }
+public fun HttpClient.tunnel(
+    serializer: Serializer,
+    url: String,
+    buildRequest: HttpRequestBuilder.() -> Unit = {},
+): Tunnel = { request ->
+    val response = post(url) {
+        buildRequest()
+        setBody(serializer.toByteArray(request))
+    }
     serializer.fromByteArray(response.bodyAsBytes()) as Reply
 }
 

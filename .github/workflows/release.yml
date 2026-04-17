@@ -5,10 +5,10 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: gradle/actions/wrapper-validation@v4
+      - uses: gradle/actions/wrapper-validation@v6
       - name: release
         env: # printenv prevents that secrets are visible on the command line
           MAVEN_CENTRAL_KEY: ${{ secrets.MAVEN_CENTRAL_KEY }}

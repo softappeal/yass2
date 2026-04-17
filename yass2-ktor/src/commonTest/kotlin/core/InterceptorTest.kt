@@ -42,7 +42,7 @@ val Printer: Interceptor = { function, parameters, invoke ->
     }
 }
 
-suspend fun invoke(calculatorImpl: Calculator, echoImpl: Echo) {
+suspend fun interceptorTest(calculator: Calculator, echo: Echo) {
     var counter = 0
     var functionName: String? = null
     var params: List<Any?>? = null
@@ -55,27 +55,27 @@ suspend fun invoke(calculatorImpl: Calculator, echoImpl: Echo) {
         result
     }
     val interceptor = testInterceptor + Printer
-    val calculator = calculatorImpl.proxy(interceptor)
-    val echo = echoImpl.proxy(interceptor)
+    val calculatorProxy = calculator.proxy(interceptor)
+    val echoProxy = echo.proxy(interceptor)
 
-    assertEquals(5, calculator.add(2, 3))
+    assertEquals(5, calculatorProxy.add(2, 3))
     assertEquals("add", functionName)
     assertEquals(listOf(2, 3), params)
     assertEquals(5, result)
     assertEquals(1, counter)
 
-    assertEquals(3, calculator.divide(12, 4))
+    assertEquals(3, calculatorProxy.divide(12, 4))
     assertEquals(2, counter)
-    assertFailsWith<DivideByZeroException> { calculator.divide(12, 0) }
+    assertFailsWith<DivideByZeroException> { calculatorProxy.divide(12, 0) }
     assertEquals(3, counter)
 
-    echo.noParametersNoResult()
-    assertEquals("hello", echo.echo("hello"))
-    assertEquals(3, (echo.echo(ByteArray(3)) as ByteArray).size)
+    echoProxy.noParametersNoResult()
+    assertEquals("hello", echoProxy.echo("hello"))
+    assertEquals(3, (echoProxy.echo(ByteArray(3)) as ByteArray).size)
 
-    withTimeout(200.milliseconds) { echo.delay(100) }
+    withTimeout(200.milliseconds) { echoProxy.delay(100) }
     assertFailsWith<TimeoutCancellationException> {
-        withTimeout(100.milliseconds) { echo.delay(200) }
+        withTimeout(100.milliseconds) { echoProxy.delay(200) }
     }
 
     println("done")
@@ -114,8 +114,8 @@ class InterceptorTest {
     }
 
     @Test
-    fun invoke() = runTest {
-        invoke(CalculatorImpl, EchoImpl)
+    fun interceptorTest() = runTest {
+        interceptorTest(CalculatorImpl, EchoImpl)
     }
 
     @Test

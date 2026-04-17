@@ -1,8 +1,8 @@
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.ContractSerializer
-import ch.softappeal.yass2.core.remote.invoke
-import ch.softappeal.yass2.core.remote.tunnel
+import ch.softappeal.yass2.core.remote.clientTest
+import ch.softappeal.yass2.core.remote.serverTunnel
 import ch.softappeal.yass2.coroutines.session.acceptorSessionFactory
 import ch.softappeal.yass2.coroutines.session.initiatorSessionFactory
 import io.ktor.network.selector.SelectorManager
@@ -59,7 +59,7 @@ class SocketTest {
     fun socket() {
         runServer { tcp, serverSocket ->
             val listenerJob = launch {
-                val serverTunnel = tunnel { "socket-${currentCoroutineContext()[SocketCce]!!.socket.remoteAddress}" }
+                val serverTunnel = serverTunnel { "socket-${currentCoroutineContext()[SocketCce]!!.socket.remoteAddress}" }
                 while (true) {
                     val socket = serverSocket.accept()
                     launch {
@@ -73,7 +73,7 @@ class SocketTest {
             }
             try {
                 val clientTunnel = ContractSerializer.tunnel { tcp.connect(serverSocket.localAddress) }
-                clientTunnel.invoke()
+                clientTunnel.clientTest()
             } finally {
                 listenerJob.cancel()
             }

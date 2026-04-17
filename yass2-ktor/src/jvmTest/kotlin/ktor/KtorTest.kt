@@ -1,7 +1,7 @@
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.ContractSerializer
-import ch.softappeal.yass2.core.remote.tunnel
+import ch.softappeal.yass2.core.remote.serverTunnel
 import ch.softappeal.yass2.coroutines.session.acceptorSessionFactory
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
@@ -21,7 +21,7 @@ val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
         route(
             ContractSerializer,
             PATH,
-            tunnel { "http-${currentCoroutineContext()[CallCce]!!.call.request.local.remotePort}" },
+            serverTunnel { "http-${currentCoroutineContext()[CallCce]!!.call.request.local.remotePort}" },
         )
         webSocket(PATH) {
             receiveLoop(

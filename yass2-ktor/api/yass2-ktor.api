@@ -9,7 +9,8 @@ public final class ch/softappeal/yass2/ktor/CallCce$Key : kotlin/coroutines/Coro
 
 public final class ch/softappeal/yass2/ktor/HttpKt {
 	public static final fun route (Lio/ktor/server/routing/Route;Lch/softappeal/yass2/core/serialize/Serializer;Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
-	public static final fun tunnel (Lio/ktor/client/HttpClient;Lch/softappeal/yass2/core/serialize/Serializer;Ljava/lang/String;)Lkotlin/jvm/functions/Function2;
+	public static final fun tunnel (Lio/ktor/client/HttpClient;Lch/softappeal/yass2/core/serialize/Serializer;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lkotlin/jvm/functions/Function2;
+	public static synthetic fun tunnel$default (Lio/ktor/client/HttpClient;Lch/softappeal/yass2/core/serialize/Serializer;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlin/jvm/functions/Function2;
 }
 
 public final class ch/softappeal/yass2/ktor/SocketCce : kotlin/coroutines/AbstractCoroutineContextElement {
