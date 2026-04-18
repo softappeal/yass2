@@ -26,7 +26,7 @@ val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
         webSocket(PATH) {
             receiveLoop(
                 ContractSerializer,
-                acceptorSessionFactory { "ws-${(connection.session as WebSocketServerSession).call.request.local.remotePort}" },
+                acceptorSessionFactory { "ws-${(connection.session as WebSocketServerSession).call.request.headers[CONTEXT_HEADER]}" },
             )
         }
         // code

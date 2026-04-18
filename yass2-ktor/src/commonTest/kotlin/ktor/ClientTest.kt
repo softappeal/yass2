@@ -8,6 +8,7 @@ import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.plugins.websocket.WebSockets.Plugin
 import io.ktor.client.plugins.websocket.ws
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.header
 
 const val LOCAL_HOST = "localhost"
 const val PORT = 28947
@@ -32,6 +33,9 @@ suspend fun clientTest(httpClientEngineFactory: HttpClientEngineFactory<*>) {
         }
         */
         client.tunnel(ContractSerializer, "http://$LOCAL_HOST:$PORT$PATH", requestBuilder).clientTest()
-        client.ws("ws://$LOCAL_HOST:$PORT$PATH") { receiveLoop(ContractSerializer, initiatorSessionFactory()) }
+        client.ws(
+            "ws://$LOCAL_HOST:$PORT$PATH",
+            { header(CONTEXT_HEADER, 123) },
+        ) { receiveLoop(ContractSerializer, initiatorSessionFactory()) }
     }
 }
