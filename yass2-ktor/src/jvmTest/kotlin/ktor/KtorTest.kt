@@ -21,7 +21,7 @@ val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
         route(
             ContractSerializer,
             PATH,
-            serverTunnel { "http-${currentCoroutineContext()[CallCce]!!.call.request.local.remotePort}" },
+            serverTunnel { "http-${currentCoroutineContext()[CallCce]!!.call.request.headers[CONTEXT_HEADER]}" },
         )
         webSocket(PATH) {
             receiveLoop(
