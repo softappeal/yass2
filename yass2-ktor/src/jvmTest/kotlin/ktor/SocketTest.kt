@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -25,6 +26,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val IGNORE = false // NOTE: spurious failures
 
@@ -63,17 +65,14 @@ class SocketTest {
                 while (true) {
                     val socket = serverSocket.accept()
                     launch {
-                        try {
-                            socket.handleRequest(ContractSerializer, serverTunnel)
-                        } catch (e: Exception) {
-                            println(e)
-                        }
+                        socket.handleRequest(ContractSerializer, serverTunnel)
                     }
                 }
             }
             try {
-                val clientTunnel = ContractSerializer.tunnel { tcp.connect(serverSocket.localAddress) }
+                val clientTunnel = tunnel(ContractSerializer) { tcp.connect(serverSocket.localAddress) }
                 clientTunnel.clientTest()
+                delay(100.milliseconds)
             } finally {
                 listenerJob.cancel()
             }

@@ -56,13 +56,13 @@ private suspend fun ByteReadChannel.read(serializer: Serializer): Any? {
 
 public typealias SocketConnector = suspend () -> Socket
 
-public fun Serializer.tunnel(socketConnector: SocketConnector): Tunnel = { request ->
+public fun tunnel(serializer: Serializer, socketConnector: SocketConnector): Tunnel = { request ->
     socketConnector()
         .use { socket ->
             val writeChannel = socket.openWriteChannel()
-            writeChannel.write(this, request)
+            writeChannel.write(serializer, request)
             writeChannel.flush()
-            socket.openReadChannel().read(this) as Reply
+            socket.openReadChannel().read(serializer) as Reply
         }
 }
 
@@ -82,8 +82,8 @@ public suspend fun Socket.handleRequest(serializer: Serializer, tunnel: Tunnel) 
 }
 
 public class SocketConnection internal constructor(
-    private val serializer: Serializer,
     public val socket: Socket,
+    private val serializer: Serializer,
 ) : Connection {
     private val writeChannel = socket.openWriteChannel()
     override suspend fun write(packet: Packet?) {
@@ -99,7 +99,7 @@ public class SocketConnection internal constructor(
 public suspend fun Socket.receiveLoop(serializer: Serializer, sessionFactory: SessionFactory<SocketConnection>) {
     use {
         val readChannel = openReadChannel()
-        SocketConnection(serializer, this)
+        SocketConnection(this, serializer)
             .receiveLoop(sessionFactory) { readChannel.read(serializer) as Packet? }
     }
 }

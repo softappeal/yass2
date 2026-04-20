@@ -6,6 +6,15 @@
 // - Show declarations: true
 
 // Library unique name: <ch.softappeal.yass2:yass2-ktor>
+final class ch.softappeal.yass2.ktor/BuildRequestCce : kotlin.coroutines/AbstractCoroutineContextElement { // ch.softappeal.yass2.ktor/BuildRequestCce|null[0]
+    constructor <init>(kotlin/Function1<io.ktor.client.request/HttpRequestBuilder, kotlin/Unit>) // ch.softappeal.yass2.ktor/BuildRequestCce.<init>|<init>(kotlin.Function1<io.ktor.client.request.HttpRequestBuilder,kotlin.Unit>){}[0]
+
+    final val buildRequest // ch.softappeal.yass2.ktor/BuildRequestCce.buildRequest|{}buildRequest[0]
+        final fun <get-buildRequest>(): kotlin/Function1<io.ktor.client.request/HttpRequestBuilder, kotlin/Unit> // ch.softappeal.yass2.ktor/BuildRequestCce.buildRequest.<get-buildRequest>|<get-buildRequest>(){}[0]
+
+    final object Key : kotlin.coroutines/CoroutineContext.Key<ch.softappeal.yass2.ktor/BuildRequestCce> // ch.softappeal.yass2.ktor/BuildRequestCce.Key|null[0]
+}
+
 final class ch.softappeal.yass2.ktor/CallCce : kotlin.coroutines/AbstractCoroutineContextElement { // ch.softappeal.yass2.ktor/CallCce|null[0]
     constructor <init>(io.ktor.server.application/ApplicationCall) // ch.softappeal.yass2.ktor/CallCce.<init>|<init>(io.ktor.server.application.ApplicationCall){}[0]
 
@@ -13,6 +22,15 @@ final class ch.softappeal.yass2.ktor/CallCce : kotlin.coroutines/AbstractCorouti
         final fun <get-call>(): io.ktor.server.application/ApplicationCall // ch.softappeal.yass2.ktor/CallCce.call.<get-call>|<get-call>(){}[0]
 
     final object Key : kotlin.coroutines/CoroutineContext.Key<ch.softappeal.yass2.ktor/CallCce> // ch.softappeal.yass2.ktor/CallCce.Key|null[0]
+}
+
+final class ch.softappeal.yass2.ktor/HandleResponseCce : kotlin.coroutines/AbstractCoroutineContextElement { // ch.softappeal.yass2.ktor/HandleResponseCce|null[0]
+    constructor <init>(kotlin/Function1<io.ktor.client.statement/HttpResponse, kotlin/Unit>) // ch.softappeal.yass2.ktor/HandleResponseCce.<init>|<init>(kotlin.Function1<io.ktor.client.statement.HttpResponse,kotlin.Unit>){}[0]
+
+    final val handleResponse // ch.softappeal.yass2.ktor/HandleResponseCce.handleResponse|{}handleResponse[0]
+        final fun <get-handleResponse>(): kotlin/Function1<io.ktor.client.statement/HttpResponse, kotlin/Unit> // ch.softappeal.yass2.ktor/HandleResponseCce.handleResponse.<get-handleResponse>|<get-handleResponse>(){}[0]
+
+    final object Key : kotlin.coroutines/CoroutineContext.Key<ch.softappeal.yass2.ktor/HandleResponseCce> // ch.softappeal.yass2.ktor/HandleResponseCce.Key|null[0]
 }
 
 final class ch.softappeal.yass2.ktor/SocketCce : kotlin.coroutines/AbstractCoroutineContextElement { // ch.softappeal.yass2.ktor/SocketCce|null[0]
@@ -40,9 +58,9 @@ final class ch.softappeal.yass2.ktor/WebSocketConnection : ch.softappeal.yass2.c
     final suspend fun write(ch.softappeal.yass2.coroutines.session/Packet?) // ch.softappeal.yass2.ktor/WebSocketConnection.write|write(ch.softappeal.yass2.coroutines.session.Packet?){}[0]
 }
 
-final fun (ch.softappeal.yass2.core.serialize/Serializer).ch.softappeal.yass2.ktor/tunnel(kotlin.coroutines/SuspendFunction0<io.ktor.network.sockets/Socket>): kotlin.coroutines/SuspendFunction1<ch.softappeal.yass2.core.remote/Request, ch.softappeal.yass2.core.remote/Reply> // ch.softappeal.yass2.ktor/tunnel|tunnel@ch.softappeal.yass2.core.serialize.Serializer(kotlin.coroutines.SuspendFunction0<io.ktor.network.sockets.Socket>){}[0]
-final fun (io.ktor.client/HttpClient).ch.softappeal.yass2.ktor/tunnel(ch.softappeal.yass2.core.serialize/Serializer, kotlin/String, kotlin/Function1<io.ktor.client.request/HttpRequestBuilder, kotlin/Unit> = ..., kotlin/Function1<io.ktor.client.statement/HttpResponse, kotlin/Unit> = ...): kotlin.coroutines/SuspendFunction1<ch.softappeal.yass2.core.remote/Request, ch.softappeal.yass2.core.remote/Reply> // ch.softappeal.yass2.ktor/tunnel|tunnel@io.ktor.client.HttpClient(ch.softappeal.yass2.core.serialize.Serializer;kotlin.String;kotlin.Function1<io.ktor.client.request.HttpRequestBuilder,kotlin.Unit>;kotlin.Function1<io.ktor.client.statement.HttpResponse,kotlin.Unit>){}[0]
-final fun (io.ktor.server.routing/Route).ch.softappeal.yass2.ktor/route(ch.softappeal.yass2.core.serialize/Serializer, kotlin/String, kotlin.coroutines/SuspendFunction1<ch.softappeal.yass2.core.remote/Request, ch.softappeal.yass2.core.remote/Reply>) // ch.softappeal.yass2.ktor/route|route@io.ktor.server.routing.Route(ch.softappeal.yass2.core.serialize.Serializer;kotlin.String;kotlin.coroutines.SuspendFunction1<ch.softappeal.yass2.core.remote.Request,ch.softappeal.yass2.core.remote.Reply>){}[0]
+final fun (io.ktor.client/HttpClient).ch.softappeal.yass2.ktor/tunnel(kotlin/String, ch.softappeal.yass2.core.serialize/Serializer): kotlin.coroutines/SuspendFunction1<ch.softappeal.yass2.core.remote/Request, ch.softappeal.yass2.core.remote/Reply> // ch.softappeal.yass2.ktor/tunnel|tunnel@io.ktor.client.HttpClient(kotlin.String;ch.softappeal.yass2.core.serialize.Serializer){}[0]
+final fun (io.ktor.server.routing/Route).ch.softappeal.yass2.ktor/route(kotlin/String, ch.softappeal.yass2.core.serialize/Serializer, kotlin.coroutines/SuspendFunction1<ch.softappeal.yass2.core.remote/Request, ch.softappeal.yass2.core.remote/Reply>) // ch.softappeal.yass2.ktor/route|route@io.ktor.server.routing.Route(kotlin.String;ch.softappeal.yass2.core.serialize.Serializer;kotlin.coroutines.SuspendFunction1<ch.softappeal.yass2.core.remote.Request,ch.softappeal.yass2.core.remote.Reply>){}[0]
+final fun ch.softappeal.yass2.ktor/tunnel(ch.softappeal.yass2.core.serialize/Serializer, kotlin.coroutines/SuspendFunction0<io.ktor.network.sockets/Socket>): kotlin.coroutines/SuspendFunction1<ch.softappeal.yass2.core.remote/Request, ch.softappeal.yass2.core.remote/Reply> // ch.softappeal.yass2.ktor/tunnel|tunnel(ch.softappeal.yass2.core.serialize.Serializer;kotlin.coroutines.SuspendFunction0<io.ktor.network.sockets.Socket>){}[0]
 final suspend fun (io.ktor.network.sockets/Socket).ch.softappeal.yass2.ktor/handleRequest(ch.softappeal.yass2.core.serialize/Serializer, kotlin.coroutines/SuspendFunction1<ch.softappeal.yass2.core.remote/Request, ch.softappeal.yass2.core.remote/Reply>) // ch.softappeal.yass2.ktor/handleRequest|handleRequest@io.ktor.network.sockets.Socket(ch.softappeal.yass2.core.serialize.Serializer;kotlin.coroutines.SuspendFunction1<ch.softappeal.yass2.core.remote.Request,ch.softappeal.yass2.core.remote.Reply>){}[0]
 final suspend fun (io.ktor.network.sockets/Socket).ch.softappeal.yass2.ktor/receiveLoop(ch.softappeal.yass2.core.serialize/Serializer, kotlin/Function0<ch.softappeal.yass2.coroutines.session/Session<ch.softappeal.yass2.ktor/SocketConnection>>) // ch.softappeal.yass2.ktor/receiveLoop|receiveLoop@io.ktor.network.sockets.Socket(ch.softappeal.yass2.core.serialize.Serializer;kotlin.Function0<ch.softappeal.yass2.coroutines.session.Session<ch.softappeal.yass2.ktor.SocketConnection>>){}[0]
 final suspend fun (io.ktor.websocket/WebSocketSession).ch.softappeal.yass2.ktor/receiveLoop(ch.softappeal.yass2.core.serialize/Serializer, kotlin/Function0<ch.softappeal.yass2.coroutines.session/Session<ch.softappeal.yass2.ktor/WebSocketConnection>>) // ch.softappeal.yass2.ktor/receiveLoop|receiveLoop@io.ktor.websocket.WebSocketSession(ch.softappeal.yass2.core.serialize.Serializer;kotlin.Function0<ch.softappeal.yass2.coroutines.session.Session<ch.softappeal.yass2.ktor.WebSocketConnection>>){}[0]

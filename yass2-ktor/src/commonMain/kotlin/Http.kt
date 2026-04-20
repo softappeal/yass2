@@ -18,22 +18,30 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
-public fun HttpClient.tunnel(
-    serializer: Serializer,
-    url: String,
-    buildRequest: HttpRequestBuilder.() -> Unit = {},
-    handleResponse: HttpResponse.() -> Unit = {},
-): Tunnel = { request ->
+public class BuildRequestCce(
+    public val buildRequest: HttpRequestBuilder.() -> Unit,
+) : AbstractCoroutineContextElement(BuildRequestCce) {
+    public companion object Key : CoroutineContext.Key<BuildRequestCce>
+}
+
+public class HandleResponseCce(
+    public val handleResponse: HttpResponse.() -> Unit,
+) : AbstractCoroutineContextElement(HandleResponseCce) {
+    public companion object Key : CoroutineContext.Key<HandleResponseCce>
+}
+
+public fun HttpClient.tunnel(url: String, serializer: Serializer): Tunnel = { request ->
     val response = post(url) {
-        buildRequest()
+        currentCoroutineContext()[BuildRequestCce]?.buildRequest(this)
         setBody(serializer.toByteArray(request))
     }
     (serializer.fromByteArray(response.bodyAsBytes()) as Reply).apply {
-        response.handleResponse()
+        currentCoroutineContext()[HandleResponseCce]?.handleResponse(response)
     }
 }
 
@@ -41,7 +49,7 @@ public class CallCce(public val call: ApplicationCall) : AbstractCoroutineContex
     public companion object Key : CoroutineContext.Key<CallCce>
 }
 
-public fun Route.route(serializer: Serializer, path: String, tunnel: Tunnel) {
+public fun Route.route(path: String, serializer: Serializer, tunnel: Tunnel) {
     route(path) {
         post {
             withContext(CallCce(call)) {

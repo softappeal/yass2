@@ -8,7 +8,8 @@ import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.plugins.websocket.WebSockets.Plugin
 import io.ktor.client.plugins.websocket.ws
 import io.ktor.client.request.header
-import kotlin.test.assertTrue
+import kotlinx.coroutines.withContext
+import kotlin.test.assertEquals
 
 const val LOCAL_HOST = "localhost"
 const val PORT = 28947
@@ -23,20 +24,19 @@ suspend fun clientTest(httpClientEngineFactory: HttpClientEngineFactory<*>) {
         install(Plugin)
     }.use { client ->
         var counter = 0
-        client.tunnel(
-            ContractSerializer,
-            "http://$LOCAL_HOST:$PORT$PATH",
-            {
-                headers.append(CONTEXT_HEADER, "$CONTEXT_VALUE-$counter")
-            },
-            {
-                val context = headers[CONTEXT_HEADER]
-                println("response:<$context>")
-                assertTrue(context == null || context == CONTEXT_VALUE)
-            },
-        ).clientTest { _, _, invocation ->
+        client.tunnel("http://$LOCAL_HOST:$PORT$PATH", ContractSerializer).clientTest { _, _, invocation ->
             counter++
-            invocation()
+            withContext(BuildRequestCce {
+                headers.append(CONTEXT_HEADER, "$CONTEXT_VALUE-$counter")
+            }) {
+                withContext(HandleResponseCce {
+                    val context = headers[CONTEXT_HEADER]!!
+                    println("response:<$context>")
+                    assertEquals(CONTEXT_VALUE, context)
+                }) {
+                    invocation()
+                }
+            }
         }
         client.ws(
             "ws://$LOCAL_HOST:$PORT$PATH",

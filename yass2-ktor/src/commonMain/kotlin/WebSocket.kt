@@ -12,8 +12,8 @@ import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.close
 
 public class WebSocketConnection internal constructor(
-    private val serializer: Serializer,
     public val session: WebSocketSession,
+    private val serializer: Serializer,
 ) : Connection {
     override suspend fun write(packet: Packet?) {
         val byteArray = serializer.toByteArray(packet)
@@ -26,7 +26,7 @@ public class WebSocketConnection internal constructor(
 }
 
 public suspend fun WebSocketSession.receiveLoop(serializer: Serializer, sessionFactory: SessionFactory<WebSocketConnection>) {
-    WebSocketConnection(serializer, this)
+    WebSocketConnection(this, serializer)
         .receiveLoop(sessionFactory) {
             val byteArray = (incoming.receive() as Frame.Binary).data
             serializer.fromByteArray(byteArray) as Packet?

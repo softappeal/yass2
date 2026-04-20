@@ -21,17 +21,15 @@ val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
     install(WebSockets)
     routing {
         route(
-            ContractSerializer,
             PATH,
+            ContractSerializer,
             serverTunnel(
                 {
                     val context = currentCoroutineContext()[CallCce]!!.call.request.headers[CONTEXT_HEADER]!!
                     assertTrue(context.startsWith(CONTEXT_VALUE))
                     "http-$context"
                 },
-                {
-                    currentCoroutineContext()[CallCce]!!.call.response.headers.append(CONTEXT_HEADER, CONTEXT_VALUE)
-                },
+                { currentCoroutineContext()[CallCce]!!.call.response.headers.append(CONTEXT_HEADER, CONTEXT_VALUE) },
             ),
         )
         webSocket(PATH) {
