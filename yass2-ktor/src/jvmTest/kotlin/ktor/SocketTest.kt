@@ -16,7 +16,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -58,14 +57,14 @@ class SocketTest {
     }
 
     @Test
-    fun socket() {
+    fun socketTest() {
         runServer { tcp, serverSocket ->
             val listenerJob = launch {
-                val serverTunnel = serverTunnel({ "socket-${currentCoroutineContext()[SocketCce]!!.socket.remoteAddress}" })
+                val serverTunnel = serverTunnel({ "socket-${socket().remoteAddress}" })
                 while (true) {
-                    val socket = serverSocket.accept()
+                    val clientSocket = serverSocket.accept()
                     launch {
-                        socket.handleRequest(ContractSerializer, serverTunnel)
+                        clientSocket.handleRequest(ContractSerializer, serverTunnel)
                     }
                 }
             }

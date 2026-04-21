@@ -10,7 +10,6 @@ import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSocketServerSession
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.webSocket
-import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import kotlin.test.Test
@@ -25,11 +24,11 @@ val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
             ContractSerializer,
             serverTunnel(
                 {
-                    val context = currentCoroutineContext()[CallCce]!!.call.request.headers[CONTEXT_HEADER]!!
+                    val context = call().request.headers[CONTEXT_HEADER]!!
                     assertTrue(context.startsWith(CONTEXT_VALUE))
                     "http-$context"
                 },
-                { currentCoroutineContext()[CallCce]!!.call.response.headers.append(CONTEXT_HEADER, CONTEXT_VALUE) },
+                { call().response.headers.append(CONTEXT_HEADER, CONTEXT_VALUE) },
             ),
         )
         webSocket(PATH) {

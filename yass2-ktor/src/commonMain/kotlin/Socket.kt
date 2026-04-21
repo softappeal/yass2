@@ -21,6 +21,7 @@ import io.ktor.utils.io.readInt
 import io.ktor.utils.io.writeFully
 import io.ktor.utils.io.writeInt
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
@@ -66,9 +67,11 @@ public fun tunnel(serializer: Serializer, socketConnector: SocketConnector): Tun
         }
 }
 
-public class SocketCce(public val socket: Socket) : AbstractCoroutineContextElement(SocketCce) {
-    public companion object Key : CoroutineContext.Key<SocketCce>
+internal class SocketCce(val socket: Socket) : AbstractCoroutineContextElement(SocketCce) {
+    companion object Key : CoroutineContext.Key<SocketCce>
 }
+
+public suspend fun socket(): Socket = currentCoroutineContext()[SocketCce]!!.socket
 
 public suspend fun Socket.handleRequest(serializer: Serializer, tunnel: Tunnel) {
     use {

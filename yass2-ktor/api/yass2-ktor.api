@@ -1,42 +1,9 @@
-public final class ch/softappeal/yass2/ktor/BuildRequestCce : kotlin/coroutines/AbstractCoroutineContextElement {
-	public static final field Key Lch/softappeal/yass2/ktor/BuildRequestCce$Key;
-	public fun <init> (Lkotlin/jvm/functions/Function1;)V
-	public final fun getBuildRequest ()Lkotlin/jvm/functions/Function1;
-}
-
-public final class ch/softappeal/yass2/ktor/BuildRequestCce$Key : kotlin/coroutines/CoroutineContext$Key {
-}
-
-public final class ch/softappeal/yass2/ktor/CallCce : kotlin/coroutines/AbstractCoroutineContextElement {
-	public static final field Key Lch/softappeal/yass2/ktor/CallCce$Key;
-	public fun <init> (Lio/ktor/server/application/ApplicationCall;)V
-	public final fun getCall ()Lio/ktor/server/application/ApplicationCall;
-}
-
-public final class ch/softappeal/yass2/ktor/CallCce$Key : kotlin/coroutines/CoroutineContext$Key {
-}
-
-public final class ch/softappeal/yass2/ktor/HandleResponseCce : kotlin/coroutines/AbstractCoroutineContextElement {
-	public static final field Key Lch/softappeal/yass2/ktor/HandleResponseCce$Key;
-	public fun <init> (Lkotlin/jvm/functions/Function1;)V
-	public final fun getHandleResponse ()Lkotlin/jvm/functions/Function1;
-}
-
-public final class ch/softappeal/yass2/ktor/HandleResponseCce$Key : kotlin/coroutines/CoroutineContext$Key {
-}
-
 public final class ch/softappeal/yass2/ktor/HttpKt {
+	public static final fun buildRequest (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun call (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun handleResponse (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static final fun route (Lio/ktor/server/routing/Route;Ljava/lang/String;Lch/softappeal/yass2/core/serialize/Serializer;Lkotlin/jvm/functions/Function2;)V
 	public static final fun tunnel (Lio/ktor/client/HttpClient;Ljava/lang/String;Lch/softappeal/yass2/core/serialize/Serializer;)Lkotlin/jvm/functions/Function2;
-}
-
-public final class ch/softappeal/yass2/ktor/SocketCce : kotlin/coroutines/AbstractCoroutineContextElement {
-	public static final field Key Lch/softappeal/yass2/ktor/SocketCce$Key;
-	public fun <init> (Lio/ktor/network/sockets/Socket;)V
-	public final fun getSocket ()Lio/ktor/network/sockets/Socket;
-}
-
-public final class ch/softappeal/yass2/ktor/SocketCce$Key : kotlin/coroutines/CoroutineContext$Key {
 }
 
 public final class ch/softappeal/yass2/ktor/SocketConnection : ch/softappeal/yass2/coroutines/session/Connection {
@@ -48,6 +15,7 @@ public final class ch/softappeal/yass2/ktor/SocketConnection : ch/softappeal/yas
 public final class ch/softappeal/yass2/ktor/SocketKt {
 	public static final fun handleRequest (Lio/ktor/network/sockets/Socket;Lch/softappeal/yass2/core/serialize/Serializer;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static final fun receiveLoop (Lio/ktor/network/sockets/Socket;Lch/softappeal/yass2/core/serialize/Serializer;Lkotlin/jvm/functions/Function0;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun socket (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static final fun tunnel (Lch/softappeal/yass2/core/serialize/Serializer;Lkotlin/jvm/functions/Function1;)Lkotlin/jvm/functions/Function2;
 }
 

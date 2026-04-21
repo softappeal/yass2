@@ -18,22 +18,29 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
-public class BuildRequestCce(
-    public val buildRequest: HttpRequestBuilder.() -> Unit,
+internal class BuildRequestCce(
+    val buildRequest: HttpRequestBuilder.() -> Unit,
 ) : AbstractCoroutineContextElement(BuildRequestCce) {
-    public companion object Key : CoroutineContext.Key<BuildRequestCce>
+    companion object Key : CoroutineContext.Key<BuildRequestCce>
 }
 
-public class HandleResponseCce(
-    public val handleResponse: HttpResponse.() -> Unit,
+public suspend fun <T> buildRequest(buildRequest: HttpRequestBuilder.() -> Unit, block: suspend CoroutineScope.() -> T): T =
+    withContext(BuildRequestCce(buildRequest)) { block() }
+
+internal class HandleResponseCce(
+    val handleResponse: HttpResponse.() -> Unit,
 ) : AbstractCoroutineContextElement(HandleResponseCce) {
-    public companion object Key : CoroutineContext.Key<HandleResponseCce>
+    companion object Key : CoroutineContext.Key<HandleResponseCce>
 }
+
+public suspend fun <T> handleResponse(handleResponse: HttpResponse.() -> Unit, block: suspend CoroutineScope.() -> T): T =
+    withContext(HandleResponseCce(handleResponse)) { block() }
 
 public fun HttpClient.tunnel(url: String, serializer: Serializer): Tunnel = { request ->
     val response = post(url) {
@@ -45,9 +52,11 @@ public fun HttpClient.tunnel(url: String, serializer: Serializer): Tunnel = { re
     }
 }
 
-public class CallCce(public val call: ApplicationCall) : AbstractCoroutineContextElement(CallCce) {
-    public companion object Key : CoroutineContext.Key<CallCce>
+internal class CallCce(val call: ApplicationCall) : AbstractCoroutineContextElement(CallCce) {
+    companion object Key : CoroutineContext.Key<CallCce>
 }
+
+public suspend fun call(): ApplicationCall = currentCoroutineContext()[CallCce]!!.call
 
 public fun Route.route(path: String, serializer: Serializer, tunnel: Tunnel) {
     route(path) {
