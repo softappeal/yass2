@@ -91,8 +91,7 @@ allprojects {
         if (project.name.startsWith("yass2-")) {
             explicitApi()
             @OptIn(ExperimentalAbiValidation::class)
-            abiValidation {
-                enabled.set(allPlatforms)
+            if (allPlatforms) abiValidation {
                 filters {
                     exclude {
                         annotatedWith.add("ch.softappeal.yass2.core.InternalYassApi")
