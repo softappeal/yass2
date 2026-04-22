@@ -24,7 +24,7 @@ import kotlinx.coroutines.withContext
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
-internal class BuildRequestCce(
+private class BuildRequestCce(
     val buildRequest: HttpRequestBuilder.() -> Unit,
 ) : AbstractCoroutineContextElement(BuildRequestCce) {
     companion object Key : CoroutineContext.Key<BuildRequestCce>
@@ -33,7 +33,7 @@ internal class BuildRequestCce(
 public suspend fun <T> buildRequest(buildRequest: HttpRequestBuilder.() -> Unit, block: suspend CoroutineScope.() -> T): T =
     withContext(BuildRequestCce(buildRequest)) { block() }
 
-internal class HandleResponseCce(
+private class HandleResponseCce(
     val handleResponse: HttpResponse.() -> Unit,
 ) : AbstractCoroutineContextElement(HandleResponseCce) {
     companion object Key : CoroutineContext.Key<HandleResponseCce>
@@ -52,7 +52,7 @@ public fun HttpClient.tunnel(url: String, serializer: Serializer): Tunnel = { re
     }
 }
 
-internal class CallCce(val call: ApplicationCall) : AbstractCoroutineContextElement(CallCce) {
+private class CallCce(val call: ApplicationCall) : AbstractCoroutineContextElement(CallCce) {
     companion object Key : CoroutineContext.Key<CallCce>
 }
 

@@ -67,7 +67,7 @@ public fun tunnel(serializer: Serializer, socketConnector: SocketConnector): Tun
         }
 }
 
-internal class SocketCce(val socket: Socket) : AbstractCoroutineContextElement(SocketCce) {
+private class SocketCce(val socket: Socket) : AbstractCoroutineContextElement(SocketCce) {
     companion object Key : CoroutineContext.Key<SocketCce>
 }
 
