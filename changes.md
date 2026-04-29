@@ -1,5 +1,7 @@
 # Changes for yass2
 
+## Release TODO
+
 ## Release 28.0.0 (2026-04-29)
 
 ### Breaking changes
