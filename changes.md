@@ -1,10 +1,15 @@
-# Changes for yass2
+# TODO
 
-## Release TODO
+## Dependencies
 
-## Release 28.0.0 (2026-04-29)
+## Internal
 
-### Breaking changes
+- use Amper default layout
+- tests moved from module `yass2-ktor` to new module `tests`
+
+# 28.0.0 (2026-04-29)
+
+## Breaking changes
 
 - better ktor API
 - fromByteArray and toByteArray moved
@@ -17,11 +22,11 @@
 - annotation ExperimentalApi removed from most items
 - KSP dependency is now compileOnly instead of implementation
 
-### New features
+## New features
 
 - long encoders added
 
-### Dependencies
+## Dependencies
 
     Java 25.0.2
 
@@ -30,9 +35,9 @@
     ktor       = "3.4.3"         # https://github.com/ktorio/ktor
     ksp        = "2.3.7"         # https://github.com/google/ksp
 
-## Release 27.0.0 (2026-02-11)
+# 27.0.0 (2026-02-11)
 
-### Dependencies
+## Dependencies
 
     Java 25.0.2
 

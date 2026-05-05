@@ -5,19 +5,45 @@
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import java.util.regex.Pattern
 
 val allPlatforms = System.getProperty("os.name").lowercase().contains("linux")
 
-val linuxPlatform = allPlatforms
 val webPlatform = allPlatforms
+val linuxPlatform = allPlatforms
 
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.ksp)
     alias(libs.plugins.dokka)
     alias(libs.plugins.publish)
+}
+
+// see https://amper.org/latest/user-guide/multiplatform/#module-layout
+fun KotlinMultiplatformExtension.configureSourceSets() {
+    sourceSets {
+        commonMain {
+            kotlin.srcDir("src")
+        }
+        commonTest {
+            kotlin.srcDir("test")
+        }
+        jvmMain {
+            kotlin.srcDir("src@jvm")
+            resources.srcDir("resources@jvm")
+        }
+        jvmTest {
+            kotlin.srcDir("test@jvm")
+        }
+        if (webPlatform) {
+            webTest {
+                kotlin.srcDir("test@web")
+                resources.srcDir("testResources@web")
+            }
+        }
+    }
 }
 
 allprojects {
@@ -56,6 +82,7 @@ allprojects {
             linuxX64()
             linuxArm64()
         }
+        configureSourceSets()
         compilerOptions {
             allWarningsAsErrors.set(true)
             extraWarnings.set(true)
@@ -73,7 +100,7 @@ allprojects {
                 }
             }
         }
-        if (!project.file("src/commonMain/kotlin").exists()) sourceSets { // TODO
+        if (!project.file("src").exists()) sourceSets {
             commonMain {
                 kotlin.srcDir(rootProject.projectDir.resolve("gradle/publish.workaround"))
             }
@@ -154,8 +181,23 @@ val ktorProject = project(":yass2-ktor") {
                     api(libraries.bundles.ktor)
                 }
             }
+        }
+    }
+}
+
+dependencies {
+    dokka(coreProject)
+    dokka(generateProject)
+    dokka(coroutinesProject)
+    dokka(ktorProject)
+}
+
+project(":tests") {
+    kotlin {
+        sourceSets {
             commonTest {
                 dependencies {
+                    implementation(ktorProject)
                     implementation(libraries.coroutines.test)
                 }
             }
@@ -174,13 +216,6 @@ val ktorProject = project(":yass2-ktor") {
     dependencies {
         ksp(generateProject)
     }
-}
-
-dependencies {
-    dokka(coreProject)
-    dokka(coroutinesProject)
-    dokka(ktorProject)
-    dokka(generateProject)
 }
 
 project(":tutorial") {

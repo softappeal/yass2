@@ -9,7 +9,7 @@ import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-private const val DIR = "src/jvmTest/kotlin/generate/reflect"
+private const val DIR = "test@jvm/generate/reflect"
 
 val CODE = File("$DIR/$GENERATED_BY_YASS.kt")
     .readText()

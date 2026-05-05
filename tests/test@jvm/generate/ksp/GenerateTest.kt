@@ -12,7 +12,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 private fun compile(generateMode: GenerateMode) = compile(
-    File("src/commonTest/kotlin/Contract.kt").readText(),
+    File("test/Contract.kt").readText(),
     generateMode,
     "../yass2-core/build/classes/kotlin/jvm/main",
     "../yass2-coroutines/build/classes/kotlin/jvm/main",

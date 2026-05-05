@@ -1,6 +1,9 @@
+@file:OptIn(TestingYassApi::class)
+
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.ContractSerializer
+import ch.softappeal.yass2.core.TestingYassApi
 import ch.softappeal.yass2.core.remote.clientTest
 import ch.softappeal.yass2.core.remote.serverTunnel
 import ch.softappeal.yass2.coroutines.session.acceptorSessionFactory

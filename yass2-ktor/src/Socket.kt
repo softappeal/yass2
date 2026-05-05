@@ -1,5 +1,8 @@
+@file:OptIn(TestingYassApi::class)
+
 package ch.softappeal.yass2.ktor
 
+import ch.softappeal.yass2.core.TestingYassApi
 import ch.softappeal.yass2.core.remote.Reply
 import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.Tunnel
@@ -34,7 +37,8 @@ private suspend fun ByteWriteChannel.write(serializer: Serializer, value: Any?) 
     writeFully(byteArray)
 }
 
-internal suspend fun readByteArray(
+/** @suppress */
+@TestingYassApi public suspend fun readByteArray(
     length: Int,
     readByteArray: suspend (byteArray: ByteArray, offset: Int, length: Int) -> Unit,
 ): ByteArray {
