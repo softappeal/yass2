@@ -1,0 +1,7 @@
+product:
+    type: lib
+    platforms: [ jvm, js, wasmJs, linuxX64, linuxArm64 ]
+
+dependencies:
+    -   ../yass2-core: exported
+    -   $libs.coroutines.core: exported

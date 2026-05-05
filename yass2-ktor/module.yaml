@@ -1,0 +1,10 @@
+product:
+    type: lib
+    platforms: [ jvm, js, wasmJs, linuxX64, linuxArm64 ]
+
+dependencies:
+    -   ../yass2-coroutines: exported
+    -   $libs.client.core: exported
+    -   $libs.server.core: exported
+    -   $libs.client.websockets: exported
+    -   $libs.network: exported

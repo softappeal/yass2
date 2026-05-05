@@ -1,0 +1,15 @@
+product:
+    type: lib
+    platforms: [ jvm ]
+
+dependencies:
+    - ../yass2-ktor
+    - $libs.client.cio
+    - $libs.server.cio
+    - $libs.server.websockets
+
+settings:
+    kotlin:
+        ksp:
+            processors:
+                - ../yass2-generate
