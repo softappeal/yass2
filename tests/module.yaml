@@ -1,0 +1,25 @@
+apply:
+    - ../shared.module-template.yaml
+
+product:
+    type: lib
+    platforms: [ jvm, wasmJs ]
+
+test-dependencies:
+    - ../yass2-ktor
+    - $libs.coroutines.test
+    - $libs.client.cio
+    - $libs.server.cio
+    - $libs.server.websockets
+
+test-dependencies@jvm:
+    - ../yass2-generate
+    - $libs.kct
+
+settings:
+    kotlin:
+        ksp:
+            processors:
+                - ../yass2-generate
+            processorOptions:
+                yass.GenerateMode: WithExpectAndActual

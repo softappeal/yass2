@@ -1,0 +1,11 @@
+apply:
+    - ../shared.module-template.yaml
+
+product:
+    type: lib
+    platforms: [ jvm ]
+
+dependencies:
+    - ../yass2-core
+    - $kotlin.reflect
+    - $libs.ksp

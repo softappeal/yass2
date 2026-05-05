@@ -1,0 +1,7 @@
+settings:
+    kotlin:
+        version: 2.4.0-RC
+        allWarningsAsErrors: true
+        freeCompilerArgs: [ "-Xname-based-destructuring=complete" ]
+        ksp:
+            version: 2.3.8

@@ -1,0 +1,6 @@
+# TODO: replace gradle with kotlin toolchain
+
+modules:
+    - ./tests
+    - ./tutorial
+    - ./yass2-*

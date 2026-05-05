@@ -1,0 +1,6 @@
+apply:
+    - ../shared.module-template.yaml
+
+product:
+    type: lib
+    platforms: [ jvm, js, wasmJs, linuxX64, linuxArm64 ]
