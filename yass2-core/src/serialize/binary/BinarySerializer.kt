@@ -41,8 +41,8 @@ public abstract class BinarySerializer : Serializer {
             listEncoderId.encoder,
         ) + binaryEncoders).toTypedArray()
         typeToEncoderId = buildMap {
-            encoders.forEachIndexed { encoderId, encoder ->
-                require(put(encoder.type, EncoderId(encoderId, encoder)) == null) { "duplicated type '${encoder.type}'" }
+            encoders.forEachIndexed { encoderIndex, encoder ->
+                require(put(encoder.type, EncoderId(encoderIndex, encoder)) == null) { "duplicated type '${encoder.type}'" }
             }
         }
     }
@@ -65,7 +65,7 @@ public abstract class BinarySerializer : Serializer {
     )
 
     protected fun Writer.writeObject(value: Any?) {
-        (val encoderId = id, val encoder) = when (value) {
+        val (id, encoder) = when (value) {
             null -> {
                 writeVarInt(BINARY_NULL_ENCODER_ID)
                 return
@@ -73,7 +73,7 @@ public abstract class BinarySerializer : Serializer {
             is List<*> -> listEncoderId
             else -> typeToEncoderId[value::class] ?: error("missing type '${value::class}'")
         }
-        writeVarInt(encoderId)
+        writeVarInt(id)
         write(encoder, value)
     }
 
