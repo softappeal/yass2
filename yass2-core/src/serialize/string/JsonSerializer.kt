@@ -156,7 +156,7 @@ public class JsonSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
                 }
             }
             else -> {
-                val (handled, result, _) = readBuiltIn { false }
+                val [handled, result, _] = readBuiltIn { false }
                 if (!handled) error("unexpected codePoint $nextCodePoint")
                 result
             }

@@ -86,6 +86,7 @@ allprojects {
         compilerOptions {
             allWarningsAsErrors.set(true)
             extraWarnings.set(true)
+            freeCompilerArgs.add("-Xname-based-destructuring=complete")
         }
         if (project.name.startsWith("yass2-")) {
             explicitApi()

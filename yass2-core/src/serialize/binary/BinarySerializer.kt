@@ -65,7 +65,7 @@ public abstract class BinarySerializer : Serializer {
     )
 
     protected fun Writer.writeObject(value: Any?) {
-        val (encoderId, encoder) = when (value) {
+        (val encoderId = id, val encoder) = when (value) {
             null -> {
                 writeVarInt(BINARY_NULL_ENCODER_ID)
                 return

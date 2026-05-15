@@ -160,7 +160,7 @@ private fun processPackage(name: String, declarations: Set<KSDeclaration>, envir
                 .flatMap { annotation -> resolver.getSymbolsWithAnnotation(annotation.qualifiedName!!) }
                 .map { annotated -> annotated as KSDeclaration }
                 .groupBy { declaration -> declaration.packageName.asString() }
-                .forEach { (name, declarations) -> processPackage(name, declarations.toSet(), environment) }
+                .forEach { [name, declarations] -> processPackage(name, declarations.toSet(), environment) }
             return emptyList()
         }
     }
