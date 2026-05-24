@@ -5,7 +5,7 @@ product:
     type: lib
     platforms: [ jvm ]
 
-dependencies:
+dependencies@jvm:
     - ../yass2-ktor
     - $libs.client.cio
     - $libs.server.cio
@@ -14,5 +14,5 @@ dependencies:
 settings:
     kotlin:
         ksp:
-            processors:
+            processors@jvm:
                 - ../yass2-generate

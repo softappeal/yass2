@@ -8,3 +8,11 @@ product:
 dependencies:
     -   ../yass2-core: exported
     -   $libs.coroutines.core: exported
+
+settings:
+    kotlin:
+        ksp:
+            processors@jvm:
+                - ../yass2-generate
+            processorOptions:
+                yass.GenerateMode: InRepository

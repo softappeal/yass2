@@ -5,7 +5,7 @@ product:
     type: lib
     platforms: [ jvm ]
 
-dependencies:
+dependencies@jvm:
     - ../yass2-core
     - $kotlin.reflect
     - $libs.ksp

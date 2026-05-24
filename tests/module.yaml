@@ -8,12 +8,12 @@ product:
 test-dependencies:
     - ../yass2-ktor
     - $libs.coroutines.test
-    - $libs.client.cio
-    - $libs.server.cio
-    - $libs.server.websockets
 
 test-dependencies@jvm:
     - ../yass2-generate
+    - $libs.client.cio
+    - $libs.server.cio
+    - $libs.server.websockets
     - $libs.kct
 
 settings:
