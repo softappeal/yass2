@@ -8,4 +8,4 @@ product:
 dependencies@jvm:
     - ../yass2-core
     - $kotlin.reflect
-    - $libs.ksp
+    -   $libs.ksp: compile-only

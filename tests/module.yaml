@@ -3,7 +3,7 @@ apply:
 
 product:
     type: lib
-    platforms: [ jvm, wasmJs ]
+    platforms: [ jvm, wasmJs ] # TODO: add missing platforms
 
 test-dependencies:
     - ../yass2-ktor

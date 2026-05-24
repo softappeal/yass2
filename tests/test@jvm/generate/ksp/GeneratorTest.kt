@@ -23,7 +23,14 @@ fun compile(source: String, generateMode: GenerateMode?, vararg classPaths: Stri
 }.compile()
 
 private fun executeTest(message: String, source: String) {
-    val result = compile(source, null, "../yass2-core/build/classes/kotlin/jvm/main")
+    val result = compile(
+        source,
+        null,
+        // gradle
+        "../yass2-core/build/classes/kotlin/jvm/main",
+        // toolchain
+        "../build/artifacts/CompiledJvmArtifact/yass2-corejvm/kotlin-output",
+    )
     assertEquals(KotlinCompilation.ExitCode.INTERNAL_ERROR, result.exitCode)
     assertTrue(result.messages.contains("Exception: $message\n"))
 }
