@@ -136,103 +136,11 @@ allprojects {
     }
 }
 
-val libraries = libs // needed because libs is not available as an extension here
-
-val coreProject = project(":yass2-core")
-
-val generateProject = project(":yass2-generate") {
-    kotlin {
-        sourceSets {
-            jvmMain {
-                dependencies {
-                    api(coreProject)
-                    implementation(kotlin("reflect"))
-                    compileOnly(libraries.ksp)
-                }
-            }
-        }
-    }
-}
-
-val coroutinesProject = project(":yass2-coroutines") {
-    kotlin {
-        sourceSets {
-            commonMain {
-                dependencies {
-                    api(coreProject)
-                    api(libraries.coroutines.core)
-                }
-            }
-        }
-    }
-    ksp {
-        arg("yass.GenerateMode", "InRepository")
-    }
-    dependencies {
-        add("kspJvm", generateProject)
-    }
-}
-
-val ktorProject = project(":yass2-ktor") {
-    kotlin {
-        sourceSets {
-            commonMain {
-                dependencies {
-                    api(coroutinesProject)
-                    api(libraries.bundles.ktor)
-                }
-            }
-        }
-    }
-}
-
 dependencies {
-    dokka(coreProject)
-    dokka(generateProject)
-    dokka(coroutinesProject)
-    dokka(ktorProject)
-}
-
-project(":tests") {
-    kotlin {
-        sourceSets {
-            commonTest {
-                dependencies {
-                    implementation(ktorProject)
-                    implementation(libraries.coroutines.test)
-                }
-            }
-            jvmTest {
-                dependencies {
-                    implementation(generateProject)
-                    implementation(libraries.bundles.ktor.cio)
-                    implementation(libraries.kct)
-                }
-            }
-        }
-    }
-    ksp {
-        arg("yass.GenerateMode", "WithExpectAndActual")
-    }
-    dependencies {
-        ksp(generateProject)
-    }
-}
-
-project(":tutorial") {
-    kotlin {
-        sourceSets {
-            jvmMain {
-                dependencies {
-                    implementation(ktorProject)
-                    implementation(libraries.bundles.ktor.cio)
-                }
-            }
-        }
-    }
-    dependencies {
-        add("kspJvm", generateProject)
-    }
+    dokka(project(":yass2-core"))
+    dokka(project(":yass2-generate"))
+    dokka(project(":yass2-coroutines"))
+    dokka(project(":yass2-ktor"))
 }
 
 tasks.register("markers") {
