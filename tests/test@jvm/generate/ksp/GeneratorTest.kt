@@ -14,6 +14,11 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+// TODO: remove gradle later
+fun gradlePath(module: String, test: Boolean = false) = "../$module/build/classes/kotlin/jvm/${if (test) "test" else "main"}"
+fun toolchainPath(module: String, test: Boolean = false) =
+    "../build/artifacts/CompiledJvmArtifact/${module}jvm${if (test) "Test" else ""}/kotlin-output"
+
 fun compile(source: String, generateMode: GenerateMode?, vararg classPaths: String) = KotlinCompilation().apply {
     useKsp2()
     classpaths = classPaths.map { File(it) }
@@ -26,10 +31,8 @@ private fun executeTest(message: String, source: String) {
     val result = compile(
         source,
         null,
-        // gradle
-        "../yass2-core/build/classes/kotlin/jvm/main",
-        // toolchain
-        "../build/artifacts/CompiledJvmArtifact/yass2-corejvm/kotlin-output",
+        gradlePath("yass2-core"),
+        toolchainPath("yass2-core"),
     )
     assertEquals(KotlinCompilation.ExitCode.INTERNAL_ERROR, result.exitCode)
     assertTrue(result.messages.contains("Exception: $message\n"))

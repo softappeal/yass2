@@ -14,14 +14,12 @@ import kotlin.test.assertEquals
 private fun compile(generateMode: GenerateMode) = compile(
     File("test/Contract.kt").readText(),
     generateMode,
-    // gradle
-    "../yass2-core/build/classes/kotlin/jvm/main",
-    "../yass2-coroutines/build/classes/kotlin/jvm/main",
-    "build/classes/kotlin/jvm/test",
-    // toolchain
-    "../build/artifacts/CompiledJvmArtifact/yass2-corejvm/kotlin-output",
-    "../build/artifacts/CompiledJvmArtifact/yass2-coroutinesjvm/kotlin-output",
-    "../build/artifacts/CompiledJvmArtifact/testsjvmTest/kotlin-output",
+    gradlePath("yass2-core"),
+    gradlePath("yass2-coroutines"),
+    gradlePath("tests", true),
+    toolchainPath("yass2-core"),
+    toolchainPath("yass2-coroutines"),
+    toolchainPath("tests", true),
 ).apply {
     assertEquals(KotlinCompilation.ExitCode.OK, exitCode)
 }
@@ -29,11 +27,12 @@ private fun compile(generateMode: GenerateMode) = compile(
 class GenerateTest {
     @Test
     fun actual() {
-        val gradle = File("build/generated/ksp/jvm/jvmTest/kotlin/ch/softappeal/yass2/$GENERATED_BY_YASS.kt")
-        val toolchain = File("../build/generated/tests/jvmTest/src/ksp/kotlin/ch/softappeal/yass2/$GENERATED_BY_YASS.kt")
+        val generated = "kotlin/ch/softappeal/yass2/$GENERATED_BY_YASS.kt"
+        val gradle = File("build/generated/ksp/jvm/jvmTest/$generated")
+        val toolchain = File("../build/generated/tests/jvmTest/src/ksp/$generated")
         assertEquals(
             CODE,
-            (if (gradle.exists()) gradle else toolchain)
+            (if (gradle.exists()) gradle else toolchain) // TODO: remove gradle later
                 .readText()
                 .replace("public actual fun ", "public fun "),
         )

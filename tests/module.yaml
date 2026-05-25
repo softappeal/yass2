@@ -2,8 +2,8 @@ apply:
     - ../shared.module-template.yaml
 
 product:
-    type: lib
-    platforms: [ jvm, wasmJs ] # TODO: add missing platforms
+    type: kmp/lib
+    platforms: [ jvm, js, wasmJs ] # TODO: add missing platforms
 
 test-dependencies:
     - ../yass2-ktor

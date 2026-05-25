@@ -2,17 +2,17 @@ apply:
     - ../shared.module-template.yaml
 
 product:
-    type: lib
+    type: kmp/lib
     platforms: [ jvm, js, wasmJs, linuxX64, linuxArm64 ]
 
 dependencies:
     -   ../yass2-core: exported
     -   $libs.coroutines.core: exported
 
-settings:
+settings@jvm:
     kotlin:
         ksp:
-            processors@jvm:
+            processors:
                 - ../yass2-generate
             processorOptions:
                 yass.GenerateMode: InRepository

@@ -2,7 +2,7 @@ apply:
     - ../shared.module-template.yaml
 
 product:
-    type: lib
+    type: kmp/lib
     platforms: [ jvm ]
 
 dependencies@jvm:

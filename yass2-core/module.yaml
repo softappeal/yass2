@@ -2,5 +2,5 @@ apply:
     - ../shared.module-template.yaml
 
 product:
-    type: lib
+    type: kmp/lib
     platforms: [ jvm, js, wasmJs, linuxX64, linuxArm64 ]

@@ -6,4 +6,6 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - run: ./kotlin test
+      - run: |
+          ./kotlin build
+          ./kotlin test

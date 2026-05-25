@@ -2,7 +2,7 @@ apply:
     - ../shared.module-template.yaml
 
 product:
-    type: lib
+    type: kmp/lib
     platforms: [ jvm ]
 
 dependencies@jvm:
@@ -11,8 +11,8 @@ dependencies@jvm:
     - $libs.server.cio
     - $libs.server.websockets
 
-settings:
+settings@jvm:
     kotlin:
         ksp:
-            processors@jvm:
+            processors:
                 - ../yass2-generate
