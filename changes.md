@@ -1,6 +1,13 @@
-# TODO
+# 28.0.1 (2026-06-07)
 
 ## Dependencies
+
+    Java 25.0.3
+
+    kotlin     = "2.4.0"         # https://github.com/JetBrains/kotlin
+    coroutines = "1.11.0"        # https://github.com/Kotlin/kotlinx.coroutines
+    ktor       = "3.5.0"         # https://github.com/ktorio/ktor
+    ksp        = "2.3.9"         # https://github.com/google/ksp
 
 ## Internal
 
