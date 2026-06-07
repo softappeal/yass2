@@ -1,3 +1,7 @@
+# TODO: Next Release
+
+## Dependencies
+
 # 28.0.1 (2026-06-07)
 
 ## Dependencies
