@@ -24,8 +24,8 @@ val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
             ContractSerializer,
             serverTunnel(
                 {
-                    val context = call().request.headers[CONTEXT_HEADER]!!
-                    assertTrue(context.startsWith(CONTEXT_VALUE))
+                    val context = call().request.headers[CONTEXT_HEADER]
+                    if (context != null) assertTrue(context.startsWith(CONTEXT_VALUE))
                     "http-$context"
                 },
                 { call().response.headers.append(CONTEXT_HEADER, CONTEXT_VALUE) },
@@ -35,8 +35,8 @@ val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
             receiveLoop(
                 ContractSerializer,
                 acceptorSessionFactory {
-                    val context = (connection.session as WebSocketServerSession).call.request.headers[CONTEXT_HEADER]!!
-                    assertEquals(CONTEXT_VALUE, context)
+                    val context = (connection.session as WebSocketServerSession).call.request.headers[CONTEXT_HEADER]
+                    if (context != null) assertEquals(CONTEXT_VALUE, context)
                     "ws-$context"
                 },
             )

@@ -99,6 +99,7 @@ class SocketTest {
                 tcp
                     .connect(serverSocket.localAddress)
                     .receiveLoop(ContractSerializer, initiatorSessionFactory())
+                delay(100.milliseconds)
             } finally {
                 acceptorJob.cancel()
             }

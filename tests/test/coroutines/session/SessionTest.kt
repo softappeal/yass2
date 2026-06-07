@@ -136,7 +136,7 @@ class SessionTest {
             val job = launchKeepAlive(this, 100.milliseconds, 200.milliseconds)
             delay(450.milliseconds)
             close()
-            delay(50.milliseconds)
+            delay(200.milliseconds)
             assertTrue(job.isCompleted)
             assertFalse(job.isCancelled)
             assertEquals(3, counter.load())

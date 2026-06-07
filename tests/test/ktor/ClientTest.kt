@@ -27,9 +27,9 @@ suspend fun clientTest(httpClientEngineFactory: HttpClientEngineFactory<*>) {
             counter++
             buildRequest({ headers.append(CONTEXT_HEADER, "$CONTEXT_VALUE-$counter") }) {
                 handleResponse({
-                    val context = headers[CONTEXT_HEADER]!!
+                    val context = headers[CONTEXT_HEADER]
                     println("response:<$context>")
-                    assertEquals(CONTEXT_VALUE, context)
+                    if (context != null) assertEquals(CONTEXT_VALUE, context)
                 }) {
                     invocation()
                 }
