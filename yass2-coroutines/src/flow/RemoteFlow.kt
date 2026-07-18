@@ -47,7 +47,7 @@ public interface FlowService<out F, I> {
             val collectId = nextCollectId.incrementAndFetch()
             val channel = Channel<Reply?>()
             collectIdToChannel.put(collectId, channel)
-            launch {
+            this@flowService.launch {
                 tryFinally({
                     try {
                         flow.collect { channel.send(ValueReply(it)) }

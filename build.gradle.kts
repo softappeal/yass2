@@ -11,9 +11,6 @@ import java.util.regex.Pattern
 
 val allPlatforms = System.getProperty("os.name").lowercase().contains("linux")
 
-val webPlatform = allPlatforms
-val linuxPlatform = allPlatforms
-
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.ksp)
@@ -37,7 +34,7 @@ fun KotlinMultiplatformExtension.configureSourceSets() {
         jvmTest {
             kotlin.srcDir("test@jvm")
         }
-        if (webPlatform) {
+        if (project.extra["webPlatform"] as Boolean) {
             webTest {
                 kotlin.srcDir("test@web")
                 resources.srcDir("testResources@web")
@@ -56,13 +53,16 @@ allprojects {
         mavenCentral()
     }
 
+    project.extra["webPlatform"] = allPlatforms
+    project.extra["linuxPlatform"] = allPlatforms
+
     kotlin {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         dependencies {
             testImplementation(kotlin("test"))
         }
         jvm()
-        if (webPlatform) {
+        if (project.extra["webPlatform"] as Boolean) {
             js {
                 outputModuleName.set(project.name)
                 nodejs()
@@ -78,7 +78,7 @@ allprojects {
                 binaries.executable()
             }
         }
-        if (linuxPlatform) {
+        if (project.extra["linuxPlatform"] as Boolean) {
             linuxX64()
             linuxArm64()
         }

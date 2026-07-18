@@ -5,8 +5,8 @@ settings:
             distributions: [ temurin ]
             selectionMode: alwaysProvision
     kotlin:
-        version: 2.4.0
+        version: 2.4.10
         allWarningsAsErrors: true
         freeCompilerArgs: [ "-Xname-based-destructuring=complete" ]
         ksp:
-            version: 2.3.9
+            version: 2.3.10

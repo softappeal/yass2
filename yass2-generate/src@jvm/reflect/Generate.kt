@@ -1,8 +1,7 @@
-@file:OptIn(InternalYassApi::class, TestingYassApi::class)
+@file:OptIn(TestingYassApi::class)
 
 package ch.softappeal.yass2.generate.reflect
 
-import ch.softappeal.yass2.core.InternalYassApi
 import ch.softappeal.yass2.core.Proxies
 import ch.softappeal.yass2.core.TestingYassApi
 import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses

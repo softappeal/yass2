@@ -17,7 +17,15 @@ kotlin {
 }
 
 dependencies {
-    ksp(project(":yass2-generate"))
+    add("kspJvmTest", project(":yass2-generate"))
+    if (project.extra["webPlatform"] as Boolean) {
+        add("kspJsTest", project(":yass2-generate"))
+        add("kspWasmJsTest", project(":yass2-generate"))
+    }
+    if (project.extra["linuxPlatform"] as Boolean) {
+        add("kspLinuxX64Test", project(":yass2-generate"))
+        add("kspLinuxArm64Test", project(":yass2-generate"))
+    }
 }
 
 ksp {

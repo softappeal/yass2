@@ -1,4 +1,4 @@
-@file:OptIn(InternalYassApi::class, TestingYassApi::class)
+@file:OptIn(TestingYassApi::class)
 
 package ch.softappeal.yass2.core.serialize.string
 
