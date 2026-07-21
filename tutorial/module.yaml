@@ -11,8 +11,5 @@ dependencies@jvm:
     - $libs.server.cio
     - $libs.server.websockets
 
-settings@jvm:
-    kotlin:
-        ksp:
-            processors:
-                - ../yass2-generate
+test-dependencies@jvm:
+    - ../yass2-generate

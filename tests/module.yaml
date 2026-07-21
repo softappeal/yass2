@@ -3,7 +3,7 @@ apply:
 
 product:
     type: kmp/lib
-    platforms: [ jvm, js, wasmJs ] # TODO: add missing platforms
+    platforms: [ jvm, js, wasmJs, linuxX64, linuxArm64 ]
 
 test-dependencies:
     - ../yass2-ktor
@@ -14,12 +14,3 @@ test-dependencies@jvm:
     - $libs.client.cio
     - $libs.server.cio
     - $libs.server.websockets
-    - $libs.kct
-
-settings:
-    kotlin:
-        ksp:
-            processors:
-                - ../yass2-generate
-            processorOptions:
-                yass.GenerateMode: WithExpectAndActual

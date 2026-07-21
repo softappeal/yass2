@@ -1,21 +1,18 @@
-public final class ch/softappeal/yass2/generate/SharedKt {
+public final class ch/softappeal/yass2/generate/CodeWriter {
+}
+
+public final class ch/softappeal/yass2/generate/GenerateKt {
 	public static final field GENERATED_BY_YASS Ljava/lang/String;
+	public static final fun generateFile (Ljava/lang/Object;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 }
 
-public final class ch/softappeal/yass2/generate/ksp/GenerateKt {
-	public static final field GENERATE_MODE Ljava/lang/String;
+public final class ch/softappeal/yass2/generate/GenerateProxyKt {
+	public static final fun generateProxies (Lch/softappeal/yass2/generate/CodeWriter;Ljava/util/List;)V
+	public static final fun generateProxy (Lch/softappeal/yass2/generate/CodeWriter;Lkotlin/reflect/KClass;)V
 }
 
-public final class ch/softappeal/yass2/generate/ksp/GenerateMode : java/lang/Enum {
-	public static final field InBuildDir Lch/softappeal/yass2/generate/ksp/GenerateMode;
-	public static final field InRepository Lch/softappeal/yass2/generate/ksp/GenerateMode;
-	public static final field WithExpectAndActual Lch/softappeal/yass2/generate/ksp/GenerateMode;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lch/softappeal/yass2/generate/ksp/GenerateMode;
-	public static fun values ()[Lch/softappeal/yass2/generate/ksp/GenerateMode;
-}
-
-public final class ch/softappeal/yass2/generate/reflect/GenerateKt {
-	public static final fun generateFile (Ljava/lang/Object;Ljava/lang/String;Lkotlin/reflect/KAnnotatedElement;)V
+public final class ch/softappeal/yass2/generate/GenerateSerializerKt {
+	public static final fun generateBinarySerializer (Lch/softappeal/yass2/generate/CodeWriter;Ljava/util/List;Ljava/util/List;)V
+	public static final fun generateStringEncoders (Lch/softappeal/yass2/generate/CodeWriter;Ljava/util/List;Ljava/util/List;)V
 }
 

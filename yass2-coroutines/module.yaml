@@ -9,10 +9,5 @@ dependencies:
     -   ../yass2-core: exported
     -   $libs.coroutines.core: exported
 
-settings@jvm:
-    kotlin:
-        ksp:
-            processors:
-                - ../yass2-generate
-            processorOptions:
-                yass.GenerateMode: InRepository
+test-dependencies@jvm:
+    - ../yass2-generate

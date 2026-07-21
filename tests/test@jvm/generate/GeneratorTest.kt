@@ -1,14 +1,18 @@
 @file:OptIn(TestingYassApi::class)
 
-package ch.softappeal.yass2.generate.reflect
+package ch.softappeal.yass2.generate
 
 import ch.softappeal.yass2.core.TestingYassApi
 import ch.softappeal.yass2.core.assertFailsWithMessage
 import ch.softappeal.yass2.core.serialize.binary.BinaryEncoder
 import ch.softappeal.yass2.core.serialize.binary.IntBinaryEncoder
-import ch.softappeal.yass2.generate.CodeWriter
 import kotlin.reflect.KClass
 import kotlin.test.Test
+import kotlin.test.assertEquals
+
+private fun map(): Map<Exception, RuntimeException>? = null
+private const val MapType =
+    "kotlin.collections.Map<kotlin.Exception /* = java.lang.Exception */, kotlin.RuntimeException /* = java.lang.RuntimeException */>?"
 
 private class NotAnInterface
 
@@ -49,46 +53,58 @@ private fun codeWriter() = CodeWriter(StringBuilder())
 
 class GeneratorTest {
     @Test
+    fun removeComment() {
+        assertEquals("", "/**/".removeComment())
+        assertEquals("", " /**/".removeComment())
+        assertEquals("", "  /**/".removeComment())
+        assertEquals("12", "1 /*abc/**/2".removeComment())
+        assertEquals("kotlin.Exception", "kotlin.Exception /* = java.lang.Exception */".removeComment())
+        assertEquals(MapType, ::map.returnType.toString())
+        assertEquals("kotlin.collections.Map<kotlin.Exception, kotlin.RuntimeException>?", MapType.removeComment())
+        assertEquals(" 12 ", " 1  /*abc/* a b c * / */2 ".removeComment())
+    }
+
+    @Test
     fun binarySerializer() {
         fun generateBinarySerializer(klass: KClass<*>) {
             codeWriter().generateBinarySerializer(listOf(), listOf(klass))
         }
         assertFailsWithMessage<IllegalArgumentException>(
-            "class 'ch.softappeal.yass2.generate.reflect.BodyProperty' must not have body properties"
+            "class 'ch.softappeal.yass2.generate.BodyProperty' must not have body properties"
         ) { generateBinarySerializer(BodyProperty::class) }
         assertFailsWithMessage<IllegalStateException>(
-            "class 'ch.softappeal.yass2.generate.reflect.NoPrimaryConstructor' must have a primary constructor"
+            "class 'ch.softappeal.yass2.generate.NoPrimaryConstructor' must have a primary constructor"
         ) { generateBinarySerializer(NoPrimaryConstructor::class) }
         assertFailsWithMessage<IllegalStateException>(
-            "primary constructor parameter 'x' of class 'ch.softappeal.yass2.generate.reflect.ConstructorParameterIsNotProperty' must be a property"
+            "primary constructor parameter 'x' of class 'ch.softappeal.yass2.generate.ConstructorParameterIsNotProperty' must be a property"
         ) { generateBinarySerializer(ConstructorParameterIsNotProperty::class) }
         assertFailsWithMessage<IllegalArgumentException>(
-            "class 'ch.softappeal.yass2.generate.reflect.NotRegularClass' must be concrete"
+            "class 'ch.softappeal.yass2.generate.NotRegularClass' must be concrete"
         ) { generateBinarySerializer(NotRegularClass::class) }
         assertFailsWithMessage<IllegalArgumentException>(
-            "class 'ch.softappeal.yass2.generate.reflect.AbstractClass' must be concrete"
+            "class 'ch.softappeal.yass2.generate.AbstractClass' must be concrete"
         ) { generateBinarySerializer(AbstractClass::class) }
         assertFailsWithMessage<IllegalStateException>(
-            "enum class 'ch.softappeal.yass2.generate.reflect.Enum' belongs to 'ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses'"
+            "enum class 'ch.softappeal.yass2.generate.Enum' belongs to 'concreteAndEnumClasses'"
         ) { codeWriter().generateBinarySerializer(listOf(MyEnumEncoder::class), listOf()) }
         assertFailsWithMessage<IllegalArgumentException>(
             "classes [kotlin.Int] are duplicated"
         ) { codeWriter().generateBinarySerializer(listOf(IntBinaryEncoder::class), listOf(Int::class)) }
         assertFailsWithMessage<IllegalArgumentException>(
-            "classes [ch.softappeal.yass2.generate.reflect.Enum] are duplicated"
+            "classes [ch.softappeal.yass2.generate.Enum] are duplicated"
         ) { codeWriter().generateBinarySerializer(listOf(), listOf(Enum::class, Enum::class)) }
     }
 
     @Test
     fun proxy() {
         assertFailsWithMessage<IllegalArgumentException>(
-            "'ch.softappeal.yass2.generate.reflect.NotAnInterface' must be an interface"
+            "'ch.softappeal.yass2.generate.NotAnInterface' must be an interface"
         ) { codeWriter().generateProxy(NotAnInterface::class) }
         assertFailsWithMessage<IllegalArgumentException>(
-            "interface 'ch.softappeal.yass2.generate.reflect.Overloaded' has overloaded methods [f]"
+            "interface 'ch.softappeal.yass2.generate.Overloaded' has overloaded methods [f]"
         ) { codeWriter().generateProxy(Overloaded::class) }
         assertFailsWithMessage<IllegalArgumentException>(
-            "method 'ch.softappeal.yass2.generate.reflect.NoSuspend.noSuspend' must be suspend"
+            "method 'ch.softappeal.yass2.generate.NoSuspend.noSuspend' must be suspend"
         ) { codeWriter().generateProxy(NoSuspend::class) }
     }
 }

@@ -1,6 +1,5 @@
 package ch.softappeal.yass2.coroutines.session
 
-import ch.softappeal.yass2.core.Proxies
 import ch.softappeal.yass2.core.remote.Service
 import ch.softappeal.yass2.core.remote.ServiceId
 import ch.softappeal.yass2.core.remote.Tunnel
@@ -12,7 +11,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlin.time.Duration
 
-@Proxies(KeepAlive::class)
 public interface KeepAlive {
     public suspend fun keepAlive()
 }

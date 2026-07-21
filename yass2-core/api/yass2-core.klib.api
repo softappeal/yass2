@@ -6,40 +6,12 @@
 // - Show declarations: true
 
 // Library unique name: <ch.softappeal.yass2:yass2-core>
-open annotation class ch.softappeal.yass2.core.serialize.binary/BinaryEncoderObjects : kotlin/Annotation { // ch.softappeal.yass2.core.serialize.binary/BinaryEncoderObjects|null[0]
-    constructor <init>(kotlin/Array<out kotlin.reflect/KClass<out ch.softappeal.yass2.core.serialize.binary/BinaryEncoder<*>>>...) // ch.softappeal.yass2.core.serialize.binary/BinaryEncoderObjects.<init>|<init>(kotlin.Array<out|kotlin.reflect.KClass<out|ch.softappeal.yass2.core.serialize.binary.BinaryEncoder<*>>>...){}[0]
-
-    final val value // ch.softappeal.yass2.core.serialize.binary/BinaryEncoderObjects.value|{}value[0]
-        final fun <get-value>(): kotlin/Array<out kotlin.reflect/KClass<out ch.softappeal.yass2.core.serialize.binary/BinaryEncoder<*>>> // ch.softappeal.yass2.core.serialize.binary/BinaryEncoderObjects.value.<get-value>|<get-value>(){}[0]
-}
-
-open annotation class ch.softappeal.yass2.core.serialize.string/StringEncoderObjects : kotlin/Annotation { // ch.softappeal.yass2.core.serialize.string/StringEncoderObjects|null[0]
-    constructor <init>(kotlin/Array<out kotlin.reflect/KClass<out ch.softappeal.yass2.core.serialize.string/BaseStringEncoder<*>>>...) // ch.softappeal.yass2.core.serialize.string/StringEncoderObjects.<init>|<init>(kotlin.Array<out|kotlin.reflect.KClass<out|ch.softappeal.yass2.core.serialize.string.BaseStringEncoder<*>>>...){}[0]
-
-    final val value // ch.softappeal.yass2.core.serialize.string/StringEncoderObjects.value|{}value[0]
-        final fun <get-value>(): kotlin/Array<out kotlin.reflect/KClass<out ch.softappeal.yass2.core.serialize.string/BaseStringEncoder<*>>> // ch.softappeal.yass2.core.serialize.string/StringEncoderObjects.value.<get-value>|<get-value>(){}[0]
-}
-
-open annotation class ch.softappeal.yass2.core.serialize/ConcreteAndEnumClasses : kotlin/Annotation { // ch.softappeal.yass2.core.serialize/ConcreteAndEnumClasses|null[0]
-    constructor <init>(kotlin/Array<out kotlin.reflect/KClass<*>>...) // ch.softappeal.yass2.core.serialize/ConcreteAndEnumClasses.<init>|<init>(kotlin.Array<out|kotlin.reflect.KClass<*>>...){}[0]
-
-    final val value // ch.softappeal.yass2.core.serialize/ConcreteAndEnumClasses.value|{}value[0]
-        final fun <get-value>(): kotlin/Array<out kotlin.reflect/KClass<*>> // ch.softappeal.yass2.core.serialize/ConcreteAndEnumClasses.value.<get-value>|<get-value>(){}[0]
-}
-
 open annotation class ch.softappeal.yass2.core/ExperimentalYassApi : kotlin/Annotation { // ch.softappeal.yass2.core/ExperimentalYassApi|null[0]
     constructor <init>() // ch.softappeal.yass2.core/ExperimentalYassApi.<init>|<init>(){}[0]
 }
 
 open annotation class ch.softappeal.yass2.core/InternalYassApi : kotlin/Annotation { // ch.softappeal.yass2.core/InternalYassApi|null[0]
     constructor <init>() // ch.softappeal.yass2.core/InternalYassApi.<init>|<init>(){}[0]
-}
-
-open annotation class ch.softappeal.yass2.core/Proxies : kotlin/Annotation { // ch.softappeal.yass2.core/Proxies|null[0]
-    constructor <init>(kotlin/Array<out kotlin.reflect/KClass<*>>...) // ch.softappeal.yass2.core/Proxies.<init>|<init>(kotlin.Array<out|kotlin.reflect.KClass<*>>...){}[0]
-
-    final val value // ch.softappeal.yass2.core/Proxies.value|{}value[0]
-        final fun <get-value>(): kotlin/Array<out kotlin.reflect/KClass<*>> // ch.softappeal.yass2.core/Proxies.value.<get-value>|<get-value>(){}[0]
 }
 
 open annotation class ch.softappeal.yass2.core/TestingYassApi : kotlin/Annotation { // ch.softappeal.yass2.core/TestingYassApi|null[0]

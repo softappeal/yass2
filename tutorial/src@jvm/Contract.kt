@@ -1,14 +1,11 @@
 package tutorial
 
-import ch.softappeal.yass2.core.Proxies
 import ch.softappeal.yass2.core.remote.ExceptionReply
 import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.ServiceId
 import ch.softappeal.yass2.core.remote.ValueReply
-import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses
 import ch.softappeal.yass2.core.serialize.string.BaseStringEncoder
 import ch.softappeal.yass2.core.serialize.string.IntStringEncoder
-import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
 import ch.softappeal.yass2.core.serialize.string.TextSerializer
 import ch.softappeal.yass2.coroutines.session.MustBeImplementedByAcceptor
 import ch.softappeal.yass2.coroutines.session.MustBeImplementedByInitiator
@@ -67,6 +64,8 @@ class SubClass(
     val subClassProperty: String,
 ) : BaseClass()
 
+val ContractSerializer = TextSerializer(stringEncoders())
+
 /**
  * All functions must be suspendable because they need IO.
  * Overloading is not allowed.
@@ -86,21 +85,19 @@ val CalculatorId = ServiceId<Calculator>("Calculator")
 @MustBeImplementedByInitiator
 val NewsListenerId = ServiceId<NewsListener>("NewsListener")
 
-// The following annotations generate the proxies and serializers.
-// They can be added to anything in the package.
-
-@Proxies(
+internal val Proxies = listOf(
     Calculator::class,
     NewsListener::class,
 )
 
 // Define all the encoders needed by the contract.
-@StringEncoderObjects(
+internal val StringEncoderObjects = listOf(
     // String and Boolean is built-in
     IntStringEncoder::class,
     MyDateEncoder::class,
 )
-@ConcreteAndEnumClasses(
+
+internal val ConcreteAndEnumClasses = listOf(
     Packet::class, // needed by ch.softappeal.yass2.coroutines.session (also needs Int)
     Request::class, ValueReply::class, ExceptionReply::class, // needed by ch.softappeal.yass2.core.remote (also needs String)
     Gender::class,
@@ -109,4 +106,3 @@ val NewsListenerId = ServiceId<NewsListener>("NewsListener")
     DivideByZeroException::class,
     SubClass::class,
 )
-val ContractSerializer = TextSerializer(stringEncoders())

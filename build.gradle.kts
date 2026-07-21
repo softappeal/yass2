@@ -11,9 +11,11 @@ import java.util.regex.Pattern
 
 val allPlatforms = System.getProperty("os.name").lowercase().contains("linux")
 
+val webPlatform = allPlatforms
+val linuxPlatform = allPlatforms
+
 plugins {
     alias(libs.plugins.multiplatform)
-    alias(libs.plugins.ksp)
     alias(libs.plugins.dokka)
     alias(libs.plugins.publish)
 }
@@ -29,12 +31,11 @@ fun KotlinMultiplatformExtension.configureSourceSets() {
         }
         jvmMain {
             kotlin.srcDir("src@jvm")
-            resources.srcDir("resources@jvm")
         }
         jvmTest {
             kotlin.srcDir("test@jvm")
         }
-        if (project.extra["webPlatform"] as Boolean) {
+        if (webPlatform) {
             webTest {
                 kotlin.srcDir("test@web")
                 resources.srcDir("testResources@web")
@@ -45,7 +46,6 @@ fun KotlinMultiplatformExtension.configureSourceSets() {
 
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
-    apply(plugin = "com.google.devtools.ksp")
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "com.vanniktech.maven.publish")
 
@@ -53,16 +53,13 @@ allprojects {
         mavenCentral()
     }
 
-    project.extra["webPlatform"] = allPlatforms
-    project.extra["linuxPlatform"] = allPlatforms
-
     kotlin {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         dependencies {
             testImplementation(kotlin("test"))
         }
         jvm()
-        if (project.extra["webPlatform"] as Boolean) {
+        if (webPlatform) {
             js {
                 outputModuleName.set(project.name)
                 nodejs()
@@ -78,7 +75,7 @@ allprojects {
                 binaries.executable()
             }
         }
-        if (project.extra["linuxPlatform"] as Boolean) {
+        if (linuxPlatform) {
             linuxX64()
             linuxArm64()
         }

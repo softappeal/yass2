@@ -1,5 +1,9 @@
 # TODO: Next Release
 
+## Breaking changes
+
+- KSP removed
+
 ## Dependencies
 
 # 28.0.1 (2026-06-07)

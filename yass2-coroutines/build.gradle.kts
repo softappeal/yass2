@@ -6,13 +6,10 @@ kotlin {
                 api(libs.coroutines.core)
             }
         }
+        jvmTest {
+            dependencies {
+                implementation(project(":yass2-generate"))
+            }
+        }
     }
-}
-
-dependencies {
-    add("kspJvm", project(":yass2-generate"))
-}
-
-ksp {
-    arg("yass.GenerateMode", "InRepository")
 }

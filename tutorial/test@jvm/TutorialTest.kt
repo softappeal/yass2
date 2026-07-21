@@ -5,7 +5,9 @@ import kotlin.test.Test
 
 class TutorialTest {
     @Test
-    fun test() = runBlocking {
-        main()
+    fun test() {
+        runBlocking {
+            main()
+        }
     }
 }
