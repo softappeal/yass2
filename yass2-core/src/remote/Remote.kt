@@ -4,7 +4,7 @@ public class ServiceId<@Suppress("unused") S : Any>(public val id: String)
 
 public class Service(
     internal val id: String,
-    internal val tunnel: suspend (function: String, parameters: List<Any?>) -> Any?,
+    internal val invoke: suspend (function: String, parameters: List<Any?>) -> Any?,
 )
 
 public typealias Tunnel = suspend (request: Request) -> Reply
@@ -15,7 +15,7 @@ public fun tunnel(vararg services: Service): Tunnel {
     return { request ->
         val service = serviceId2service[request.service] ?: error("no service '${request.service}'")
         try {
-            val result = service.tunnel(request.function, request.parameters)
+            val result = service.invoke(request.function, request.parameters)
             ValueReply(if (result === Unit) null else result)
         } catch (e: Exception) {
             ExceptionReply(e)

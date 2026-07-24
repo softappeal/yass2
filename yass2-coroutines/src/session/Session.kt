@@ -53,13 +53,8 @@ public abstract class Session<C : Connection> {
         val requestNumber = nextRequestNumber.incrementAndFetch()
         val deferred = CompletableDeferred<Reply>(currentCoroutineContext()[Job]!!)
         requestNumberToDeferred.put(requestNumber, deferred)
-        try {
-            write(Packet(requestNumber, request))
-            deferred.await()
-        } catch (e: Exception) {
-            requestNumberToDeferred.remove(requestNumber)
-            throw e
-        }
+        write(Packet(requestNumber, request))
+        deferred.await()
     }
 
     protected open val serverTunnel: Tunnel = { throw UnsupportedOperationException() }

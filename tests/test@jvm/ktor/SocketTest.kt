@@ -30,14 +30,14 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
-private const val IGNORE = false // NOTE: spurious failures
-
 private fun runServer(block: suspend CoroutineScope.(tcp: TcpSocketBuilder, serverSocket: ServerSocket) -> Unit) {
-    if (IGNORE) return
     runBlocking {
         SelectorManager().use { selector ->
             val tcp = aSocket(selector).tcp()
-            tcp.bind(LOCAL_HOST, PORT).use { serverSocket -> block(tcp, serverSocket) }
+            tcp.bind(LOCAL_HOST).use { serverSocket ->
+                println("Listening on ${serverSocket.localAddress}")
+                block(tcp, serverSocket)
+            }
         }
     }
 }
@@ -74,7 +74,7 @@ class SocketTest {
             try {
                 val clientTunnel = tunnel(ContractSerializer) { tcp.connect(serverSocket.localAddress) }
                 clientTunnel.clientTest()
-                delay(100.milliseconds)
+                delay(1000.milliseconds)
             } finally {
                 listenerJob.cancel()
             }
@@ -99,7 +99,7 @@ class SocketTest {
                 tcp
                     .connect(serverSocket.localAddress)
                     .receiveLoop(ContractSerializer, initiatorSessionFactory())
-                delay(100.milliseconds)
+                delay(1000.milliseconds)
             } finally {
                 acceptorJob.cancel()
             }
