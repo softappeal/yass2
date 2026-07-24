@@ -6,5 +6,5 @@ product:
     platforms: [ jvm ]
 
 dependencies@jvm:
-    - ../yass2-core
+    -   ../yass2-core: exported
     - $kotlin.reflect
