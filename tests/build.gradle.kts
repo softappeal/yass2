@@ -10,6 +10,7 @@ kotlin {
             dependencies {
                 implementation(project(":yass2-generate"))
                 implementation(libs.bundles.ktor.cio)
+                implementation(libs.server.status.pages)
             }
         }
     }

@@ -14,7 +14,9 @@
 
 package ch.softappeal.yass2
 
-public fun ch.softappeal.yass2.Calculator.proxy(interceptor: ch.softappeal.yass2.core.Interceptor): ch.softappeal.yass2.Calculator =
+public fun ch.softappeal.yass2.Calculator.proxy(
+    interceptor: ch.softappeal.yass2.core.Interceptor,
+): ch.softappeal.yass2.Calculator =
     object : ch.softappeal.yass2.Calculator {
         override suspend fun add(
             p1: kotlin.Int,
@@ -25,50 +27,6 @@ public fun ch.softappeal.yass2.Calculator.proxy(interceptor: ch.softappeal.yass2
             } as kotlin.Int
         }
 
-        override suspend fun divide(
-            p1: kotlin.Int,
-            p2: kotlin.Int,
-        ): kotlin.Int {
-            return interceptor("divide", listOf(p1, p2)) {
-                this@proxy.divide(p1, p2)
-            } as kotlin.Int
-        }
-    }
-
-public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.Calculator>.proxy(tunnel: ch.softappeal.yass2.core.remote.Tunnel): ch.softappeal.yass2.Calculator =
-    object : ch.softappeal.yass2.Calculator {
-        override suspend fun add(
-            p1: kotlin.Int,
-            p2: kotlin.Int,
-        ) =
-            tunnel(ch.softappeal.yass2.core.remote.Request(id, "add", listOf(p1, p2)))
-                .process() as kotlin.Int
-
-        override suspend fun divide(
-            p1: kotlin.Int,
-            p2: kotlin.Int,
-        ) =
-            tunnel(ch.softappeal.yass2.core.remote.Request(id, "divide", listOf(p1, p2)))
-                .process() as kotlin.Int
-    }
-
-public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.Calculator>.service(implementation: ch.softappeal.yass2.Calculator): ch.softappeal.yass2.core.remote.Service =
-    ch.softappeal.yass2.core.remote.Service(id) { function, parameters ->
-        when (function) {
-            "add" -> implementation.add(
-                parameters[0] as kotlin.Int,
-                parameters[1] as kotlin.Int,
-            )
-            "divide" -> implementation.divide(
-                parameters[0] as kotlin.Int,
-                parameters[1] as kotlin.Int,
-            )
-            else -> error("service '$id' has no function '$function'")
-        }
-    }
-
-public fun ch.softappeal.yass2.Echo.proxy(interceptor: ch.softappeal.yass2.core.Interceptor): ch.softappeal.yass2.Echo =
-    object : ch.softappeal.yass2.Echo {
         override suspend fun delay(
             p1: kotlin.Int,
         ) {
@@ -77,39 +35,13 @@ public fun ch.softappeal.yass2.Echo.proxy(interceptor: ch.softappeal.yass2.core.
             }
         }
 
-        override suspend fun echo(
-            p1: kotlin.Any?,
-        ): kotlin.Any? {
-            return interceptor("echo", listOf(p1)) {
-                this@proxy.echo(p1)
-            } as kotlin.Any?
-        }
-
-        override suspend fun echoException(
-            p1: kotlin.Exception,
-        ): kotlin.Exception {
-            return interceptor("echoException", listOf(p1)) {
-                this@proxy.echoException(p1)
-            } as kotlin.Exception
-        }
-
-        override suspend fun echoMonster(
-            p1: kotlin.collections.List<*>,
-            p2: kotlin.collections.List<kotlin.collections.List<kotlin.String?>?>,
-            p3: kotlin.collections.Map<out kotlin.Int, kotlin.String>,
-            p4: kotlin.Pair<*, *>,
-        ): kotlin.collections.Map<in kotlin.Int, kotlin.String>? {
-            return interceptor("echoMonster", listOf(p1, p2, p3, p4)) {
-                this@proxy.echoMonster(p1, p2, p3, p4)
-            } as kotlin.collections.Map<in kotlin.Int, kotlin.String>?
-        }
-
-        override suspend fun echoRequired(
-            p1: kotlin.Any,
-        ): kotlin.Any {
-            return interceptor("echoRequired", listOf(p1)) {
-                this@proxy.echoRequired(p1)
-            } as kotlin.Any
+        override suspend fun divide(
+            p1: kotlin.Int,
+            p2: kotlin.Int,
+        ): kotlin.Int {
+            return interceptor("divide", listOf(p1, p2)) {
+                this@proxy.divide(p1, p2)
+            } as kotlin.Int
         }
 
         override suspend fun noParametersNoResult(
@@ -120,8 +52,17 @@ public fun ch.softappeal.yass2.Echo.proxy(interceptor: ch.softappeal.yass2.core.
         }
     }
 
-public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.Echo>.proxy(tunnel: ch.softappeal.yass2.core.remote.Tunnel): ch.softappeal.yass2.Echo =
-    object : ch.softappeal.yass2.Echo {
+public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.Calculator>.proxy(
+    tunnel: ch.softappeal.yass2.core.remote.Tunnel,
+): ch.softappeal.yass2.Calculator =
+    object : ch.softappeal.yass2.Calculator {
+        override suspend fun add(
+            p1: kotlin.Int,
+            p2: kotlin.Int,
+        ) =
+            tunnel(ch.softappeal.yass2.core.remote.Request(id, "add", listOf(p1, p2)))
+                .process() as kotlin.Int
+
         override suspend fun delay(
             p1: kotlin.Int,
         ) {
@@ -129,32 +70,12 @@ public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.Echo>.p
                 .process()
         }
 
-        override suspend fun echo(
-            p1: kotlin.Any?,
+        override suspend fun divide(
+            p1: kotlin.Int,
+            p2: kotlin.Int,
         ) =
-            tunnel(ch.softappeal.yass2.core.remote.Request(id, "echo", listOf(p1)))
-                .process() as kotlin.Any?
-
-        override suspend fun echoException(
-            p1: kotlin.Exception,
-        ) =
-            tunnel(ch.softappeal.yass2.core.remote.Request(id, "echoException", listOf(p1)))
-                .process() as kotlin.Exception
-
-        override suspend fun echoMonster(
-            p1: kotlin.collections.List<*>,
-            p2: kotlin.collections.List<kotlin.collections.List<kotlin.String?>?>,
-            p3: kotlin.collections.Map<out kotlin.Int, kotlin.String>,
-            p4: kotlin.Pair<*, *>,
-        ) =
-            tunnel(ch.softappeal.yass2.core.remote.Request(id, "echoMonster", listOf(p1, p2, p3, p4)))
-                .process() as kotlin.collections.Map<in kotlin.Int, kotlin.String>?
-
-        override suspend fun echoRequired(
-            p1: kotlin.Any,
-        ) =
-            tunnel(ch.softappeal.yass2.core.remote.Request(id, "echoRequired", listOf(p1)))
-                .process() as kotlin.Any
+            tunnel(ch.softappeal.yass2.core.remote.Request(id, "divide", listOf(p1, p2)))
+                .process() as kotlin.Int
 
         override suspend fun noParametersNoResult(
         ) {
@@ -163,26 +84,21 @@ public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.Echo>.p
         }
     }
 
-public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.Echo>.service(implementation: ch.softappeal.yass2.Echo): ch.softappeal.yass2.core.remote.Service =
+public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.Calculator>.service(
+    implementation: ch.softappeal.yass2.Calculator,
+): ch.softappeal.yass2.core.remote.Service =
     ch.softappeal.yass2.core.remote.Service(id) { function, parameters ->
         when (function) {
+            "add" -> implementation.add(
+                parameters[0] as kotlin.Int,
+                parameters[1] as kotlin.Int,
+            )
             "delay" -> implementation.delay(
                 parameters[0] as kotlin.Int,
             )
-            "echo" -> implementation.echo(
-                parameters[0] as kotlin.Any?,
-            )
-            "echoException" -> implementation.echoException(
-                parameters[0] as kotlin.Exception,
-            )
-            "echoMonster" -> implementation.echoMonster(
-                parameters[0] as kotlin.collections.List<*>,
-                parameters[1] as kotlin.collections.List<kotlin.collections.List<kotlin.String?>?>,
-                parameters[2] as kotlin.collections.Map<out kotlin.Int, kotlin.String>,
-                parameters[3] as kotlin.Pair<*, *>,
-            )
-            "echoRequired" -> implementation.echoRequired(
-                parameters[0] as kotlin.Any,
+            "divide" -> implementation.divide(
+                parameters[0] as kotlin.Int,
+                parameters[1] as kotlin.Int,
             )
             "noParametersNoResult" -> implementation.noParametersNoResult(
             )
@@ -190,7 +106,9 @@ public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.Echo>.s
         }
     }
 
-public fun <A, B, C> ch.softappeal.yass2.GenericService<A, B, C>.proxy(interceptor: ch.softappeal.yass2.core.Interceptor): ch.softappeal.yass2.GenericService<A, B, C> =
+public fun <A, B, C> ch.softappeal.yass2.GenericService<A, B, C>.proxy(
+    interceptor: ch.softappeal.yass2.core.Interceptor,
+): ch.softappeal.yass2.GenericService<A, B, C> =
     object : ch.softappeal.yass2.GenericService<A, B, C> {
         override suspend fun service(
             p1: A,
@@ -202,7 +120,9 @@ public fun <A, B, C> ch.softappeal.yass2.GenericService<A, B, C>.proxy(intercept
         }
     }
 
-public fun <A, B, C> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.GenericService<A, B, C>>.proxy(tunnel: ch.softappeal.yass2.core.remote.Tunnel): ch.softappeal.yass2.GenericService<A, B, C> =
+public fun <A, B, C> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.GenericService<A, B, C>>.proxy(
+    tunnel: ch.softappeal.yass2.core.remote.Tunnel,
+): ch.softappeal.yass2.GenericService<A, B, C> =
     object : ch.softappeal.yass2.GenericService<A, B, C> {
         override suspend fun service(
             p1: A,
@@ -212,7 +132,9 @@ public fun <A, B, C> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yas
                 .process() as C
     }
 
-public fun <A, B, C> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.GenericService<A, B, C>>.service(implementation: ch.softappeal.yass2.GenericService<A, B, C>): ch.softappeal.yass2.core.remote.Service =
+public fun <A, B, C> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.GenericService<A, B, C>>.service(
+    implementation: ch.softappeal.yass2.GenericService<A, B, C>,
+): ch.softappeal.yass2.core.remote.Service =
     ch.softappeal.yass2.core.remote.Service(id) { function, parameters ->
         when (function) {
             "service" -> implementation.service(
@@ -388,7 +310,7 @@ public fun binarySerializer(): ch.softappeal.yass2.core.serialize.binary.BinaryS
                     },
                     {
                         ch.softappeal.yass2.core.remote.ExceptionReply(
-                            exception = readObject() as kotlin.Exception,
+                            exception = readObject() as ch.softappeal.yass2.core.remote.ContractException,
                         )
                     }
                 ),
@@ -626,7 +548,7 @@ public fun stringEncoders(): List<ch.softappeal.yass2.core.serialize.string.Stri
             },
             {
                 ch.softappeal.yass2.core.remote.ExceptionReply(
-                    getProperty("exception") as kotlin.Exception,
+                    getProperty("exception") as ch.softappeal.yass2.core.remote.ContractException,
                 )
             },
             "exception" to -1,

@@ -5,7 +5,6 @@ import ch.softappeal.yass2.core.remote.tunnel
 import ch.softappeal.yass2.core.serialize.string.StringSerializer
 import ch.softappeal.yass2.core.serialize.string.fromString
 import ch.softappeal.yass2.core.serialize.string.toString
-import ch.softappeal.yass2.coroutines.session.Connection
 import ch.softappeal.yass2.coroutines.session.Session
 import ch.softappeal.yass2.coroutines.session.SessionFactory
 import ch.softappeal.yass2.ktor.WebSocketConnection
@@ -53,23 +52,16 @@ suspend fun useTunnel(tunnel: Tunnel) {
     useCalculator(calculator)
 }
 
-abstract class InitiatorSession<C : Connection> : Session<C>() {
-    fun printNews(news: String) {
+object NewsListenerImpl : NewsListener {
+    override suspend fun notify(news: String) {
         println("news: $news")
     }
 }
 
-// Shows how to pass a session to service implementation.
-class NewsListenerImpl<C : Connection>(val session: InitiatorSession<C>) : NewsListener {
-    override suspend fun notify(news: String) {
-        session.printNews(news)
-    }
-}
-
 fun CoroutineScope.initiatorSessionFactory(): SessionFactory<WebSocketConnection> = {
-    object : InitiatorSession<WebSocketConnection>() {
+    object : Session<WebSocketConnection>() {
         override val serverTunnel = tunnel(
-            NewsListenerId.service(NewsListenerImpl(this)),
+            NewsListenerId.service(NewsListenerImpl),
         )
 
         override fun opened() {

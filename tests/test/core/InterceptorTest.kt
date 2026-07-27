@@ -2,13 +2,13 @@ package ch.softappeal.yass2.core
 
 import ch.softappeal.yass2.Calculator
 import ch.softappeal.yass2.DivideByZeroException
-import ch.softappeal.yass2.Echo
 import ch.softappeal.yass2.proxy
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.test.assertSame
@@ -16,69 +16,57 @@ import kotlin.time.Duration.Companion.milliseconds
 
 object CalculatorImpl : Calculator {
     override suspend fun add(a: Int, b: Int) = a + b
-    override suspend fun divide(a: Int, b: Int) = if (b == 0) throw DivideByZeroException() else a / b
-}
-
-object EchoImpl : Echo {
-    override suspend fun echo(value: Any?) = value
-    override suspend fun echoRequired(value: Any) = value
     override suspend fun noParametersNoResult() {}
     override suspend fun delay(milliSeconds: Int) = kotlinx.coroutines.delay(milliSeconds.milliseconds)
-    override suspend fun echoException(value: Exception) = value
-
-    @Suppress("SameReturnValue")
-    override suspend fun echoMonster(a: List<*>, b: List<List<String?>?>, c: Map<out Int, String>, d: Pair<*, *>) = null
-}
-
-val Printer: Interceptor = { function, parameters, invocation ->
-    println("$function $parameters -> ")
-    try {
-        val result = invocation()
-        println("-> $result")
-        result
-    } catch (e: Exception) {
-        println("-> $e")
-        throw e
+    override suspend fun divide(a: Int, b: Int): Int {
+        if (b == 0) throw DivideByZeroException()
+        if (b == 999) error("simulates technical exception in service implementation")
+        return a / b
     }
 }
 
-suspend fun interceptorTest(calculator: Calculator, echo: Echo) {
-    var counter = 0
+enum class TestMode { Normal, Exception }
+
+suspend fun Calculator.interceptorTest(testMode: TestMode) {
+    if (testMode == TestMode.Exception) {
+        assertFails { divide(0, 999) }
+        return
+    }
+
     var functionName: String? = null
     var params: List<Any?>? = null
-    var result: Any? = null
-    val testInterceptor: Interceptor = { function, parameters, invocation ->
-        counter++
+    val calculator = proxy { function, parameters, invocation ->
         functionName = function
         params = parameters
-        result = invocation()
-        result
+        invocation()
     }
-    val interceptor = testInterceptor + Printer
-    val calculatorProxy = calculator.proxy(interceptor)
-    val echoProxy = echo.proxy(interceptor)
 
-    assertEquals(5, calculatorProxy.add(2, 3))
+    assertEquals(5, calculator.add(2, 3))
     assertEquals("add", functionName)
     assertEquals(listOf(2, 3), params)
-    assertEquals(5, result)
-    assertEquals(1, counter)
 
-    assertEquals(3, calculatorProxy.divide(12, 4))
-    assertEquals(2, counter)
-    assertFailsWith<DivideByZeroException> { calculatorProxy.divide(12, 0) }
-    assertEquals(3, counter)
+    calculator.noParametersNoResult()
+    assertEquals("noParametersNoResult", functionName)
+    assertEquals(listOf(), params)
 
-    echoProxy.noParametersNoResult()
-    assertEquals("hello", echoProxy.echo("hello"))
-    assertEquals(3, (echoProxy.echo(ByteArray(3)) as ByteArray).size)
+    assertFailsWith<DivideByZeroException> { calculator.divide(12, 0) }
 
-    withTimeout(200.milliseconds) { echoProxy.delay(100) }
+    withTimeout(200.milliseconds) { calculator.delay(100) }
     assertFailsWith<TimeoutCancellationException> {
-        withTimeout(100.milliseconds) { echoProxy.delay(200) }
+        withTimeout(100.milliseconds) { calculator.delay(200) }
     }
 
-    println("done")
+    kotlinx.coroutines.delay(400.milliseconds)
+}
+
+fun printer(name: String): Interceptor = { function, parameters, invocation ->
+    println("$name: $function $parameters")
+    try {
+        invocation().apply { println("$name: $this") }
+    } catch (e: Exception) {
+        println("$name: $e")
+        throw e
+    }
 }
 
 class InterceptorTest {
@@ -100,13 +88,11 @@ class InterceptorTest {
             assertNull(value1)
             assertNull(value2)
             value1 = 1
-            println("interceptor1")
         }
         val interceptor2 = interceptor {
             assertEquals(1, value1)
             assertNull(value2)
             value2 = 2
-            println("interceptor2")
         }
         assertSame(result, (interceptor1 + interceptor2)(function, parameters) { result })
         assertEquals(1, value1)
@@ -114,12 +100,14 @@ class InterceptorTest {
     }
 
     @Test
-    fun interceptorTest() = runTest {
-        interceptorTest(CalculatorImpl, EchoImpl)
+    fun passThroughInterceptor() = runTest {
+        assertEquals(5, PassThroughInterceptor("x", listOf()) { 5 })
     }
 
     @Test
-    fun passThroughInterceptor() = runTest {
-        assertEquals(5, CalculatorImpl.proxy(PassThroughInterceptor).add(2, 3))
+    fun interceptorTest() = runTest {
+        val calculator = CalculatorImpl.proxy(printer("interceptor"))
+        calculator.interceptorTest(TestMode.Normal)
+        calculator.interceptorTest(TestMode.Exception)
     }
 }

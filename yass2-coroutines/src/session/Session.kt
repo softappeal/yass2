@@ -12,8 +12,10 @@ import ch.softappeal.yass2.coroutines.ThreadSafeMap
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlin.time.Duration.Companion.milliseconds
 
 public class Packet(public val requestNumber: Int, public val message: Message)
 
@@ -75,7 +77,17 @@ public abstract class Session<C : Connection> {
         if (closed.exchange(true)) return
         tryFinally({
             closed(e)
-            if (sendEnd) write(null)
+            if (sendEnd) {
+                write(null)
+                delay(500.milliseconds) // give some time so that close packet can reach peer
+            }
+            requestNumberToDeferred.forEach { // cancel all outstanding client requests
+                try {
+                    it.cancel()
+                } catch (_: Exception) {
+                    // ignore
+                }
+            }
         }) {
             connection.closed()
         }

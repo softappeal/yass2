@@ -42,6 +42,10 @@ abstract class <#A: kotlin/Any> ch.softappeal.yass2.core.serialize.string/BaseSt
         final fun <get-writeBase>(): kotlin/Function1<#A, kotlin/String> // ch.softappeal.yass2.core.serialize.string/BaseStringEncoder.writeBase.<get-writeBase>|<get-writeBase>(){}[0]
 }
 
+abstract class ch.softappeal.yass2.core.remote/ContractException : kotlin/RuntimeException { // ch.softappeal.yass2.core.remote/ContractException|null[0]
+    constructor <init>() // ch.softappeal.yass2.core.remote/ContractException.<init>|<init>(){}[0]
+}
+
 abstract class ch.softappeal.yass2.core.serialize.binary/BinarySerializer : ch.softappeal.yass2.core.serialize/Serializer { // ch.softappeal.yass2.core.serialize.binary/BinarySerializer|null[0]
     constructor <init>() // ch.softappeal.yass2.core.serialize.binary/BinarySerializer.<init>|<init>(){}[0]
 
@@ -97,10 +101,10 @@ final class <#A: kotlin/Enum<#A>> ch.softappeal.yass2.core.serialize.string/Enum
 }
 
 final class ch.softappeal.yass2.core.remote/ExceptionReply : ch.softappeal.yass2.core.remote/Reply { // ch.softappeal.yass2.core.remote/ExceptionReply|null[0]
-    constructor <init>(kotlin/Exception) // ch.softappeal.yass2.core.remote/ExceptionReply.<init>|<init>(kotlin.Exception){}[0]
+    constructor <init>(ch.softappeal.yass2.core.remote/ContractException) // ch.softappeal.yass2.core.remote/ExceptionReply.<init>|<init>(ch.softappeal.yass2.core.remote.ContractException){}[0]
 
     final val exception // ch.softappeal.yass2.core.remote/ExceptionReply.exception|{}exception[0]
-        final fun <get-exception>(): kotlin/Exception // ch.softappeal.yass2.core.remote/ExceptionReply.exception.<get-exception>|<get-exception>(){}[0]
+        final fun <get-exception>(): ch.softappeal.yass2.core.remote/ContractException // ch.softappeal.yass2.core.remote/ExceptionReply.exception.<get-exception>|<get-exception>(){}[0]
 
     final fun process(): kotlin/Nothing // ch.softappeal.yass2.core.remote/ExceptionReply.process|process(){}[0]
 }

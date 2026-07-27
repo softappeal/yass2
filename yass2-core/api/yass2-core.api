@@ -21,9 +21,13 @@ public abstract interface annotation class ch/softappeal/yass2/core/InternalYass
 public abstract interface annotation class ch/softappeal/yass2/core/TestingYassApi : java/lang/annotation/Annotation {
 }
 
+public abstract class ch/softappeal/yass2/core/remote/ContractException : java/lang/RuntimeException {
+	public fun <init> ()V
+}
+
 public final class ch/softappeal/yass2/core/remote/ExceptionReply : ch/softappeal/yass2/core/remote/Reply {
-	public fun <init> (Ljava/lang/Exception;)V
-	public final fun getException ()Ljava/lang/Exception;
+	public fun <init> (Lch/softappeal/yass2/core/remote/ContractException;)V
+	public final fun getException ()Lch/softappeal/yass2/core/remote/ContractException;
 	public synthetic fun process ()Ljava/lang/Object;
 	public fun process ()Ljava/lang/Void;
 }

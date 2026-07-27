@@ -3,6 +3,12 @@
 ## Breaking changes
 
 - KSP removed
+- contract exceptions must now inherit from `ContractException`
+- `buildRequest` and `handleResponse` replaced by `HttpSend` plugin
+
+## Changes
+
+- generated proxy signatures are now on three lines
 
 ## Dependencies
 

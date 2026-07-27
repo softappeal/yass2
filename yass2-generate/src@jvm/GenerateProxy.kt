@@ -10,6 +10,14 @@ import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.javaMethod
 
+private fun CodeWriter.writeFun(head: String, parameter: String, tail: String, body: CodeWriter.() -> Unit) {
+    writeLine()
+    writeNestedLine("public fun$head(", "): $tail =") {
+        writeNestedLine("$parameter,")
+    }
+    nested { body() }
+}
+
 private fun KFunction<*>.hasResult() = returnType.classifier != Unit::class
 
 private fun CodeWriter.writeSignature(function: KFunction<*>) {
@@ -24,8 +32,8 @@ private fun CodeWriter.writeSignature(function: KFunction<*>) {
 private fun KFunction<*>.parameters() = (1..valueParameters.size).joinToString(", ") { "p$it" }
 
 private val KClass<*>.withTypeParameters get() = "<${typeParameters.joinToString { it.name }}>"
-private val KClass<*>.withTypes get() = "$qualifiedName${if (typeParameters.isEmpty()) "" else withTypeParameters}"
-private val KClass<*>.types get() = if (typeParameters.isEmpty()) "" else " $withTypeParameters"
+private val KClass<*>.serviceName get() = "$qualifiedName${if (typeParameters.isEmpty()) "" else withTypeParameters}"
+private val KClass<*>.serviceTypeParameters get() = if (typeParameters.isEmpty()) "" else " $withTypeParameters"
 
 public fun CodeWriter.generateProxy(service: KClass<*>) {
     require(service.java.isInterface) { "'${service.qualifiedName}' must be an interface" }
@@ -41,8 +49,12 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
             require(methodNames.hasNoDuplicates()) { "interface '${service.qualifiedName}' has overloaded methods ${methodNames.duplicates()}" }
         }
 
-    writeFun("${service.types} ${service.withTypes}.proxy(interceptor: $CSY.core.Interceptor): ${service.withTypes}") {
-        writeNestedLine("object : ${service.withTypes} {", "}") {
+    writeFun(
+        "${service.serviceTypeParameters} ${service.serviceName}.proxy",
+        "interceptor: $CSY.core.Interceptor",
+        service.serviceName,
+    ) {
+        writeNestedLine("object : ${service.serviceName} {", "}") {
             functions.forEachSeparator({ writeLine() }) { function ->
                 val hasResult = function.hasResult()
                 writeSignature(function)
@@ -60,8 +72,12 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
         }
     }
 
-    writeFun("${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.proxy(tunnel: $CSY.core.remote.Tunnel): ${service.withTypes}") {
-        writeNestedLine("object : ${service.withTypes} {", "}") {
+    writeFun(
+        "${service.serviceTypeParameters} ${ServiceId::class.qualifiedName}<${service.serviceName}>.proxy",
+        "tunnel: $CSY.core.remote.Tunnel",
+        service.serviceName,
+    ) {
+        writeNestedLine("object : ${service.serviceName} {", "}") {
             functions.forEachSeparator({ writeLine() }) { function ->
                 val hasResult = function.hasResult()
                 writeSignature(function)
@@ -77,7 +93,11 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
         }
     }
 
-    writeFun("${service.types} ${ServiceId::class.qualifiedName}<${service.withTypes}>.service(implementation: ${service.withTypes}): ${Service::class.qualifiedName}") {
+    writeFun(
+        "${service.serviceTypeParameters} ${ServiceId::class.qualifiedName}<${service.serviceName}>.service",
+        "implementation: ${service.serviceName}",
+        Service::class.qualifiedName!!,
+    ) {
         writeNestedLine("${Service::class.qualifiedName}(id) { function, parameters ->", "}") {
             writeNestedLine("when (function) {", "}") {
                 functions.forEach { function ->

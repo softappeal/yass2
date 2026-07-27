@@ -72,12 +72,6 @@ private val RemoveComment = Regex(""" *?/\*.*?\*/""") // TODO: see file 'KTypeTo
 
 internal fun KType.toType() = toString().removeComment()
 
-internal fun CodeWriter.writeFun(signature: String, body: CodeWriter.() -> Unit) {
-    writeLine()
-    writeNestedLine("public fun$signature =")
-    nested { body() }
-}
-
 private fun Appendable.appendPackage(packageName: String) {
     append(
         """

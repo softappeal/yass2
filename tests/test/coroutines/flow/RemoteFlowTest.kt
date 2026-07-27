@@ -4,7 +4,7 @@ package ch.softappeal.yass2.coroutines.flow
 
 import ch.softappeal.yass2.DivideByZeroException
 import ch.softappeal.yass2.core.ExperimentalYassApi
-import ch.softappeal.yass2.core.Printer
+import ch.softappeal.yass2.core.printer
 import ch.softappeal.yass2.core.remote.ServiceId
 import ch.softappeal.yass2.core.remote.tunnel
 import kotlinx.coroutines.CoroutineScope
@@ -34,7 +34,7 @@ private fun flowFactory(flowId: Int) = when (flowId) {
 private val FlowServiceId = ServiceId<FlowService<Int, Int>>("FlowService")
 
 private fun CoroutineScope.createFlow(flowId: Int): Flow<Int> {
-    val flowService = flowService(::flowFactory).proxy(Printer)
+    val flowService = flowService(::flowFactory).proxy(printer("flow"))
     val remoteFlowService = FlowServiceId.proxy(tunnel(FlowServiceId.service(flowService)))
     return remoteFlowService.createFlow(flowId)
 }

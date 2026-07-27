@@ -1,11 +1,16 @@
 package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.ContractSerializer
+import ch.softappeal.yass2.core.TestMode
 import ch.softappeal.yass2.core.remote.serverTunnel
-import ch.softappeal.yass2.coroutines.session.acceptorSessionFactory
+import ch.softappeal.yass2.coroutines.session.ACCEPTOR
+import ch.softappeal.yass2.coroutines.session.sessionFactory
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.http.content.staticFiles
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSocketServerSession
 import io.ktor.server.websocket.WebSockets
@@ -18,28 +23,30 @@ import kotlin.test.assertTrue
 
 val Server = embeddedServer(io.ktor.server.cio.CIO, PORT) {
     install(WebSockets)
+    install(StatusPages) {
+        exception<Exception> { call, cause ->
+            println("server.exception: $cause")
+            call.respond(HttpStatusCode.InternalServerError, "InternalServerError")
+        }
+    }
     routing {
-        route(
-            PATH,
-            ContractSerializer,
-            serverTunnel(
-                {
-                    val context = call().request.headers[CONTEXT_HEADER]
-                    if (context != null) assertTrue(context.startsWith(CONTEXT_VALUE))
-                    "http-$context"
-                },
-                { call().response.headers.append(CONTEXT_HEADER, CONTEXT_VALUE) },
-            ),
-        )
+        route(PATH, ContractSerializer, serverTunnel("server") { _, _, invocation ->
+            val call = call()
+            val context = call.request.headers[CONTEXT_HEADER]!!
+            // println("context: $context")
+            assertTrue(context.startsWith("$CONTEXT_VALUE-"))
+            try {
+                invocation()
+            } finally {
+                call.response.headers.append(CONTEXT_HEADER, CONTEXT_VALUE)
+            }
+        })
         webSocket(PATH) {
-            receiveLoop(
-                ContractSerializer,
-                acceptorSessionFactory {
-                    val context = (connection.session as WebSocketServerSession).call.request.headers[CONTEXT_HEADER]
-                    if (context != null) assertEquals(CONTEXT_VALUE, context)
-                    "ws-$context"
-                },
-            )
+            receiveLoop(ContractSerializer, sessionFactory(TestMode.Normal, runTests = false, ACCEPTOR) {
+                val context = (connection.session as WebSocketServerSession).call.request.headers[CONTEXT_HEADER]
+                // println("context: $context")
+                if (context != null) assertEquals(CONTEXT_VALUE, context)
+            })
         }
         // code
         staticFiles("/wasm", File("./build/wasm/packages/tests-test/kotlin"))

@@ -17,7 +17,7 @@ public fun tunnel(vararg services: Service): Tunnel {
         try {
             val result = service.invoke(request.function, request.parameters)
             ValueReply(if (result === Unit) null else result)
-        } catch (e: Exception) {
+        } catch (e: ContractException) { // we only return contract exceptions; others are propagated
             ExceptionReply(e)
         }
     }

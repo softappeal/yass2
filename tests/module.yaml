@@ -14,3 +14,4 @@ test-dependencies@jvm:
     - $libs.client.cio
     - $libs.server.cio
     - $libs.server.websockets
+    - $libs.server.status.pages

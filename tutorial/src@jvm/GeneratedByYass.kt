@@ -14,7 +14,9 @@
 
 package tutorial
 
-public fun tutorial.Calculator.proxy(interceptor: ch.softappeal.yass2.core.Interceptor): tutorial.Calculator =
+public fun tutorial.Calculator.proxy(
+    interceptor: ch.softappeal.yass2.core.Interceptor,
+): tutorial.Calculator =
     object : tutorial.Calculator {
         override suspend fun add(
             p1: kotlin.Int,
@@ -35,7 +37,9 @@ public fun tutorial.Calculator.proxy(interceptor: ch.softappeal.yass2.core.Inter
         }
     }
 
-public fun ch.softappeal.yass2.core.remote.ServiceId<tutorial.Calculator>.proxy(tunnel: ch.softappeal.yass2.core.remote.Tunnel): tutorial.Calculator =
+public fun ch.softappeal.yass2.core.remote.ServiceId<tutorial.Calculator>.proxy(
+    tunnel: ch.softappeal.yass2.core.remote.Tunnel,
+): tutorial.Calculator =
     object : tutorial.Calculator {
         override suspend fun add(
             p1: kotlin.Int,
@@ -52,7 +56,9 @@ public fun ch.softappeal.yass2.core.remote.ServiceId<tutorial.Calculator>.proxy(
                 .process() as kotlin.Int
     }
 
-public fun ch.softappeal.yass2.core.remote.ServiceId<tutorial.Calculator>.service(implementation: tutorial.Calculator): ch.softappeal.yass2.core.remote.Service =
+public fun ch.softappeal.yass2.core.remote.ServiceId<tutorial.Calculator>.service(
+    implementation: tutorial.Calculator,
+): ch.softappeal.yass2.core.remote.Service =
     ch.softappeal.yass2.core.remote.Service(id) { function, parameters ->
         when (function) {
             "add" -> implementation.add(
@@ -67,7 +73,9 @@ public fun ch.softappeal.yass2.core.remote.ServiceId<tutorial.Calculator>.servic
         }
     }
 
-public fun tutorial.NewsListener.proxy(interceptor: ch.softappeal.yass2.core.Interceptor): tutorial.NewsListener =
+public fun tutorial.NewsListener.proxy(
+    interceptor: ch.softappeal.yass2.core.Interceptor,
+): tutorial.NewsListener =
     object : tutorial.NewsListener {
         override suspend fun notify(
             p1: kotlin.String,
@@ -78,7 +86,9 @@ public fun tutorial.NewsListener.proxy(interceptor: ch.softappeal.yass2.core.Int
         }
     }
 
-public fun ch.softappeal.yass2.core.remote.ServiceId<tutorial.NewsListener>.proxy(tunnel: ch.softappeal.yass2.core.remote.Tunnel): tutorial.NewsListener =
+public fun ch.softappeal.yass2.core.remote.ServiceId<tutorial.NewsListener>.proxy(
+    tunnel: ch.softappeal.yass2.core.remote.Tunnel,
+): tutorial.NewsListener =
     object : tutorial.NewsListener {
         override suspend fun notify(
             p1: kotlin.String,
@@ -88,7 +98,9 @@ public fun ch.softappeal.yass2.core.remote.ServiceId<tutorial.NewsListener>.prox
         }
     }
 
-public fun ch.softappeal.yass2.core.remote.ServiceId<tutorial.NewsListener>.service(implementation: tutorial.NewsListener): ch.softappeal.yass2.core.remote.Service =
+public fun ch.softappeal.yass2.core.remote.ServiceId<tutorial.NewsListener>.service(
+    implementation: tutorial.NewsListener,
+): ch.softappeal.yass2.core.remote.Service =
     ch.softappeal.yass2.core.remote.Service(id) { function, parameters ->
         when (function) {
             "notify" -> implementation.notify(
@@ -161,7 +173,7 @@ public fun stringEncoders(): List<ch.softappeal.yass2.core.serialize.string.Stri
             },
             {
                 ch.softappeal.yass2.core.remote.ExceptionReply(
-                    getProperty("exception") as kotlin.Exception,
+                    getProperty("exception") as ch.softappeal.yass2.core.remote.ContractException,
                 )
             },
             "exception" to -1,

@@ -14,7 +14,9 @@
 
 package ch.softappeal.yass2.coroutines.session
 
-public fun ch.softappeal.yass2.coroutines.session.KeepAlive.proxy(interceptor: ch.softappeal.yass2.core.Interceptor): ch.softappeal.yass2.coroutines.session.KeepAlive =
+public fun ch.softappeal.yass2.coroutines.session.KeepAlive.proxy(
+    interceptor: ch.softappeal.yass2.core.Interceptor,
+): ch.softappeal.yass2.coroutines.session.KeepAlive =
     object : ch.softappeal.yass2.coroutines.session.KeepAlive {
         override suspend fun keepAlive(
         ) {
@@ -24,7 +26,9 @@ public fun ch.softappeal.yass2.coroutines.session.KeepAlive.proxy(interceptor: c
         }
     }
 
-public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.coroutines.session.KeepAlive>.proxy(tunnel: ch.softappeal.yass2.core.remote.Tunnel): ch.softappeal.yass2.coroutines.session.KeepAlive =
+public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.coroutines.session.KeepAlive>.proxy(
+    tunnel: ch.softappeal.yass2.core.remote.Tunnel,
+): ch.softappeal.yass2.coroutines.session.KeepAlive =
     object : ch.softappeal.yass2.coroutines.session.KeepAlive {
         override suspend fun keepAlive(
         ) {
@@ -33,7 +37,9 @@ public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.corouti
         }
     }
 
-public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.coroutines.session.KeepAlive>.service(implementation: ch.softappeal.yass2.coroutines.session.KeepAlive): ch.softappeal.yass2.core.remote.Service =
+public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.coroutines.session.KeepAlive>.service(
+    implementation: ch.softappeal.yass2.coroutines.session.KeepAlive,
+): ch.softappeal.yass2.core.remote.Service =
     ch.softappeal.yass2.core.remote.Service(id) { function, parameters ->
         when (function) {
             "keepAlive" -> implementation.keepAlive(

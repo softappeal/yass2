@@ -1,5 +1,6 @@
 package tutorial
 
+import ch.softappeal.yass2.core.remote.ContractException
 import ch.softappeal.yass2.core.remote.ExceptionReply
 import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.ServiceId
@@ -46,10 +47,10 @@ class Person(
 )
 
 /**
- * Exceptions are supported.
+ * Exceptions are supported. They must be [ContractException]s.
  * They are basically like regular classes but [Throwable.message] and [Throwable.cause] aren't serialized.
  */
-class DivideByZeroException : RuntimeException()
+class DivideByZeroException : ContractException()
 
 /**
  * Inheritance is supported.

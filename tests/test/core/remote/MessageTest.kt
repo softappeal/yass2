@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.core.remote
 
+import ch.softappeal.yass2.DivideByZeroException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -14,7 +15,7 @@ class MessageTest {
 
     @Test
     fun exceptionReply() {
-        val exception = Exception()
+        val exception = DivideByZeroException()
         assertSame(
             exception,
             assertFailsWith { ExceptionReply(exception).process() },

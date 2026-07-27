@@ -1,5 +1,6 @@
 package ch.softappeal.yass2
 
+import ch.softappeal.yass2.core.remote.ContractException
 import ch.softappeal.yass2.core.remote.ExceptionReply
 import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.ServiceId
@@ -53,7 +54,7 @@ class ManyProperties(
     var b: Int,
 )
 
-class DivideByZeroException : RuntimeException()
+class DivideByZeroException : ContractException()
 
 class ThrowableFake(
     val cause: String?,
@@ -75,15 +76,8 @@ interface AddCalculator {
 
 interface Calculator : AddCalculator {
     suspend fun divide(a: Int, b: Int): Int
-}
-
-interface Echo {
-    suspend fun echo(value: Any?): Any?
-    suspend fun echoRequired(value: Any): Any
     suspend fun noParametersNoResult()
     suspend fun delay(milliSeconds: Int)
-    suspend fun echoMonster(a: List<*>, b: List<List<String?>?>, c: Map<out Int, String>, d: Pair<*, *>): Map<in Int, String>?
-    suspend fun echoException(value: Exception): Exception
 }
 
 interface GenericService<A, B, C> {
@@ -93,11 +87,9 @@ interface GenericService<A, B, C> {
 val ContractSerializer = TextSerializer(stringEncoders())
 
 val CalculatorId = ServiceId<Calculator>("Calculator")
-val EchoId = ServiceId<Echo>("Echo")
 
 internal val Proxies = listOf(
     Calculator::class,
-    Echo::class,
     GenericService::class,
 )
 

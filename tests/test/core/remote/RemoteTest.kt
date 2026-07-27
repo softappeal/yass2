@@ -1,14 +1,16 @@
 package ch.softappeal.yass2.core.remote
 
 import ch.softappeal.yass2.CalculatorId
-import ch.softappeal.yass2.Echo
-import ch.softappeal.yass2.EchoId
+import ch.softappeal.yass2.DivideByZeroException
+import ch.softappeal.yass2.GenericService
 import ch.softappeal.yass2.core.CalculatorImpl
-import ch.softappeal.yass2.core.EchoImpl
 import ch.softappeal.yass2.core.Interceptor
 import ch.softappeal.yass2.core.PassThroughInterceptor
+import ch.softappeal.yass2.core.TestMode
 import ch.softappeal.yass2.core.assertFailsWithMessage
 import ch.softappeal.yass2.core.interceptorTest
+import ch.softappeal.yass2.core.plus
+import ch.softappeal.yass2.core.printer
 import ch.softappeal.yass2.proxy
 import ch.softappeal.yass2.service
 import kotlinx.coroutines.test.runTest
@@ -19,18 +21,12 @@ import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.fail
 
-suspend fun Tunnel.clientTest(contextInterceptor: Interceptor = PassThroughInterceptor) {
-    interceptorTest(CalculatorId.proxy(this), EchoId.proxy(this).proxy(contextInterceptor))
+suspend fun Tunnel.clientTest(testMode: TestMode, interceptor: String) {
+    CalculatorId.proxy(this).proxy(printer(interceptor)).interceptorTest(testMode)
 }
 
-fun serverTunnel(inContext: suspend () -> Any, outContext: suspend () -> Unit = {}) = tunnel(
-    CalculatorId.service(CalculatorImpl),
-    EchoId.service(EchoImpl.proxy { _, _, invocation ->
-        println("context<${inContext()}>")
-        invocation().apply {
-            outContext()
-        }
-    }),
+fun serverTunnel(interceptor: String, context: Interceptor) = tunnel(
+    CalculatorId.service(CalculatorImpl.proxy(printer(interceptor) + context))
 )
 
 class RemoteTest {
@@ -50,7 +46,7 @@ class RemoteTest {
 
     @Test
     fun tunnelTest() = runTest {
-        val exception = Exception()
+        val exception = DivideByZeroException()
         val tunnel = tunnel(
             Service("service1") { function, parameters ->
                 when (function) {
@@ -58,6 +54,7 @@ class RemoteTest {
                     "null" -> null
                     "unit" -> Unit
                     "exception" -> throw exception
+                    "error" -> error("error")
                     else -> fail(function)
                 }
             },
@@ -66,21 +63,24 @@ class RemoteTest {
         assertEquals(3, tunnel(Request("service1", "add", listOf(1, 2))).process())
         assertNull(tunnel(Request("service1", "null", listOf())).process())
         assertNull(tunnel(Request("service1", "unit", listOf())).process())
-        assertSame(
-            exception,
-            assertFails { tunnel(Request("service1", "exception", listOf())).process() },
-        )
-    }
-
-    @Test
-    fun noFunction() = runTest {
-        assertFailsWithMessage<IllegalStateException>("service 'Calculator' has no function 'noParametersNoResult'") {
-            ServiceId<Echo>(CalculatorId.id).proxy(tunnel(CalculatorId.service(CalculatorImpl))).noParametersNoResult()
+        assertSame(exception, assertFails { tunnel(Request("service1", "exception", listOf())).process() })
+        assertFailsWithMessage<IllegalStateException>("error") {
+            tunnel(Request("service1", "error", listOf()))
         }
     }
 
     @Test
-    fun test() = runTest {
-        serverTunnel({}).clientTest()
+    fun noFunction() = runTest {
+        assertFailsWithMessage<IllegalStateException>("service 'Calculator' has no function 'service'") {
+            ServiceId<GenericService<Int, Int, Int>>(CalculatorId.id).proxy(tunnel(CalculatorId.service(CalculatorImpl)))
+                .service(1, 2)
+        }
+    }
+
+    @Test
+    fun clientTest() = runTest {
+        val tunnel = serverTunnel("server", PassThroughInterceptor)
+        tunnel.clientTest(TestMode.Normal, "client")
+        tunnel.clientTest(TestMode.Exception, "client")
     }
 }

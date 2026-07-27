@@ -14,4 +14,8 @@ internal class ThreadSafeMap<K, V>(initialCapacity: Int) {
     suspend fun remove(key: K) = mutex.withLock { map.remove(key) }
 
     suspend fun get(key: K) = mutex.withLock { map[key] }
+
+    suspend fun forEach(action: (V) -> Unit) {
+        mutex.withLock { map.values.forEach(action) }
+    }
 }

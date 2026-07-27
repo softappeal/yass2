@@ -26,6 +26,12 @@ import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.superclasses
 import kotlin.reflect.full.valueParameters
 
+private fun CodeWriter.writeFun(signature: String, body: CodeWriter.() -> Unit) {
+    writeLine()
+    writeNestedLine("public fun $signature =")
+    nested { body() }
+}
+
 private data class Classes(
     val baseClasses: List<KClass<*>>,
     val enumClasses: List<KClass<out Enum<*>>>,
@@ -94,7 +100,7 @@ public fun CodeWriter.generateBinarySerializer(
             "write${suffix()}($reference${if (encoderId == BINARY_NO_ENCODER_ID) "" else ", $encoderId"})"
     }
 
-    writeFun(" binarySerializer(): ${BinarySerializer::class.qualifiedName}") {
+    writeFun("binarySerializer(): ${BinarySerializer::class.qualifiedName}") {
         writeNestedLine("object : ${BinarySerializer::class.qualifiedName}() {", "}") {
             writeNestedLine("init {", "}") {
                 writeNestedLine("initialize(", ")") {
@@ -155,7 +161,7 @@ public fun CodeWriter.generateStringEncoders(
         }"
     }
 
-    writeFun(" stringEncoders(): List<${StringEncoder::class.qualifiedName}<*>>") {
+    writeFun("stringEncoders(): List<${StringEncoder::class.qualifiedName}<*>>") {
         writeNestedLine("listOf(", ")") {
             writeNestedLine("// ${String::class.qualifiedName}: $STRING_STRING_ENCODER_ID")
             writeNestedLine("// ${Boolean::class.qualifiedName}: $STRING_BOOLEAN_ENCODER_ID")

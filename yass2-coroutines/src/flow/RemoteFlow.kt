@@ -2,9 +2,6 @@ package ch.softappeal.yass2.coroutines.flow
 
 import ch.softappeal.yass2.core.ExperimentalYassApi
 import ch.softappeal.yass2.core.addSuppressed
-import ch.softappeal.yass2.core.remote.ExceptionReply
-import ch.softappeal.yass2.core.remote.Reply
-import ch.softappeal.yass2.core.remote.ValueReply
 import ch.softappeal.yass2.core.tryFinally
 import ch.softappeal.yass2.coroutines.AtomicInt
 import ch.softappeal.yass2.coroutines.ThreadSafeMap
@@ -38,20 +35,20 @@ public interface FlowService<out F, I> {
 
 @ExperimentalYassApi public fun <F, I> CoroutineScope.flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I> {
     val nextCollectId = AtomicInt(0)
-    val collectIdToChannel = ThreadSafeMap<Int, Channel<Reply?>>(16)
+    val collectIdToChannel = ThreadSafeMap<Int, Channel<Any?>>(16)
     return object : FlowService<F, I> {
         override suspend fun create(flowId: I): Int {
             val flow = flowFactory(flowId)
             val collectId = nextCollectId.incrementAndFetch()
-            val channel = Channel<Reply?>()
+            val channel = Channel<Any?>()
             collectIdToChannel.put(collectId, channel)
             this@flowService.launch {
                 tryFinally({
                     try {
-                        flow.collect { channel.send(ValueReply(it)) }
+                        flow.collect { channel.send(it) }
                         channel.send(null)
                     } catch (e: Exception) {
-                        channel.send(ExceptionReply(e))
+                        channel.send(e)
                     }
                 }) {
                     collectIdToChannel.remove(collectId)
@@ -62,7 +59,8 @@ public interface FlowService<out F, I> {
 
         override suspend fun next(collectId: Int): F? {
             val reply = collectIdToChannel.get(collectId)!!.receive()
-            @Suppress("UNCHECKED_CAST") return reply?.process() as F
+            if (reply is Exception) throw reply
+            @Suppress("UNCHECKED_CAST") return reply as F?
         }
 
         override suspend fun cancel(collectId: Int) {
