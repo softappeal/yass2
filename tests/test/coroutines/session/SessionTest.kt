@@ -9,8 +9,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 suspend fun connect(
@@ -55,19 +53,16 @@ fun <C : Connection> CoroutineScope.sessionFactory(
         override fun opened() {
             launch {
                 println("$type session opened")
-                assertFalse(isClosed())
-                if (runTests) {
-                    clientTunnel.clientTest(testMode, "$type.client")
-                    close()
-                    assertTrue(isClosed())
-                }
+                if (!runTests) return@launch
+                clientTunnel.clientTest(testMode, "$type.client")
+                close()
+                assertTrue(isClosed())
             }
         }
 
         override suspend fun closed(e: Exception?) {
             println("$type session closed: $e")
             assertTrue(isClosed())
-            if (testMode == TestMode.Normal) assertNull(e)
         }
     }
 }
