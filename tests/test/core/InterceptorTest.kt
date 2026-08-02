@@ -52,11 +52,11 @@ suspend fun Calculator.interceptorTest(testMode: TestMode) {
     assertFailsWith<DivideByZeroException> { calculator.divide(12, 0) }
 
     withTimeout(200.milliseconds) { calculator.delay(100) }
+
     assertFailsWith<TimeoutCancellationException> {
         withTimeout(100.milliseconds) { calculator.delay(200) }
     }
-
-    kotlinx.coroutines.delay(400.milliseconds)
+    kotlinx.coroutines.delay(200.milliseconds) // to make sure that the server side delay is finished
 }
 
 fun printer(name: String): Interceptor = { function, parameters, invocation ->
