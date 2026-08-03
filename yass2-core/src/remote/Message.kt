@@ -16,7 +16,7 @@ public class ValueReply(public val value: Any?) : Reply() {
     override fun process(): Any? = value
 }
 
-/** Base class for exceptions thrown by the contract. */
+/** NOTE: Base class for exceptions thrown by the contract. */
 public abstract class ContractException : RuntimeException()
 
 public class ExceptionReply(public val exception: ContractException) : Reply() {

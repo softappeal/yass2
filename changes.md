@@ -1,4 +1,4 @@
-# TODO: Next Release
+# 29.0.0 (2026-08-03)
 
 ## Breaking changes
 
@@ -11,6 +11,12 @@
 - generated proxy signatures are now on three lines
 
 ## Dependencies
+
+    Java 25.0.3
+
+    kotlin     = "2.4.10"        # https://github.com/JetBrains/kotlin
+    coroutines = "1.11.0"        # https://github.com/Kotlin/kotlinx.coroutines
+    ktor       = "3.5.1"         # https://github.com/ktorio/ktor
 
 # 28.0.1 (2026-06-07)
 
