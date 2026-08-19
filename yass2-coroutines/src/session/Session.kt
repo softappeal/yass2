@@ -38,6 +38,7 @@ public abstract class Session<C : Connection> {
         close(false, e)
     }
 
+    // TODO: remove `suspend` when kotlin.concurrent.atomics is no longer ExperimentalAtomicApi
     public suspend fun isClosed(): Boolean = closed.load()
 
     public suspend fun closeOnException(block: suspend () -> Unit) {

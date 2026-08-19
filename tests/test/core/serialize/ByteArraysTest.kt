@@ -18,7 +18,7 @@ class ByteArraysTest {
             writeByte(13)
             writeByteArray(byteArrayOf(1, 2, 3))
             writeByte(31)
-            byteArray = toyByteArray()
+            byteArray = toByteArray()
         }
         assertContentEquals(byteArrayOf(13, 1, 2, 3, 31), byteArray)
         with(ByteArrayReader(byteArray)) {
@@ -42,7 +42,7 @@ class ByteArraysTest {
             assertEquals(1, byteArray.size)
             writeByte(31)
             assertEquals(1000, byteArray.size)
-            assertContentEquals(byteArrayOf(13, 31), toyByteArray())
+            assertContentEquals(byteArrayOf(13, 31), toByteArray())
             writeByteArray(ByteArray(998))
             assertEquals(1000, byteArray.size)
             writeByte(99)

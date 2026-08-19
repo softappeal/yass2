@@ -24,7 +24,14 @@ public class ByteArrayWriter(initialCapacity: Int = 1000) : Writer {
         current = newCurrent
     }
 
-    public fun toyByteArray(): ByteArray = byteArray.copyOf(current)
+    public fun toByteArray(): ByteArray = byteArray.copyOf(current)
+
+    @Deprecated(
+        message = "Renamed to 'toByteArray()' because 'toyByteArray()' was a typo; will be removed in a future release.",
+        replaceWith = ReplaceWith("toByteArray()"),
+        level = DeprecationLevel.ERROR,
+    )
+    public fun toyByteArray(): ByteArray = toByteArray()
 }
 
 public class ByteArrayReader(private val byteArray: ByteArray) : Reader {
@@ -53,7 +60,7 @@ public fun ByteArrayReader.checkDrained() {
 
 public fun Serializer.toByteArray(value: Any?): ByteArray = with(ByteArrayWriter()) {
     write(value)
-    toyByteArray()
+    toByteArray()
 }
 
 public fun Serializer.fromByteArray(byteArray: ByteArray): Any? = with(ByteArrayReader(byteArray)) {

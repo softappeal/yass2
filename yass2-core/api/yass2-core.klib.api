@@ -167,6 +167,7 @@ final class ch.softappeal.yass2.core.serialize/ByteArrayReader : ch.softappeal.y
 final class ch.softappeal.yass2.core.serialize/ByteArrayWriter : ch.softappeal.yass2.core.serialize/Writer { // ch.softappeal.yass2.core.serialize/ByteArrayWriter|null[0]
     constructor <init>(kotlin/Int = ...) // ch.softappeal.yass2.core.serialize/ByteArrayWriter.<init>|<init>(kotlin.Int){}[0]
 
+    final fun toByteArray(): kotlin/ByteArray // ch.softappeal.yass2.core.serialize/ByteArrayWriter.toByteArray|toByteArray(){}[0]
     final fun toyByteArray(): kotlin/ByteArray // ch.softappeal.yass2.core.serialize/ByteArrayWriter.toyByteArray|toyByteArray(){}[0]
     final fun writeByte(kotlin/Byte) // ch.softappeal.yass2.core.serialize/ByteArrayWriter.writeByte|writeByte(kotlin.Byte){}[0]
     final fun writeByteArray(kotlin/ByteArray) // ch.softappeal.yass2.core.serialize/ByteArrayWriter.writeByteArray|writeByteArray(kotlin.ByteArray){}[0]

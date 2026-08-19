@@ -400,7 +400,7 @@ class SerializerTest {
         val serializer = binarySerializer()
         val writer = ByteArrayWriter()
         serializer.write(writer, 123)
-        val reader = ByteArrayReader(writer.toyByteArray())
+        val reader = ByteArrayReader(writer.toByteArray())
         assertEquals(123, serializer.read(reader))
         reader.checkDrained()
     }

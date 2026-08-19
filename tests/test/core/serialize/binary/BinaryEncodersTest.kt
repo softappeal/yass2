@@ -24,9 +24,9 @@ private fun <T : Any> BinaryEncoder<T>.check(value: T, vararg bytes: Int) {
     val writer = ByteArrayWriter()
     with(writer) {
         write(this, value)
-        assertEquals(bytes.map { it.toByte() }, toyByteArray().toList())
+        assertEquals(bytes.map { it.toByte() }, toByteArray().toList())
     }
-    with(ByteArrayReader(writer.toyByteArray())) {
+    with(ByteArrayReader(writer.toByteArray())) {
         if (value is ByteArray) {
             assertEquals(value.toList(), (read(this) as ByteArray).toList())
         } else {

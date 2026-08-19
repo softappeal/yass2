@@ -12,7 +12,7 @@ import kotlin.test.assertEquals
 private fun <T> check(value: T, write: Writer.(value: T) -> Unit, vararg bytes: Int, read: Reader.() -> T) {
     val writer = ByteArrayWriter()
     writer.write(value)
-    val byteArray = writer.toyByteArray()
+    val byteArray = writer.toByteArray()
     assertEquals(bytes.map { it.toByte() }, byteArray.toList())
     val reader = ByteArrayReader(byteArray)
     assertEquals(value, reader.read().apply { reader.checkDrained() })
