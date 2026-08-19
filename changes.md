@@ -1,5 +1,9 @@
 # TODO: Next Release
 
+## Changes
+
+- Deprecated typo `ByteArrayWriter.toyByteArray` and added replacement `toByteArray`.
+
 ## Dependencies
 
 # 29.0.0 (2026-08-03)
