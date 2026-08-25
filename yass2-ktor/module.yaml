@@ -1,12 +1,12 @@
-apply:
-    - ../shared.module-template.yaml
-
 product:
     type: kmp/lib
     platforms: [ jvm, js, wasmJs, linuxX64, linuxArm64 ]
 
+apply:
+    - //yass.module-template.yaml
+
 dependencies:
-    -   ../yass2-coroutines: exported
+    -   //yass2-coroutines: exported
     -   $libs.client.core: exported
     -   $libs.server.core: exported
     -   $libs.client.websockets: exported

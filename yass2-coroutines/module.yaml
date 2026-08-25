@@ -1,13 +1,13 @@
-apply:
-    - ../shared.module-template.yaml
-
 product:
     type: kmp/lib
     platforms: [ jvm, js, wasmJs, linuxX64, linuxArm64 ]
 
+apply:
+    - //yass.module-template.yaml
+
 dependencies:
-    -   ../yass2-core: exported
+    -   //yass2-core: exported
     -   $libs.coroutines.core: exported
 
 test-dependencies@jvm:
-    - ../yass2-generate
+    - //yass2-generate

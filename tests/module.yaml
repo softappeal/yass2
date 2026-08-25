@@ -1,16 +1,16 @@
-apply:
-    - ../shared.module-template.yaml
-
 product:
     type: kmp/lib
     platforms: [ jvm, js, wasmJs, linuxX64, linuxArm64 ]
 
+apply:
+    - //common.module-template.yaml
+
 test-dependencies:
-    - ../yass2-ktor
+    - //yass2-ktor
     - $libs.coroutines.test
 
 test-dependencies@jvm:
-    - ../yass2-generate
+    - //yass2-generate
     - $libs.client.cio
     - $libs.server.cio
     - $libs.server.websockets
