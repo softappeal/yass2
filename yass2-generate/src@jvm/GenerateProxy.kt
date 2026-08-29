@@ -60,7 +60,7 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
                 writeSignature(function)
                 if (hasResult) write(": ${function.returnType.toType()}")
                 writeLine(" {") {
-                    writeNestedLine("${if (hasResult) "return " else ""}interceptor(\"${function.name}\", listOf(${function.parameters()})) {") {
+                    writeNestedLine("${if (hasResult) "return " else ""}interceptor(${service.serviceName}::${function.name}, listOf(${function.parameters()})) {") {
                         writeNestedLine("this@proxy.${function.name}(${function.parameters()})")
                     }
                     writeNested("}")

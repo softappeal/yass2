@@ -22,7 +22,7 @@ public fun ch.softappeal.yass2.Calculator.proxy(
             p1: kotlin.Int,
             p2: kotlin.Int,
         ): kotlin.Int {
-            return interceptor("add", listOf(p1, p2)) {
+            return interceptor(ch.softappeal.yass2.Calculator::add, listOf(p1, p2)) {
                 this@proxy.add(p1, p2)
             } as kotlin.Int
         }
@@ -30,7 +30,7 @@ public fun ch.softappeal.yass2.Calculator.proxy(
         override suspend fun delay(
             p1: kotlin.Int,
         ) {
-            interceptor("delay", listOf(p1)) {
+            interceptor(ch.softappeal.yass2.Calculator::delay, listOf(p1)) {
                 this@proxy.delay(p1)
             }
         }
@@ -39,14 +39,14 @@ public fun ch.softappeal.yass2.Calculator.proxy(
             p1: kotlin.Int,
             p2: kotlin.Int,
         ): kotlin.Int {
-            return interceptor("divide", listOf(p1, p2)) {
+            return interceptor(ch.softappeal.yass2.Calculator::divide, listOf(p1, p2)) {
                 this@proxy.divide(p1, p2)
             } as kotlin.Int
         }
 
         override suspend fun noParametersNoResult(
         ) {
-            interceptor("noParametersNoResult", listOf()) {
+            interceptor(ch.softappeal.yass2.Calculator::noParametersNoResult, listOf()) {
                 this@proxy.noParametersNoResult()
             }
         }
@@ -114,7 +114,7 @@ public fun <A, B, C> ch.softappeal.yass2.GenericService<A, B, C>.proxy(
             p1: A,
             p2: B,
         ): C {
-            return interceptor("service", listOf(p1, p2)) {
+            return interceptor(ch.softappeal.yass2.GenericService<A, B, C>::service, listOf(p1, p2)) {
                 this@proxy.service(p1, p2)
             } as C
         }

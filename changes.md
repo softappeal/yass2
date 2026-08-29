@@ -1,8 +1,9 @@
 # TODO: Next Release
 
-## Changes
+## Breaking changes
 
-- Deprecated typo `ByteArrayWriter.toyByteArray` and added replacement `toByteArray`.
+- argument `function` of `Interceptor` changed from `String` to `KFunction`
+- Typo `ByteArrayWriter.toyByteArray` renamed to `toByteArray`.
 
 ## Dependencies
 

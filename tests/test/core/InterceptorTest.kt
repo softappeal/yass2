@@ -6,6 +6,7 @@ import ch.softappeal.yass2.proxy
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
+import kotlin.reflect.KFunction
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -33,20 +34,20 @@ suspend fun Calculator.interceptorTest(testMode: TestMode) {
         return
     }
 
-    var functionName: String? = null
+    var f: KFunction<*>? = null
     var params: List<Any?>? = null
     val calculator = proxy { function, parameters, invocation ->
-        functionName = function
+        f = function
         params = parameters
         invocation()
     }
 
     assertEquals(5, calculator.add(2, 3))
-    assertEquals("add", functionName)
+    assertEquals(Calculator::add, f)
     assertEquals(listOf(2, 3), params)
 
     calculator.noParametersNoResult()
-    assertEquals("noParametersNoResult", functionName)
+    assertEquals(Calculator::noParametersNoResult, f)
     assertEquals(listOf(), params)
 
     assertFailsWith<DivideByZeroException> { calculator.divide(12, 0) }
@@ -60,7 +61,7 @@ suspend fun Calculator.interceptorTest(testMode: TestMode) {
 }
 
 fun printer(name: String): Interceptor = { function, parameters, invocation ->
-    println("$name: $function $parameters")
+    println("$name: ${function.name} $parameters")
     try {
         invocation().apply { println("$name: $this") }
     } catch (e: Exception) {
@@ -73,7 +74,7 @@ class InterceptorTest {
     @Test
     fun plus() = runTest {
         val result = "result"
-        val function = "add"
+        val function = Calculator::add
         val parameters = listOf(1, 2, 3)
         fun interceptor(check: () -> Unit): Interceptor = { f, p, invocation ->
             assertSame(function, f)
@@ -101,7 +102,7 @@ class InterceptorTest {
 
     @Test
     fun passThroughInterceptor() = runTest {
-        assertEquals(5, PassThroughInterceptor("x", listOf()) { 5 })
+        assertEquals(5, PassThroughInterceptor(Calculator::add, listOf()) { 5 })
     }
 
     @Test

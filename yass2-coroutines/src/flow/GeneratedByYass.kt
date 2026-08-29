@@ -21,7 +21,7 @@ public fun <F, I> ch.softappeal.yass2.coroutines.flow.FlowService<F, I>.proxy(
         override suspend fun cancel(
             p1: kotlin.Int,
         ) {
-            interceptor("cancel", listOf(p1)) {
+            interceptor(ch.softappeal.yass2.coroutines.flow.FlowService<F, I>::cancel, listOf(p1)) {
                 this@proxy.cancel(p1)
             }
         }
@@ -29,7 +29,7 @@ public fun <F, I> ch.softappeal.yass2.coroutines.flow.FlowService<F, I>.proxy(
         override suspend fun create(
             p1: I,
         ): kotlin.Int {
-            return interceptor("create", listOf(p1)) {
+            return interceptor(ch.softappeal.yass2.coroutines.flow.FlowService<F, I>::create, listOf(p1)) {
                 this@proxy.create(p1)
             } as kotlin.Int
         }
@@ -37,7 +37,7 @@ public fun <F, I> ch.softappeal.yass2.coroutines.flow.FlowService<F, I>.proxy(
         override suspend fun next(
             p1: kotlin.Int,
         ): F? {
-            return interceptor("next", listOf(p1)) {
+            return interceptor(ch.softappeal.yass2.coroutines.flow.FlowService<F, I>::next, listOf(p1)) {
                 this@proxy.next(p1)
             } as F?
         }

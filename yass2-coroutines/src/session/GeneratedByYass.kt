@@ -20,7 +20,7 @@ public fun ch.softappeal.yass2.coroutines.session.KeepAlive.proxy(
     object : ch.softappeal.yass2.coroutines.session.KeepAlive {
         override suspend fun keepAlive(
         ) {
-            interceptor("keepAlive", listOf()) {
+            interceptor(ch.softappeal.yass2.coroutines.session.KeepAlive::keepAlive, listOf()) {
                 this@proxy.keepAlive()
             }
         }

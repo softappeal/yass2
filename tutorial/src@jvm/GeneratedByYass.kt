@@ -22,7 +22,7 @@ public fun tutorial.Calculator.proxy(
             p1: kotlin.Int,
             p2: kotlin.Int,
         ): kotlin.Int {
-            return interceptor("add", listOf(p1, p2)) {
+            return interceptor(tutorial.Calculator::add, listOf(p1, p2)) {
                 this@proxy.add(p1, p2)
             } as kotlin.Int
         }
@@ -31,7 +31,7 @@ public fun tutorial.Calculator.proxy(
             p1: kotlin.Int,
             p2: kotlin.Int,
         ): kotlin.Int {
-            return interceptor("divide", listOf(p1, p2)) {
+            return interceptor(tutorial.Calculator::divide, listOf(p1, p2)) {
                 this@proxy.divide(p1, p2)
             } as kotlin.Int
         }
@@ -80,7 +80,7 @@ public fun tutorial.NewsListener.proxy(
         override suspend fun notify(
             p1: kotlin.String,
         ) {
-            interceptor("notify", listOf(p1)) {
+            interceptor(tutorial.NewsListener::notify, listOf(p1)) {
                 this@proxy.notify(p1)
             }
         }

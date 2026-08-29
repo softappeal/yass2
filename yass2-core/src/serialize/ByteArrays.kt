@@ -25,13 +25,6 @@ public class ByteArrayWriter(initialCapacity: Int = 1000) : Writer {
     }
 
     public fun toByteArray(): ByteArray = byteArray.copyOf(current)
-
-    @Deprecated(
-        message = "Renamed to 'toByteArray()' because 'toyByteArray()' was a typo; will be removed in a future release.",
-        replaceWith = ReplaceWith("toByteArray()"),
-        level = DeprecationLevel.ERROR,
-    )
-    public fun toyByteArray(): ByteArray = toByteArray()
 }
 
 public class ByteArrayReader(private val byteArray: ByteArray) : Reader {

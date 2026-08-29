@@ -70,7 +70,11 @@ data class Example(
     val listOptional: List<Int>?,
 )
 
+@Target(AnnotationTarget.FUNCTION)
+annotation class TestAnnotation
+
 interface AddCalculator {
+    @TestAnnotation
     suspend fun add(a: Int, b: Int): Int
 }
 
