@@ -26,7 +26,7 @@ server-status-pages = { module = "io.ktor:ktor-server-status-pages", version.ref
 [bundles]
 
 ktor     = [ "client-core", "server-core", "client-websockets", "network" ]
-ktor-cio = [ "client-cio" , "server-cio" , "server-websockets"            ]
+ktor-cio = [ "client-cio" , "server-cio" , "server-websockets", "server-status-pages" ]
 
 [plugins]
 
