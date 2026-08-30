@@ -5,7 +5,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalJsExport::class) @JsExport
-fun clientTest() {
+fun webClientTest() {
     MainScope().launch {
         clientTest(JsClient())
     }

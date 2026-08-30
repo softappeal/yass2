@@ -7,11 +7,11 @@ apply:
 
 test-dependencies:
     - //yass2-ktor
-    - $libs.coroutines.test
-
-test-dependencies@jvm:
-    - //yass2-generate
     - $libs.client.cio
     - $libs.server.cio
     - $libs.server.websockets
     - $libs.server.status.pages
+    - $libs.coroutines.test
+
+test-dependencies@jvm:
+    - //yass2-generate
