@@ -36,7 +36,7 @@ import kotlin.test.assertTrue
 private fun runServer(block: suspend CoroutineScope.(tcp: TcpSocketBuilder, serverSocket: ServerSocket) -> Unit) = runTest {
     SelectorManager().use { selector ->
         val tcp = aSocket(selector).tcp()
-        tcp.bind(LOCAL_HOST).use { serverSocket ->
+        tcp.bind("localhost").use { serverSocket ->
             withContext(Dispatchers.Default.limitedParallelism(1)) {
                 block(tcp, serverSocket)
             }

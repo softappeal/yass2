@@ -1,3 +1,3 @@
 package ch.softappeal.yass2.ktor
 
-class JvmKtorTest : KtorTest()
+class EnabledWebTest : WebTest()

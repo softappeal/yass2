@@ -1,7 +1,5 @@
 // https://kotlinlang.org/docs/multiplatform-intro.html
 
-@file:Suppress("SpellCheckingInspection")
-
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -39,6 +37,9 @@ fun KotlinMultiplatformExtension.configureSourceSets() {
             webTest {
                 kotlin.srcDir("test@web")
                 resources.srcDir("testResources@web")
+            }
+            wasmJsTest {
+                kotlin.srcDir("test@wasmJs")
             }
         }
     }
