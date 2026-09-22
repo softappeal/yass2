@@ -27,18 +27,19 @@ import io.ktor.server.websocket.webSocket
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
+import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 private const val LOCAL_HOST = "localhost"
-private const val PORT = 28948
+private const val BROWSER_PORT = 28948
 private const val PATH = "/yass"
 
 private const val CONTEXT_HEADER = "Context-Header"
 private const val CONTEXT_VALUE = "ContextValue"
 
-suspend fun webClientTest(httpClientEngineFactory: HttpClientEngineFactory<*>) {
+suspend fun webClientTest(port: Int = BROWSER_PORT, httpClientEngineFactory: HttpClientEngineFactory<*>) {
     HttpClient(httpClientEngineFactory) {
         install(Plugin)
     }.use { client ->
@@ -60,7 +61,7 @@ suspend fun webClientTest(httpClientEngineFactory: HttpClientEngineFactory<*>) {
         suspend fun http(testMode: TestMode) {
             println()
             println("*** http: testMode = $testMode ***")
-            @Suppress("HttpUrlsUsage") val tunnel = client.tunnel("http://$LOCAL_HOST:$PORT$PATH", ContractSerializer)
+            @Suppress("HttpUrlsUsage") val tunnel = client.tunnel("http://$LOCAL_HOST:$port$PATH", ContractSerializer)
             tunnel.clientTest(testMode, "client")
         }
         http(TestMode.Normal)
@@ -71,7 +72,7 @@ suspend fun webClientTest(httpClientEngineFactory: HttpClientEngineFactory<*>) {
             println()
             println("*** webSocket: testMode = $testMode ***")
             client.ws(
-                "ws://$LOCAL_HOST:$PORT$PATH",
+                "ws://$LOCAL_HOST:$port$PATH",
                 { header(CONTEXT_HEADER, CONTEXT_VALUE) }, // header is not set if run in browser
             ) {
                 receiveLoop(ContractSerializer, sessionFactory(testMode, runTests = true, INITIATOR))
@@ -85,10 +86,10 @@ suspend fun webClientTest(httpClientEngineFactory: HttpClientEngineFactory<*>) {
 }
 
 @Suppress("HttpUrlsUsage")
-fun createWebServer(additionalRouting: Routing.() -> Unit = {}) =
-    embeddedServer(io.ktor.server.cio.CIO, PORT) {
-        println("http://$LOCAL_HOST:$PORT/wasm/")
-        println("http://$LOCAL_HOST:$PORT/js/")
+fun createWebServer(port: Int = BROWSER_PORT, additionalRouting: Routing.() -> Unit = {}) =
+    embeddedServer(io.ktor.server.cio.CIO, port) {
+        println("http://$LOCAL_HOST:$port/wasm/")
+        println("http://$LOCAL_HOST:$port/js/")
 
         install(WebSockets)
         install(StatusPages) {
@@ -120,14 +121,15 @@ fun createWebServer(additionalRouting: Routing.() -> Unit = {}) =
         }
     }
 
-abstract class WebTest {
+class WebTest {
     @Test
     fun test() = runTest {
-        val server = createWebServer()
+        val port = Random.nextInt(2_000, 30_000)
+        val server = createWebServer(port)
         server.startSuspend()
         try {
             withContext(Dispatchers.Default.limitedParallelism(1)) {
-                webClientTest(io.ktor.client.engine.cio.CIO)
+                webClientTest(port, io.ktor.client.engine.cio.CIO)
             }
         } finally {
             server.stopSuspend()

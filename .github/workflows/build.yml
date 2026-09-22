@@ -9,4 +9,4 @@ jobs:
       - uses: gradle/actions/wrapper-validation@v6
       - run: |
           docker image     build --tag project-image .
-          docker container run         project-image ./gradlew markers build
+          docker container run         project-image ./gradlew markers build -i

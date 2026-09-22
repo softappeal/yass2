@@ -16,6 +16,7 @@ import io.ktor.network.sockets.TcpSocketBuilder
 import io.ktor.network.sockets.aSocket
 import io.ktor.network.sockets.isClosed
 import io.ktor.network.sockets.openReadChannel
+import io.ktor.network.sockets.port
 import io.ktor.utils.io.readByte
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -80,7 +81,7 @@ private fun socketSession(testMode: TestMode, initiatorRunTests: Boolean, accept
     runServer { tcp, serverSocket ->
         println()
         println("*** socketSession: testMode = $testMode, initiatorRunTests = $initiatorRunTests, acceptorRunTests = $acceptorRunTests ***")
-        val address = serverSocket.localAddress.toString()
+        val port = serverSocket.localAddress.port()
         val acceptorJob = launch {
             while (true) {
                 val socket = serverSocket.accept()
@@ -88,8 +89,8 @@ private fun socketSession(testMode: TestMode, initiatorRunTests: Boolean, accept
                     socket.receiveLoop(
                         ContractSerializer,
                         sessionFactory(testMode, acceptorRunTests, ACCEPTOR) {
-                            // println("address: $address")
-                            assertEquals(address, connection.socket.localAddress.toString())
+                            // println("port: $port")
+                            assertEquals(port, connection.socket.localAddress.port())
                         },
                     )
                 }
@@ -104,7 +105,7 @@ private fun socketSession(testMode: TestMode, initiatorRunTests: Boolean, accept
         }
     }
 
-abstract class SocketTest {
+class SocketTest {
     @Test
     fun socketTestNormal() = socketTest(TestMode.Normal)
 
