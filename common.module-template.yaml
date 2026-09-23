@@ -5,6 +5,6 @@ settings:
             distributions: [ temurin ]
             selectionMode: alwaysProvision
     kotlin:
-        version: 2.4.20
+        version: 2.5.0-Beta1
         # TODO allWarningsAsErrors: true
         freeCompilerArgs: [ "-Xname-based-destructuring=complete" ]
