@@ -1,2 +1,6 @@
 apply:
     - //common.module-template.yaml
+
+settings:
+    kotlin:
+        explicitApi: strict

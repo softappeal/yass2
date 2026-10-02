@@ -8,4 +8,4 @@ jobs:
           fetch-depth: 0
       - run: |
           ./kotlin build
-          ./kotlin test
+          ./kotlin test --platform jvm --platform linuxX64
