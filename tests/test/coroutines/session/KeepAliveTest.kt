@@ -24,9 +24,9 @@ private suspend fun CoroutineScope.keepAliveTest(keepAliveFun: suspend () -> Uni
             object : Session<Connection>() {
                 override fun opened() {
                     launch {
-                        assertFalse(isClosed())
+                        assertFalse(isClosedSuspend())
                         open()
-                        assertTrue(isClosed())
+                        assertTrue(isClosedSuspend())
                     }
                 }
 

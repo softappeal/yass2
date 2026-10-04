@@ -38,8 +38,8 @@ public abstract class Session<C : Connection> {
         close(false, e)
     }
 
-    // TODO: remove `suspend` when kotlin.concurrent.atomics is no longer ExperimentalAtomicApi
-    public suspend fun isClosed(): Boolean = closed.load()
+    // TODO: add isClosed() function when kotlin.concurrent.atomics is no longer ExperimentalAtomicApi and deprecate this function
+    public suspend fun isClosedSuspend(): Boolean = closed.load()
 
     public suspend fun closeOnException(block: suspend () -> Unit) {
         try {
@@ -50,7 +50,7 @@ public abstract class Session<C : Connection> {
     }
 
     public val clientTunnel: Tunnel = { request ->
-        check(!isClosed()) { "session '$this' is closed" }
+        check(!isClosedSuspend()) { "session '$this' is closed" }
         val requestNumber = nextRequestNumber.incrementAndFetch()
         val deferred = CompletableDeferred<Reply>(currentCoroutineContext()[Job]!!)
         requestNumberToDeferred.put(requestNumber, deferred)
@@ -90,7 +90,7 @@ public abstract class Session<C : Connection> {
     }
 
     private suspend fun received(packet: Packet?) {
-        check(!isClosed()) { "session '$this' is closed" }
+        check(!isClosedSuspend()) { "session '$this' is closed" }
         if (packet == null) {
             close(false, null)
             return

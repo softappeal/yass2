@@ -56,13 +56,13 @@ fun <C : Connection> CoroutineScope.sessionFactory(
                 if (!runTests) return@launch
                 clientTunnel.clientTest(testMode, "$type.client")
                 close()
-                assertTrue(isClosed())
+                assertTrue(isClosedSuspend())
             }
         }
 
         override suspend fun closed(e: Exception?) {
             println("$type session closed: $e")
-            assertTrue(isClosed())
+            assertTrue(isClosedSuspend())
         }
     }
 }

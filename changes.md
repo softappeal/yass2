@@ -3,7 +3,9 @@
 ## Breaking changes
 
 - argument `function` of `Interceptor` changed from `String` to `KFunction`
-- Typo `ByteArrayWriter.toyByteArray` renamed to `toByteArray`.
+- typo `ByteArrayWriter.toyByteArray` renamed to `toByteArray`
+- `Session.isClosed` renamed to `isClosedSuspend`
+- `SessionConnector` is no longer `suspend`
 
 ## Dependencies
 

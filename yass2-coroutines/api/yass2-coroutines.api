@@ -57,12 +57,12 @@ public abstract class ch/softappeal/yass2/coroutines/session/Session {
 	public final fun getClientTunnel ()Lkotlin/jvm/functions/Function2;
 	public final fun getConnection ()Lch/softappeal/yass2/coroutines/session/Connection;
 	protected fun getServerTunnel ()Lkotlin/jvm/functions/Function2;
-	public final fun isClosed (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun isClosedSuspend (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun opened ()V
 }
 
 public final class ch/softappeal/yass2/coroutines/session/SessionConnectorKt {
-	public static final fun launchConnector-exY8QGI (Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function0;JLkotlin/jvm/functions/Function2;)Lkotlinx/coroutines/Job;
+	public static final fun launchConnector-exY8QGI (Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function0;JLkotlin/jvm/functions/Function1;)Lkotlinx/coroutines/Job;
 }
 
 public final class ch/softappeal/yass2/coroutines/session/SessionKt {
