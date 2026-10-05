@@ -87,6 +87,7 @@ private fun Appendable.appendPackage(packageName: String) {
                 "RedundantSuppression",
                 "UNUSED_ANONYMOUS_PARAMETER",
                 "KotlinRedundantDiagnosticSuppress",
+                "RedundantUpperBound",
             )
 
             package $packageName

@@ -10,6 +10,7 @@
     "RedundantSuppression",
     "UNUSED_ANONYMOUS_PARAMETER",
     "KotlinRedundantDiagnosticSuppress",
+    "RedundantUpperBound",
 )
 
 package tutorial

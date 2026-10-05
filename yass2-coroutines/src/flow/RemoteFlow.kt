@@ -8,32 +8,30 @@ import ch.softappeal.yass2.coroutines.ThreadSafeMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
-public interface FlowService<out F, I> {
+public interface FlowService<out F : Any, I> {
     public suspend fun create(flowId: I): Int
     public suspend fun next(collectId: Int): F?
     public suspend fun cancel(collectId: Int)
 }
 
-@ExperimentalYassApi public fun <F, I> FlowService<F, I>.createFlow(flowId: I): Flow<F> = object : Flow<F> {
-    override suspend fun collect(collector: FlowCollector<F>) {
-        val collectId = create(flowId)
-        try {
-            while (true) {
-                val value = next(collectId) ?: return
-                collector.emit(value)
-            }
-        } catch (e: Exception) {
-            throw e.addSuppressed { cancel(collectId) }
+@ExperimentalYassApi public fun <F : Any, I> FlowService<F, I>.createFlow(flowId: I): Flow<F> = flow {
+    val collectId = create(flowId)
+    try {
+        while (true) {
+            val value = next(collectId) ?: return@flow
+            emit(value)
         }
+    } catch (e: Exception) {
+        throw e.addSuppressed { cancel(collectId) }
     }
 }
 
 @ExperimentalYassApi public typealias FlowFactory<F, I> = (flowId: I) -> Flow<F>
 
-@ExperimentalYassApi public fun <F, I> CoroutineScope.flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I> {
+@ExperimentalYassApi public fun <F : Any, I> CoroutineScope.flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I> {
     val nextCollectId = AtomicInt(0)
     val collectIdToChannel = ThreadSafeMap<Int, Channel<Any?>>(16)
     return object : FlowService<F, I> {

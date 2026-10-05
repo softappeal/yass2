@@ -84,7 +84,7 @@ interface Calculator : AddCalculator {
     suspend fun delay(milliSeconds: Int)
 }
 
-interface GenericService<A, B, C> {
+interface GenericService<A : Number, B, C> {
     suspend fun service(a: A, b: B): C
 }
 

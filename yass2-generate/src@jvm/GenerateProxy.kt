@@ -6,6 +6,7 @@ import ch.softappeal.yass2.core.remote.Service
 import ch.softappeal.yass2.core.remote.ServiceId
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.KTypeParameter
 import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.javaMethod
@@ -29,11 +30,22 @@ private fun CodeWriter.writeSignature(function: KFunction<*>) {
     writeNested(")")
 }
 
-private fun KFunction<*>.parameters() = (1..valueParameters.size).joinToString(", ") { "p$it" }
+private fun KFunction<*>.parameters() = (1..valueParameters.size).joinToString { "p$it" }
 
-private val KClass<*>.withTypeParameters get() = "<${typeParameters.joinToString { it.name }}>"
-private val KClass<*>.serviceName get() = "$qualifiedName${if (typeParameters.isEmpty()) "" else withTypeParameters}"
-private val KClass<*>.serviceTypeParameters get() = if (typeParameters.isEmpty()) "" else " $withTypeParameters"
+private val KClass<*>.serviceName get() = "$qualifiedName${if (typeParameters.isEmpty()) "" else "<${typeParameters.joinToString { it.name }}>"}"
+
+private val KClass<*>.serviceTypeParameters: String
+    get() {
+        if (typeParameters.isEmpty()) return ""
+        fun KTypeParameter.typeParameter() = buildString {
+            append(name)
+            if (upperBounds.isEmpty()) return@buildString
+            if (upperBounds.size != 1) error("not yet implemented: upperBounds must have size <= 1") // TODO
+            append(" : ")
+            append(upperBounds.first())
+        }
+        return " <${typeParameters.joinToString { it.typeParameter() }}>"
+    }
 
 public fun CodeWriter.generateProxy(service: KClass<*>) {
     require(service.java.isInterface) { "'${service.qualifiedName}' must be an interface" }

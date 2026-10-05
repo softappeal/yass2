@@ -10,6 +10,7 @@
     "RedundantSuppression",
     "UNUSED_ANONYMOUS_PARAMETER",
     "KotlinRedundantDiagnosticSuppress",
+    "RedundantUpperBound",
 )
 
 package ch.softappeal.yass2
@@ -106,7 +107,7 @@ public fun ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.Calcula
         }
     }
 
-public fun <A, B, C> ch.softappeal.yass2.GenericService<A, B, C>.proxy(
+public fun <A : kotlin.Number, B : kotlin.Any?, C : kotlin.Any?> ch.softappeal.yass2.GenericService<A, B, C>.proxy(
     interceptor: ch.softappeal.yass2.core.Interceptor,
 ): ch.softappeal.yass2.GenericService<A, B, C> =
     object : ch.softappeal.yass2.GenericService<A, B, C> {
@@ -120,7 +121,7 @@ public fun <A, B, C> ch.softappeal.yass2.GenericService<A, B, C>.proxy(
         }
     }
 
-public fun <A, B, C> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.GenericService<A, B, C>>.proxy(
+public fun <A : kotlin.Number, B : kotlin.Any?, C : kotlin.Any?> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.GenericService<A, B, C>>.proxy(
     tunnel: ch.softappeal.yass2.core.remote.Tunnel,
 ): ch.softappeal.yass2.GenericService<A, B, C> =
     object : ch.softappeal.yass2.GenericService<A, B, C> {
@@ -132,7 +133,7 @@ public fun <A, B, C> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yas
                 .process() as C
     }
 
-public fun <A, B, C> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.GenericService<A, B, C>>.service(
+public fun <A : kotlin.Number, B : kotlin.Any?, C : kotlin.Any?> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.GenericService<A, B, C>>.service(
     implementation: ch.softappeal.yass2.GenericService<A, B, C>,
 ): ch.softappeal.yass2.core.remote.Service =
     ch.softappeal.yass2.core.remote.Service(id) { function, parameters ->

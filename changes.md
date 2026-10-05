@@ -7,6 +7,10 @@
 - `Session.isClosed` renamed to `isClosedSuspend`
 - `SessionConnector` is no longer `suspend`
 
+## Changes
+
+- signature of experimental `FlowService<out F, I>` changed to `FlowService<out F : Any, I>`
+
 ## Dependencies
 
 # 29.0.0 (2026-08-03)

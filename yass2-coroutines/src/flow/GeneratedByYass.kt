@@ -10,11 +10,12 @@
     "RedundantSuppression",
     "UNUSED_ANONYMOUS_PARAMETER",
     "KotlinRedundantDiagnosticSuppress",
+    "RedundantUpperBound",
 )
 
 package ch.softappeal.yass2.coroutines.flow
 
-public fun <F, I> ch.softappeal.yass2.coroutines.flow.FlowService<F, I>.proxy(
+public fun <F : kotlin.Any, I : kotlin.Any?> ch.softappeal.yass2.coroutines.flow.FlowService<F, I>.proxy(
     interceptor: ch.softappeal.yass2.core.Interceptor,
 ): ch.softappeal.yass2.coroutines.flow.FlowService<F, I> =
     object : ch.softappeal.yass2.coroutines.flow.FlowService<F, I> {
@@ -43,7 +44,7 @@ public fun <F, I> ch.softappeal.yass2.coroutines.flow.FlowService<F, I>.proxy(
         }
     }
 
-public fun <F, I> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.coroutines.flow.FlowService<F, I>>.proxy(
+public fun <F : kotlin.Any, I : kotlin.Any?> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.coroutines.flow.FlowService<F, I>>.proxy(
     tunnel: ch.softappeal.yass2.core.remote.Tunnel,
 ): ch.softappeal.yass2.coroutines.flow.FlowService<F, I> =
     object : ch.softappeal.yass2.coroutines.flow.FlowService<F, I> {
@@ -67,7 +68,7 @@ public fun <F, I> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.
                 .process() as F?
     }
 
-public fun <F, I> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.coroutines.flow.FlowService<F, I>>.service(
+public fun <F : kotlin.Any, I : kotlin.Any?> ch.softappeal.yass2.core.remote.ServiceId<ch.softappeal.yass2.coroutines.flow.FlowService<F, I>>.service(
     implementation: ch.softappeal.yass2.coroutines.flow.FlowService<F, I>,
 ): ch.softappeal.yass2.core.remote.Service =
     ch.softappeal.yass2.core.remote.Service(id) { function, parameters ->
