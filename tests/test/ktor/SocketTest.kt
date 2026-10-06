@@ -8,6 +8,7 @@ import ch.softappeal.yass2.core.TestingYassApi
 import ch.softappeal.yass2.core.assertFailsWithMessage
 import ch.softappeal.yass2.core.remote.clientTest
 import ch.softappeal.yass2.core.remote.serverTunnel
+import ch.softappeal.yass2.coroutines.JobState
 import ch.softappeal.yass2.coroutines.session.ACCEPTOR
 import ch.softappeal.yass2.coroutines.session.INITIATOR
 import ch.softappeal.yass2.coroutines.session.sessionFactory
@@ -136,7 +137,7 @@ class SocketTest {
         val acceptedSocket = acceptedSocketDeferred.await()
         assertFalse(acceptedSocket.isClosed)
         val clientByte = async { clientSocket.openReadChannel().readByte() }
-        assertTrue(clientByte.isActive)
+        JobState.Active.assert(clientByte)
         assertFalse(clientSocket.isClosed)
         clientSocket.cancel() // closes clientSocket, see https://youtrack.jetbrains.com/issue/KTOR-5093/Native-Read-from-a-closed-socket-doesnt-throw-an-exception
         assertFailsWith<CancellationException> { clientByte.await() }

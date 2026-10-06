@@ -3,6 +3,7 @@ package ch.softappeal.yass2.coroutines.session
 import ch.softappeal.yass2.CalculatorId
 import ch.softappeal.yass2.core.CalculatorImpl
 import ch.softappeal.yass2.core.remote.tunnel
+import ch.softappeal.yass2.coroutines.JobState
 import ch.softappeal.yass2.proxy
 import ch.softappeal.yass2.service
 import kotlinx.coroutines.CoroutineScope
@@ -58,8 +59,7 @@ class KeepAliveTest {
             delay(450.milliseconds)
             close()
             delay(200.milliseconds)
-            assertTrue(job.isCompleted)
-            assertFalse(job.isCancelled)
+            JobState.Completed.assert(job)
             assertEquals(3, counter.load())
         }
     }
@@ -72,8 +72,7 @@ class KeepAliveTest {
             delay(450.milliseconds)
             job.cancel()
             delay(50.milliseconds)
-            assertTrue(job.isCompleted)
-            assertTrue(job.isCancelled)
+            JobState.Cancelled.assert(job)
             assertEquals(3, counter.load())
         }
     }
@@ -83,8 +82,7 @@ class KeepAliveTest {
         keepAliveTest({ throw Exception("keepAlive") }) {
             val job = launchKeepAlive(this, 100.milliseconds, 200.milliseconds)
             delay(50.milliseconds)
-            assertTrue(job.isCompleted)
-            assertFalse(job.isCancelled)
+            JobState.Completed.assert(job)
         }
     }
 
@@ -93,8 +91,7 @@ class KeepAliveTest {
         keepAliveTest({ delay(150.milliseconds) }) {
             val job = launchKeepAlive(this, 100.milliseconds, 200.milliseconds)
             delay(200.milliseconds)
-            assertTrue(job.isCompleted)
-            assertFalse(job.isCancelled)
+            JobState.Completed.assert(job)
         }
     }
 
