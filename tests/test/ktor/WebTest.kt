@@ -2,6 +2,7 @@ package ch.softappeal.yass2.ktor
 
 import ch.softappeal.yass2.ContractSerializer
 import ch.softappeal.yass2.core.TestMode
+import ch.softappeal.yass2.core.assertFailsWithMessage
 import ch.softappeal.yass2.core.remote.clientTest
 import ch.softappeal.yass2.core.remote.serverTunnel
 import ch.softappeal.yass2.coroutines.session.ACCEPTOR
@@ -124,6 +125,7 @@ fun createWebServer(port: Int = BROWSER_PORT, additionalRouting: Routing.() -> U
 class WebTest {
     @Test
     fun test() = runTest {
+        assertFailsWithMessage<IllegalStateException>("no running request") { call() }
         val port = Random.nextInt(2_000, 30_000)
         val server = createWebServer(port)
         server.startSuspend()

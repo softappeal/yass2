@@ -38,7 +38,7 @@ private class CallCce(val call: ApplicationCall) : AbstractCoroutineContextEleme
     companion object Key : CoroutineContext.Key<CallCce>
 }
 
-public suspend fun call(): ApplicationCall = currentCoroutineContext()[CallCce]!!.call
+public suspend fun call(): ApplicationCall = currentCoroutineContext()[CallCce]?.call ?: error("no running request")
 
 /** Use `StatusPages` plugin for handling exceptions. */
 public fun Route.route(path: String, serializer: Serializer, tunnel: Tunnel) {

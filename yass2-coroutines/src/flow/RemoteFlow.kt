@@ -31,6 +31,7 @@ public interface FlowService<out F : Any, I> {
 
 @ExperimentalYassApi public typealias FlowFactory<F, I> = (flowId: I) -> Flow<F>
 
+/** NOTE: [F] must not be an [Exception] */
 @ExperimentalYassApi public fun <F : Any, I> CoroutineScope.flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I> {
     val nextCollectId = AtomicInt(0)
     val collectIdToChannel = ThreadSafeMap<Int, Channel<Any?>>(16)
@@ -56,7 +57,8 @@ public interface FlowService<out F : Any, I> {
         }
 
         override suspend fun next(collectId: Int): F? {
-            val reply = collectIdToChannel.get(collectId)!!.receive()
+            val channel = collectIdToChannel.get(collectId) ?: error("no collectId $collectId")
+            val reply = channel.receive()
             if (reply is Exception) throw reply
             @Suppress("UNCHECKED_CAST") return reply as F?
         }

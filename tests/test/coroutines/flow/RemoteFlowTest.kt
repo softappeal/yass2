@@ -4,6 +4,7 @@ package ch.softappeal.yass2.coroutines.flow
 
 import ch.softappeal.yass2.DivideByZeroException
 import ch.softappeal.yass2.core.ExperimentalYassApi
+import ch.softappeal.yass2.core.assertFailsWithMessage
 import ch.softappeal.yass2.core.printer
 import ch.softappeal.yass2.core.remote.ServiceId
 import ch.softappeal.yass2.core.remote.tunnel
@@ -75,5 +76,11 @@ class RemoteFlowTest {
                 assertEquals(range2.toList(), createFlow(2).onEach { delay(17.seconds) }.toList())
             }
         }
+    }
+
+    @Test
+    fun noCollectId() = runTest {
+        val flowService = flowService(::flowFactory)
+        assertFailsWithMessage<IllegalStateException>("no collectId 123") { flowService.next(123) }
     }
 }

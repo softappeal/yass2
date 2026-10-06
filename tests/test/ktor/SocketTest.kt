@@ -5,6 +5,7 @@ package ch.softappeal.yass2.ktor
 import ch.softappeal.yass2.ContractSerializer
 import ch.softappeal.yass2.core.TestMode
 import ch.softappeal.yass2.core.TestingYassApi
+import ch.softappeal.yass2.core.assertFailsWithMessage
 import ch.softappeal.yass2.core.remote.clientTest
 import ch.softappeal.yass2.core.remote.serverTunnel
 import ch.softappeal.yass2.coroutines.session.ACCEPTOR
@@ -47,6 +48,7 @@ private fun runServer(block: suspend CoroutineScope.(tcp: TcpSocketBuilder, serv
 
 @OptIn(ExperimentalAtomicApi::class)
 private fun socketTest(testMode: TestMode) = runServer { tcp, serverSocket ->
+    assertFailsWithMessage<IllegalStateException>("no running request") { socket() }
     println()
     println("*** socketTest: testMode = $testMode ***")
     val address = AtomicReference<String?>(null)

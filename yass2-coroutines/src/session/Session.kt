@@ -97,7 +97,8 @@ public abstract class Session<C : Connection> {
         }
         when (val message = packet.message) {
             is Request -> write(Packet(packet.requestNumber, serverTunnel(message)))
-            is Reply -> requestNumberToDeferred.remove(packet.requestNumber)!!.complete(message)
+            is Reply -> requestNumberToDeferred.remove(packet.requestNumber)?.complete(message)
+                ?: error("no requestNumber ${packet.requestNumber}")
         }
     }
 
