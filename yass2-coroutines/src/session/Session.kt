@@ -10,10 +10,12 @@ import ch.softappeal.yass2.coroutines.AtomicBoolean
 import ch.softappeal.yass2.coroutines.AtomicInt
 import ch.softappeal.yass2.coroutines.ThreadSafeMap
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlin.coroutines.CoroutineContext
 
 public class Packet(public val requestNumber: Int, public val message: Message)
 
@@ -22,7 +24,10 @@ public interface Connection {
     public suspend fun closed()
 }
 
-public abstract class Session<C : Connection> {
+public abstract class Session<C : Connection> : CoroutineScope {
+    private val job = Job()
+    override val coroutineContext: CoroutineContext = job
+
     public open fun opened() {}
 
     /** [e] is `null` for regular close. */
@@ -52,7 +57,7 @@ public abstract class Session<C : Connection> {
     public val clientTunnel: Tunnel = { request ->
         check(!isClosedSuspend()) { "session '$this' is closed" }
         val requestNumber = nextRequestNumber.incrementAndFetch()
-        val deferred = CompletableDeferred<Reply>(currentCoroutineContext()[Job]!!)
+        val deferred = CompletableDeferred<Reply>(job)
         requestNumberToDeferred.put(requestNumber, deferred)
         write(Packet(requestNumber, request))
         deferred.await()
@@ -77,15 +82,9 @@ public abstract class Session<C : Connection> {
         tryFinally({
             closed(e)
             if (sendEnd) write(null)
-            requestNumberToDeferred.forEach { // cancel all outstanding client requests
-                try {
-                    it.cancel()
-                } catch (_: Exception) {
-                    // ignore
-                }
-            }
-        }) {
             connection.closed()
+        }) {
+            job.cancel()
         }
     }
 
@@ -96,7 +95,12 @@ public abstract class Session<C : Connection> {
             return
         }
         when (val message = packet.message) {
-            is Request -> write(Packet(packet.requestNumber, serverTunnel(message)))
+            is Request -> launch {
+                closeOnException {
+                    val reply = serverTunnel(message)
+                    write(Packet(packet.requestNumber, reply))
+                }
+            }
             is Reply -> requestNumberToDeferred.remove(packet.requestNumber)?.complete(message)
                 ?: error("no requestNumber ${packet.requestNumber}")
         }

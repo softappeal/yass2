@@ -3,7 +3,6 @@ package ch.softappeal.yass2.coroutines.session
 import ch.softappeal.yass2.core.TestMode
 import ch.softappeal.yass2.core.remote.clientTest
 import ch.softappeal.yass2.core.remote.serverTunnel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -38,7 +37,7 @@ suspend fun connect(
 const val INITIATOR = "initiator"
 const val ACCEPTOR = "acceptor"
 
-fun <C : Connection> CoroutineScope.sessionFactory(
+fun <C : Connection> sessionFactory(
     testMode: TestMode,
     runTests: Boolean,
     type: String,

@@ -6,6 +6,8 @@
 - typo `ByteArrayWriter.toyByteArray` renamed to `toByteArray`
 - `Session.isClosed` renamed to `isClosedSuspend`
 - `SessionConnector` is no longer `suspend`
+- `Session` is now a `CoroutineScope`
+- signature of `launchKeepAlive` changed
 
 ## Changes
 

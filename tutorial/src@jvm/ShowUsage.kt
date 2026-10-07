@@ -17,7 +17,6 @@ import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.routing.routing
 import io.ktor.server.websocket.webSocket
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -58,7 +57,7 @@ object NewsListenerImpl : NewsListener {
     }
 }
 
-fun CoroutineScope.initiatorSessionFactory(): SessionFactory<WebSocketConnection> = {
+fun initiatorSessionFactory(): SessionFactory<WebSocketConnection> = {
     object : Session<WebSocketConnection>() {
         override val serverTunnel = tunnel(
             NewsListenerId.service(NewsListenerImpl),
@@ -78,7 +77,7 @@ fun CoroutineScope.initiatorSessionFactory(): SessionFactory<WebSocketConnection
     }
 }
 
-fun CoroutineScope.acceptorSessionFactory(): SessionFactory<WebSocketConnection> = {
+fun acceptorSessionFactory(): SessionFactory<WebSocketConnection> = {
     object : Session<WebSocketConnection>() {
         override val serverTunnel = tunnel(
             CalculatorId.service(CalculatorImpl),

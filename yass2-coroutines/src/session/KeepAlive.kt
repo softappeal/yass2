@@ -4,8 +4,6 @@ import ch.softappeal.yass2.core.remote.Service
 import ch.softappeal.yass2.core.remote.ServiceId
 import ch.softappeal.yass2.core.remote.Tunnel
 import ch.softappeal.yass2.core.remote.tunnel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
@@ -18,19 +16,21 @@ public interface KeepAlive {
 public val KeepAliveId: ServiceId<KeepAlive> = ServiceId("KeepAlive")
 
 /**
- * Launches a new coroutine that closes [session] if keep-alive fails.
+ * Launches a coroutine that closes the session if keep-alive fails.
+ * The coroutine terminates if the session is closed.
  * Precondition: [Session.serverTunnel] must use [keepAliveTunnel].
  */
-public fun <C : Connection> CoroutineScope.launchKeepAlive(session: Session<C>, timeout: Duration, interval: Duration): Job =
+public fun <C : Connection> Session<C>.launchKeepAlive(timeout: Duration, interval: Duration) {
     launch {
-        session.closeOnException {
-            val keepAlive = KeepAliveId.proxy(session.clientTunnel)
+        closeOnException {
+            val keepAlive = KeepAliveId.proxy(clientTunnel)
             while (true) {
                 withTimeout(timeout) { keepAlive.keepAlive() }
                 delay(interval)
             }
         }
     }
+}
 
 private object KeepAliveImpl : KeepAlive {
     override suspend fun keepAlive() {
