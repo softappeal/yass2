@@ -1,4 +1,4 @@
-# TODO: Next Release
+# 30.0.0 (2026-10-11)
 
 ## Breaking changes
 
@@ -14,6 +14,12 @@
 - signature of experimental `FlowService<out F, I>` changed to `FlowService<out F : Any, I>`
 
 ## Dependencies
+
+    Java 25.0.4.1
+
+    kotlin     = "2.4.21"        # https://github.com/JetBrains/kotlin
+    coroutines = "1.11.0"        # https://github.com/Kotlin/kotlinx.coroutines
+    ktor       = "3.6.0"         # https://github.com/ktorio/ktor
 
 # 29.0.0 (2026-08-03)
 
