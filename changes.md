@@ -1,3 +1,7 @@
+# TODO: Next Release
+
+## Dependencies
+
 # 30.0.0 (2026-10-11)
 
 ## Breaking changes
