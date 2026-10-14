@@ -12,7 +12,7 @@ insert_final_newline = true
 max_line_length = 132
 
 # YAML files
-[*.yml]
+[*.{yml,yaml}]
 indent_size = 2
 
 [*.{kt,kts}]

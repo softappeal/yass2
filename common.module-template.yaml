@@ -1,10 +1,10 @@
 settings:
-    jvm:
-        jdk:
-            version: 25
-            distributions: [ temurin ]
-            selectionMode: alwaysProvision
-    kotlin:
-        version: 2.4.21
-        allWarningsAsErrors: true
-        freeCompilerArgs: [ "-Xname-based-destructuring=complete" ]
+  jvm:
+    jdk:
+      version: 25
+      distributions: [ temurin ]
+      selectionMode: alwaysProvision
+  kotlin:
+    version: 2.4.21
+    allWarningsAsErrors: true
+    freeCompilerArgs: [ "-Xname-based-destructuring=complete" ]

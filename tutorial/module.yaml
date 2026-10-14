@@ -1,15 +1,15 @@
 product:
-    type: kmp/lib
-    platforms: [ jvm ]
+  type: kmp/lib
+  platforms: [ jvm ]
 
 apply:
-    - //common.module-template.yaml
+  - //common.module-template.yaml
 
 dependencies@jvm:
-    - //yass2-ktor
-    - $libs.client.cio
-    - $libs.server.cio
-    - $libs.server.websockets
+  - //yass2-ktor
+  - $libs.client.cio
+  - $libs.server.cio
+  - $libs.server.websockets
 
 test-dependencies@jvm:
-    - //yass2-generate
+  - //yass2-generate

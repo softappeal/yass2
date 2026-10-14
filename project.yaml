@@ -3,6 +3,6 @@
 # TODO: replace Gradle with kotlin toolchain
 
 modules:
-    - tests
-    - tutorial
-    - yass2-*
+  - tests
+  - tutorial
+  - yass2-*

@@ -1,10 +1,10 @@
 product:
-    type: kmp/lib
-    platforms: [ jvm ]
+  type: kmp/lib
+  platforms: [ jvm ]
 
 apply:
-    - //yass.module-template.yaml
+  - //yass.module-template.yaml
 
 dependencies@jvm:
-    -   //yass2-core: exported
-    - $kotlin.reflect
+  - //yass2-core: exported
+  - $kotlin.reflect
