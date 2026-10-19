@@ -1,5 +1,13 @@
 # TODO: Next Release
 
+## Breaking changes
+
+- package `generate` moved to `generatea.reflect`
+
+## New features
+
+- KSP code generator added
+
 ## Dependencies
 
 # 30.0.0 (2026-10-11)

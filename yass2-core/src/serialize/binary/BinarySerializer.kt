@@ -110,3 +110,5 @@ private const val BINARY_NULL_ENCODER_ID: Int = 0
 
 /** @suppress */
 @InternalYassApi public const val BINARY_FIRST_ENCODER_ID: Int = 2
+
+public annotation class BinaryEncoderObjects(vararg val value: KClass<out BinaryEncoder<*>>)

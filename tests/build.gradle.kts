@@ -10,7 +10,12 @@ kotlin {
         jvmTest {
             dependencies {
                 implementation(project(":yass2-generate"))
+                implementation(libs.kct)
             }
         }
     }
+}
+
+dependencies {
+    add("kspJvmTest", project(":yass2-generate"))
 }

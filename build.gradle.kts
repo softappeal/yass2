@@ -14,6 +14,7 @@ val linuxPlatform = allPlatforms
 
 plugins {
     alias(libs.plugins.multiplatform)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.dokka)
     alias(libs.plugins.publish)
 }
@@ -29,6 +30,7 @@ fun KotlinMultiplatformExtension.configureSourceSets() {
         }
         jvmMain {
             kotlin.srcDir("src@jvm")
+            resources.srcDir("resources@jvm")
         }
         jvmTest {
             kotlin.srcDir("test@jvm")
@@ -49,6 +51,7 @@ fun KotlinMultiplatformExtension.configureSourceSets() {
 
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
+    apply(plugin = "com.google.devtools.ksp")
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "com.vanniktech.maven.publish")
 
@@ -93,7 +96,6 @@ allprojects {
                 filters {
                     exclude {
                         annotatedWith.add("ch.softappeal.yass2.core.InternalYassApi")
-                        annotatedWith.add("ch.softappeal.yass2.core.TestingYassApi")
                     }
                 }
             }

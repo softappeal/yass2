@@ -8,3 +8,5 @@ apply:
 dependencies@jvm:
   - //yass2-core: exported
   - $kotlin.reflect
+  - $libs.ksp: compile-only
+

@@ -1,6 +1,8 @@
 package ch.softappeal.yass2.coroutines.flow
 
 import ch.softappeal.yass2.core.ExperimentalYassApi
+import ch.softappeal.yass2.core.GenerateInRepository
+import ch.softappeal.yass2.core.Proxies
 import ch.softappeal.yass2.core.addSuppressed
 import ch.softappeal.yass2.core.tryFinally
 import ch.softappeal.yass2.coroutines.AtomicInt
@@ -11,6 +13,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
+@GenerateInRepository
+@Proxies(FlowService::class)
 public interface FlowService<out F : Any, I> {
     public suspend fun create(flowId: I): Int
     public suspend fun next(collectId: Int): F?

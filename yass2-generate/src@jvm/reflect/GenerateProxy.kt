@@ -1,23 +1,24 @@
-package ch.softappeal.yass2.generate
+@file:OptIn(InternalYassApi::class)
+@file:Suppress("DuplicatedCode")
 
+package ch.softappeal.yass2.generate.reflect
+
+import ch.softappeal.yass2.core.InternalYassApi
 import ch.softappeal.yass2.core.forEachSeparator
 import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.Service
 import ch.softappeal.yass2.core.remote.ServiceId
+import ch.softappeal.yass2.generate.CSY
+import ch.softappeal.yass2.generate.CodeWriter
+import ch.softappeal.yass2.generate.duplicates
+import ch.softappeal.yass2.generate.hasNoDuplicates
+import ch.softappeal.yass2.generate.writeFun
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KTypeParameter
 import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.javaMethod
-
-private fun CodeWriter.writeFun(head: String, parameter: String, tail: String, body: CodeWriter.() -> Unit) {
-    writeLine()
-    writeNestedLine("public fun$head(", "): $tail =") {
-        writeNestedLine("$parameter,")
-    }
-    nested { body() }
-}
 
 private fun KFunction<*>.hasResult() = returnType.classifier != Unit::class
 
@@ -39,15 +40,16 @@ private val KClass<*>.serviceTypeParameters: String
         if (typeParameters.isEmpty()) return ""
         fun KTypeParameter.typeParameter() = buildString {
             append(name)
-            if (upperBounds.isEmpty()) return@buildString
-            if (upperBounds.size != 1) error("not yet implemented: upperBounds must have size <= 1") // TODO
+            val first = upperBounds.firstOrNull() ?: return@buildString
+            if (upperBounds.count() != 1) error("not yet implemented: bounds must have size <= 1") // TODO
             append(" : ")
-            append(upperBounds.first())
+            append(first)
         }
         return " <${typeParameters.joinToString { it.typeParameter() }}>"
     }
 
-public fun CodeWriter.generateProxy(service: KClass<*>) {
+/** @suppress */
+@InternalYassApi public fun CodeWriter.generateProxy(service: KClass<*>) {
     require(service.java.isInterface) { "'${service.qualifiedName}' must be an interface" }
 
     val functions = service.memberFunctions
@@ -123,8 +125,4 @@ public fun CodeWriter.generateProxy(service: KClass<*>) {
             }
         }
     }
-}
-
-public fun CodeWriter.generateProxies(services: List<KClass<*>>) {
-    services.forEach { generateProxy(it) }
 }

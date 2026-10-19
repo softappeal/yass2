@@ -1,10 +1,14 @@
 package ch.softappeal.yass2
 
+import ch.softappeal.yass2.core.GenerateInRepository
+import ch.softappeal.yass2.core.Proxies
 import ch.softappeal.yass2.core.remote.ContractException
 import ch.softappeal.yass2.core.remote.ExceptionReply
 import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.ServiceId
 import ch.softappeal.yass2.core.remote.ValueReply
+import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses
+import ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects
 import ch.softappeal.yass2.core.serialize.binary.BooleanBinaryEncoder
 import ch.softappeal.yass2.core.serialize.binary.ByteArrayBinaryEncoder
 import ch.softappeal.yass2.core.serialize.binary.IntBinaryEncoder
@@ -13,6 +17,7 @@ import ch.softappeal.yass2.core.serialize.binary.StringBinaryEncoder
 import ch.softappeal.yass2.core.serialize.string.ByteArrayStringEncoder
 import ch.softappeal.yass2.core.serialize.string.IntStringEncoder
 import ch.softappeal.yass2.core.serialize.string.LongStringEncoder
+import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
 import ch.softappeal.yass2.core.serialize.string.TextSerializer
 import ch.softappeal.yass2.coroutines.session.Packet
 
@@ -92,26 +97,24 @@ val ContractSerializer = TextSerializer(stringEncoders())
 
 val CalculatorId = ServiceId<Calculator>("Calculator")
 
-internal val Proxies = listOf(
+@GenerateInRepository
+@Proxies(
     Calculator::class,
     GenericService::class,
 )
-
-internal val BinaryEncoderObjects = listOf(
+@BinaryEncoderObjects(
     BooleanBinaryEncoder::class,
     IntBinaryEncoder::class,
     LongBinaryEncoder::class,
     StringBinaryEncoder::class,
     ByteArrayBinaryEncoder::class,
 )
-
-internal val StringEncoderObjects = listOf(
+@StringEncoderObjects(
     IntStringEncoder::class,
     LongStringEncoder::class,
     ByteArrayStringEncoder::class,
 )
-
-internal val ConcreteAndEnumClasses = listOf(
+@ConcreteAndEnumClasses(
     Gender::class,
     A::class,
     B::class,
@@ -124,3 +127,4 @@ internal val ConcreteAndEnumClasses = listOf(
     Packet::class,
     Example::class,
 )
+internal class Generate

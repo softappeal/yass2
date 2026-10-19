@@ -1,9 +1,8 @@
-@file:OptIn(TestingYassApi::class)
+@file:OptIn(InternalYassApi::class)
 
 package ch.softappeal.yass2.core.serialize.string
 
 import ch.softappeal.yass2.core.InternalYassApi
-import ch.softappeal.yass2.core.TestingYassApi
 import ch.softappeal.yass2.core.serialize.Reader
 import ch.softappeal.yass2.core.serialize.Serializer
 import ch.softappeal.yass2.core.serialize.Writer
@@ -279,3 +278,5 @@ public fun StringSerializer.toString(value: Any?): String = toByteArray(value).d
 
 public fun StringSerializer.fromString(string: String): Any? =
     fromByteArray(string.encodeToByteArray(throwOnInvalidSequence = true))
+
+public annotation class StringEncoderObjects(vararg val value: KClass<out BaseStringEncoder<*>>)

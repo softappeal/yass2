@@ -15,3 +15,10 @@ test-dependencies:
 
 test-dependencies@jvm:
   - //yass2-generate
+  - $libs.kct
+
+settings:
+  kotlin:
+    ksp:
+      processors:
+        - //yass2-generate

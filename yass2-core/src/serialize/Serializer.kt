@@ -1,5 +1,7 @@
 package ch.softappeal.yass2.core.serialize
 
+import kotlin.reflect.KClass
+
 public interface Writer {
     public fun writeByte(byte: Byte)
     public fun writeByteArray(byteArray: ByteArray)
@@ -11,7 +13,7 @@ public interface Reader {
 }
 
 /**
- * Concrete classes must have a primary constructor and all its parameters must be properties.
+ * Concrete classes must have a primary constructor and all its parameters must be public properties.
  * Properties can be optional.
  * Inheritance is supported.
  * Exceptions are supported but [Throwable.message] and [Throwable.cause] aren't serialized.
@@ -26,3 +28,5 @@ public fun Serializer.write(writer: Writer, value: Any?) {
 }
 
 public fun Serializer.read(reader: Reader): Any? = reader.read()
+
+public annotation class ConcreteAndEnumClasses(vararg val value: KClass<*>)

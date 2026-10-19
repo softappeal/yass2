@@ -1,11 +1,15 @@
-@file:OptIn(TestingYassApi::class)
+@file:OptIn(InternalYassApi::class)
 
-package ch.softappeal.yass2.generate
+package ch.softappeal.yass2.generate.reflect
 
-import ch.softappeal.yass2.core.TestingYassApi
+import ch.softappeal.yass2.core.InternalYassApi
 import ch.softappeal.yass2.core.assertFailsWithMessage
+import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses
 import ch.softappeal.yass2.core.serialize.binary.BinaryEncoder
+import ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects
 import ch.softappeal.yass2.core.serialize.binary.IntBinaryEncoder
+import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
+import ch.softappeal.yass2.generate.CodeWriter
 import kotlin.reflect.KClass
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -45,6 +49,13 @@ private class ConstructorParameterIsNotProperty(x: Int) {
     }
 }
 
+@Suppress("CanBeParameter")
+private class ConstructorParameterIsNotPublic(private val x: Int) {
+    init {
+        println(x)
+    }
+}
+
 private enum class Enum { One }
 
 private object MyEnumEncoder : BinaryEncoder<Enum>(Enum::class, {}, { Enum.One })
@@ -70,41 +81,71 @@ class GeneratorTest {
             codeWriter().generateBinarySerializer(listOf(), listOf(klass))
         }
         assertFailsWithMessage<IllegalArgumentException>(
-            "class 'ch.softappeal.yass2.generate.BodyProperty' must not have body properties"
+            "class 'ch.softappeal.yass2.generate.reflect.BodyProperty' must not have body properties"
         ) { generateBinarySerializer(BodyProperty::class) }
         assertFailsWithMessage<IllegalStateException>(
-            "class 'ch.softappeal.yass2.generate.NoPrimaryConstructor' must have a primary constructor"
+            "class 'ch.softappeal.yass2.generate.reflect.NoPrimaryConstructor' must have a primary constructor"
         ) { generateBinarySerializer(NoPrimaryConstructor::class) }
         assertFailsWithMessage<IllegalStateException>(
-            "primary constructor parameter 'x' of class 'ch.softappeal.yass2.generate.ConstructorParameterIsNotProperty' must be a property"
+            "primary constructor parameter 'x' of class 'ch.softappeal.yass2.generate.reflect.ConstructorParameterIsNotProperty' must be a public property"
         ) { generateBinarySerializer(ConstructorParameterIsNotProperty::class) }
+        assertFailsWithMessage<IllegalStateException>(
+            "primary constructor parameter 'x' of class 'ch.softappeal.yass2.generate.reflect.ConstructorParameterIsNotPublic' must be a public property"
+        ) { generateBinarySerializer(ConstructorParameterIsNotPublic::class) }
         assertFailsWithMessage<IllegalArgumentException>(
-            "class 'ch.softappeal.yass2.generate.NotRegularClass' must be concrete"
+            "class 'ch.softappeal.yass2.generate.reflect.NotRegularClass' must be concrete"
         ) { generateBinarySerializer(NotRegularClass::class) }
         assertFailsWithMessage<IllegalArgumentException>(
-            "class 'ch.softappeal.yass2.generate.AbstractClass' must be concrete"
+            "class 'ch.softappeal.yass2.generate.reflect.AbstractClass' must be concrete"
         ) { generateBinarySerializer(AbstractClass::class) }
         assertFailsWithMessage<IllegalStateException>(
-            "enum class 'ch.softappeal.yass2.generate.Enum' belongs to 'concreteAndEnumClasses'"
+            "enum class 'ch.softappeal.yass2.generate.reflect.Enum' belongs to 'ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses'"
         ) { codeWriter().generateBinarySerializer(listOf(MyEnumEncoder::class), listOf()) }
         assertFailsWithMessage<IllegalArgumentException>(
             "classes [kotlin.Int] are duplicated"
         ) { codeWriter().generateBinarySerializer(listOf(IntBinaryEncoder::class), listOf(Int::class)) }
         assertFailsWithMessage<IllegalArgumentException>(
-            "classes [ch.softappeal.yass2.generate.Enum] are duplicated"
+            "classes [ch.softappeal.yass2.generate.reflect.Enum] are duplicated"
         ) { codeWriter().generateBinarySerializer(listOf(), listOf(Enum::class, Enum::class)) }
     }
 
     @Test
     fun proxy() {
         assertFailsWithMessage<IllegalArgumentException>(
-            "'ch.softappeal.yass2.generate.NotAnInterface' must be an interface"
+            "'ch.softappeal.yass2.generate.reflect.NotAnInterface' must be an interface"
         ) { codeWriter().generateProxy(NotAnInterface::class) }
         assertFailsWithMessage<IllegalArgumentException>(
-            "interface 'ch.softappeal.yass2.generate.Overloaded' has overloaded methods [f]"
+            "interface 'ch.softappeal.yass2.generate.reflect.Overloaded' has overloaded methods [f]"
         ) { codeWriter().generateProxy(Overloaded::class) }
         assertFailsWithMessage<IllegalArgumentException>(
-            "method 'ch.softappeal.yass2.generate.NoSuspend.noSuspend' must be suspend"
+            "method 'ch.softappeal.yass2.generate.reflect.NoSuspend.noSuspend' must be suspend"
         ) { codeWriter().generateProxy(NoSuspend::class) }
+    }
+
+    @Test
+    fun onlyBinaryEncoderObjects() {
+        @BinaryEncoderObjects
+        class Generate
+        assertFailsWithMessage<IllegalArgumentException>(
+            "missing annotation 'ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses'"
+        ) { generateFile("", Generate::class) }
+    }
+
+    @Test
+    fun onlyStringEncoderObjects() {
+        @StringEncoderObjects
+        class Generate
+        assertFailsWithMessage<IllegalArgumentException>(
+            "missing annotation 'ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses'"
+        ) { generateFile("", Generate::class) }
+    }
+
+    @Test
+    fun onlyConcreteAndEnumClasses() {
+        @ConcreteAndEnumClasses
+        class Generate
+        assertFailsWithMessage<IllegalArgumentException>(
+            "missing annotations 'ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects' or 'ch.softappeal.yass2.core.serialize.string.StringEncoderObjects'"
+        ) { generateFile("", Generate::class) }
     }
 }

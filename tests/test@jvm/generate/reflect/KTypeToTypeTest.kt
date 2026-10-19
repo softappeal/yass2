@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.generate
+package ch.softappeal.yass2.generate.reflect
 
 import ch.softappeal.yass2.core.forEachSeparator
 import kotlin.reflect.KCallable

@@ -1,12 +1,15 @@
 package tutorial
 
+import ch.softappeal.yass2.core.Proxies
 import ch.softappeal.yass2.core.remote.ContractException
 import ch.softappeal.yass2.core.remote.ExceptionReply
 import ch.softappeal.yass2.core.remote.Request
 import ch.softappeal.yass2.core.remote.ServiceId
 import ch.softappeal.yass2.core.remote.ValueReply
+import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses
 import ch.softappeal.yass2.core.serialize.string.BaseStringEncoder
 import ch.softappeal.yass2.core.serialize.string.IntStringEncoder
+import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
 import ch.softappeal.yass2.core.serialize.string.TextSerializer
 import ch.softappeal.yass2.coroutines.session.MustBeImplementedByAcceptor
 import ch.softappeal.yass2.coroutines.session.MustBeImplementedByInitiator
@@ -80,25 +83,19 @@ interface NewsListener {
     suspend fun notify(news: String)
 }
 
-@MustBeImplementedByAcceptor
-val CalculatorId = ServiceId<Calculator>("Calculator")
-
-@MustBeImplementedByInitiator
-val NewsListenerId = ServiceId<NewsListener>("NewsListener")
-
-internal val Proxies = listOf(
+@Proxies(
     Calculator::class,
     NewsListener::class,
 )
 
 // Define all the encoders needed by the contract.
-internal val StringEncoderObjects = listOf(
+@StringEncoderObjects(
     // String and Boolean is built-in
     IntStringEncoder::class,
     MyDateEncoder::class,
 )
 
-internal val ConcreteAndEnumClasses = listOf(
+@ConcreteAndEnumClasses(
     Packet::class, // needed by ch.softappeal.yass2.coroutines.session (also needs Int)
     Request::class, ValueReply::class, ExceptionReply::class, // needed by ch.softappeal.yass2.core.remote (also needs String)
     Gender::class,
@@ -107,3 +104,9 @@ internal val ConcreteAndEnumClasses = listOf(
     DivideByZeroException::class,
     SubClass::class,
 )
+
+@MustBeImplementedByAcceptor
+val CalculatorId = ServiceId<Calculator>("Calculator")
+
+@MustBeImplementedByInitiator
+val NewsListenerId = ServiceId<NewsListener>("NewsListener")

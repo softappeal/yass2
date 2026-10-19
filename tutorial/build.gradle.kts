@@ -6,10 +6,9 @@ kotlin {
                 implementation(libs.bundles.ktor.cio)
             }
         }
-        jvmTest {
-            dependencies {
-                implementation(project(":yass2-generate"))
-            }
-        }
     }
+}
+
+dependencies {
+    add("kspJvm", project(":yass2-generate"))
 }

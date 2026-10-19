@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.core
 
+import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
 public typealias Invocation = suspend () -> Any?
@@ -11,3 +12,5 @@ public inline operator fun Interceptor.plus(crossinline interceptor: Interceptor
     }
 
 public val PassThroughInterceptor: Interceptor = { _, _, invocation -> invocation() }
+
+public annotation class Proxies(vararg val value: KClass<*>)
