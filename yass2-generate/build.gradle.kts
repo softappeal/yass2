@@ -2,10 +2,24 @@ kotlin {
     sourceSets {
         jvmMain {
             dependencies {
-                api(project(":yass2-core"))
+                implementation(project(":yass2-serialize"))
+                implementation(project(":yass2-remote"))
                 implementation(kotlin("reflect"))
                 compileOnly(libs.ksp)
             }
         }
+        jvmTest {
+            dependencies {
+                implementation(libs.kct)
+            }
+        }
     }
+}
+
+dependencies {
+    add("kspJvmTest", project(":yass2-generate"))
+}
+
+ksp {
+    arg("yass.GenerateMode", "InRepository")
 }

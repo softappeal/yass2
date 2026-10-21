@@ -11,7 +11,7 @@ dependencies@jvm:
   - $libs.server.cio
   - $libs.server.websockets
 
-settings:
+settings@jvm:
   kotlin:
     ksp:
       processors:

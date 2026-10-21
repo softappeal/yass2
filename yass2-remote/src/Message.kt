@@ -1,0 +1,24 @@
+package ch.softappeal.yass2.remote
+
+public sealed class Message
+
+/**
+ * Functions must be suspendable because they need IO.
+ * Overloading is not allowed (NOTE: It's not worth it, it's even not possible in JavaScript).
+ */
+public class Request(public val service: String, public val function: String, public val parameters: List<Any?>) : Message()
+
+public sealed class Reply : Message() {
+    public abstract fun process(): Any?
+}
+
+public class ValueReply(public val value: Any?) : Reply() {
+    override fun process(): Any? = value
+}
+
+/** NOTE: Base class for exceptions thrown by the contract. */
+public abstract class ContractException : RuntimeException()
+
+public class ExceptionReply(public val exception: ContractException) : Reply() {
+    override fun process(): Nothing = throw exception
+}

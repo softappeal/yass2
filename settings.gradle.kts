@@ -1,10 +1,9 @@
 rootProject.name = "yass2"
 
 include(
-    ":yass2-core",
-    ":yass2-generate",
-    ":yass2-coroutines",
+    ":yass2-serialize",
+    ":yass2-remote",
     ":yass2-ktor",
-    ":tests",
+    ":yass2-generate",
     ":tutorial",
 )

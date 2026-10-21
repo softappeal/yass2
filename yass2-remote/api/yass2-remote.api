@@ -1,0 +1,128 @@
+public abstract class ch/softappeal/yass2/remote/ContractException : java/lang/RuntimeException {
+	public fun <init> ()V
+}
+
+public final class ch/softappeal/yass2/remote/ExceptionReply : ch/softappeal/yass2/remote/Reply {
+	public fun <init> (Lch/softappeal/yass2/remote/ContractException;)V
+	public final fun getException ()Lch/softappeal/yass2/remote/ContractException;
+	public synthetic fun process ()Ljava/lang/Object;
+	public fun process ()Ljava/lang/Void;
+}
+
+public final class ch/softappeal/yass2/remote/InterceptorKt {
+	public static final fun getPassThroughInterceptor ()Lkotlin/jvm/functions/Function4;
+	public static final fun plus (Lkotlin/jvm/functions/Function4;Lkotlin/jvm/functions/Function4;)Lkotlin/jvm/functions/Function4;
+}
+
+public abstract class ch/softappeal/yass2/remote/Message {
+}
+
+public abstract interface annotation class ch/softappeal/yass2/remote/Proxies : java/lang/annotation/Annotation {
+	public abstract fun value ()[Ljava/lang/Class;
+}
+
+public final class ch/softappeal/yass2/remote/RemoteKt {
+	public static final fun tunnel ([Lch/softappeal/yass2/remote/Service;)Lkotlin/jvm/functions/Function2;
+}
+
+public abstract class ch/softappeal/yass2/remote/Reply : ch/softappeal/yass2/remote/Message {
+	public abstract fun process ()Ljava/lang/Object;
+}
+
+public final class ch/softappeal/yass2/remote/Request : ch/softappeal/yass2/remote/Message {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)V
+	public final fun getFunction ()Ljava/lang/String;
+	public final fun getParameters ()Ljava/util/List;
+	public final fun getService ()Ljava/lang/String;
+}
+
+public final class ch/softappeal/yass2/remote/Service {
+	public fun <init> (Ljava/lang/String;Lkotlin/jvm/functions/Function3;)V
+}
+
+public final class ch/softappeal/yass2/remote/ServiceId {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun getId ()Ljava/lang/String;
+}
+
+public final class ch/softappeal/yass2/remote/ValueReply : ch/softappeal/yass2/remote/Reply {
+	public fun <init> (Ljava/lang/Object;)V
+	public final fun getValue ()Ljava/lang/Object;
+	public fun process ()Ljava/lang/Object;
+}
+
+public abstract interface annotation class ch/softappeal/yass2/remote/flow/ExperimentalFlowApi : java/lang/annotation/Annotation {
+}
+
+public abstract interface class ch/softappeal/yass2/remote/flow/FlowService {
+	public abstract fun cancel (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun create (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun next (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ch/softappeal/yass2/remote/flow/GeneratedByYassKt {
+	public static final fun proxy (Lch/softappeal/yass2/remote/ServiceId;Lkotlin/jvm/functions/Function2;)Lch/softappeal/yass2/remote/flow/FlowService;
+	public static final fun proxy (Lch/softappeal/yass2/remote/flow/FlowService;Lkotlin/jvm/functions/Function4;)Lch/softappeal/yass2/remote/flow/FlowService;
+	public static final fun service (Lch/softappeal/yass2/remote/ServiceId;Lch/softappeal/yass2/remote/flow/FlowService;)Lch/softappeal/yass2/remote/Service;
+}
+
+public final class ch/softappeal/yass2/remote/flow/RemoteFlowKt {
+	public static final fun createFlow (Lch/softappeal/yass2/remote/flow/FlowService;Ljava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
+	public static final fun flowService (Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function1;)Lch/softappeal/yass2/remote/flow/FlowService;
+}
+
+public abstract interface class ch/softappeal/yass2/remote/session/Connection {
+	public abstract fun closed (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun write (Lch/softappeal/yass2/remote/session/Packet;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ch/softappeal/yass2/remote/session/GeneratedByYassKt {
+	public static final fun proxy (Lch/softappeal/yass2/remote/ServiceId;Lkotlin/jvm/functions/Function2;)Lch/softappeal/yass2/remote/session/KeepAlive;
+	public static final fun proxy (Lch/softappeal/yass2/remote/session/KeepAlive;Lkotlin/jvm/functions/Function4;)Lch/softappeal/yass2/remote/session/KeepAlive;
+	public static final fun service (Lch/softappeal/yass2/remote/ServiceId;Lch/softappeal/yass2/remote/session/KeepAlive;)Lch/softappeal/yass2/remote/Service;
+}
+
+public abstract interface class ch/softappeal/yass2/remote/session/KeepAlive {
+	public abstract fun keepAlive (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ch/softappeal/yass2/remote/session/KeepAliveKt {
+	public static final fun getKeepAliveId ()Lch/softappeal/yass2/remote/ServiceId;
+	public static final fun keepAliveTunnel ([Lch/softappeal/yass2/remote/Service;)Lkotlin/jvm/functions/Function2;
+	public static final fun launchKeepAlive-5qebJ5I (Lch/softappeal/yass2/remote/session/Session;JJ)V
+}
+
+public abstract interface annotation class ch/softappeal/yass2/remote/session/MustBeImplementedByAcceptor : java/lang/annotation/Annotation {
+}
+
+public abstract interface annotation class ch/softappeal/yass2/remote/session/MustBeImplementedByInitiator : java/lang/annotation/Annotation {
+}
+
+public final class ch/softappeal/yass2/remote/session/Packet {
+	public fun <init> (ILch/softappeal/yass2/remote/Message;)V
+	public final fun getMessage ()Lch/softappeal/yass2/remote/Message;
+	public final fun getRequestNumber ()I
+}
+
+public abstract class ch/softappeal/yass2/remote/session/Session : kotlinx/coroutines/CoroutineScope {
+	public fun <init> ()V
+	public final fun close (Ljava/lang/Exception;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun close (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun closeOnException (Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	protected fun closed (Ljava/lang/Exception;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getClientTunnel ()Lkotlin/jvm/functions/Function2;
+	public final fun getConnection ()Lch/softappeal/yass2/remote/session/Connection;
+	public fun getCoroutineContext ()Lkotlin/coroutines/CoroutineContext;
+	protected fun getServerTunnel ()Lkotlin/jvm/functions/Function2;
+	public final fun isClosedSuspend (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun opened ()V
+}
+
+public final class ch/softappeal/yass2/remote/session/SessionConnectorKt {
+	public static final fun launchConnector-exY8QGI (Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function0;JLkotlin/jvm/functions/Function1;)Lkotlinx/coroutines/Job;
+}
+
+public final class ch/softappeal/yass2/remote/session/SessionKt {
+	public static final fun receiveLoop (Lch/softappeal/yass2/remote/session/Connection;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+

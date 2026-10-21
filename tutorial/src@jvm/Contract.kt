@@ -1,19 +1,19 @@
 package tutorial
 
-import ch.softappeal.yass2.core.Proxies
-import ch.softappeal.yass2.core.remote.ContractException
-import ch.softappeal.yass2.core.remote.ExceptionReply
-import ch.softappeal.yass2.core.remote.Request
-import ch.softappeal.yass2.core.remote.ServiceId
-import ch.softappeal.yass2.core.remote.ValueReply
-import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses
-import ch.softappeal.yass2.core.serialize.string.BaseStringEncoder
-import ch.softappeal.yass2.core.serialize.string.IntStringEncoder
-import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
-import ch.softappeal.yass2.core.serialize.string.TextSerializer
-import ch.softappeal.yass2.coroutines.session.MustBeImplementedByAcceptor
-import ch.softappeal.yass2.coroutines.session.MustBeImplementedByInitiator
-import ch.softappeal.yass2.coroutines.session.Packet
+import ch.softappeal.yass2.remote.ContractException
+import ch.softappeal.yass2.remote.ExceptionReply
+import ch.softappeal.yass2.remote.Proxies
+import ch.softappeal.yass2.remote.Request
+import ch.softappeal.yass2.remote.ServiceId
+import ch.softappeal.yass2.remote.ValueReply
+import ch.softappeal.yass2.remote.session.MustBeImplementedByAcceptor
+import ch.softappeal.yass2.remote.session.MustBeImplementedByInitiator
+import ch.softappeal.yass2.remote.session.Packet
+import ch.softappeal.yass2.serialize.ConcreteAndEnumClasses
+import ch.softappeal.yass2.serialize.string.BaseStringEncoder
+import ch.softappeal.yass2.serialize.string.IntStringEncoder
+import ch.softappeal.yass2.serialize.string.StringEncoders
+import ch.softappeal.yass2.serialize.string.TextSerializer
 
 /**
  * Shows how to implement an own base type.
@@ -89,7 +89,7 @@ interface NewsListener {
 )
 
 // Define all the encoders needed by the contract.
-@StringEncoderObjects(
+@StringEncoders(
     // String and Boolean is built-in
     IntStringEncoder::class,
     MyDateEncoder::class,

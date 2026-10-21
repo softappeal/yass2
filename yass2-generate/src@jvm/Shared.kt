@@ -1,8 +1,5 @@
-@file:OptIn(InternalYassApi::class)
-
 package ch.softappeal.yass2.generate
 
-import ch.softappeal.yass2.core.InternalYassApi
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.notExists
@@ -16,7 +13,17 @@ internal fun <T> List<T>.duplicates(): List<T> {
     return filter { !seen.add(it) }
 }
 
-internal const val CSY = "ch.softappeal.yass2"
+internal inline fun <T> Iterable<T>.forEach(separator: () -> Unit, action: (T) -> Unit) {
+    val iterator = iterator()
+    if (!iterator.hasNext()) return
+    action(iterator.next())
+    while (iterator.hasNext()) {
+        separator()
+        action(iterator.next())
+    }
+}
+
+internal const val RemotePackage = "ch.softappeal.yass2.remote"
 
 internal fun Appendable.appendPackage(packageName: String) {
     append(
@@ -42,44 +49,43 @@ internal fun Appendable.appendPackage(packageName: String) {
     )
 }
 
-/** @suppress */
-@InternalYassApi public class CodeWriter private constructor(private val appendable: Appendable, private val indent: String) {
-    public constructor(appendable: Appendable) : this(appendable, "")
+internal class CodeWriter private constructor(private val appendable: Appendable, private val indent: String) {
+    constructor(appendable: Appendable) : this(appendable, "")
 
-    internal fun writeLine() {
+    fun writeLine() {
         appendable.append('\n')
     }
 
-    internal fun write(s: String) {
+    fun write(s: String) {
         appendable.append(s)
     }
 
-    internal fun nested(write: CodeWriter.() -> Unit) {
+    fun nested(write: CodeWriter.() -> Unit) {
         CodeWriter(appendable, "$indent    ").write()
     }
 
-    internal fun writeLine(s: String, write: CodeWriter.() -> Unit) {
+    fun writeLine(s: String, write: CodeWriter.() -> Unit) {
         write(s)
         writeLine()
         nested(write)
     }
 
-    internal fun writeNested(s: String) {
+    fun writeNested(s: String) {
         write(indent)
         write(s)
     }
 
-    internal fun writeNestedLine(s: String) {
+    fun writeNestedLine(s: String) {
         writeNested(s)
         writeLine()
     }
 
-    internal fun writeNestedLine(s: String, write: CodeWriter.() -> Unit) {
+    fun writeNestedLine(s: String, write: CodeWriter.() -> Unit) {
         writeNestedLine(s)
         nested(write)
     }
 
-    internal fun writeNestedLine(start: String, end: String, write: CodeWriter.() -> Unit) {
+    fun writeNestedLine(start: String, end: String, write: CodeWriter.() -> Unit) {
         writeNestedLine(start, write)
         writeNestedLine(end)
     }
@@ -102,7 +108,7 @@ internal fun CodeWriter.writeFun(head: String, parameter: String, tail: String, 
 /** Name of the generated file (without `.kt` extension). */
 public const val GENERATED_BY_YASS: String = "GeneratedByYass"
 
-private fun String.fixLines() = replace("\r\n", "\n")
+internal fun String.fixLines() = replace("\r\n", "\n")
 
 internal fun writeGeneratedFile(generatedDir: Path, generatedCode: String) {
     val generatedFile = generatedDir.resolve("$GENERATED_BY_YASS.kt")

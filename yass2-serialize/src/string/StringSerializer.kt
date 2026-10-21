@@ -1,0 +1,268 @@
+package ch.softappeal.yass2.serialize.string
+
+import ch.softappeal.yass2.serialize.Reader
+import ch.softappeal.yass2.serialize.Serializer
+import ch.softappeal.yass2.serialize.Writer
+import ch.softappeal.yass2.serialize.fromByteArray
+import ch.softappeal.yass2.serialize.toByteArray
+import kotlin.reflect.KClass
+
+internal const val QUOTE = '"'.code
+internal const val COMMA = ','.code
+internal const val LPAREN = '('.code
+internal const val RPAREN = ')'.code
+internal const val SP = ' '.code
+private const val BS = '\\'.code
+private const val NL = '\n'.code
+private const val CR = '\r'.code
+private const val TAB = '\t'.code
+private const val DOLLAR = '$'.code
+private const val NULL = "null"
+private const val TRUE = "true"
+private const val FALSE = "false"
+
+private fun Int.isWhitespace() = this == SP || this == TAB || this == NL || this == CR
+
+private const val S_BS = BS.toChar().toString()
+private const val S_BS_BS = S_BS + S_BS
+private const val S_QUOTE = QUOTE.toChar().toString()
+private const val S_BS_QUOTE = S_BS + S_QUOTE
+private const val S_NL = NL.toChar().toString()
+private const val S_BS_NL = S_BS + "n"
+private const val S_CR = CR.toChar().toString()
+private const val S_BS_CR = S_BS + "r"
+private const val S_TAB = TAB.toChar().toString()
+private const val S_BS_TAB = S_BS + "t"
+private const val S_DOLLAR = DOLLAR.toChar().toString()
+private const val S_BS_DOLLAR = "$S_BS$"
+
+private val Tab = ByteArray(4) { SP.toByte() }
+
+public abstract class StringWriter(
+    private val writer: Writer,
+    internal val indent: Int,
+    private val escapeDollar: Boolean = false,
+) : Writer by writer {
+    internal fun writeIndent() {
+        repeat(indent) { writeByteArray(Tab) }
+    }
+
+    internal fun writeNewLine() {
+        writeAsciiChar(NL)
+    }
+
+    internal fun writeAsciiChar(asciiCodePoint: Int) {
+        writeByte(asciiCodePoint.toByte())
+    }
+
+    internal fun writeString(string: String) {
+        writeByteArray(string.encodeToByteArray(throwOnInvalidSequence = true))
+    }
+
+    internal fun writeQuotedString(string: String) {
+        writeAsciiChar(QUOTE)
+        writeString(
+            string
+                .replace(S_BS, S_BS_BS) // must be first!
+                .replace(S_QUOTE, S_BS_QUOTE)
+                .replace(S_NL, S_BS_NL)
+                .replace(S_CR, S_BS_CR)
+                .replace(S_TAB, S_BS_TAB)
+                .run { if (escapeDollar) replace(S_DOLLAR, S_BS_DOLLAR) else this }
+        )
+        writeAsciiChar(QUOTE)
+    }
+
+    internal abstract fun writeList(list: List<*>)
+
+    /** @return [value] was handled as a built-in type */
+    internal fun writeBuiltIn(value: Any?): Boolean {
+        when (value) {
+            null -> writeString(NULL)
+            false -> writeString(FALSE)
+            true -> writeString(TRUE)
+            is String -> writeQuotedString(value)
+            is List<*> -> writeList(value)
+            else -> return false
+        }
+        return true
+    }
+
+    public abstract fun writeProperty(name: String, value: Any?)
+    public abstract fun writeProperty(name: String, value: Any?, encoderId: Int)
+}
+
+public abstract class StringReader(
+    private val reader: Reader,
+    internal var nextCodePoint: Int,
+    private val escapeDollar: Boolean = false,
+) : Reader by reader {
+    internal fun expectedCodePoint(codePoint: Int) = nextCodePoint == codePoint
+
+    internal fun readNextCodePoint() {
+        nextCodePoint = readCodePoint()
+    }
+
+    internal fun checkExpectedCodePoint(codePoint: Int) {
+        check(expectedCodePoint(codePoint)) { "'${codePoint.toChar()}' expected instead of '${nextCodePoint.toChar()}'" }
+    }
+
+    private fun isWhitespace() = nextCodePoint.isWhitespace()
+
+    internal fun skipWhitespace() {
+        while (isWhitespace()) readNextCodePoint()
+    }
+
+    internal fun readNextCodePointAndSkipWhitespace() {
+        readNextCodePoint()
+        skipWhitespace()
+    }
+
+    internal fun readQuotedString() = buildString {
+        while (true) {
+            readNextCodePoint()
+            when {
+                expectedCodePoint(QUOTE) -> break
+                expectedCodePoint(BS) -> {
+                    readNextCodePoint()
+                    when {
+                        expectedCodePoint(QUOTE) -> append(QUOTE.toChar())
+                        expectedCodePoint(BS) -> append(BS.toChar())
+                        expectedCodePoint('n'.code) -> append(NL.toChar())
+                        expectedCodePoint('r'.code) -> append(CR.toChar())
+                        expectedCodePoint('t'.code) -> append(TAB.toChar())
+                        escapeDollar && expectedCodePoint(DOLLAR) -> append(DOLLAR.toChar())
+                        else -> error("illegal escape with codePoint $nextCodePoint")
+                    }
+                }
+                else -> addCodePoint(nextCodePoint)
+            }
+        }
+    }
+
+    internal fun readString(isEnd: () -> Boolean) = buildString {
+        while (!isEnd() && !isWhitespace()) {
+            addCodePoint(nextCodePoint)
+            readNextCodePoint()
+        }
+        skipWhitespace()
+    }
+
+    internal data class ReadBuiltInResult(val handled: Boolean, val result: Boolean?, val className: String)
+
+    internal fun readBuiltIn(isEnd: () -> Boolean): ReadBuiltInResult {
+        val className = buildString {
+            while (!isEnd() && !isWhitespace()) {
+                addCodePoint(nextCodePoint)
+                val head = toString()
+                if (NULL == head || FALSE == head || TRUE == head) return@buildString
+                readNextCodePoint()
+            }
+            skipWhitespace()
+        }
+        @Suppress("BooleanLiteralArgument")
+        return when (className) {
+            NULL -> ReadBuiltInResult(true, null, className)
+            FALSE -> ReadBuiltInResult(true, false, className)
+            TRUE -> ReadBuiltInResult(true, true, className)
+            else -> ReadBuiltInResult(false, null, className)
+        }
+    }
+
+    private val propertyNameToValue = mutableMapOf<String, Any?>()
+
+    internal fun ClassStringEncoder<*>.addProperty(name: String, value: Any?) {
+        check(!propertyNameToValue.containsKey(name)) { "duplicated property '${type.simpleName}.$name'" }
+        propertyNameToValue[name] = value
+    }
+
+    public fun getProperty(name: String): Any? = propertyNameToValue[name]
+
+    internal fun ClassStringEncoder<*>.checkMissingProperties() {
+        val missingProperties = propertyToEncoderId.keys - propertyNameToValue.keys
+        check(missingProperties.isEmpty()) { "missing properties ${missingProperties.sorted()} for '${type.simpleName}'" }
+    }
+}
+
+public open class StringEncoder<T : Any>(
+    internal val type: KClass<T>,
+    internal val write: StringWriter.(value: T) -> Unit,
+    internal val read: StringReader.() -> T,
+)
+
+internal fun StringWriter.write(encoder: StringEncoder<*>, value: Any) {
+    @Suppress("UNCHECKED_CAST") (encoder as StringEncoder<Any>).write(this, value)
+}
+
+public abstract class BaseStringEncoder<T : Any>(
+    type: KClass<T>,
+    /** Result string must not contain whitespace, `"`, `,` or `)`. */
+    public val writeBase: T.() -> String,
+    public val readBase: String.() -> T,
+) : StringEncoder<T>(
+    type,
+    { value ->
+        writeString(writeBase(value).apply {
+            check(indexOfFirst { it.code.isWhitespace() || it.code == QUOTE || it.code == COMMA || it.code == RPAREN } < 0) {
+                "'$this' must not contain whitespace, '${QUOTE.toChar()}', '${COMMA.toChar()}' or '${RPAREN.toChar()}'"
+            }
+        })
+    },
+    {
+        readString { expectedCodePoint(QUOTE) || expectedCodePoint(COMMA) || expectedCodePoint(RPAREN) }.readBase()
+    },
+)
+
+public class ClassStringEncoder<T : Any>(
+    type: KClass<T>,
+    write: StringWriter.(value: T) -> Unit,
+    read: StringReader.() -> T,
+    /** see [STRING_NO_ENCODER_ID] */
+    vararg propertyEncoderIds: Pair<String, Int>,
+) : StringEncoder<T>(type, write, read) {
+    internal val propertyToEncoderId = propertyEncoderIds.toMap()
+    internal fun encoderId(property: String): Int {
+        val encoderId = propertyToEncoderId[property]
+        check(encoderId != null) { "no property '${type.simpleName}.$property'" }
+        return encoderId
+    }
+}
+
+/**
+ * It reads/writes UTF-8 encoded strings.
+ * It has built-in encoders for `null`, [String], [Boolean] and [List].
+ */
+public abstract class StringSerializer(stringEncoders: List<StringEncoder<*>>) : Serializer {
+    private val encoders = (listOf(
+        // placeholders, methods are never called
+        StringEncoder(String::class, {}, { "" }),
+        StringEncoder(Boolean::class, {}, { false }),
+        StringEncoder(List::class, {}, { listOf<Int>() }),
+    ) + stringEncoders).toTypedArray()
+    private val typeToEncoder = HashMap<KClass<*>, StringEncoder<*>>(encoders.size)
+    private val classNameToEncoder = HashMap<String, StringEncoder<*>>(encoders.size)
+
+    init {
+        encoders.forEach { encoder ->
+            require(typeToEncoder.put(encoder.type, encoder) == null) { "duplicated type '${encoder.type}'" }
+            require(classNameToEncoder.put(encoder.type.simpleName!!, encoder) == null) {
+                "duplicated className '${encoder.type.simpleName}'"
+            }
+        }
+    }
+
+    internal fun encoder(encoderId: Int) = encoders[encoderId]
+    internal fun encoder(type: KClass<*>) = typeToEncoder[type] ?: error("missing type '$type'")
+    internal fun encoder(className: String) = classNameToEncoder[className] ?: error("missing encoder for class '$className'")
+}
+
+public const val STRING_NO_ENCODER_ID: Int = -1
+public const val STRING_STRING_ENCODER_ID: Int = 0
+public const val STRING_BOOLEAN_ENCODER_ID: Int = 1
+public const val STRING_LIST_ENCODER_ID: Int = 2
+public const val STRING_FIRST_ENCODER_ID: Int = 3
+
+public fun StringSerializer.toString(value: Any?): String = toByteArray(value).decodeToString(throwOnInvalidSequence = true)
+
+public fun StringSerializer.fromString(string: String): Any? =
+    fromByteArray(string.encodeToByteArray(throwOnInvalidSequence = true))

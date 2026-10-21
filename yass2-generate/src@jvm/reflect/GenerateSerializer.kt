@@ -1,29 +1,27 @@
-@file:OptIn(InternalYassApi::class)
 @file:Suppress("DuplicatedCode")
 
 package ch.softappeal.yass2.generate.reflect
 
-import ch.softappeal.yass2.core.InternalYassApi
-import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses
-import ch.softappeal.yass2.core.serialize.binary.BINARY_FIRST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.binary.BINARY_LIST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.binary.BINARY_NO_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.binary.BinaryEncoder
-import ch.softappeal.yass2.core.serialize.binary.BinarySerializer
-import ch.softappeal.yass2.core.serialize.binary.EnumBinaryEncoder
-import ch.softappeal.yass2.core.serialize.string.BaseStringEncoder
-import ch.softappeal.yass2.core.serialize.string.ClassStringEncoder
-import ch.softappeal.yass2.core.serialize.string.EnumStringEncoder
-import ch.softappeal.yass2.core.serialize.string.STRING_BOOLEAN_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.STRING_FIRST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.STRING_LIST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.STRING_NO_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.STRING_STRING_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.StringEncoder
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.duplicates
 import ch.softappeal.yass2.generate.hasNoDuplicates
 import ch.softappeal.yass2.generate.writeFun
+import ch.softappeal.yass2.serialize.ConcreteAndEnumClasses
+import ch.softappeal.yass2.serialize.binary.BINARY_FIRST_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.BINARY_LIST_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.BINARY_NO_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.BinaryEncoder
+import ch.softappeal.yass2.serialize.binary.BinarySerializer
+import ch.softappeal.yass2.serialize.binary.EnumBinaryEncoder
+import ch.softappeal.yass2.serialize.string.BaseStringEncoder
+import ch.softappeal.yass2.serialize.string.ClassStringEncoder
+import ch.softappeal.yass2.serialize.string.EnumStringEncoder
+import ch.softappeal.yass2.serialize.string.STRING_BOOLEAN_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.STRING_FIRST_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.STRING_LIST_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.STRING_NO_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.STRING_STRING_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.StringEncoder
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KVisibility
@@ -41,8 +39,8 @@ private data class Classes(
 
 private fun KClass<*>.isEnum() = java.isEnum
 
-private fun getClasses(encoderObjects: List<KClass<*>>, concreteAndEnumClasses: List<KClass<*>>): Classes {
-    val encoderTypes = encoderObjects
+private fun getClasses(encoders: List<KClass<*>>, concreteAndEnumClasses: List<KClass<*>>): Classes {
+    val encoderTypes = encoders
         .map { it.supertypes.first().arguments.first().type!!.classifier as KClass<*> }
     val enumClasses = concreteAndEnumClasses.filter { it.isEnum() }.map { @Suppress("UNCHECKED_CAST") (it as KClass<Enum<*>>) }
     val concreteClasses = concreteAndEnumClasses.filterNot { it.isEnum() }
@@ -81,12 +79,11 @@ private fun <P : Property> KClass<*>.properties(createProperty: (property: KProp
     return constructorProperties
 }
 
-/** @suppress */
-@InternalYassApi public fun CodeWriter.generateBinarySerializer(
-    encoderObjects: List<KClass<out BinaryEncoder<*>>>,
+internal fun CodeWriter.generateBinarySerializer(
+    encoders: List<KClass<out BinaryEncoder<*>>>,
     concreteAndEnumClasses: List<KClass<*>>,
 ) {
-    val (baseClasses, enumClasses, concreteClasses) = getClasses(encoderObjects, concreteAndEnumClasses)
+    val (baseClasses, enumClasses, concreteClasses) = getClasses(encoders, concreteAndEnumClasses)
 
     class BinaryProperty(property: KProperty1<out Any, *>) : Property(property) {
         private val encoderId = if (classifier == List::class) BINARY_LIST_ENCODER_ID else {
@@ -114,7 +111,7 @@ private fun <P : Property> KClass<*>.properties(createProperty: (property: KProp
                 writeNestedLine("initialize(", ")") {
                     writeNestedLine("// ${List::class.qualifiedName}: $BINARY_LIST_ENCODER_ID")
                     var encoderId = BINARY_FIRST_ENCODER_ID
-                    encoderObjects.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
+                    encoders.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
                     enumClasses.forEach { type ->
                         writeNestedLine("${EnumBinaryEncoder::class.qualifiedName}(", "),") {
                             writeNestedLine("${type.qualifiedName}::class, kotlin.enums.enumEntries(), // ${encoderId++}")
@@ -140,12 +137,11 @@ private fun <P : Property> KClass<*>.properties(createProperty: (property: KProp
     }
 }
 
-/** @suppress */
-@InternalYassApi public fun CodeWriter.generateStringEncoders(
-    encoderObjects: List<KClass<out BaseStringEncoder<*>>>,
+internal fun CodeWriter.generateStringEncoders(
+    encoders: List<KClass<out BaseStringEncoder<*>>>,
     concreteAndEnumClasses: List<KClass<*>>,
 ) {
-    val (baseClasses, enumClasses, concreteClasses) = getClasses(encoderObjects, concreteAndEnumClasses)
+    val (baseClasses, enumClasses, concreteClasses) = getClasses(encoders, concreteAndEnumClasses)
 
     class StringProperty(property: KProperty1<out Any, *>) : Property(property) {
         private val encoderId = when (classifier) {
@@ -176,7 +172,7 @@ private fun <P : Property> KClass<*>.properties(createProperty: (property: KProp
             writeNestedLine("// ${Boolean::class.qualifiedName}: $STRING_BOOLEAN_ENCODER_ID")
             writeNestedLine("// ${List::class.qualifiedName}: $STRING_LIST_ENCODER_ID")
             var encoderId = STRING_FIRST_ENCODER_ID
-            encoderObjects.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
+            encoders.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
             enumClasses.forEach { type ->
                 writeNestedLine("${EnumStringEncoder::class.qualifiedName}(", "),") {
                     writeNestedLine("${type.qualifiedName}::class, // ${encoderId++}")

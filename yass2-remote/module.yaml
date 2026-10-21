@@ -1,0 +1,16 @@
+product:
+  type: kmp/lib
+  platforms: [ jvm, js, wasmJs, linuxX64, linuxArm64 ]
+
+apply:
+  - //yass.module-template.yaml
+
+dependencies:
+  - $libs.coroutines.core: exported
+
+test-dependencies:
+  - $libs.coroutines.test
+
+test-dependencies@jvm:
+  - $kotlin.reflect
+  - //yass2-generate

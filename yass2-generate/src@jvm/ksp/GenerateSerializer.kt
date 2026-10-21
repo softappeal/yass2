@@ -1,28 +1,26 @@
-@file:OptIn(InternalYassApi::class)
 @file:Suppress("DuplicatedCode")
 
 package ch.softappeal.yass2.generate.ksp
 
-import ch.softappeal.yass2.core.InternalYassApi
-import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses
-import ch.softappeal.yass2.core.serialize.binary.BINARY_FIRST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.binary.BINARY_LIST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.binary.BINARY_NO_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.binary.BinaryEncoder
-import ch.softappeal.yass2.core.serialize.binary.BinarySerializer
-import ch.softappeal.yass2.core.serialize.binary.EnumBinaryEncoder
-import ch.softappeal.yass2.core.serialize.string.ClassStringEncoder
-import ch.softappeal.yass2.core.serialize.string.EnumStringEncoder
-import ch.softappeal.yass2.core.serialize.string.STRING_BOOLEAN_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.STRING_FIRST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.STRING_LIST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.STRING_NO_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.STRING_STRING_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.StringEncoder
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.duplicates
 import ch.softappeal.yass2.generate.hasNoDuplicates
 import ch.softappeal.yass2.generate.writeFun
+import ch.softappeal.yass2.serialize.ConcreteAndEnumClasses
+import ch.softappeal.yass2.serialize.binary.BINARY_FIRST_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.BINARY_LIST_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.BINARY_NO_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.BinaryEncoder
+import ch.softappeal.yass2.serialize.binary.BinarySerializer
+import ch.softappeal.yass2.serialize.binary.EnumBinaryEncoder
+import ch.softappeal.yass2.serialize.string.ClassStringEncoder
+import ch.softappeal.yass2.serialize.string.EnumStringEncoder
+import ch.softappeal.yass2.serialize.string.STRING_BOOLEAN_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.STRING_FIRST_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.STRING_LIST_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.STRING_NO_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.STRING_STRING_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.StringEncoder
 import com.google.devtools.ksp.isAbstract
 import com.google.devtools.ksp.isPublic
 import com.google.devtools.ksp.symbol.ClassKind
@@ -38,8 +36,8 @@ private data class Classes(
 
 private fun KSType.isEnum() = (declaration as KSClassDeclaration).classKind == ClassKind.ENUM_CLASS
 
-private fun getClasses(encoderObjects: List<KSType>, concreteAndEnumClasses: List<KSType>): Classes {
-    val encoderTypes = encoderObjects
+private fun getClasses(encoders: List<KSType>, concreteAndEnumClasses: List<KSType>): Classes {
+    val encoderTypes = encoders
         .map { (it.declaration as KSClassDeclaration).superTypes.first().element!!.typeArguments.first().type!!.resolve() }
     val enumClasses = concreteAndEnumClasses.filter { it.isEnum() }
     val concreteClasses = concreteAndEnumClasses.filterNot { it.isEnum() }
@@ -79,10 +77,10 @@ private fun <P : Property> KSClassDeclaration.properties(createProperty: (proper
 }
 
 internal fun CodeWriter.generateBinarySerializer(
-    encoderObjects: List<KSType>,
+    encoders: List<KSType>,
     concreteAndEnumClasses: List<KSType>,
 ) {
-    val (baseClasses, enumClasses, concreteClasses) = getClasses(encoderObjects, concreteAndEnumClasses)
+    val (baseClasses, enumClasses, concreteClasses) = getClasses(encoders, concreteAndEnumClasses)
 
     class BinaryProperty(property: KSPropertyDeclaration) : Property(property) {
         private val encoderId = if (typeQualifiedName == List::class.qualifiedName) BINARY_LIST_ENCODER_ID else {
@@ -110,7 +108,7 @@ internal fun CodeWriter.generateBinarySerializer(
                 writeNestedLine("initialize(", ")") {
                     writeNestedLine("// ${List::class.qualifiedName}: $BINARY_LIST_ENCODER_ID")
                     var encoderId = BINARY_FIRST_ENCODER_ID
-                    encoderObjects.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
+                    encoders.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
                     enumClasses.forEach { type ->
                         writeNestedLine("${EnumBinaryEncoder::class.qualifiedName}(", "),") {
                             writeNestedLine("${type.qualifiedName}::class, kotlin.enums.enumEntries(), // ${encoderId++}")
@@ -137,10 +135,10 @@ internal fun CodeWriter.generateBinarySerializer(
 }
 
 internal fun CodeWriter.generateStringEncoders(
-    encoderObjects: List<KSType>,
+    encoders: List<KSType>,
     concreteAndEnumClasses: List<KSType>,
 ) {
-    val (baseClasses, enumClasses, concreteClasses) = getClasses(encoderObjects, concreteAndEnumClasses)
+    val (baseClasses, enumClasses, concreteClasses) = getClasses(encoders, concreteAndEnumClasses)
 
     class StringProperty(property: KSPropertyDeclaration) : Property(property) {
         private val encoderId = when (typeQualifiedName) {
@@ -171,7 +169,7 @@ internal fun CodeWriter.generateStringEncoders(
             writeNestedLine("// ${Boolean::class.qualifiedName}: $STRING_BOOLEAN_ENCODER_ID")
             writeNestedLine("// ${List::class.qualifiedName}: $STRING_LIST_ENCODER_ID")
             var encoderId = STRING_FIRST_ENCODER_ID
-            encoderObjects.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
+            encoders.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
             enumClasses.forEach { type ->
                 writeNestedLine("${EnumStringEncoder::class.qualifiedName}(", "),") {
                     writeNestedLine("${type.qualifiedName}::class, // ${encoderId++}")

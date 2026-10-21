@@ -44,13 +44,16 @@
 * yass2 has multiple modules with the following dependencies
 
 ```
-yass2-core <-- yass2-generate
-     ^
-     |
-yass2-coroutines --> kotlinx-coroutines-core
-     ^
-     |
-yass2-ktor --> Ktor
+yass2-serialize     yass2-remote  -->  kotlinx-coroutines-core
+     ^                   ^
+     |                   |
+     +----------+--------+
+                |
+                |
+           yass2-ktor  -->  Ktor
+
+
+yass2-generate
 ```
 
 * artifacts on [Maven Central](https://central.sonatype.com/search?q=g:ch.softappeal.yass2) (GroupId: ch.softappeal.yass2)

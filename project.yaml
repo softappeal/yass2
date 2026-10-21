@@ -1,8 +1,5 @@
 # https://kotlin-toolchain.org
 
-# TODO: replace Gradle with kotlin toolchain
-
 modules:
-  - tests
   - tutorial
   - yass2-*

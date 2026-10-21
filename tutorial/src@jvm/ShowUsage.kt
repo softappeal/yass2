@@ -1,16 +1,16 @@
 package tutorial
 
-import ch.softappeal.yass2.core.remote.Tunnel
-import ch.softappeal.yass2.core.remote.tunnel
-import ch.softappeal.yass2.core.serialize.string.StringSerializer
-import ch.softappeal.yass2.core.serialize.string.fromString
-import ch.softappeal.yass2.core.serialize.string.toString
-import ch.softappeal.yass2.coroutines.session.Session
-import ch.softappeal.yass2.coroutines.session.SessionFactory
 import ch.softappeal.yass2.ktor.WebSocketConnection
 import ch.softappeal.yass2.ktor.receiveLoop
 import ch.softappeal.yass2.ktor.route
 import ch.softappeal.yass2.ktor.tunnel
+import ch.softappeal.yass2.remote.Tunnel
+import ch.softappeal.yass2.remote.session.Session
+import ch.softappeal.yass2.remote.session.SessionFactory
+import ch.softappeal.yass2.remote.tunnel
+import ch.softappeal.yass2.serialize.string.StringSerializer
+import ch.softappeal.yass2.serialize.string.fromString
+import ch.softappeal.yass2.serialize.string.toString
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.ws
 import io.ktor.server.application.install

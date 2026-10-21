@@ -1,16 +1,13 @@
-@file:OptIn(InternalYassApi::class)
-
 package ch.softappeal.yass2.generate.reflect
 
-import ch.softappeal.yass2.core.InternalYassApi
-import ch.softappeal.yass2.core.Proxies
-import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses
-import ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects
-import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import ch.softappeal.yass2.generate.appendPackage
 import ch.softappeal.yass2.generate.writeGeneratedFile
+import ch.softappeal.yass2.remote.Proxies
+import ch.softappeal.yass2.serialize.ConcreteAndEnumClasses
+import ch.softappeal.yass2.serialize.binary.BinaryEncoders
+import ch.softappeal.yass2.serialize.string.StringEncoders
 import kotlin.io.path.Path
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KType
@@ -18,8 +15,7 @@ import kotlin.reflect.full.findAnnotation
 
 private val RemoveComment = Regex(""" *?/\*.*?\*/""") // TODO: see file 'KTypeToTypeTest.kt'
 
-/** @suppress */
-@InternalYassApi public fun String.removeComment(): String = replace(RemoveComment, "")
+internal fun String.removeComment(): String = replace(RemoveComment, "")
 
 internal fun KType.toType() = toString().removeComment()
 
@@ -30,18 +26,18 @@ private fun Any.generateCode(annotatedElement: KAnnotatedElement) = buildString 
         services?.value?.forEach(::generateProxy)
 
         val concreteAndEnumClasses = annotatedElement.findAnnotation<ConcreteAndEnumClasses>()
-        val binaryEncoderObjects = annotatedElement.findAnnotation<BinaryEncoderObjects>()
-        val stringEncoderObjects = annotatedElement.findAnnotation<StringEncoderObjects>()
+        val binaryEncoders = annotatedElement.findAnnotation<BinaryEncoders>()
+        val stringEncoders = annotatedElement.findAnnotation<StringEncoders>()
         if (concreteAndEnumClasses == null) {
-            require(binaryEncoderObjects == null && stringEncoderObjects == null) {
+            require(binaryEncoders == null && stringEncoders == null) {
                 "missing annotation '${ConcreteAndEnumClasses::class.qualifiedName}'"
             }
         } else {
-            require(binaryEncoderObjects != null || stringEncoderObjects != null) {
-                "missing annotations '${BinaryEncoderObjects::class.qualifiedName}' or '${StringEncoderObjects::class.qualifiedName}'"
+            require(binaryEncoders != null || stringEncoders != null) {
+                "missing annotations '${BinaryEncoders::class.qualifiedName}' or '${StringEncoders::class.qualifiedName}'"
             }
-            binaryEncoderObjects?.let { generateBinarySerializer(it.value.toList(), concreteAndEnumClasses.value.toList()) }
-            stringEncoderObjects?.let { generateStringEncoders(it.value.toList(), concreteAndEnumClasses.value.toList()) }
+            binaryEncoders?.let { generateBinarySerializer(it.value.toList(), concreteAndEnumClasses.value.toList()) }
+            stringEncoders?.let { generateStringEncoders(it.value.toList(), concreteAndEnumClasses.value.toList()) }
         }
     }
 }

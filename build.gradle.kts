@@ -92,13 +92,7 @@ allprojects {
         if (project.name.startsWith("yass2-")) {
             explicitApi()
             @OptIn(ExperimentalAbiValidation::class)
-            if (allPlatforms) abiValidation {
-                filters {
-                    exclude {
-                        annotatedWith.add("ch.softappeal.yass2.core.InternalYassApi")
-                    }
-                }
-            }
+            if (allPlatforms) abiValidation()
         }
         if (!project.file("src").exists()) sourceSets {
             commonMain {
@@ -136,10 +130,10 @@ allprojects {
 }
 
 dependencies {
-    dokka(project(":yass2-core"))
-    dokka(project(":yass2-generate"))
-    dokka(project(":yass2-coroutines"))
+    dokka(project(":yass2-serialize"))
+    dokka(project(":yass2-remote"))
     dokka(project(":yass2-ktor"))
+    dokka(project(":yass2-generate"))
 }
 
 tasks.register("markers") {

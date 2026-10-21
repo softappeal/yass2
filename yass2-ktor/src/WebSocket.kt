@@ -1,12 +1,12 @@
 package ch.softappeal.yass2.ktor
 
-import ch.softappeal.yass2.core.serialize.Serializer
-import ch.softappeal.yass2.core.serialize.fromByteArray
-import ch.softappeal.yass2.core.serialize.toByteArray
-import ch.softappeal.yass2.coroutines.session.Connection
-import ch.softappeal.yass2.coroutines.session.Packet
-import ch.softappeal.yass2.coroutines.session.SessionFactory
-import ch.softappeal.yass2.coroutines.session.receiveLoop
+import ch.softappeal.yass2.remote.session.Connection
+import ch.softappeal.yass2.remote.session.Packet
+import ch.softappeal.yass2.remote.session.SessionFactory
+import ch.softappeal.yass2.remote.session.receiveLoop
+import ch.softappeal.yass2.serialize.Serializer
+import ch.softappeal.yass2.serialize.fromByteArray
+import ch.softappeal.yass2.serialize.toByteArray
 import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.close

@@ -1,18 +1,16 @@
-@file:OptIn(InternalYassApi::class)
 @file:Suppress("DuplicatedCode")
 
 package ch.softappeal.yass2.generate.reflect
 
-import ch.softappeal.yass2.core.InternalYassApi
-import ch.softappeal.yass2.core.forEachSeparator
-import ch.softappeal.yass2.core.remote.Request
-import ch.softappeal.yass2.core.remote.Service
-import ch.softappeal.yass2.core.remote.ServiceId
-import ch.softappeal.yass2.generate.CSY
 import ch.softappeal.yass2.generate.CodeWriter
+import ch.softappeal.yass2.generate.RemotePackage
 import ch.softappeal.yass2.generate.duplicates
+import ch.softappeal.yass2.generate.forEach
 import ch.softappeal.yass2.generate.hasNoDuplicates
 import ch.softappeal.yass2.generate.writeFun
+import ch.softappeal.yass2.remote.Request
+import ch.softappeal.yass2.remote.Service
+import ch.softappeal.yass2.remote.ServiceId
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KTypeParameter
@@ -41,15 +39,15 @@ private val KClass<*>.serviceTypeParameters: String
         fun KTypeParameter.typeParameter() = buildString {
             append(name)
             val first = upperBounds.firstOrNull() ?: return@buildString
-            if (upperBounds.count() != 1) error("not yet implemented: bounds must have size <= 1") // TODO
+            if (upperBounds.count() != 1) error("not yet implemented: bounds must have size <= 1")
             append(" : ")
             append(first)
         }
         return " <${typeParameters.joinToString { it.typeParameter() }}>"
     }
 
-/** @suppress */
-@InternalYassApi public fun CodeWriter.generateProxy(service: KClass<*>) {
+
+internal fun CodeWriter.generateProxy(service: KClass<*>) {
     require(service.java.isInterface) { "'${service.qualifiedName}' must be an interface" }
 
     val functions = service.memberFunctions
@@ -65,11 +63,11 @@ private val KClass<*>.serviceTypeParameters: String
 
     writeFun(
         "${service.serviceTypeParameters} ${service.serviceName}.proxy",
-        "interceptor: $CSY.core.Interceptor",
+        "interceptor: $RemotePackage.Interceptor",
         service.serviceName,
     ) {
         writeNestedLine("object : ${service.serviceName} {", "}") {
-            functions.forEachSeparator({ writeLine() }) { function ->
+            functions.forEach({ writeLine() }) { function ->
                 val hasResult = function.hasResult()
                 writeSignature(function)
                 if (hasResult) write(": ${function.returnType.toType()}")
@@ -88,11 +86,11 @@ private val KClass<*>.serviceTypeParameters: String
 
     writeFun(
         "${service.serviceTypeParameters} ${ServiceId::class.qualifiedName}<${service.serviceName}>.proxy",
-        "tunnel: $CSY.core.remote.Tunnel",
+        "tunnel: $RemotePackage.Tunnel",
         service.serviceName,
     ) {
         writeNestedLine("object : ${service.serviceName} {", "}") {
-            functions.forEachSeparator({ writeLine() }) { function ->
+            functions.forEach({ writeLine() }) { function ->
                 val hasResult = function.hasResult()
                 writeSignature(function)
                 writeLine(" ${if (hasResult) "=" else "{"}") {
