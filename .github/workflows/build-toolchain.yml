@@ -1,4 +1,4 @@
-on: push
+on: deployment # TODO: push
 jobs:
   build:
     runs-on: ubuntu-latest

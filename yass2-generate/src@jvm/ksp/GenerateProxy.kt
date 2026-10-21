@@ -1,18 +1,16 @@
-@file:OptIn(InternalYassApi::class)
 @file:Suppress("DuplicatedCode")
 
 package ch.softappeal.yass2.generate.ksp
 
-import ch.softappeal.yass2.core.InternalYassApi
-import ch.softappeal.yass2.core.forEachSeparator
-import ch.softappeal.yass2.core.remote.Request
-import ch.softappeal.yass2.core.remote.Service
-import ch.softappeal.yass2.core.remote.ServiceId
-import ch.softappeal.yass2.generate.CSY
 import ch.softappeal.yass2.generate.CodeWriter
+import ch.softappeal.yass2.generate.RemotePackage
 import ch.softappeal.yass2.generate.duplicates
+import ch.softappeal.yass2.generate.forEach
 import ch.softappeal.yass2.generate.hasNoDuplicates
 import ch.softappeal.yass2.generate.writeFun
+import ch.softappeal.yass2.remote.Request
+import ch.softappeal.yass2.remote.Service
+import ch.softappeal.yass2.remote.ServiceId
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
@@ -65,11 +63,11 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
 
     writeFun(
         "${service.serviceTypeParameters} ${service.serviceName}.proxy",
-        "interceptor: $CSY.core.Interceptor",
+        "interceptor: $RemotePackage.Interceptor",
         service.serviceName,
     ) {
         writeNestedLine("object : ${service.serviceName} {", "}") {
-            functions.forEachSeparator({ writeLine() }) { function ->
+            functions.forEach({ writeLine() }) { function ->
                 val hasResult = function.hasResult()
                 writeSignature(function)
                 if (hasResult) write(": ${function.returnType.toType()}")
@@ -88,11 +86,11 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
 
     writeFun(
         "${service.serviceTypeParameters} ${ServiceId::class.qualifiedName}<${service.serviceName}>.proxy",
-        "tunnel: $CSY.core.remote.Tunnel",
+        "tunnel: $RemotePackage.Tunnel",
         service.serviceName,
     ) {
         writeNestedLine("object : ${service.serviceName} {", "}") {
-            functions.forEachSeparator({ writeLine() }) { function ->
+            functions.forEach({ writeLine() }) { function ->
                 val hasResult = function.hasResult()
                 writeSignature(function)
                 writeLine(" ${if (hasResult) "=" else "{"}") {

@@ -1,28 +1,26 @@
-@file:OptIn(InternalYassApi::class)
 @file:Suppress("DuplicatedCode")
 
 package ch.softappeal.yass2.generate.ksp
 
-import ch.softappeal.yass2.core.InternalYassApi
-import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses
-import ch.softappeal.yass2.core.serialize.binary.BINARY_FIRST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.binary.BINARY_LIST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.binary.BINARY_NO_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.binary.BinaryEncoder
-import ch.softappeal.yass2.core.serialize.binary.BinarySerializer
-import ch.softappeal.yass2.core.serialize.binary.EnumBinaryEncoder
-import ch.softappeal.yass2.core.serialize.string.ClassStringEncoder
-import ch.softappeal.yass2.core.serialize.string.EnumStringEncoder
-import ch.softappeal.yass2.core.serialize.string.STRING_BOOLEAN_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.STRING_FIRST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.STRING_LIST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.STRING_NO_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.STRING_STRING_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.StringEncoder
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.duplicates
 import ch.softappeal.yass2.generate.hasNoDuplicates
 import ch.softappeal.yass2.generate.writeFun
+import ch.softappeal.yass2.serialize.ConcreteAndEnumClasses
+import ch.softappeal.yass2.serialize.binary.BINARY_FIRST_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.BINARY_LIST_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.BINARY_NO_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.BinaryEncoder
+import ch.softappeal.yass2.serialize.binary.BinarySerializer
+import ch.softappeal.yass2.serialize.binary.EnumBinaryEncoder
+import ch.softappeal.yass2.serialize.string.ClassStringEncoder
+import ch.softappeal.yass2.serialize.string.EnumStringEncoder
+import ch.softappeal.yass2.serialize.string.STRING_BOOLEAN_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.STRING_FIRST_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.STRING_LIST_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.STRING_NO_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.STRING_STRING_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.StringEncoder
 import com.google.devtools.ksp.isAbstract
 import com.google.devtools.ksp.isPublic
 import com.google.devtools.ksp.symbol.ClassKind

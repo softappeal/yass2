@@ -1,0 +1,9 @@
+product:
+  type: kmp/lib
+  platforms: [ jvm, js, wasmJs, linuxX64, linuxArm64 ]
+
+apply:
+  - //yass.module-template.yaml
+
+test-dependencies@jvm:
+  - //yass2-generate

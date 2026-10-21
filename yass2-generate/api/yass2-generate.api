@@ -2,6 +2,18 @@ public final class ch/softappeal/yass2/generate/SharedKt {
 	public static final field GENERATED_BY_YASS Ljava/lang/String;
 }
 
+public final class ch/softappeal/yass2/generate/ksp/GenerateKt {
+	public static final field GENERATE_MODE Ljava/lang/String;
+}
+
+public final class ch/softappeal/yass2/generate/ksp/GenerateMode : java/lang/Enum {
+	public static final field InBuildDir Lch/softappeal/yass2/generate/ksp/GenerateMode;
+	public static final field InRepository Lch/softappeal/yass2/generate/ksp/GenerateMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lch/softappeal/yass2/generate/ksp/GenerateMode;
+	public static fun values ()[Lch/softappeal/yass2/generate/ksp/GenerateMode;
+}
+
 public final class ch/softappeal/yass2/generate/reflect/GenerateKt {
 	public static final fun generateFile (Ljava/lang/Object;Ljava/lang/String;Lkotlin/reflect/KAnnotatedElement;)V
 }

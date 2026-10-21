@@ -1,19 +1,16 @@
-@file:OptIn(InternalYassApi::class)
-
 package ch.softappeal.yass2.ktor
 
-import ch.softappeal.yass2.core.InternalYassApi
-import ch.softappeal.yass2.core.remote.Reply
-import ch.softappeal.yass2.core.remote.Request
-import ch.softappeal.yass2.core.remote.Tunnel
-import ch.softappeal.yass2.core.serialize.ByteArrayWriter
-import ch.softappeal.yass2.core.serialize.Serializer
-import ch.softappeal.yass2.core.serialize.fromByteArray
-import ch.softappeal.yass2.core.serialize.write
-import ch.softappeal.yass2.coroutines.session.Connection
-import ch.softappeal.yass2.coroutines.session.Packet
-import ch.softappeal.yass2.coroutines.session.SessionFactory
-import ch.softappeal.yass2.coroutines.session.receiveLoop
+import ch.softappeal.yass2.remote.Reply
+import ch.softappeal.yass2.remote.Request
+import ch.softappeal.yass2.remote.Tunnel
+import ch.softappeal.yass2.remote.session.Connection
+import ch.softappeal.yass2.remote.session.Packet
+import ch.softappeal.yass2.remote.session.SessionFactory
+import ch.softappeal.yass2.remote.session.receiveLoop
+import ch.softappeal.yass2.serialize.ByteArrayWriter
+import ch.softappeal.yass2.serialize.Serializer
+import ch.softappeal.yass2.serialize.fromByteArray
+import ch.softappeal.yass2.serialize.write
 import io.ktor.network.sockets.Socket
 import io.ktor.network.sockets.openReadChannel
 import io.ktor.network.sockets.openWriteChannel
@@ -37,8 +34,7 @@ private suspend fun ByteWriteChannel.write(serializer: Serializer, value: Any?) 
     writeFully(byteArray)
 }
 
-/** @suppress */
-@InternalYassApi public suspend fun readByteArray(
+internal suspend fun readByteArray(
     length: Int,
     readByteArray: suspend (byteArray: ByteArray, offset: Int, length: Int) -> Unit,
 ): ByteArray {

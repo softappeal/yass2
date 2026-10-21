@@ -6,7 +6,18 @@ apply:
   - //yass.module-template.yaml
 
 dependencies@jvm:
-  - //yass2-core: exported
+  - //yass2-serialize
+  - //yass2-remote
   - $kotlin.reflect
   - $libs.ksp: compile-only
 
+test-dependencies@jvm:
+  - $libs.kct
+
+test-settings@jvm:
+  kotlin:
+    ksp:
+      processors:
+        - //yass2-generate
+      processorOptions:
+        yass.GenerateMode: InRepository

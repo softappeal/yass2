@@ -1,0 +1,134 @@
+package ch.softappeal.yass2.remote.session
+
+import ch.softappeal.yass2.remote.AtomicBoolean
+import ch.softappeal.yass2.remote.AtomicInt
+import ch.softappeal.yass2.remote.Message
+import ch.softappeal.yass2.remote.Reply
+import ch.softappeal.yass2.remote.Request
+import ch.softappeal.yass2.remote.ServiceId
+import ch.softappeal.yass2.remote.ThreadSafeMap
+import ch.softappeal.yass2.remote.Tunnel
+import ch.softappeal.yass2.remote.tryFinally
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlin.coroutines.CoroutineContext
+
+public class Packet(public val requestNumber: Int, public val message: Message)
+
+public interface Connection {
+    public suspend fun write(packet: Packet?)
+    public suspend fun closed()
+}
+
+public abstract class Session<C : Connection> : CoroutineScope {
+    private val job = Job()
+    override val coroutineContext: CoroutineContext = job
+
+    public open fun opened() {}
+
+    /** [e] is `null` for regular close. */
+    protected open suspend fun closed(e: Exception?) {}
+
+    /** Is idempotent. */
+    public suspend fun close() {
+        close(true, null)
+    }
+
+    /** Is idempotent. */
+    public suspend fun close(e: Exception) {
+        close(false, e)
+    }
+
+    // TODO: add isClosed() function when kotlin.concurrent.atomics is no longer ExperimentalAtomicApi and deprecate this function
+    public suspend fun isClosedSuspend(): Boolean = closed.load()
+
+    public suspend fun closeOnException(block: suspend () -> Unit) {
+        try {
+            block()
+        } catch (e: Exception) {
+            close(e)
+        }
+    }
+
+    public val clientTunnel: Tunnel = { request ->
+        check(!isClosedSuspend()) { "session '$this' is closed" }
+        val requestNumber = nextRequestNumber.incrementAndFetch()
+        val deferred = CompletableDeferred<Reply>(job)
+        requestNumberToDeferred.put(requestNumber, deferred)
+        write(Packet(requestNumber, request))
+        deferred.await()
+    }
+
+    protected open val serverTunnel: Tunnel = { throw UnsupportedOperationException() }
+
+    public lateinit var connection: C
+        internal set
+
+    private val closed = AtomicBoolean(false)
+    private val nextRequestNumber = AtomicInt(0)
+    private val requestNumberToDeferred = ThreadSafeMap<Int, CompletableDeferred<Reply>>(16)
+    private val writeMutex = Mutex()
+
+    private suspend fun write(packet: Packet?) {
+        writeMutex.withLock { connection.write(packet) }
+    }
+
+    private suspend fun close(sendEnd: Boolean, e: Exception?) {
+        if (closed.exchange(true)) return
+        tryFinally({
+            closed(e)
+            if (sendEnd) write(null)
+            connection.closed()
+        }) {
+            job.cancel()
+        }
+    }
+
+    private suspend fun received(packet: Packet?) {
+        check(!isClosedSuspend()) { "session '$this' is closed" }
+        if (packet == null) {
+            close(false, null)
+            return
+        }
+        when (val message = packet.message) {
+            is Request -> launch {
+                closeOnException {
+                    val reply = serverTunnel(message)
+                    write(Packet(packet.requestNumber, reply))
+                }
+            }
+            is Reply -> requestNumberToDeferred.remove(packet.requestNumber)?.complete(message)
+                ?: error("no requestNumber ${packet.requestNumber}")
+        }
+    }
+
+    internal suspend fun receiveLoop(receive: suspend () -> Packet?) = closeOnException {
+        opened()
+        do {
+            val packet = receive()
+            received(packet)
+        } while (packet != null)
+    }
+}
+
+public typealias SessionFactory<C> = () -> Session<C>
+
+public suspend fun <C : Connection> C.receiveLoop(sessionFactory: SessionFactory<C>, receive: suspend () -> Packet?) {
+    sessionFactory()
+        .apply { connection = this@receiveLoop }
+        .receiveLoop(receive)
+}
+
+@Target(AnnotationTarget.PROPERTY)
+@MustBeDocumented
+/** Documents a [ServiceId] that must be implemented by initiator. */
+public annotation class MustBeImplementedByInitiator
+
+@Target(AnnotationTarget.PROPERTY)
+@MustBeDocumented
+/** Documents a [ServiceId] that must be implemented by acceptor. */
+public annotation class MustBeImplementedByAcceptor

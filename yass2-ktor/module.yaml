@@ -3,11 +3,22 @@ product:
   platforms: [ jvm, js, wasmJs, linuxX64, linuxArm64 ]
 
 apply:
-  - //yass.module-template.yaml
+  - //common.module-template.yaml
 
 dependencies:
-  - //yass2-coroutines: exported
+  - //yass2-serialize: exported
+  - //yass2-remote: exported
   - $libs.client.core: exported
   - $libs.server.core: exported
   - $libs.client.websockets: exported
   - $libs.network: exported
+
+test-dependencies:
+  - $libs.client.cio
+  - $libs.server.cio
+  - $libs.server.websockets
+  - $libs.server.status.pages
+  - $libs.coroutines.test
+
+test-dependencies@jvm:
+  - //yass2-generate

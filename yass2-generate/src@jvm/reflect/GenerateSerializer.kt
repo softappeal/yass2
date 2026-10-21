@@ -1,29 +1,27 @@
-@file:OptIn(InternalYassApi::class)
 @file:Suppress("DuplicatedCode")
 
 package ch.softappeal.yass2.generate.reflect
 
-import ch.softappeal.yass2.core.InternalYassApi
-import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses
-import ch.softappeal.yass2.core.serialize.binary.BINARY_FIRST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.binary.BINARY_LIST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.binary.BINARY_NO_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.binary.BinaryEncoder
-import ch.softappeal.yass2.core.serialize.binary.BinarySerializer
-import ch.softappeal.yass2.core.serialize.binary.EnumBinaryEncoder
-import ch.softappeal.yass2.core.serialize.string.BaseStringEncoder
-import ch.softappeal.yass2.core.serialize.string.ClassStringEncoder
-import ch.softappeal.yass2.core.serialize.string.EnumStringEncoder
-import ch.softappeal.yass2.core.serialize.string.STRING_BOOLEAN_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.STRING_FIRST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.STRING_LIST_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.STRING_NO_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.STRING_STRING_ENCODER_ID
-import ch.softappeal.yass2.core.serialize.string.StringEncoder
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.duplicates
 import ch.softappeal.yass2.generate.hasNoDuplicates
 import ch.softappeal.yass2.generate.writeFun
+import ch.softappeal.yass2.serialize.ConcreteAndEnumClasses
+import ch.softappeal.yass2.serialize.binary.BINARY_FIRST_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.BINARY_LIST_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.BINARY_NO_ENCODER_ID
+import ch.softappeal.yass2.serialize.binary.BinaryEncoder
+import ch.softappeal.yass2.serialize.binary.BinarySerializer
+import ch.softappeal.yass2.serialize.binary.EnumBinaryEncoder
+import ch.softappeal.yass2.serialize.string.BaseStringEncoder
+import ch.softappeal.yass2.serialize.string.ClassStringEncoder
+import ch.softappeal.yass2.serialize.string.EnumStringEncoder
+import ch.softappeal.yass2.serialize.string.STRING_BOOLEAN_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.STRING_FIRST_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.STRING_LIST_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.STRING_NO_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.STRING_STRING_ENCODER_ID
+import ch.softappeal.yass2.serialize.string.StringEncoder
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KVisibility
@@ -81,8 +79,7 @@ private fun <P : Property> KClass<*>.properties(createProperty: (property: KProp
     return constructorProperties
 }
 
-/** @suppress */
-@InternalYassApi public fun CodeWriter.generateBinarySerializer(
+internal fun CodeWriter.generateBinarySerializer(
     encoderObjects: List<KClass<out BinaryEncoder<*>>>,
     concreteAndEnumClasses: List<KClass<*>>,
 ) {
@@ -140,8 +137,7 @@ private fun <P : Property> KClass<*>.properties(createProperty: (property: KProp
     }
 }
 
-/** @suppress */
-@InternalYassApi public fun CodeWriter.generateStringEncoders(
+internal fun CodeWriter.generateStringEncoders(
     encoderObjects: List<KClass<out BaseStringEncoder<*>>>,
     concreteAndEnumClasses: List<KClass<*>>,
 ) {

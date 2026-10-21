@@ -1,18 +1,14 @@
-@file:OptIn(InternalYassApi::class)
-
 package ch.softappeal.yass2.generate.ksp
 
-import ch.softappeal.yass2.core.GenerateInRepository
-import ch.softappeal.yass2.core.InternalYassApi
-import ch.softappeal.yass2.core.Proxies
-import ch.softappeal.yass2.core.forEachSeparator
-import ch.softappeal.yass2.core.serialize.ConcreteAndEnumClasses
-import ch.softappeal.yass2.core.serialize.binary.BinaryEncoderObjects
-import ch.softappeal.yass2.core.serialize.string.StringEncoderObjects
 import ch.softappeal.yass2.generate.CodeWriter
 import ch.softappeal.yass2.generate.GENERATED_BY_YASS
 import ch.softappeal.yass2.generate.appendPackage
+import ch.softappeal.yass2.generate.forEach
 import ch.softappeal.yass2.generate.writeGeneratedFile
+import ch.softappeal.yass2.remote.Proxies
+import ch.softappeal.yass2.serialize.ConcreteAndEnumClasses
+import ch.softappeal.yass2.serialize.binary.BinaryEncoderObjects
+import ch.softappeal.yass2.serialize.string.StringEncoderObjects
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
@@ -41,11 +37,11 @@ internal fun KSTypeReference?.toType(): String {
         val typeArguments = element!!.typeArguments
         if (typeArguments.isEmpty()) return
         append('<')
-        typeArguments.forEachSeparator({ append(", ") }) { typeArgument ->
+        typeArguments.forEach({ append(", ") }) { typeArgument ->
             val variance = typeArgument.variance
             append(variance.label)
             when (variance) {
-                Variance.STAR -> return@forEachSeparator
+                Variance.STAR -> return@forEach
                 Variance.INVARIANT -> {}
                 Variance.COVARIANT, Variance.CONTRAVARIANT -> append(' ')
             }
@@ -63,6 +59,24 @@ internal fun KSTypeReference?.toType(): String {
 @Suppress("UNCHECKED_CAST")
 private fun KSAnnotation.value() = arguments.first { it.name!!.asString() == "value" }.value as List<KSType>
 
+public enum class GenerateMode {
+    /**
+     * Generate the code in the build directory. That's the normal KSP way.
+     * TODO: KSP generated code is platform code (see https://github.com/google/ksp/issues/2233).
+     * This mode only works for platform code because common/intermediate code cannot reference platform code.
+     */
+    InBuildDir,
+
+    /** Generate the code in the code repository. */
+    InRepository,
+}
+
+/**
+ * KSP argument for setting the [GenerateMode].
+ * Uses [GenerateMode.InBuildDir] if not specified.
+ */
+public const val GENERATE_MODE: String = "yass.GenerateMode"
+
 private fun processPackage(packageName: String, declarations: Set<KSDeclaration>, environment: SymbolProcessorEnvironment) {
     fun annotationOrNull(annotation: KClass<*>) = declarations
         .mapNotNull { declaration ->
@@ -72,8 +86,6 @@ private fun processPackage(packageName: String, declarations: Set<KSDeclaration>
             require(annotations.size <= 1) { "there can be at most one annotation '${annotation.qualifiedName}' in package '$packageName'" }
         }
         .firstOrNull()
-
-    val generateInRepository = annotationOrNull(GenerateInRepository::class) != null
 
     val code = StringBuilder()
     code.appendPackage(packageName)
@@ -98,7 +110,8 @@ private fun processPackage(packageName: String, declarations: Set<KSDeclaration>
         stringEncoderObjects?.let { writer.generateStringEncoders(it.value(), concreteAndEnumClasses.value()) }
     }
 
-    if (generateInRepository) {
+    val generateMode = GenerateMode.valueOf(environment.options[GENERATE_MODE] ?: GenerateMode.InBuildDir.name)
+    if (generateMode == GenerateMode.InRepository) {
         writeGeneratedFile(Path((declarations.first().location as FileLocation).filePath).parent, code.toString())
     } else {
         environment.codeGenerator
@@ -108,12 +121,10 @@ private fun processPackage(packageName: String, declarations: Set<KSDeclaration>
     }
 }
 
-/** @suppress */
-@InternalYassApi public class YassProvider : SymbolProcessorProvider {
+internal class YassProvider : SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor = object : SymbolProcessor {
         override fun process(resolver: Resolver): List<KSAnnotated> {
             listOf(
-                GenerateInRepository::class,
                 Proxies::class,
                 ConcreteAndEnumClasses::class,
                 BinaryEncoderObjects::class,

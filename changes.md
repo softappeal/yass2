@@ -2,10 +2,7 @@
 
 ## Breaking changes
 
-- package `generate` moved to `generatea.reflect`
-
-## New features
-
+- modules `yass2-core` and `yass2-coroutines` replaced with `yass2-serialize` and `yass2-remote`
 - KSP code generator added
 
 ## Dependencies
