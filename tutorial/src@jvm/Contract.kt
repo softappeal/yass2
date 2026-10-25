@@ -96,8 +96,8 @@ interface NewsListener {
 )
 
 @ConcreteAndEnumClasses(
-    Packet::class, // needed by ch.softappeal.yass2.coroutines.session (also needs Int)
-    Request::class, ValueReply::class, ExceptionReply::class, // needed by ch.softappeal.yass2.core.remote (also needs String)
+    Packet::class, // needed by 'remote.session' (also needs Int)
+    Request::class, ValueReply::class, ExceptionReply::class, // needed by 'remote' (also needs String)
     Gender::class,
     Address::class,
     Person::class,
