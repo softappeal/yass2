@@ -3,10 +3,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: gradle/actions/wrapper-validation@v6
+      - uses: actions/setup-java@v6
+        with:
+          java-version-file: '.tool-versions'
       - run: |
-          docker image     build --tag project-image .
-          docker container run         project-image ./gradlew markers build
+          echo $JAVA_HOME
+          java --version
+          ./gradlew markers build
