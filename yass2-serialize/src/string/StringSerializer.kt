@@ -1,5 +1,6 @@
 package ch.softappeal.yass2.serialize.string
 
+import ch.softappeal.yass2.serialize.InternalSerializeApi
 import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Writer
@@ -217,7 +218,7 @@ public class ClassStringEncoder<T : Any>(
     type: KClass<T>,
     write: StringWriter.(value: T) -> Unit,
     read: StringReader.() -> T,
-    /** see [STRING_NO_ENCODER_ID] */
+    /** see [StringSerializer.NO_ENCODER_ID] */
     vararg propertyEncoderIds: Pair<String, Int>,
 ) : StringEncoder<T>(type, write, read) {
     internal val propertyToEncoderId = propertyEncoderIds.toMap()
@@ -233,6 +234,15 @@ public class ClassStringEncoder<T : Any>(
  * It has built-in encoders for `null`, [String], [Boolean] and [List].
  */
 public abstract class StringSerializer(stringEncoders: List<StringEncoder<*>>) : Serializer {
+    /** @suppress */
+    @InternalSerializeApi public companion object {
+        public const val NO_ENCODER_ID: Int = -1
+        public const val STRING_ENCODER_ID: Int = 0
+        public const val BOOLEAN_ENCODER_ID: Int = 1
+        public const val LIST_ENCODER_ID: Int = 2
+        public const val FIRST_ENCODER_ID: Int = 3
+    }
+
     private val encoders = (listOf(
         // placeholders, methods are never called
         StringEncoder(String::class, {}, { "" }),
@@ -255,12 +265,6 @@ public abstract class StringSerializer(stringEncoders: List<StringEncoder<*>>) :
     internal fun encoder(type: KClass<*>) = typeToEncoder[type] ?: error("missing type '$type'")
     internal fun encoder(className: String) = classNameToEncoder[className] ?: error("missing encoder for class '$className'")
 }
-
-public const val STRING_NO_ENCODER_ID: Int = -1
-public const val STRING_STRING_ENCODER_ID: Int = 0
-public const val STRING_BOOLEAN_ENCODER_ID: Int = 1
-public const val STRING_LIST_ENCODER_ID: Int = 2
-public const val STRING_FIRST_ENCODER_ID: Int = 3
 
 public fun StringSerializer.toString(value: Any?): String = toByteArray(value).decodeToString(throwOnInvalidSequence = true)
 

@@ -37,6 +37,7 @@ private fun <T : Any> BinaryEncoder<T>.check(value: T, vararg bytes: Int) {
 }
 
 class BinaryEncodersTest {
+    @Suppress("SpellCheckingInspection")
     @Test
     fun test() {
         with(BooleanBinaryEncoder) {
@@ -57,7 +58,6 @@ class BinaryEncodersTest {
             check(Long.MAX_VALUE, -2, -1, -1, -1, -1, -1, -1, -1, -1, 1)
             check(Long.MIN_VALUE, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1)
         }
-        @Suppress("SpellCheckingInspection", "GrazieInspectionRunner")
         with(StringBinaryEncoder) {
             check("", 0)
             check("abc", 3, 97, 98, 99)

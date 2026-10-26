@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package ch.softappeal.yass2.generate.reflect
 
 import ch.softappeal.yass2.generate.CodeWriter
@@ -11,29 +13,28 @@ import kotlin.reflect.KClass
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@Suppress("SameReturnValue")
 private fun map(): Map<Exception, RuntimeException>? = null
 private const val MapType =
     "kotlin.collections.Map<kotlin.Exception /* = java.lang.Exception */, kotlin.RuntimeException /* = java.lang.RuntimeException */>?"
 
 private class NotAnInterface
 
-@Suppress("unused")
 private interface Overloaded {
     suspend fun f()
     suspend fun f(i: Int)
 }
 
-@Suppress("unused")
 private interface NoSuspend {
     fun noSuspend()
 }
 
 private class BodyProperty {
-    @Suppress("unused") var x: Int = 0
+    var x: Int = 0
 }
 
 private class NoPrimaryConstructor {
-    @Suppress("unused", "ConvertSecondaryConstructorToPrimary") constructor()
+    constructor()
 }
 
 private interface NotRegularClass

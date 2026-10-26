@@ -1,3 +1,5 @@
+@file:Suppress("HttpUrlsUsage")
+
 package ch.softappeal.yass2.ktor
 
 import io.ktor.client.HttpClient
@@ -54,7 +56,7 @@ suspend fun webClientTest(port: Int = BROWSER_PORT, httpClientEngineFactory: Htt
         suspend fun http(testMode: TestMode) {
             println()
             println("*** http: testMode = $testMode ***")
-            @Suppress("HttpUrlsUsage") val tunnel = client.tunnel("http://$LOCAL_HOST:$port$PATH", ContractSerializer)
+            val tunnel = client.tunnel("http://$LOCAL_HOST:$port$PATH", ContractSerializer)
             tunnel.clientTest(testMode, "client")
         }
         http(TestMode.Normal)
@@ -78,7 +80,6 @@ suspend fun webClientTest(port: Int = BROWSER_PORT, httpClientEngineFactory: Htt
     }
 }
 
-@Suppress("HttpUrlsUsage")
 fun createWebServer(port: Int = BROWSER_PORT, additionalRouting: Routing.() -> Unit = {}) =
     embeddedServer(io.ktor.server.cio.CIO, port) {
         println("http://$LOCAL_HOST:$port/wasm/")

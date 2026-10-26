@@ -1,3 +1,4 @@
+@file:OptIn(InternalSerializeApi::class)
 @file:Suppress("DuplicatedCode")
 
 package ch.softappeal.yass2.generate.ksp
@@ -7,20 +8,14 @@ import ch.softappeal.yass2.generate.duplicates
 import ch.softappeal.yass2.generate.hasNoDuplicates
 import ch.softappeal.yass2.generate.writeFun
 import ch.softappeal.yass2.serialize.ConcreteAndEnumClasses
-import ch.softappeal.yass2.serialize.binary.BINARY_FIRST_ENCODER_ID
-import ch.softappeal.yass2.serialize.binary.BINARY_LIST_ENCODER_ID
-import ch.softappeal.yass2.serialize.binary.BINARY_NO_ENCODER_ID
+import ch.softappeal.yass2.serialize.InternalSerializeApi
 import ch.softappeal.yass2.serialize.binary.BinaryEncoder
 import ch.softappeal.yass2.serialize.binary.BinarySerializer
 import ch.softappeal.yass2.serialize.binary.EnumBinaryEncoder
 import ch.softappeal.yass2.serialize.string.ClassStringEncoder
 import ch.softappeal.yass2.serialize.string.EnumStringEncoder
-import ch.softappeal.yass2.serialize.string.STRING_BOOLEAN_ENCODER_ID
-import ch.softappeal.yass2.serialize.string.STRING_FIRST_ENCODER_ID
-import ch.softappeal.yass2.serialize.string.STRING_LIST_ENCODER_ID
-import ch.softappeal.yass2.serialize.string.STRING_NO_ENCODER_ID
-import ch.softappeal.yass2.serialize.string.STRING_STRING_ENCODER_ID
 import ch.softappeal.yass2.serialize.string.StringEncoder
+import ch.softappeal.yass2.serialize.string.StringSerializer
 import com.google.devtools.ksp.isAbstract
 import com.google.devtools.ksp.isPublic
 import com.google.devtools.ksp.symbol.ClassKind
@@ -83,31 +78,33 @@ internal fun CodeWriter.generateBinarySerializer(
     val (baseClasses, enumClasses, concreteClasses) = getClasses(encoders, concreteAndEnumClasses)
 
     class BinaryProperty(property: KSPropertyDeclaration) : Property(property) {
-        private val encoderId = if (typeQualifiedName == List::class.qualifiedName) BINARY_LIST_ENCODER_ID else {
+        private val encoderId = if (typeQualifiedName == List::class.qualifiedName) BinarySerializer.LIST_ENCODER_ID else {
             val baseClassIndex = baseClasses.indexOfFirst { it == typeNotNullable }
-            if (baseClassIndex >= 0) baseClassIndex + BINARY_FIRST_ENCODER_ID else {
+            if (baseClassIndex >= 0) baseClassIndex + BinarySerializer.FIRST_ENCODER_ID else {
                 fun KSType.hasSuperCLass(superClass: KSType) =
                     (this.declaration as KSClassDeclaration).superTypes.map { it.resolve() }.contains(superClass)
 
                 val concreteClassIndex = concreteClasses.indexOfFirst { it == typeNotNullable }
                 if (
                     concreteClassIndex >= 0 && concreteClasses.none { it.hasSuperCLass(concreteClasses[concreteClassIndex]) }
-                ) concreteClassIndex + baseClasses.size + BINARY_FIRST_ENCODER_ID else BINARY_NO_ENCODER_ID
+                ) concreteClassIndex + baseClasses.size + BinarySerializer.FIRST_ENCODER_ID else BinarySerializer.NO_ENCODER_ID
             }
         }
 
-        private fun suffix() = if (encoderId == BINARY_NO_ENCODER_ID) "Object" else if (nullable) "Optional" else "Required"
-        fun readObject() = "read${suffix()}(${if (encoderId == BINARY_NO_ENCODER_ID) "" else encoderId})"
+        private fun suffix() =
+            if (encoderId == BinarySerializer.NO_ENCODER_ID) "Object" else if (nullable) "Optional" else "Required"
+
+        fun readObject() = "read${suffix()}(${if (encoderId == BinarySerializer.NO_ENCODER_ID) "" else encoderId})"
         fun writeObject(reference: String) =
-            "write${suffix()}($reference${if (encoderId == BINARY_NO_ENCODER_ID) "" else ", $encoderId"})"
+            "write${suffix()}($reference${if (encoderId == BinarySerializer.NO_ENCODER_ID) "" else ", $encoderId"})"
     }
 
     writeFun("binarySerializer(): ${BinarySerializer::class.qualifiedName}") {
         writeNestedLine("object : ${BinarySerializer::class.qualifiedName}() {", "}") {
             writeNestedLine("init {", "}") {
                 writeNestedLine("initialize(", ")") {
-                    writeNestedLine("// ${List::class.qualifiedName}: $BINARY_LIST_ENCODER_ID")
-                    var encoderId = BINARY_FIRST_ENCODER_ID
+                    writeNestedLine("// ${List::class.qualifiedName}: ${BinarySerializer.LIST_ENCODER_ID}")
+                    var encoderId = BinarySerializer.FIRST_ENCODER_ID
                     encoders.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
                     enumClasses.forEach { type ->
                         writeNestedLine("${EnumBinaryEncoder::class.qualifiedName}(", "),") {
@@ -142,33 +139,33 @@ internal fun CodeWriter.generateStringEncoders(
 
     class StringProperty(property: KSPropertyDeclaration) : Property(property) {
         private val encoderId = when (typeQualifiedName) {
-            String::class.qualifiedName -> STRING_STRING_ENCODER_ID
-            Boolean::class.qualifiedName -> STRING_BOOLEAN_ENCODER_ID
-            List::class.qualifiedName -> STRING_LIST_ENCODER_ID
+            String::class.qualifiedName -> StringSerializer.STRING_ENCODER_ID
+            Boolean::class.qualifiedName -> StringSerializer.BOOLEAN_ENCODER_ID
+            List::class.qualifiedName -> StringSerializer.LIST_ENCODER_ID
             else -> {
                 val baseClassIndex = baseClasses.indexOfFirst { it == typeNotNullable }
-                if (baseClassIndex >= 0) baseClassIndex + STRING_FIRST_ENCODER_ID else STRING_NO_ENCODER_ID
+                if (baseClassIndex >= 0) baseClassIndex + StringSerializer.FIRST_ENCODER_ID else StringSerializer.NO_ENCODER_ID
             }
         }
 
         fun writeProperty(reference: String) =
-            "writeProperty(\"$name\", $reference${if (encoderId == STRING_NO_ENCODER_ID) "" else ", $encoderId"})"
+            "writeProperty(\"$name\", $reference${if (encoderId == StringSerializer.NO_ENCODER_ID) "" else ", $encoderId"})"
 
         fun propertyEncoderId() = "\"$name\" to ${
             if (
-                encoderId != STRING_STRING_ENCODER_ID &&
-                encoderId != STRING_BOOLEAN_ENCODER_ID &&
-                encoderId != STRING_LIST_ENCODER_ID
-            ) encoderId else STRING_NO_ENCODER_ID
+                encoderId != StringSerializer.STRING_ENCODER_ID &&
+                encoderId != StringSerializer.BOOLEAN_ENCODER_ID &&
+                encoderId != StringSerializer.LIST_ENCODER_ID
+            ) encoderId else StringSerializer.NO_ENCODER_ID
         }"
     }
 
     writeFun("stringEncoders(): List<${StringEncoder::class.qualifiedName}<*>>") {
         writeNestedLine("listOf(", ")") {
-            writeNestedLine("// ${String::class.qualifiedName}: $STRING_STRING_ENCODER_ID")
-            writeNestedLine("// ${Boolean::class.qualifiedName}: $STRING_BOOLEAN_ENCODER_ID")
-            writeNestedLine("// ${List::class.qualifiedName}: $STRING_LIST_ENCODER_ID")
-            var encoderId = STRING_FIRST_ENCODER_ID
+            writeNestedLine("// ${String::class.qualifiedName}: ${StringSerializer.STRING_ENCODER_ID}")
+            writeNestedLine("// ${Boolean::class.qualifiedName}: ${StringSerializer.BOOLEAN_ENCODER_ID}")
+            writeNestedLine("// ${List::class.qualifiedName}: ${StringSerializer.LIST_ENCODER_ID}")
+            var encoderId = StringSerializer.FIRST_ENCODER_ID
             encoders.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }
             enumClasses.forEach { type ->
                 writeNestedLine("${EnumStringEncoder::class.qualifiedName}(", "),") {

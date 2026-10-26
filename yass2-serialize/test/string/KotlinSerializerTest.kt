@@ -11,7 +11,6 @@ private val SERIALIZER = KotlinSerializer(stringEncoders())
 private fun check(value: Any?, serialized: String, vararg others: String) = SERIALIZER.check(value, serialized, *others)
 
 class KotlinSerializerTest {
-    @Suppress("CanConvertToMultiDollarString")
     @Test
     fun builtIn() {
         check(
@@ -61,12 +60,12 @@ class KotlinSerializerTest {
             "\"a \\$ b\"",
         )
         check(
-            "a\$b",
-            "\"a\\\$b\"",
+            $$"a$b",
+            $$"\"a\\$b\"",
         )
         check(
-            "a\${b",
-            "\"a\\\${b\"",
+            $$"a${b",
+            $$"\"a\\${b\"",
         )
         assertFailsWithMessage<IllegalStateException>("illegal escape with codePoint 120") {
             SERIALIZER.fromString("\"\\x\"")

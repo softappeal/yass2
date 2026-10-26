@@ -1,5 +1,7 @@
 // https://kotlinlang.org/docs/multiplatform-intro.html
 
+@file:Suppress("TaskMissingDescription", "AvoidApplyPluginMethod")
+
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -92,7 +94,13 @@ allprojects {
         if (project.name.startsWith("yass2-")) {
             explicitApi()
             @OptIn(ExperimentalAbiValidation::class)
-            if (allPlatforms) abiValidation()
+            if (allPlatforms) abiValidation {
+                filters {
+                    exclude {
+                        annotatedWith.add("ch.softappeal.yass2.serialize.InternalSerializeApi")
+                    }
+                }
+            }
         }
         if (!project.file("src").exists()) sourceSets {
             commonMain {

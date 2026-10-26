@@ -94,7 +94,7 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
                 val name = readString { expectedCodePoint(EQUALS) }
                 readNextCodePointAndSkipWhitespace()
                 val encoderId = encoder.encoderId(name)
-                val propertyEncoder = if (encoderId != STRING_NO_ENCODER_ID) encoder(encoderId) else null
+                val propertyEncoder = if (encoderId != NO_ENCODER_ID) encoder(encoderId) else null
                 val value = when (propertyEncoder) {
                     is IntStringEncoder,
                     is LongStringEncoder,
@@ -160,9 +160,17 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
     override fun Reader.read(): Any? = readObject(readCodePoint())
 }
 
-public operator fun <E : Enum<E>> E.invoke(): E = this // NOTE: needed for easy parsing of enums
+/** NOTE: needed for easy parsing of enums */
+public operator fun <E : Enum<E>> E.invoke(): E = this
 
-/** NOTE: Provide a `constructor` for each [BaseStringEncoder] (needed for easy parsing of base types). */
+
+// NOTE: Provide a `constructor` for each BaseStringEncoder
+
+/** Needed for easy parsing of a base type. */
 public fun Int(string: String): Int = IntStringEncoder.readBase(string)
+
+/** Needed for easy parsing of a base type. */
 public fun Long(string: String): Long = LongStringEncoder.readBase(string)
+
+/** Needed for easy parsing of a base type. */
 public fun ByteArray(string: String): ByteArray = ByteArrayStringEncoder.readBase(string)

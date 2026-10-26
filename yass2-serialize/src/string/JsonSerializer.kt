@@ -120,7 +120,7 @@ public class JsonSerializer(encoders: List<StringEncoder<*>>) : StringSerializer
                 val name = readKey()
                 readNextCodePointAndSkipWhitespace()
                 val encoderId = encoder.encoderId(name)
-                val value = if (encoderId == STRING_NO_ENCODER_ID) readObject(nextCodePoint) else {
+                val value = if (encoderId == NO_ENCODER_ID) readObject(nextCodePoint) else {
                     checkExpectedCodePoint(QUOTE)
                     readNextCodePoint()
                     encoder(encoderId).read(this)

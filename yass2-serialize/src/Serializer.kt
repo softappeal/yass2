@@ -11,7 +11,7 @@ public interface Reader {
 }
 
 /**
- * Concrete classes must have a primary constructor and all its parameters must be public properties.
+ * Concrete classes must have a primary constructor, and all its parameters must be public properties.
  * Properties can be optional.
  * Inheritance is supported.
  * Exceptions are supported but [Throwable.message] and [Throwable.cause] aren't serialized.

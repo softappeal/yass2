@@ -14,6 +14,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@Suppress("SpellCheckingInspection")
 private fun compile(source: String) = KotlinCompilation().apply {
     useKsp2()
     classpaths = buildList {

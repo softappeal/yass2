@@ -1,8 +1,10 @@
 package ch.softappeal.yass2.serialize.binary
 
+import ch.softappeal.yass2.serialize.InternalSerializeApi
 import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Writer
+import ch.softappeal.yass2.serialize.binary.BinarySerializer.Companion.NULL_ENCODER_ID
 import kotlin.reflect.KClass
 
 public open class BinaryEncoder<T : Any>(
@@ -26,12 +28,20 @@ public inline fun <T : Any> Reader.readBinaryOptional(read: Reader.() -> T): T? 
 
 /** Has built-in encoders for `null` and [List]. */
 public abstract class BinarySerializer : Serializer {
+    /** @suppress */
+    @InternalSerializeApi public companion object {
+        public const val NO_ENCODER_ID: Int = -1
+        private const val NULL_ENCODER_ID: Int = 0
+        public const val LIST_ENCODER_ID: Int = 1
+        public const val FIRST_ENCODER_ID: Int = 2
+    }
+
     private data class EncoderId(val id: Int, val encoder: BinaryEncoder<*>)
 
     private lateinit var encoders: Array<BinaryEncoder<*>>
     private lateinit var typeToEncoderId: Map<KClass<*>, EncoderId>
 
-    /** See [BINARY_NULL_ENCODER_ID] and [BINARY_LIST_ENCODER_ID]. */
+    /** See [NULL_ENCODER_ID] and [LIST_ENCODER_ID]. */
     protected fun initialize(vararg binaryEncoders: BinaryEncoder<*>) {
         encoders = (listOf(
             BinaryEncoder(Unit::class, {}, {}), // placeholder for NULL_ENCODER_ID, methods are never called
@@ -45,7 +55,7 @@ public abstract class BinarySerializer : Serializer {
     }
 
     private val listEncoderId = EncoderId(
-        BINARY_LIST_ENCODER_ID,
+        LIST_ENCODER_ID,
         BinaryEncoder(
             List::class,
             { list ->
@@ -64,7 +74,7 @@ public abstract class BinarySerializer : Serializer {
     protected fun Writer.writeObject(value: Any?) {
         val (id, encoder) = when (value) {
             null -> {
-                writeVarInt(BINARY_NULL_ENCODER_ID)
+                writeVarInt(NULL_ENCODER_ID)
                 return
             }
             is List<*> -> listEncoderId
@@ -84,7 +94,7 @@ public abstract class BinarySerializer : Serializer {
 
     protected fun Reader.readObject(): Any? {
         val encoderId = readVarInt()
-        return if (encoderId == BINARY_NULL_ENCODER_ID) null else readRequired(encoderId)
+        return if (encoderId == NULL_ENCODER_ID) null else readRequired(encoderId)
     }
 
     protected fun Reader.readRequired(encoderId: Int): Any = encoders[encoderId].read(this)
@@ -96,8 +106,3 @@ public abstract class BinarySerializer : Serializer {
 
     override fun Reader.read(): Any? = readObject()
 }
-
-public const val BINARY_NO_ENCODER_ID: Int = -1
-private const val BINARY_NULL_ENCODER_ID: Int = 0
-public const val BINARY_LIST_ENCODER_ID: Int = 1
-public const val BINARY_FIRST_ENCODER_ID: Int = 2
