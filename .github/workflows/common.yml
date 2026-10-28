@@ -1,0 +1,25 @@
+#file: noinspection SpellCheckingInspection
+on:
+  workflow_call:
+    inputs:
+      script:
+        type: string
+        required: true
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: '25.0.5'
+      - env: # printenv prevents that secrets are visible on the command line
+          MAVEN_CENTRAL_KEY: ${{ secrets.MAVEN_CENTRAL_KEY }}
+          GRADLE_PROPERTIES: ${{ secrets.GRADLE_PROPERTIES }}
+        run: |
+          echo $JAVA_HOME
+          java --version
+          ${{ inputs.script }}

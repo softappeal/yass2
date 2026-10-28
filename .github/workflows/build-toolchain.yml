@@ -1,16 +1,8 @@
 on: push
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-java@v6
-        with:
-          java-version-file: '.tool-versions'
-      - run: |
-          echo $JAVA_HOME
-          java --version
-          ./kotlin build
-          ./kotlin test --platform jvm --platform linuxX64 # TODO: remove later
+    uses: ./.github/workflows/common.yml
+    with:
+      script: |
+        ./kotlin build
+        ./kotlin test --platform jvm --platform linuxX64 # TODO: remove later
