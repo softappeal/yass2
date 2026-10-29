@@ -1,4 +1,3 @@
-#file: noinspection SpellCheckingInspection
 on:
   workflow_call:
     inputs:
@@ -16,7 +15,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '25.0.5'
-      - env: # printenv prevents that secrets are visible on the command line
+      - env:
           MAVEN_CENTRAL_KEY: ${{ secrets.MAVEN_CENTRAL_KEY }}
           GRADLE_PROPERTIES: ${{ secrets.GRADLE_PROPERTIES }}
         run: |

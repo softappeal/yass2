@@ -1,4 +1,3 @@
-#file: noinspection SpellCheckingInspection
 on:
   workflow_dispatch:
 jobs:
@@ -8,6 +7,7 @@ jobs:
     with:
       script: |
         mkdir -p ~/.gradle
+        # printenv prevents that secrets are visible on the command line
         printenv GRADLE_PROPERTIES             > ~/.gradle/gradle.properties
         printenv MAVEN_CENTRAL_KEY | base64 -d > ~/.gradle/maven.central.key.gpg
         ./gradlew -Pversion=`git describe` markers build publishToMavenCentral

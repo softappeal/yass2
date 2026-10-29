@@ -19,6 +19,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.dokka)
     alias(libs.plugins.publish)
+    alias(libs.plugins.kover)
 }
 
 // see https://amper.org/latest/user-guide/multiplatform/#module-layout
@@ -54,8 +55,6 @@ fun KotlinMultiplatformExtension.configureSourceSets() {
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
     apply(plugin = "com.google.devtools.ksp")
-    apply(plugin = "org.jetbrains.dokka")
-    apply(plugin = "com.vanniktech.maven.publish")
 
     repositories {
         mavenCentral()
@@ -110,6 +109,10 @@ allprojects {
     }
 
     if (project.name.startsWith("yass2")) { // includes the root project (needed for doc over all modules)
+        apply(plugin = "org.jetbrains.dokka")
+        apply(plugin = "com.vanniktech.maven.publish")
+        apply(plugin = "org.jetbrains.kotlinx.kover")
+
         dokka {
             dokkaPublications.html {
                 failOnWarning.set(true)
@@ -138,10 +141,12 @@ allprojects {
 }
 
 dependencies {
-    dokka(project(":yass2-serialize"))
-    dokka(project(":yass2-remote"))
-    dokka(project(":yass2-ktor"))
-    dokka(project(":yass2-generate"))
+    allprojects.forEach { project ->
+        if (project.name.startsWith("yass2-")) {
+            dokka(project)
+            kover(project)
+        }
+    }
 }
 
 tasks.register("markers") {
