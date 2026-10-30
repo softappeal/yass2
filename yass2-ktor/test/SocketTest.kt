@@ -96,7 +96,7 @@ private fun socketSession(testMode: TestMode, initiatorRunTests: Boolean, accept
         }
     }
 
-class SocketTest {
+abstract class SocketTest {
     @Test
     fun socketTestNormal() = socketTest(TestMode.Normal)
 
@@ -130,7 +130,9 @@ class SocketTest {
         assertFailsWith<CancellationException> { clientByte.await() }
         assertTrue(clientSocket.isClosed)
     }
+}
 
+class SocketTestWorkaround { // workaround for 'failOnNoDiscoveredTests'
     @Test
     fun readByteArray() = runTest {
         class Step(val size: Int, val offset: Int, val length: Int)

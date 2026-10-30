@@ -1,3 +1,5 @@
+@file:Suppress("SpellCheckingInspection")
+
 package ch.softappeal.yass2.ktor
 
 import io.ktor.server.http.content.staticFiles

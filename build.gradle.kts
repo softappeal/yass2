@@ -41,12 +41,7 @@ fun KotlinMultiplatformExtension.configureSourceSets() {
         if (webPlatform) {
             webTest {
                 kotlin.srcDir("test@web")
-            }
-            jsTest {
-                resources.srcDir("testResources@js")
-            }
-            wasmJsTest {
-                resources.srcDir("testResources@wasmJs")
+                resources.srcDir("testResources@web")
             }
         }
     }
@@ -71,6 +66,9 @@ allprojects {
                 outputModuleName.set(project.name)
                 nodejs()
                 binaries.executable()
+                compilerOptions {
+                    target.set("es2015")
+                }
             }
             @OptIn(ExperimentalWasmDsl::class)
             wasmJs {

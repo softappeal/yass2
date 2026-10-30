@@ -5,4 +5,4 @@ jobs:
     with:
       script: |
         ./kotlin build
-        ./kotlin test --platform jvm --platform linuxX64 # TODO: remove later
+        ./kotlin test
