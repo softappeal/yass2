@@ -1,5 +1,5 @@
 public final class ch/softappeal/yass2/ktor/HttpKt {
-	public static final fun call (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun getApplicationCallOfRequest (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static final fun route (Lio/ktor/server/routing/Route;Ljava/lang/String;Lch/softappeal/yass2/serialize/Serializer;Lkotlin/jvm/functions/Function2;)V
 	public static final fun tunnel (Lio/ktor/client/HttpClient;Ljava/lang/String;Lch/softappeal/yass2/serialize/Serializer;)Lkotlin/jvm/functions/Function2;
 }
@@ -11,9 +11,9 @@ public final class ch/softappeal/yass2/ktor/SocketConnection : ch/softappeal/yas
 }
 
 public final class ch/softappeal/yass2/ktor/SocketKt {
+	public static final fun getSocketOfRequest (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static final fun handleRequest (Lio/ktor/network/sockets/Socket;Lch/softappeal/yass2/serialize/Serializer;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static final fun receiveLoop (Lio/ktor/network/sockets/Socket;Lch/softappeal/yass2/serialize/Serializer;Lkotlin/jvm/functions/Function0;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static final fun socket (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static final fun tunnel (Lch/softappeal/yass2/serialize/Serializer;Lkotlin/jvm/functions/Function1;)Lkotlin/jvm/functions/Function2;
 }
 

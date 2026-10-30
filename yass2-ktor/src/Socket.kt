@@ -71,7 +71,7 @@ private class SocketCce(val socket: Socket) : AbstractCoroutineContextElement(So
     companion object Key : CoroutineContext.Key<SocketCce>
 }
 
-public suspend fun socket(): Socket = currentCoroutineContext()[SocketCce]?.socket ?: error("no running request")
+public suspend fun getSocketOfRequest(): Socket = currentCoroutineContext()[SocketCce]?.socket ?: error("no running request")
 
 public suspend fun Socket.handleRequest(serializer: Serializer, tunnel: Tunnel) {
     use {

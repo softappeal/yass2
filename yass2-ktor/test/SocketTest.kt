@@ -37,14 +37,14 @@ private fun runServer(block: suspend CoroutineScope.(tcp: TcpSocketBuilder, serv
 
 @OptIn(ExperimentalAtomicApi::class)
 private fun socketTest(testMode: TestMode) = runServer { tcp, serverSocket ->
-    assertFailsWithMessage<IllegalStateException>("no running request") { socket() }
+    assertFailsWithMessage<IllegalStateException>("no running request") { getSocketOfRequest() }
     println()
     println("*** socketTest: testMode = $testMode ***")
     val address = AtomicReference<String?>(null)
     val listenerJob = launch {
         val serverTunnel = serverTunnel("server") { _, _, invocation ->
             // println("address: ${socket().remoteAddress}")
-            assertEquals(address.load(), socket().remoteAddress.toString())
+            assertEquals(address.load(), getSocketOfRequest().remoteAddress.toString())
             invocation()
         }
         while (true) {

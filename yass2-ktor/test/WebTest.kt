@@ -94,7 +94,7 @@ fun createWebServer(port: Int = BROWSER_PORT, additionalRouting: Routing.() -> U
         }
         routing {
             route(PATH, ContractSerializer, serverTunnel("server") { _, _, invocation ->
-                val call = call()
+                val call = getApplicationCallOfRequest()
                 val context = call.request.headers[CONTEXT_HEADER]!!
                 // println("context: $context")
                 assertTrue(context.startsWith("$CONTEXT_VALUE-"))
@@ -118,7 +118,7 @@ fun createWebServer(port: Int = BROWSER_PORT, additionalRouting: Routing.() -> U
 class WebTest {
     @Test
     fun test() = runTest {
-        assertFailsWithMessage<IllegalStateException>("no running request") { call() }
+        assertFailsWithMessage<IllegalStateException>("no running request") { getApplicationCallOfRequest() }
         val port = Random.nextInt(2_000, 30_000)
         val server = createWebServer(port)
         server.startSuspend()
