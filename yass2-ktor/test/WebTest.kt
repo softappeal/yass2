@@ -115,7 +115,7 @@ fun createWebServer(port: Int = BROWSER_PORT, additionalRouting: Routing.() -> U
         }
     }
 
-abstract class WebTest {
+class WebTest {
     @Test
     fun test() = runTest {
         assertFailsWithMessage<IllegalStateException>("no running request") { getApplicationCallOfRequest() }
@@ -129,13 +129,5 @@ abstract class WebTest {
         } finally {
             server.stopSuspend()
         }
-    }
-}
-
-class WebTestWorkaround { // workaround for 'failOnNoDiscoveredTests'
-    @Suppress("EmptyMethod")
-    @Test
-    fun test() {
-        // empty
     }
 }
