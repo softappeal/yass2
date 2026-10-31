@@ -7,4 +7,4 @@ settings:
     allWarningsAsErrors: true
     freeCompilerArgs: [ "-Xname-based-destructuring=complete" ]
     ksp:
-      version: 2.3.12
+      version: 2.3.13
