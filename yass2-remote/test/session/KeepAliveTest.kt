@@ -87,8 +87,8 @@ class KeepAliveTest {
     }
 
     @Test
-    fun keepAliveTunnel() = runTest {
-        val tunnel = keepAliveTunnel(CalculatorId.service(CalculatorImpl))
+    fun keepAliveServiceTest() = runTest {
+        val tunnel = tunnel(keepAliveService(), CalculatorId.service(CalculatorImpl))
         assertEquals(3, CalculatorId.proxy(tunnel).add(1, 2))
         KeepAliveId.proxy(tunnel).keepAlive()
     }

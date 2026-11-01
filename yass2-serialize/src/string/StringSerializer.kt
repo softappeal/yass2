@@ -197,7 +197,7 @@ internal fun StringWriter.write(encoder: StringEncoder<*>, value: Any) {
 
 public abstract class BaseStringEncoder<T : Any>(
     type: KClass<T>,
-    /** Result string must not contain whitespace, `"`, `,` or `)`. */
+    /** NOTE: Result string must not contain whitespace, `"`, `,` or `)`. */
     public val writeBase: T.() -> String,
     public val readBase: String.() -> T,
 ) : StringEncoder<T>(

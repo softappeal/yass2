@@ -3,10 +3,12 @@ package ch.softappeal.yass2.serialize
 import ch.softappeal.yass2.serialize.binary.BinaryEncoders
 import ch.softappeal.yass2.serialize.binary.BooleanBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.ByteArrayBinaryEncoder
+import ch.softappeal.yass2.serialize.binary.DoubleBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.LongBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.StringBinaryEncoder
 import ch.softappeal.yass2.serialize.string.ByteArrayStringEncoder
+import ch.softappeal.yass2.serialize.string.DoubleStringEncoder
 import ch.softappeal.yass2.serialize.string.IntStringEncoder
 import ch.softappeal.yass2.serialize.string.LongStringEncoder
 import ch.softappeal.yass2.serialize.string.StringEncoders
@@ -17,6 +19,7 @@ class Types(
     val boolean: Boolean,
     val int: Int,
     val long: Long,
+    val double: Double,
     val string: String,
     val bytes: ByteArray,
     val gender: Gender,
@@ -25,6 +28,7 @@ class Types(
     val booleanOptional: Boolean?,
     val intOptional: Int?,
     val longOptional: Long?,
+    val doubleOptional: Double?,
     val stringOptional: String?,
     val bytesOptional: ByteArray?,
     val genderOptional: Gender?,
@@ -69,12 +73,14 @@ data class Example(
     BooleanBinaryEncoder::class,
     IntBinaryEncoder::class,
     LongBinaryEncoder::class,
+    DoubleBinaryEncoder::class,
     StringBinaryEncoder::class,
     ByteArrayBinaryEncoder::class,
 )
 @StringEncoders(
     IntStringEncoder::class,
     LongStringEncoder::class,
+    DoubleStringEncoder::class,
     ByteArrayStringEncoder::class,
 )
 @ConcreteAndEnumClasses(

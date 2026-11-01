@@ -60,12 +60,16 @@ public abstract interface annotation class ch/softappeal/yass2/serialize/binary/
 public final class ch/softappeal/yass2/serialize/binary/BinaryPrimitivesKt {
 	public static final fun fromZigZag (I)I
 	public static final fun fromZigZag (J)J
-	public static final fun readBinaryBoolean (Lch/softappeal/yass2/serialize/Reader;)Z
+	public static final fun readBoolean (Lch/softappeal/yass2/serialize/Reader;)Z
+	public static final fun readInt (Lch/softappeal/yass2/serialize/Reader;)I
+	public static final fun readLong (Lch/softappeal/yass2/serialize/Reader;)J
 	public static final fun readVarInt (Lch/softappeal/yass2/serialize/Reader;)I
 	public static final fun readVarLong (Lch/softappeal/yass2/serialize/Reader;)J
 	public static final fun toZigZag (I)I
 	public static final fun toZigZag (J)J
-	public static final fun writeBinaryBoolean (Lch/softappeal/yass2/serialize/Writer;Z)V
+	public static final fun writeBoolean (Lch/softappeal/yass2/serialize/Writer;Z)V
+	public static final fun writeInt (Lch/softappeal/yass2/serialize/Writer;I)V
+	public static final fun writeLong (Lch/softappeal/yass2/serialize/Writer;J)V
 	public static final fun writeVarInt (Lch/softappeal/yass2/serialize/Writer;I)V
 	public static final fun writeVarLong (Lch/softappeal/yass2/serialize/Writer;J)V
 }
@@ -87,8 +91,8 @@ public abstract class ch/softappeal/yass2/serialize/binary/BinarySerializer : ch
 }
 
 public final class ch/softappeal/yass2/serialize/binary/BinarySerializerKt {
-	public static final fun readBinaryOptional (Lch/softappeal/yass2/serialize/Reader;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
-	public static final fun writeBinaryOptional (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;)V
+	public static final fun readOptional (Lch/softappeal/yass2/serialize/Reader;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public static final fun writeOptional (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;)V
 }
 
 public final class ch/softappeal/yass2/serialize/binary/BooleanBinaryEncoder : ch/softappeal/yass2/serialize/binary/BinaryEncoder {
@@ -97,6 +101,10 @@ public final class ch/softappeal/yass2/serialize/binary/BooleanBinaryEncoder : c
 
 public final class ch/softappeal/yass2/serialize/binary/ByteArrayBinaryEncoder : ch/softappeal/yass2/serialize/binary/BinaryEncoder {
 	public static final field INSTANCE Lch/softappeal/yass2/serialize/binary/ByteArrayBinaryEncoder;
+}
+
+public final class ch/softappeal/yass2/serialize/binary/DoubleBinaryEncoder : ch/softappeal/yass2/serialize/binary/BinaryEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/serialize/binary/DoubleBinaryEncoder;
 }
 
 public final class ch/softappeal/yass2/serialize/binary/EnumBinaryEncoder : ch/softappeal/yass2/serialize/binary/BinaryEncoder {
@@ -129,6 +137,10 @@ public final class ch/softappeal/yass2/serialize/string/ClassStringEncoder : ch/
 	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;[Lkotlin/Pair;)V
 }
 
+public final class ch/softappeal/yass2/serialize/string/DoubleStringEncoder : ch/softappeal/yass2/serialize/string/BaseStringEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/serialize/string/DoubleStringEncoder;
+}
+
 public final class ch/softappeal/yass2/serialize/string/EnumStringEncoder : ch/softappeal/yass2/serialize/string/BaseStringEncoder {
 	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;)V
 }
@@ -151,6 +163,7 @@ public final class ch/softappeal/yass2/serialize/string/KotlinSerializer : ch/so
 
 public final class ch/softappeal/yass2/serialize/string/KotlinSerializerKt {
 	public static final fun ByteArray (Ljava/lang/String;)[B
+	public static final fun Double (Ljava/lang/String;)D
 	public static final fun Int (Ljava/lang/String;)I
 	public static final fun Long (Ljava/lang/String;)J
 	public static final fun invoke (Ljava/lang/Enum;)Ljava/lang/Enum;

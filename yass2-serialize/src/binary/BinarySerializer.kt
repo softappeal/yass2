@@ -17,14 +17,14 @@ private fun Writer.write(encoder: BinaryEncoder<*>, value: Any) {
     @Suppress("UNCHECKED_CAST") (encoder as BinaryEncoder<Any>).write(this, value)
 }
 
-public inline fun <T : Any> Writer.writeBinaryOptional(value: T?, write: Writer.(value: T) -> Unit) {
-    if (value == null) writeBinaryBoolean(false) else {
-        writeBinaryBoolean(true)
+public inline fun <T : Any> Writer.writeOptional(value: T?, write: Writer.(value: T) -> Unit) {
+    if (value == null) writeBoolean(false) else {
+        writeBoolean(true)
         write(value)
     }
 }
 
-public inline fun <T : Any> Reader.readBinaryOptional(read: Reader.() -> T): T? = if (readBinaryBoolean()) read() else null
+public inline fun <T : Any> Reader.readOptional(read: Reader.() -> T): T? = if (readBoolean()) read() else null
 
 /** Has built-in encoders for `null` and [List]. */
 public abstract class BinarySerializer : Serializer {
@@ -89,7 +89,7 @@ public abstract class BinarySerializer : Serializer {
     }
 
     protected fun Writer.writeOptional(value: Any?, encoderId: Int) {
-        writeBinaryOptional(value) { writeRequired(it, encoderId) }
+        writeOptional(value) { writeRequired(it, encoderId) }
     }
 
     protected fun Reader.readObject(): Any? {
@@ -98,7 +98,7 @@ public abstract class BinarySerializer : Serializer {
     }
 
     protected fun Reader.readRequired(encoderId: Int): Any = encoders[encoderId].read(this)
-    protected fun Reader.readOptional(encoderId: Int): Any? = readBinaryOptional { readRequired(encoderId) }
+    protected fun Reader.readOptional(encoderId: Int): Any? = readOptional { readRequired(encoderId) }
 
     override fun Writer.write(value: Any?) {
         writeObject(value)

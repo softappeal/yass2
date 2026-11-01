@@ -21,10 +21,10 @@ private fun <T> check(value: T, write: Writer.(value: T) -> Unit, vararg bytes: 
 class BinaryPrimitivesTest {
     @Test
     fun boolean() {
-        check(false, { writeBinaryBoolean(it) }, 0) { readBinaryBoolean() }
-        check(true, { writeBinaryBoolean(it) }, 1) { readBinaryBoolean() }
+        check(false, { writeBoolean(it) }, 0) { readBoolean() }
+        check(true, { writeBoolean(it) }, 1) { readBoolean() }
         assertFailsWithMessage<IllegalStateException>("unexpected binary boolean 2") {
-            ByteArrayReader(byteArrayOf(2)).readBinaryBoolean()
+            ByteArrayReader(byteArrayOf(2)).readBoolean()
         }
     }
 
@@ -88,5 +88,21 @@ class BinaryPrimitivesTest {
         check(Long.MAX_VALUE, -2L)
         check(Long.MIN_VALUE + 1L, -3L)
         check(Long.MAX_VALUE - 1L, -4L)
+    }
+
+    @Test
+    fun int() {
+        fun check(value: Int, vararg bytes: Int) = check(value, { writeInt(it) }, *bytes) { readInt() }
+        check(Int.MIN_VALUE, 0x80, 0x00, 0x00, 0x00)
+        check(Int.MAX_VALUE, 0x7F, 0xFF, 0xFF, 0xFF)
+        check(0x12_34_56_78, 0x12, 0x34, 0x56, 0x78)
+    }
+
+    @Test
+    fun long() {
+        fun check(value: Long, vararg bytes: Int) = check(value, { writeLong(it) }, *bytes) { readLong() }
+        check(Long.MIN_VALUE, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
+        check(Long.MAX_VALUE, 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF)
+        check(0x12_34_56_78_9A_BC_DE_F0, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0)
     }
 }

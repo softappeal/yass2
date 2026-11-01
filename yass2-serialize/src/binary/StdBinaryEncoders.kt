@@ -5,8 +5,8 @@ import kotlin.reflect.KClass
 
 public object BooleanBinaryEncoder : BinaryEncoder<Boolean>(
     Boolean::class,
-    { value -> writeBinaryBoolean(value) },
-    { readBinaryBoolean() },
+    { value -> writeBoolean(value) },
+    { readBoolean() },
 )
 
 public object IntBinaryEncoder : BinaryEncoder<Int>(
@@ -19,6 +19,12 @@ public object LongBinaryEncoder : BinaryEncoder<Long>(
     Long::class,
     { value -> writeVarLong(value.toZigZag()) },
     { readVarLong().fromZigZag() }
+)
+
+public object DoubleBinaryEncoder : BinaryEncoder<Double>(
+    Double::class,
+    { value -> writeLong(value.toBits()) },
+    { Double.fromBits(readLong()) }
 )
 
 public object ByteArrayBinaryEncoder : BinaryEncoder<ByteArray>(

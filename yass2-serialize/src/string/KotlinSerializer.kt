@@ -71,6 +71,7 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
                 when (value) {
                     is Int,
                     is Long,
+                    is Double,
                         -> write(encoder(encoderId), value)
                     else -> writeObject(value)
                 }
@@ -98,6 +99,7 @@ public class KotlinSerializer(encoders: List<StringEncoder<*>>) : StringSerializ
                 val value = when (propertyEncoder) {
                     is IntStringEncoder,
                     is LongStringEncoder,
+                    is DoubleStringEncoder,
                         -> {
                         if (expectedCodePoint('n'.code)) {
                             readNextCodePoint()
@@ -171,6 +173,9 @@ public fun Int(string: String): Int = IntStringEncoder.readBase(string)
 
 /** Needed for easy parsing of a base type. */
 public fun Long(string: String): Long = LongStringEncoder.readBase(string)
+
+/** Needed for easy parsing of a base type. */
+public fun Double(string: String): Double = DoubleStringEncoder.readBase(string)
 
 /** Needed for easy parsing of a base type. */
 public fun ByteArray(string: String): ByteArray = ByteArrayStringEncoder.readBase(string)

@@ -102,4 +102,71 @@ class StringEncodersTest {
         println(assertFails { serializer.fromString("invalid") })
         println(assertFails { serializer.fromString("\"a") })
     }
+
+    /** see [DoubleStringEncoder] */
+    @Suppress("unused")
+    // @Test
+    fun doubleNotJsPlatform() {
+        with(DoubleStringEncoder) {
+            check(0.0, "0.0")
+            check(1.0, "1.0")
+            check(-1.0, "-1.0")
+        }
+    }
+
+    @Test
+    fun double() {
+        with(DoubleStringEncoder) {
+            check(123.456, "123.456")
+            check(Double.POSITIVE_INFINITY, "Infinity")
+            check(Double.NEGATIVE_INFINITY, "-Infinity")
+            check(Double.NaN, "NaN")
+            check(
+                -9.87654321E-123,
+                "-9.87654321E-123",
+                "-9.87654321e-123",
+            )
+            check(
+                9.87654321E123,
+                "9.87654321E123",
+                "9.87654321e123",
+                "9.87654321E+123",
+                "9.87654321e+123",
+                "+9.87654321e+123",
+            )
+            check(
+                Double.MAX_VALUE,
+                "1.7976931348623157E308",
+                "1.7976931348623157e308",
+                "1.7976931348623157E+308",
+                "1.7976931348623157e+308",
+                "+1.7976931348623157e+308",
+            )
+            check(
+                -Double.MAX_VALUE,
+                "-1.7976931348623157E308",
+                "-1.7976931348623157e308",
+                "-1.7976931348623157E+308",
+                "-1.7976931348623157e+308",
+            )
+            check(
+                1E-300,
+                "1.0E-300",
+                "1.0e-300",
+                "1E-300",
+                "1e-300",
+                "+1e-300",
+            )
+            check(
+                -1E-300,
+                "-1.0E-300",
+                "-1.0e-300",
+                "-1E-300",
+                "-1e-300",
+            )
+            assertFails { readBase("invalidDouble") }
+            assertFails { readBase("1.3e") }
+            assertFails { readBase("++2") }
+        }
+    }
 }
