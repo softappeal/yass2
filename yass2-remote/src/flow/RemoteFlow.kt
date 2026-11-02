@@ -29,7 +29,7 @@ public interface FlowService<out F : Any, I> {
     public suspend fun cancel(collectId: Int)
 }
 
-@ExperimentalFlowApi public fun <F : Any, I> FlowService<F, I>.createFlow(flowId: I): Flow<F> = flow {
+@ExperimentalFlowApi public fun <F : Any, I> FlowService<F, I>.Flow(flowId: I): Flow<F> = flow {
     val collectId = create(flowId)
     try {
         while (true) {
@@ -44,7 +44,7 @@ public interface FlowService<out F : Any, I> {
 @ExperimentalFlowApi public typealias FlowFactory<F, I> = (flowId: I) -> Flow<F>
 
 /** NOTE: [F] must not be an [Exception] */
-@ExperimentalFlowApi public fun <F : Any, I> CoroutineScope.flowService(flowFactory: FlowFactory<F, I>): FlowService<F, I> {
+@ExperimentalFlowApi public fun <F : Any, I> CoroutineScope.FlowService(flowFactory: FlowFactory<F, I>): FlowService<F, I> {
     val nextCollectId = AtomicInt(0)
     val collectIdToChannel = ThreadSafeMap<Int, Channel<Any?>>(16)
     return object : FlowService<F, I> {
@@ -53,7 +53,7 @@ public interface FlowService<out F : Any, I> {
             val collectId = nextCollectId.incrementAndFetch()
             val channel = Channel<Any?>()
             collectIdToChannel.put(collectId, channel)
-            this@flowService.launch {
+            this@FlowService.launch {
                 tryFinally({
                     try {
                         flow.collect { channel.send(it) }

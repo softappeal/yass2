@@ -11,9 +11,8 @@ import ch.softappeal.yass2.serialize.ConcreteAndEnumClasses
 import ch.softappeal.yass2.serialize.binary.BinaryEncoders
 import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.StringBinaryEncoder
-import ch.softappeal.yass2.serialize.string.IntStringEncoder
-import ch.softappeal.yass2.serialize.string.StringEncoders
-import ch.softappeal.yass2.serialize.string.TextSerializer
+import ch.softappeal.yass2.serialize.text.IntTextEncoder
+import ch.softappeal.yass2.serialize.text.TextEncoders
 
 class DivideByZeroException : ContractException()
 
@@ -24,7 +23,7 @@ interface Calculator {
     suspend fun delay(milliSeconds: Int)
 }
 
-val ContractSerializer = TextSerializer(stringEncoders())
+val ContractSerializer = TextSerializer()
 
 val CalculatorId = ServiceId<Calculator>("Calculator")
 
@@ -35,8 +34,8 @@ val CalculatorId = ServiceId<Calculator>("Calculator")
     IntBinaryEncoder::class,
     StringBinaryEncoder::class,
 )
-@StringEncoders(
-    IntStringEncoder::class,
+@TextEncoders(
+    IntTextEncoder::class,
 )
 @ConcreteAndEnumClasses(
     DivideByZeroException::class,

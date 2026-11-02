@@ -8,7 +8,7 @@ import ch.softappeal.yass2.generate.writeGeneratedFile
 import ch.softappeal.yass2.remote.Proxies
 import ch.softappeal.yass2.serialize.ConcreteAndEnumClasses
 import ch.softappeal.yass2.serialize.binary.BinaryEncoders
-import ch.softappeal.yass2.serialize.string.StringEncoders
+import ch.softappeal.yass2.serialize.text.TextEncoders
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
@@ -97,17 +97,17 @@ private fun processPackage(packageName: String, declarations: Set<KSDeclaration>
 
     val concreteAndEnumClasses = annotationOrNull(ConcreteAndEnumClasses::class)
     val binaryEncoders = annotationOrNull(BinaryEncoders::class)
-    val stringEncoders = annotationOrNull(StringEncoders::class)
+    val textEncoders = annotationOrNull(TextEncoders::class)
     if (concreteAndEnumClasses == null) {
-        require(binaryEncoders == null && stringEncoders == null) {
+        require(binaryEncoders == null && textEncoders == null) {
             "missing annotation '${ConcreteAndEnumClasses::class.qualifiedName}' in package '$packageName'"
         }
     } else {
-        require(binaryEncoders != null || stringEncoders != null) {
-            "missing annotations '${BinaryEncoders::class.qualifiedName}' or '${StringEncoders::class.qualifiedName}' in package '$packageName'"
+        require(binaryEncoders != null || textEncoders != null) {
+            "missing annotations '${BinaryEncoders::class.qualifiedName}' or '${TextEncoders::class.qualifiedName}' in package '$packageName'"
         }
         binaryEncoders?.let { writer.generateBinarySerializer(it.value(), concreteAndEnumClasses.value()) }
-        stringEncoders?.let { writer.generateStringEncoders(it.value(), concreteAndEnumClasses.value()) }
+        textEncoders?.let { writer.generateTextSerializer(it.value(), concreteAndEnumClasses.value()) }
     }
 
     val generateMode = GenerateMode.valueOf(environment.options[GENERATE_MODE] ?: GenerateMode.InBuildDir.name)
@@ -128,7 +128,7 @@ internal class YassProvider : SymbolProcessorProvider {
                 Proxies::class,
                 ConcreteAndEnumClasses::class,
                 BinaryEncoders::class,
-                StringEncoders::class,
+                TextEncoders::class,
             )
                 .flatMap { annotation -> resolver.getSymbolsWithAnnotation(annotation.qualifiedName!!) }
                 .map { annotated -> annotated as KSDeclaration }

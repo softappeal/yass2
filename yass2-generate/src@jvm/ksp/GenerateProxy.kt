@@ -106,7 +106,7 @@ internal fun CodeWriter.generateProxy(service: KSClassDeclaration) {
     }
 
     writeFun(
-        "${service.serviceTypeParameters} ${ServiceId::class.qualifiedName}<${service.serviceName}>.service",
+        "${service.serviceTypeParameters} ${ServiceId::class.qualifiedName}<${service.serviceName}>.Service",
         "implementation: ${service.serviceName}",
         Service::class.qualifiedName!!,
     ) {

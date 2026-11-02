@@ -11,6 +11,8 @@
     "UNUSED_ANONYMOUS_PARAMETER",
     "KotlinRedundantDiagnosticSuppress",
     "RedundantUpperBound",
+    "UNNECESSARY_SAFE_CALL",
+    "ForEachParameterNotUsed",
 )
 
 package ch.softappeal.yass2.remote
@@ -85,7 +87,7 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.remote.Calcu
         }
     }
 
-public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.remote.Calculator>.service(
+public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.remote.Calculator>.Service(
     implementation: ch.softappeal.yass2.remote.Calculator,
 ): ch.softappeal.yass2.remote.Service =
     ch.softappeal.yass2.remote.Service(id) { function, parameters ->
@@ -130,7 +132,7 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.remote.Other
         }
     }
 
-public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.remote.OtherService>.service(
+public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.remote.OtherService>.Service(
     implementation: ch.softappeal.yass2.remote.OtherService,
 ): ch.softappeal.yass2.remote.Service =
     ch.softappeal.yass2.remote.Service(id) { function, parameters ->

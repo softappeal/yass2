@@ -189,7 +189,7 @@ class GeneratorTest {
             """,
         )
         executeTest(
-            "missing annotations 'ch.softappeal.yass2.serialize.binary.BinaryEncoders' or 'ch.softappeal.yass2.serialize.string.StringEncoders' in package 'test'",
+            "missing annotations 'ch.softappeal.yass2.serialize.binary.BinaryEncoders' or 'ch.softappeal.yass2.serialize.text.TextEncoders' in package 'test'",
             """
                 package test
                 @ch.softappeal.yass2.serialize.ConcreteAndEnumClasses()

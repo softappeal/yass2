@@ -1,16 +1,22 @@
 package ch.softappeal.yass2.serialize.binary
 
+import ch.softappeal.yass2.serialize.B
+import ch.softappeal.yass2.serialize.BinarySerializer
+import ch.softappeal.yass2.serialize.ByteArrayReader
+import ch.softappeal.yass2.serialize.ByteArrayWriter
 import ch.softappeal.yass2.serialize.Example
-import ch.softappeal.yass2.serialize.Gender
-import ch.softappeal.yass2.serialize.binarySerializer
+import ch.softappeal.yass2.serialize.Poly
+import ch.softappeal.yass2.serialize.checkDrained
 import ch.softappeal.yass2.serialize.fromByteArray
+import ch.softappeal.yass2.serialize.read
 import ch.softappeal.yass2.serialize.toByteArray
+import ch.softappeal.yass2.serialize.write
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
-private val SERIALIZER = binarySerializer()
+private val SERIALIZER = BinarySerializer()
 
 private fun check(value: Any?, vararg bytes: Int) {
     val byteArray = SERIALIZER.toByteArray(value)
@@ -23,10 +29,8 @@ class BinarySerializerTest {
     fun builtIn() {
         check(null, 0)
 
-        check(60, 3, 120)
-
         check(listOf<Int>(), 1, 0)
-        check(listOf(null, 60), 1, 2, 0, 3, 120)
+        check(listOf(null), 1, 1, 0)
     }
 
     @Test
@@ -40,12 +44,12 @@ class BinarySerializerTest {
                 list = listOf(12, 13),
                 listOptional = null,
             ),
-            16,              // Example
+            8,               // Example
             20,              // int
             0,               // intOptional
-            3, 22,           // any
+            2, 22,           // any
             0,               // anyOptional
-            2, 3, 24, 3, 26, // list
+            2, 2, 24, 2, 26, // list
             0,               // listOptional
         )
 
@@ -58,13 +62,32 @@ class BinarySerializerTest {
                 list = listOf(12, 13),
                 listOptional = listOf(16, 17),
             ),
-            16,                // Example
+            8,                 // Example
             20,                // int
             1, 28,             // intOptional
-            3, 22,             // any
-            3, 30,             // anyOptional
-            2, 3, 24, 3, 26,   // list
-            1, 2, 3, 32, 3, 34 // listOptional
+            2, 22,             // any
+            2, 30,             // anyOptional
+            2, 2, 24, 2, 26,   // list
+            1, 2, 2, 32, 2, 34 // listOptional
+        )
+    }
+
+    @Test
+    fun poly() {
+        check(
+            Poly(
+                a = B(
+                    a = 10,
+                    b = 20,
+                ),
+                b = B(
+                    a = 1,
+                    b = 2,
+                ),
+            ),
+            7,         // Poly
+            6, 20, 40, // a
+            2, 4,      // b
         )
     }
 
@@ -73,13 +96,13 @@ class BinarySerializerTest {
         val message = assertFailsWith<IllegalArgumentException> {
             object : BinarySerializer() {
                 init {
-                    initialize(GenderEncoder, GenderEncoder)
+                    initialize(IntBinaryEncoder, IntBinaryEncoder)
                 }
             }
         }.message!!
         println(message)
         assertTrue(message.startsWith("duplicated type '"))
-        assertTrue(message.contains(Gender::class.simpleName!!))
+        assertTrue(message.contains(Int::class.simpleName!!))
     }
 
     @Test
@@ -88,5 +111,14 @@ class BinarySerializerTest {
         println(message)
         assertTrue(message.startsWith("missing type '"))
         assertTrue(message.contains(BinarySerializerTest::class.simpleName!!))
+    }
+
+    @Test
+    fun testExtensionFunctions() {
+        val writer = ByteArrayWriter()
+        SERIALIZER.write(writer, 123)
+        val reader = ByteArrayReader(writer.toByteArray())
+        assertEquals(123, SERIALIZER.read(reader))
+        reader.checkDrained()
     }
 }

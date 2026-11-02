@@ -36,4 +36,4 @@ private object KeepAliveImpl : KeepAlive {
     }
 }
 
-public fun keepAliveService(): Service = KeepAliveId.service(KeepAliveImpl)
+public fun keepAliveService(): Service = KeepAliveId.Service(KeepAliveImpl)

@@ -10,16 +10,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 
-val GenderEncoder = EnumBinaryEncoder(Gender::class, enumEntries())
-
-private data class OptionalString(val s: String?)
-
-private object OptionalStringEncoder : BinaryEncoder<OptionalString>(
-    OptionalString::class,
-    { value -> writeOptional(value.s) { StringBinaryEncoder.write(this, it) } },
-    { OptionalString(readOptional { StringBinaryEncoder.read(this) }) }
-)
-
 private fun <T : Any> BinaryEncoder<T>.check(value: T, vararg bytes: Int) {
     val writer = ByteArrayWriter()
     with(writer) {
@@ -37,13 +27,20 @@ private fun <T : Any> BinaryEncoder<T>.check(value: T, vararg bytes: Int) {
 }
 
 class BinaryEncodersTest {
-    @Suppress("SpellCheckingInspection")
     @Test
-    fun test() {
-        with(BooleanBinaryEncoder) {
-            check(false, 0)
-            check(true, 1)
+    fun enum() {
+        with(EnumBinaryEncoder(Gender::class, enumEntries())) {
+            check(Gender.Female, 0)
+            check(Gender.Male, 1)
+            assertFailsWithMessage<IllegalStateException>("illegal constant 2") { read(ByteArrayReader(byteArrayOf(2))) }
+            assertFailsWithMessage<IllegalStateException>("illegal constant -1") {
+                read(ByteArrayReader(byteArrayOf(-1, -1, -1, -1, 15)))
+            }
         }
+    }
+
+    @Test
+    fun int() {
         with(IntBinaryEncoder) {
             check(0, 0)
             check(-1, 1)
@@ -51,6 +48,10 @@ class BinaryEncodersTest {
             check(Int.MAX_VALUE, -2, -1, -1, -1, 15)
             check(Int.MIN_VALUE, -1, -1, -1, -1, 15)
         }
+    }
+
+    @Test
+    fun long() {
         with(LongBinaryEncoder) {
             check(0, 0)
             check(-1, 1)
@@ -58,6 +59,18 @@ class BinaryEncodersTest {
             check(Long.MAX_VALUE, -2, -1, -1, -1, -1, -1, -1, -1, -1, 1)
             check(Long.MIN_VALUE, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1)
         }
+    }
+
+    @Test
+    fun byteArray() {
+        with(ByteArrayBinaryEncoder) {
+            check(byteArrayOf(), 0)
+            check(byteArrayOf(0, 1, -1, 127, -128), 5, 0, 1, -1, 127, -128)
+        }
+    }
+
+    @Test
+    fun double() {
         with(DoubleBinaryEncoder) {
             check(0.0, 0, 0, 0, 0, 0, 0, 0, 0)
             check(1.0, 63, -16, 0, 0, 0, 0, 0, 0)
@@ -71,6 +84,19 @@ class BinaryEncodersTest {
             check(Double.NEGATIVE_INFINITY, -1, -16, 0, 0, 0, 0, 0, 0)
             check(Double.NaN, 127, -8, 0, 0, 0, 0, 0, 0)
         }
+    }
+
+    @Test
+    fun boolean() {
+        with(BooleanBinaryEncoder) {
+            check(false, 0)
+            check(true, 1)
+        }
+    }
+
+    @Suppress("SpellCheckingInspection")
+    @Test
+    fun string() {
         with(StringBinaryEncoder) {
             check("", 0)
             check("abc", 3, 97, 98, 99)
@@ -84,19 +110,18 @@ class BinaryEncodersTest {
             check("\uDBFF\uDFFF", 4, -12, -113, -65, -65)   // U+10FFFF
             assertFails { read(ByteArrayReader(byteArrayOf(1, -1))) }
         }
-        with(ByteArrayBinaryEncoder) {
-            check(byteArrayOf(), 0)
-            check(byteArrayOf(0, 1, -1, 127, -128), 5, 0, 1, -1, 127, -128)
-        }
-        with(GenderEncoder) {
-            check(Gender.Female, 0)
-            check(Gender.Male, 1)
-            assertFailsWithMessage<IllegalStateException>("illegal constant 2") { read(ByteArrayReader(byteArrayOf(2))) }
-            assertFailsWithMessage<IllegalStateException>("illegal constant -1") {
-                read(ByteArrayReader(byteArrayOf(-1, -1, -1, -1, 15)))
-            }
-        }
-        with(OptionalStringEncoder) {
+    }
+
+    @Test
+    fun optional() {
+        data class OptionalString(val s: String?)
+        with(
+            BinaryEncoder<OptionalString>(
+                OptionalString::class,
+                { value -> writeOptional(value.s) { StringBinaryEncoder.write(this, it) } },
+                { OptionalString(readOptional { StringBinaryEncoder.read(this) }) },
+            )
+        ) {
             check(OptionalString(null), 0)
             check(OptionalString("hello"), 1, 5, 104, 101, 108, 108, 111)
         }

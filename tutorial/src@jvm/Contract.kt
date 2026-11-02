@@ -10,17 +10,16 @@ import ch.softappeal.yass2.remote.session.MustBeImplementedByAcceptor
 import ch.softappeal.yass2.remote.session.MustBeImplementedByInitiator
 import ch.softappeal.yass2.remote.session.Packet
 import ch.softappeal.yass2.serialize.ConcreteAndEnumClasses
-import ch.softappeal.yass2.serialize.string.BaseStringEncoder
-import ch.softappeal.yass2.serialize.string.IntStringEncoder
-import ch.softappeal.yass2.serialize.string.StringEncoders
-import ch.softappeal.yass2.serialize.string.TextSerializer
+import ch.softappeal.yass2.serialize.text.IntTextEncoder
+import ch.softappeal.yass2.serialize.text.TextEncoder
+import ch.softappeal.yass2.serialize.text.TextEncoders
 
 /**
  * Shows how to implement an own base type.
  * In contrast to regular classes, own base types could implement a more efficient serializing.
  */
 data class MyDate(val currentTimeMillis: Long)
-internal object MyDateEncoder : BaseStringEncoder<MyDate>(
+internal object MyDateEncoder : TextEncoder<MyDate>(
     MyDate::class,
     { currentTimeMillis.toString() },
     { MyDate(toLong()) },
@@ -68,7 +67,7 @@ class SubClass(
     val subClassProperty: String,
 ) : BaseClass()
 
-val ContractSerializer = TextSerializer(stringEncoders())
+val ContractSerializer = TextSerializer()
 
 /**
  * All functions must be suspendable because they need IO.
@@ -89,9 +88,9 @@ interface NewsListener {
 )
 
 // Define all the encoders needed by the contract.
-@StringEncoders(
+@TextEncoders(
     // String and Boolean is built-in
-    IntStringEncoder::class,
+    IntTextEncoder::class,
     MyDateEncoder::class,
 )
 

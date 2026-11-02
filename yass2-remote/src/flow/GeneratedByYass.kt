@@ -11,6 +11,8 @@
     "UNUSED_ANONYMOUS_PARAMETER",
     "KotlinRedundantDiagnosticSuppress",
     "RedundantUpperBound",
+    "UNNECESSARY_SAFE_CALL",
+    "ForEachParameterNotUsed",
 )
 
 package ch.softappeal.yass2.remote.flow
@@ -68,7 +70,7 @@ public fun <F : kotlin.Any, I : kotlin.Any?> ch.softappeal.yass2.remote.ServiceI
                 .process() as F?
     }
 
-public fun <F : kotlin.Any, I : kotlin.Any?> ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.remote.flow.FlowService<F, I>>.service(
+public fun <F : kotlin.Any, I : kotlin.Any?> ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.remote.flow.FlowService<F, I>>.Service(
     implementation: ch.softappeal.yass2.remote.flow.FlowService<F, I>,
 ): ch.softappeal.yass2.remote.Service =
     ch.softappeal.yass2.remote.Service(id) { function, parameters ->

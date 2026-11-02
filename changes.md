@@ -3,6 +3,7 @@
 ## Breaking changes
 
 - modules `yass2-core` and `yass2-coroutines` replaced with `yass2-serialize` and `yass2-remote`
+- `KotlinSerializer` and `JsonSerializer` removed
 - KSP code generator added
 
 ## Internal

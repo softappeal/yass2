@@ -4,13 +4,12 @@ import ch.softappeal.yass2.serialize.InternalSerializeApi
 import ch.softappeal.yass2.serialize.Reader
 import ch.softappeal.yass2.serialize.Serializer
 import ch.softappeal.yass2.serialize.Writer
-import ch.softappeal.yass2.serialize.binary.BinarySerializer.Companion.NULL_ENCODER_ID
 import kotlin.reflect.KClass
 
 public open class BinaryEncoder<T : Any>(
     internal val type: KClass<T>,
-    public val write: Writer.(value: T) -> Unit,
-    public val read: Reader.() -> T,
+    internal val write: Writer.(value: T) -> Unit,
+    internal val read: Reader.() -> T,
 )
 
 private fun Writer.write(encoder: BinaryEncoder<*>, value: Any) {
@@ -28,6 +27,7 @@ public inline fun <T : Any> Reader.readOptional(read: Reader.() -> T): T? = if (
 
 /** Has built-in encoders for `null` and [List]. */
 public abstract class BinarySerializer : Serializer {
+
     /** @suppress */
     @InternalSerializeApi public companion object {
         public const val NO_ENCODER_ID: Int = -1
@@ -36,17 +36,18 @@ public abstract class BinarySerializer : Serializer {
         public const val FIRST_ENCODER_ID: Int = 2
     }
 
+    private fun baseEncoders() = listOf(
+        BinaryEncoder(Unit::class, {}, {}), // placeholder for NULL_ENCODER_ID, methods are never called
+        listEncoderId.encoder,
+    )
+
     private data class EncoderId(val id: Int, val encoder: BinaryEncoder<*>)
 
     private lateinit var encoders: Array<BinaryEncoder<*>>
     private lateinit var typeToEncoderId: Map<KClass<*>, EncoderId>
 
-    /** See [NULL_ENCODER_ID] and [LIST_ENCODER_ID]. */
     protected fun initialize(vararg binaryEncoders: BinaryEncoder<*>) {
-        encoders = (listOf(
-            BinaryEncoder(Unit::class, {}, {}), // placeholder for NULL_ENCODER_ID, methods are never called
-            listEncoderId.encoder,
-        ) + binaryEncoders).toTypedArray()
+        encoders = (baseEncoders() + binaryEncoders).toTypedArray()
         typeToEncoderId = buildMap {
             encoders.forEachIndexed { encoderIndex, encoder ->
                 require(put(encoder.type, EncoderId(encoderIndex, encoder)) == null) { "duplicated type '${encoder.type}'" }
@@ -100,9 +101,6 @@ public abstract class BinarySerializer : Serializer {
     protected fun Reader.readRequired(encoderId: Int): Any = encoders[encoderId].read(this)
     protected fun Reader.readOptional(encoderId: Int): Any? = readOptional { readRequired(encoderId) }
 
-    override fun Writer.write(value: Any?) {
-        writeObject(value)
-    }
-
+    override fun Writer.write(value: Any?): Unit = writeObject(value)
     override fun Reader.read(): Any? = readObject()
 }

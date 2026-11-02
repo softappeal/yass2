@@ -3,9 +3,9 @@ package ch.softappeal.yass2.remote.session
 import ch.softappeal.yass2.remote.CalculatorId
 import ch.softappeal.yass2.remote.CalculatorImpl
 import ch.softappeal.yass2.remote.JobState
+import ch.softappeal.yass2.remote.Service
+import ch.softappeal.yass2.remote.Tunnel
 import ch.softappeal.yass2.remote.proxy
-import ch.softappeal.yass2.remote.service
-import ch.softappeal.yass2.remote.tunnel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -43,7 +43,7 @@ private suspend fun keepAliveTest(
         },
         {
             object : Session<Connection>() {
-                override val serverTunnel = tunnel(KeepAliveId.service(object : KeepAlive {
+                override val serverTunnel = Tunnel(KeepAliveId.Service(object : KeepAlive {
                     override suspend fun keepAlive() {
                         println("keepAlive")
                         keepAliveFun()
@@ -88,7 +88,7 @@ class KeepAliveTest {
 
     @Test
     fun keepAliveServiceTest() = runTest {
-        val tunnel = tunnel(keepAliveService(), CalculatorId.service(CalculatorImpl))
+        val tunnel = Tunnel(keepAliveService(), CalculatorId.Service(CalculatorImpl))
         assertEquals(3, CalculatorId.proxy(tunnel).add(1, 2))
         KeepAliveId.proxy(tunnel).keepAlive()
     }

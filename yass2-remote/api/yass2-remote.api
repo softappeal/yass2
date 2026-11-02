@@ -22,7 +22,7 @@ public abstract interface annotation class ch/softappeal/yass2/remote/Proxies : 
 }
 
 public final class ch/softappeal/yass2/remote/RemoteKt {
-	public static final fun tunnel ([Lch/softappeal/yass2/remote/Service;)Lkotlin/jvm/functions/Function2;
+	public static final fun Tunnel ([Lch/softappeal/yass2/remote/Service;)Lkotlin/jvm/functions/Function2;
 }
 
 public abstract class ch/softappeal/yass2/remote/Reply : ch/softappeal/yass2/remote/Message {
@@ -61,14 +61,14 @@ public abstract interface class ch/softappeal/yass2/remote/flow/FlowService {
 }
 
 public final class ch/softappeal/yass2/remote/flow/GeneratedByYassKt {
+	public static final fun Service (Lch/softappeal/yass2/remote/ServiceId;Lch/softappeal/yass2/remote/flow/FlowService;)Lch/softappeal/yass2/remote/Service;
 	public static final fun proxy (Lch/softappeal/yass2/remote/ServiceId;Lkotlin/jvm/functions/Function2;)Lch/softappeal/yass2/remote/flow/FlowService;
 	public static final fun proxy (Lch/softappeal/yass2/remote/flow/FlowService;Lkotlin/jvm/functions/Function4;)Lch/softappeal/yass2/remote/flow/FlowService;
-	public static final fun service (Lch/softappeal/yass2/remote/ServiceId;Lch/softappeal/yass2/remote/flow/FlowService;)Lch/softappeal/yass2/remote/Service;
 }
 
 public final class ch/softappeal/yass2/remote/flow/RemoteFlowKt {
-	public static final fun createFlow (Lch/softappeal/yass2/remote/flow/FlowService;Ljava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
-	public static final fun flowService (Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function1;)Lch/softappeal/yass2/remote/flow/FlowService;
+	public static final fun Flow (Lch/softappeal/yass2/remote/flow/FlowService;Ljava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
+	public static final fun FlowService (Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function1;)Lch/softappeal/yass2/remote/flow/FlowService;
 }
 
 public abstract interface class ch/softappeal/yass2/remote/session/Connection {
@@ -77,9 +77,9 @@ public abstract interface class ch/softappeal/yass2/remote/session/Connection {
 }
 
 public final class ch/softappeal/yass2/remote/session/GeneratedByYassKt {
+	public static final fun Service (Lch/softappeal/yass2/remote/ServiceId;Lch/softappeal/yass2/remote/session/KeepAlive;)Lch/softappeal/yass2/remote/Service;
 	public static final fun proxy (Lch/softappeal/yass2/remote/ServiceId;Lkotlin/jvm/functions/Function2;)Lch/softappeal/yass2/remote/session/KeepAlive;
 	public static final fun proxy (Lch/softappeal/yass2/remote/session/KeepAlive;Lkotlin/jvm/functions/Function4;)Lch/softappeal/yass2/remote/session/KeepAlive;
-	public static final fun service (Lch/softappeal/yass2/remote/ServiceId;Lch/softappeal/yass2/remote/session/KeepAlive;)Lch/softappeal/yass2/remote/Service;
 }
 
 public abstract interface class ch/softappeal/yass2/remote/session/KeepAlive {

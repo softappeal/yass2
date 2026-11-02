@@ -49,8 +49,6 @@ public abstract interface class ch/softappeal/yass2/serialize/Writer {
 
 public class ch/softappeal/yass2/serialize/binary/BinaryEncoder {
 	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;)V
-	public final fun getRead ()Lkotlin/jvm/functions/Function1;
-	public final fun getWrite ()Lkotlin/jvm/functions/Function2;
 }
 
 public abstract interface annotation class ch/softappeal/yass2/serialize/binary/BinaryEncoders : java/lang/annotation/Annotation {
@@ -123,98 +121,67 @@ public final class ch/softappeal/yass2/serialize/binary/StringBinaryEncoder : ch
 	public static final field INSTANCE Lch/softappeal/yass2/serialize/binary/StringBinaryEncoder;
 }
 
-public abstract class ch/softappeal/yass2/serialize/string/BaseStringEncoder : ch/softappeal/yass2/serialize/string/StringEncoder {
-	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
-	public final fun getReadBase ()Lkotlin/jvm/functions/Function1;
-	public final fun getWriteBase ()Lkotlin/jvm/functions/Function1;
+public class ch/softappeal/yass2/serialize/text/AbstractTextEncoder {
 }
 
-public final class ch/softappeal/yass2/serialize/string/ByteArrayStringEncoder : ch/softappeal/yass2/serialize/string/BaseStringEncoder {
-	public static final field INSTANCE Lch/softappeal/yass2/serialize/string/ByteArrayStringEncoder;
+public final class ch/softappeal/yass2/serialize/text/ByteArrayTextEncoder : ch/softappeal/yass2/serialize/text/TextEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/serialize/text/ByteArrayTextEncoder;
 }
 
-public final class ch/softappeal/yass2/serialize/string/ClassStringEncoder : ch/softappeal/yass2/serialize/string/StringEncoder {
+public final class ch/softappeal/yass2/serialize/text/ClassTextEncoder : ch/softappeal/yass2/serialize/text/AbstractTextEncoder {
 	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;[Lkotlin/Pair;)V
 }
 
-public final class ch/softappeal/yass2/serialize/string/DoubleStringEncoder : ch/softappeal/yass2/serialize/string/BaseStringEncoder {
-	public static final field INSTANCE Lch/softappeal/yass2/serialize/string/DoubleStringEncoder;
+public final class ch/softappeal/yass2/serialize/text/DoubleTextEncoder : ch/softappeal/yass2/serialize/text/TextEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/serialize/text/DoubleTextEncoder;
 }
 
-public final class ch/softappeal/yass2/serialize/string/EnumStringEncoder : ch/softappeal/yass2/serialize/string/BaseStringEncoder {
+public final class ch/softappeal/yass2/serialize/text/EnumTextEncoder : ch/softappeal/yass2/serialize/text/TextEncoder {
 	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;)V
 }
 
-public final class ch/softappeal/yass2/serialize/string/IntStringEncoder : ch/softappeal/yass2/serialize/string/BaseStringEncoder {
-	public static final field INSTANCE Lch/softappeal/yass2/serialize/string/IntStringEncoder;
+public final class ch/softappeal/yass2/serialize/text/IntTextEncoder : ch/softappeal/yass2/serialize/text/TextEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/serialize/text/IntTextEncoder;
 }
 
-public final class ch/softappeal/yass2/serialize/string/JsonSerializer : ch/softappeal/yass2/serialize/string/StringSerializer {
-	public fun <init> (Ljava/util/List;)V
-	public fun read (Lch/softappeal/yass2/serialize/Reader;)Ljava/lang/Object;
-	public fun write (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
+public final class ch/softappeal/yass2/serialize/text/LongTextEncoder : ch/softappeal/yass2/serialize/text/TextEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/serialize/text/LongTextEncoder;
 }
 
-public final class ch/softappeal/yass2/serialize/string/KotlinSerializer : ch/softappeal/yass2/serialize/string/StringSerializer {
-	public fun <init> (Ljava/util/List;)V
-	public fun read (Lch/softappeal/yass2/serialize/Reader;)Ljava/lang/Object;
-	public fun write (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
+public abstract class ch/softappeal/yass2/serialize/text/TextEncoder : ch/softappeal/yass2/serialize/text/AbstractTextEncoder {
+	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
 }
 
-public final class ch/softappeal/yass2/serialize/string/KotlinSerializerKt {
-	public static final fun ByteArray (Ljava/lang/String;)[B
-	public static final fun Double (Ljava/lang/String;)D
-	public static final fun Int (Ljava/lang/String;)I
-	public static final fun Long (Ljava/lang/String;)J
-	public static final fun invoke (Ljava/lang/Enum;)Ljava/lang/Enum;
-}
-
-public final class ch/softappeal/yass2/serialize/string/LongStringEncoder : ch/softappeal/yass2/serialize/string/BaseStringEncoder {
-	public static final field INSTANCE Lch/softappeal/yass2/serialize/string/LongStringEncoder;
-}
-
-public class ch/softappeal/yass2/serialize/string/StringEncoder {
-	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;)V
-}
-
-public abstract interface annotation class ch/softappeal/yass2/serialize/string/StringEncoders : java/lang/annotation/Annotation {
+public abstract interface annotation class ch/softappeal/yass2/serialize/text/TextEncoders : java/lang/annotation/Annotation {
 	public abstract fun value ()[Ljava/lang/Class;
 }
 
-public abstract class ch/softappeal/yass2/serialize/string/StringReader : ch/softappeal/yass2/serialize/Reader {
-	public fun <init> (Lch/softappeal/yass2/serialize/Reader;IZ)V
-	public synthetic fun <init> (Lch/softappeal/yass2/serialize/Reader;IZILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun getProperty (Ljava/lang/String;)Ljava/lang/Object;
-	public fun readByte ()B
-	public fun readByteArray (I)[B
-}
-
-public abstract class ch/softappeal/yass2/serialize/string/StringSerializer : ch/softappeal/yass2/serialize/Serializer {
+public final class ch/softappeal/yass2/serialize/text/TextSerializer : ch/softappeal/yass2/serialize/Serializer {
 	public static final field BOOLEAN_ENCODER_ID I
 	public static final field FIRST_ENCODER_ID I
 	public static final field LIST_ENCODER_ID I
 	public static final field NO_ENCODER_ID I
 	public static final field STRING_ENCODER_ID I
-	public fun <init> (Ljava/util/List;)V
-}
-
-public final class ch/softappeal/yass2/serialize/string/StringSerializerKt {
-	public static final fun fromString (Lch/softappeal/yass2/serialize/string/StringSerializer;Ljava/lang/String;)Ljava/lang/Object;
-	public static final fun toString (Lch/softappeal/yass2/serialize/string/StringSerializer;Ljava/lang/Object;)Ljava/lang/String;
-}
-
-public abstract class ch/softappeal/yass2/serialize/string/StringWriter : ch/softappeal/yass2/serialize/Writer {
-	public fun <init> (Lch/softappeal/yass2/serialize/Writer;IZ)V
-	public synthetic fun <init> (Lch/softappeal/yass2/serialize/Writer;IZILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun writeByte (B)V
-	public fun writeByteArray ([B)V
-	public abstract fun writeProperty (Ljava/lang/String;Ljava/lang/Object;)V
-	public abstract fun writeProperty (Ljava/lang/String;Ljava/lang/Object;I)V
-}
-
-public final class ch/softappeal/yass2/serialize/string/TextSerializer : ch/softappeal/yass2/serialize/string/StringSerializer {
-	public fun <init> (Ljava/util/List;)V
+	public fun <init> ([Lch/softappeal/yass2/serialize/text/AbstractTextEncoder;)V
 	public fun read (Lch/softappeal/yass2/serialize/Reader;)Ljava/lang/Object;
 	public fun write (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
+}
+
+public final class ch/softappeal/yass2/serialize/text/TextSerializer$TextReader : ch/softappeal/yass2/serialize/Reader {
+	public final fun getProperty (Ljava/lang/String;)Ljava/lang/Object;
+	public fun readByte ()B
+	public fun readByteArray (I)[B
+}
+
+public final class ch/softappeal/yass2/serialize/text/TextSerializer$TextWriter : ch/softappeal/yass2/serialize/Writer {
+	public fun writeByte (B)V
+	public fun writeByteArray ([B)V
+	public final fun writeProperty (Ljava/lang/String;Ljava/lang/Object;)V
+	public final fun writeProperty (Ljava/lang/String;Ljava/lang/Object;I)V
+}
+
+public final class ch/softappeal/yass2/serialize/text/TextSerializerKt {
+	public static final fun fromString (Lch/softappeal/yass2/serialize/text/TextSerializer;Ljava/lang/String;)Ljava/lang/Object;
+	public static final fun toString (Lch/softappeal/yass2/serialize/text/TextSerializer;Ljava/lang/Object;)Ljava/lang/String;
 }
 
