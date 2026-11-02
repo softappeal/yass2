@@ -2,62 +2,20 @@ package ch.softappeal.yass2.serialize
 
 import ch.softappeal.yass2.serialize.binary.BinaryEncoders
 import ch.softappeal.yass2.serialize.binary.BooleanBinaryEncoder
-import ch.softappeal.yass2.serialize.binary.ByteArrayBinaryEncoder
-import ch.softappeal.yass2.serialize.binary.DoubleBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
-import ch.softappeal.yass2.serialize.binary.LongBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.StringBinaryEncoder
-import ch.softappeal.yass2.serialize.string.ByteArrayStringEncoder
-import ch.softappeal.yass2.serialize.string.DoubleStringEncoder
-import ch.softappeal.yass2.serialize.string.IntStringEncoder
-import ch.softappeal.yass2.serialize.string.LongStringEncoder
-import ch.softappeal.yass2.serialize.string.StringEncoders
+import ch.softappeal.yass2.serialize.text.IntTextEncoder
+import ch.softappeal.yass2.serialize.text.TextEncoders
 
 enum class Gender { Female, Male }
 
-class Types(
-    val boolean: Boolean,
-    val int: Int,
-    val long: Long,
-    val double: Double,
-    val string: String,
-    val bytes: ByteArray,
-    val gender: Gender,
-    val list: List<Any?>,
-    val b: B,
-    val booleanOptional: Boolean?,
-    val intOptional: Int?,
-    val longOptional: Long?,
-    val doubleOptional: Double?,
-    val stringOptional: String?,
-    val bytesOptional: ByteArray?,
-    val genderOptional: Gender?,
-    val listOptional: List<Any?>?,
-    val bOptional: B?,
-)
+open class A(open val a: Int?)
 
-open class A(open val a: Int)
+data class B(override val a: Int, val b: Int) : A(a)
 
-class B(override val a: Int, val b: Int) : A(123)
-
-class Poly(
+data class Poly(
     val a: A,
     val b: B,
-)
-
-class ManyProperties(
-    var h: Int,
-    val d: Int,
-    val f: Int,
-    val g: Int,
-    var b: Int,
-)
-
-class DivideByZeroException : Exception()
-
-class ThrowableFake(
-    val cause: String?,
-    val message: String,
 )
 
 data class Example(
@@ -69,29 +27,26 @@ data class Example(
     val listOptional: List<Int>?,
 )
 
-@BinaryEncoders(
-    BooleanBinaryEncoder::class,
-    IntBinaryEncoder::class,
-    LongBinaryEncoder::class,
-    DoubleBinaryEncoder::class,
-    StringBinaryEncoder::class,
-    ByteArrayBinaryEncoder::class,
+data class TextBuiltIn(
+    val boolean: Boolean,
+    val booleanOptional: Boolean?,
+    val string: String,
+    val stringOptional: String?,
 )
-@StringEncoders(
-    IntStringEncoder::class,
-    LongStringEncoder::class,
-    DoubleStringEncoder::class,
-    ByteArrayStringEncoder::class,
+
+@BinaryEncoders(
+    IntBinaryEncoder::class,
+    BooleanBinaryEncoder::class,
+    StringBinaryEncoder::class,
+)
+@TextEncoders(
+    IntTextEncoder::class,
 )
 @ConcreteAndEnumClasses(
-    Gender::class,
     A::class,
     B::class,
     Poly::class,
-    ManyProperties::class,
-    DivideByZeroException::class,
-    ThrowableFake::class,
-    Types::class,
     Example::class,
+    TextBuiltIn::class,
 )
 internal class Generate

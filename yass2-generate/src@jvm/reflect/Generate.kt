@@ -7,7 +7,7 @@ import ch.softappeal.yass2.generate.writeGeneratedFile
 import ch.softappeal.yass2.remote.Proxies
 import ch.softappeal.yass2.serialize.ConcreteAndEnumClasses
 import ch.softappeal.yass2.serialize.binary.BinaryEncoders
-import ch.softappeal.yass2.serialize.string.StringEncoders
+import ch.softappeal.yass2.serialize.text.TextEncoders
 import kotlin.io.path.Path
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KType
@@ -27,17 +27,17 @@ private fun Any.generateCode(annotatedElement: KAnnotatedElement) = buildString 
 
         val concreteAndEnumClasses = annotatedElement.findAnnotation<ConcreteAndEnumClasses>()
         val binaryEncoders = annotatedElement.findAnnotation<BinaryEncoders>()
-        val stringEncoders = annotatedElement.findAnnotation<StringEncoders>()
+        val textEncoders = annotatedElement.findAnnotation<TextEncoders>()
         if (concreteAndEnumClasses == null) {
-            require(binaryEncoders == null && stringEncoders == null) {
+            require(binaryEncoders == null && textEncoders == null) {
                 "missing annotation '${ConcreteAndEnumClasses::class.qualifiedName}'"
             }
         } else {
-            require(binaryEncoders != null || stringEncoders != null) {
-                "missing annotations '${BinaryEncoders::class.qualifiedName}' or '${StringEncoders::class.qualifiedName}'"
+            require(binaryEncoders != null || textEncoders != null) {
+                "missing annotations '${BinaryEncoders::class.qualifiedName}' or '${TextEncoders::class.qualifiedName}'"
             }
             binaryEncoders?.let { generateBinarySerializer(it.value.toList(), concreteAndEnumClasses.value.toList()) }
-            stringEncoders?.let { generateStringEncoders(it.value.toList(), concreteAndEnumClasses.value.toList()) }
+            textEncoders?.let { generateTextSerializer(it.value.toList(), concreteAndEnumClasses.value.toList()) }
         }
     }
 }

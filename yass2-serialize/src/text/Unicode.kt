@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.serialize.string
+package ch.softappeal.yass2.serialize.text
 
 import ch.softappeal.yass2.serialize.Reader
 

@@ -11,6 +11,8 @@
     "UNUSED_ANONYMOUS_PARAMETER",
     "KotlinRedundantDiagnosticSuppress",
     "RedundantUpperBound",
+    "UNNECESSARY_SAFE_CALL",
+    "ForEachParameterNotUsed",
 )
 
 package ch.softappeal.yass2.remote.session
@@ -38,7 +40,7 @@ public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.remote.sessi
         }
     }
 
-public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.remote.session.KeepAlive>.service(
+public fun ch.softappeal.yass2.remote.ServiceId<ch.softappeal.yass2.remote.session.KeepAlive>.Service(
     implementation: ch.softappeal.yass2.remote.session.KeepAlive,
 ): ch.softappeal.yass2.remote.Service =
     ch.softappeal.yass2.remote.Service(id) { function, parameters ->

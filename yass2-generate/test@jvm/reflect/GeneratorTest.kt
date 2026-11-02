@@ -8,7 +8,7 @@ import ch.softappeal.yass2.serialize.ConcreteAndEnumClasses
 import ch.softappeal.yass2.serialize.binary.BinaryEncoder
 import ch.softappeal.yass2.serialize.binary.BinaryEncoders
 import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
-import ch.softappeal.yass2.serialize.string.StringEncoders
+import ch.softappeal.yass2.serialize.text.TextEncoders
 import kotlin.reflect.KClass
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -130,8 +130,8 @@ class GeneratorTest {
     }
 
     @Test
-    fun onlyStringEncoders() {
-        @StringEncoders
+    fun onlyTextEncoders() {
+        @TextEncoders
         class Generate
         assertFailsWithMessage<IllegalArgumentException>(
             "missing annotation 'ch.softappeal.yass2.serialize.ConcreteAndEnumClasses'"
@@ -143,7 +143,7 @@ class GeneratorTest {
         @ConcreteAndEnumClasses
         class Generate
         assertFailsWithMessage<IllegalArgumentException>(
-            "missing annotations 'ch.softappeal.yass2.serialize.binary.BinaryEncoders' or 'ch.softappeal.yass2.serialize.string.StringEncoders'"
+            "missing annotations 'ch.softappeal.yass2.serialize.binary.BinaryEncoders' or 'ch.softappeal.yass2.serialize.text.TextEncoders'"
         ) { generateFile("", Generate::class) }
     }
 }

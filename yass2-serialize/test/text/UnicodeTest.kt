@@ -1,4 +1,4 @@
-package ch.softappeal.yass2.serialize.string
+package ch.softappeal.yass2.serialize.text
 
 import ch.softappeal.yass2.serialize.ByteArrayReader
 import ch.softappeal.yass2.serialize.assertFailsWithMessage
@@ -58,6 +58,8 @@ class UnicodeTest {
             assertEquals(value, readCodePoint(*bytes))
         }
 
+        read(0x20, 0b0010_0000)
+
         assertFailsWithMessage<IllegalStateException>("overlong 2 byte encoding of ${0x7F}") {
             readCodePoint(0b1100_0001, 0b1011_1111)
         }
@@ -73,6 +75,8 @@ class UnicodeTest {
         assertFailsWithMessage<IllegalStateException>("illegal surrogate ${0xDFFF}") {
             readCodePoint(0b1110_1101, 0b1011_1111, 0b1011_1111)
         }
+
+        read(0xFFFF, 0b1110_1111, 0b1011_1111, 0b1011_1111)
 
         assertFailsWithMessage<IllegalStateException>("overlong 4 byte encoding of ${0xFFFF}") {
             readCodePoint(0b1111_0000, 0b1000_1111, 0b1011_1111, 0b1011_1111)

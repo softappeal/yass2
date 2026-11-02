@@ -12,29 +12,29 @@ suspend fun Tunnel.clientTest(testMode: TestMode, interceptor: String) {
     CalculatorId.proxy(this).proxy(printer(interceptor)).clientTest(testMode)
 }
 
-fun serverTunnel(interceptor: String) = tunnel(
-    CalculatorId.service(CalculatorImpl.proxy(printer(interceptor)))
+fun serverTunnel(interceptor: String) = Tunnel(
+    CalculatorId.Service(CalculatorImpl.proxy(printer(interceptor)))
 )
 
 class RemoteTest {
     @Test
     fun duplicatedService() = assertFailsWithMessage<IllegalArgumentException>("duplicated service") {
         val service = Service("service") { _, _ -> null }
-        tunnel(service, service)
+        Tunnel(service, service)
     }
 
     @Test
     fun noService() = runTest {
         val request = Request("invalid", "add", listOf(1, 2))
         assertFailsWithMessage<IllegalStateException>("no service '${request.service}'") {
-            tunnel(Service("service") { _, _ -> null })(request)
+            Tunnel(Service("service") { _, _ -> null })(request)
         }
     }
 
     @Test
     fun tunnelTest() = runTest {
         val exception = DivideByZeroException()
-        val tunnel = tunnel(
+        val tunnel = Tunnel(
             Service("service1") { function, parameters ->
                 when (function) {
                     "add" -> (parameters[0] as Int) + (parameters[1] as Int)
@@ -59,7 +59,7 @@ class RemoteTest {
     @Test
     fun noFunction() = runTest {
         assertFailsWithMessage<IllegalStateException>("service 'Calculator' has no function 'other'") {
-            ServiceId<OtherService>(CalculatorId.id).proxy(tunnel(CalculatorId.service(CalculatorImpl)))
+            ServiceId<OtherService>(CalculatorId.id).proxy(Tunnel(CalculatorId.Service(CalculatorImpl)))
                 .other()
         }
     }

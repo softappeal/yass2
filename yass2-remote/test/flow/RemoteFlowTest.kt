@@ -4,9 +4,9 @@ package ch.softappeal.yass2.remote.flow
 
 import ch.softappeal.yass2.remote.DivideByZeroException
 import ch.softappeal.yass2.remote.ServiceId
+import ch.softappeal.yass2.remote.Tunnel
 import ch.softappeal.yass2.remote.assertFailsWithMessage
 import ch.softappeal.yass2.remote.printer
-import ch.softappeal.yass2.remote.tunnel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -34,9 +34,9 @@ private fun flowFactory(flowId: Int) = when (flowId) {
 private val FlowServiceId = ServiceId<FlowService<Int, Int>>("FlowService")
 
 private fun CoroutineScope.createFlow(flowId: Int): Flow<Int> {
-    val flowService = flowService(::flowFactory).proxy(printer("flow"))
-    val remoteFlowService = FlowServiceId.proxy(tunnel(FlowServiceId.service(flowService)))
-    return remoteFlowService.createFlow(flowId)
+    val flowService = FlowService(::flowFactory).proxy(printer("flow"))
+    val remoteFlowService = FlowServiceId.proxy(Tunnel(FlowServiceId.Service(flowService)))
+    return remoteFlowService.Flow(flowId)
 }
 
 class RemoteFlowTest {
@@ -79,7 +79,7 @@ class RemoteFlowTest {
 
     @Test
     fun noCollectId() = runTest {
-        val flowService = flowService(::flowFactory)
+        val flowService = FlowService(::flowFactory)
         assertFailsWithMessage<IllegalStateException>("no collectId 123") { flowService.next(123) }
     }
 }

@@ -7,10 +7,9 @@ import ch.softappeal.yass2.ktor.tunnel
 import ch.softappeal.yass2.remote.Tunnel
 import ch.softappeal.yass2.remote.session.Session
 import ch.softappeal.yass2.remote.session.SessionFactory
-import ch.softappeal.yass2.remote.tunnel
-import ch.softappeal.yass2.serialize.string.StringSerializer
-import ch.softappeal.yass2.serialize.string.fromString
-import ch.softappeal.yass2.serialize.string.toString
+import ch.softappeal.yass2.serialize.text.TextSerializer
+import ch.softappeal.yass2.serialize.text.fromString
+import ch.softappeal.yass2.serialize.text.toString
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.ws
 import io.ktor.server.application.install
@@ -21,7 +20,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-fun useSerializer(serializer: StringSerializer) {
+fun useSerializer(serializer: TextSerializer) {
     println("*** useSerializer ***")
     val serialized = serializer.toString(MyDate(123456))
     println(serialized)
@@ -59,8 +58,8 @@ object NewsListenerImpl : NewsListener {
 
 fun initiatorSessionFactory(): SessionFactory<WebSocketConnection> = {
     object : Session<WebSocketConnection>() {
-        override val serverTunnel = tunnel(
-            NewsListenerId.service(NewsListenerImpl),
+        override val serverTunnel = Tunnel(
+            NewsListenerId.Service(NewsListenerImpl),
         )
 
         override fun opened() {
@@ -79,8 +78,8 @@ fun initiatorSessionFactory(): SessionFactory<WebSocketConnection> = {
 
 fun acceptorSessionFactory(): SessionFactory<WebSocketConnection> = {
     object : Session<WebSocketConnection>() {
-        override val serverTunnel = tunnel(
-            CalculatorId.service(CalculatorImpl),
+        override val serverTunnel = Tunnel(
+            CalculatorId.Service(CalculatorImpl),
         )
 
         override fun opened() {
@@ -116,7 +115,7 @@ suspend fun useKtor() {
     val server = embeddedServer(io.ktor.server.cio.CIO, port) {
         install(io.ktor.server.websocket.WebSockets)
         routing {
-            route(path, ContractSerializer, tunnel(CalculatorId.service(CalculatorImpl)))
+            route(path, ContractSerializer, Tunnel(CalculatorId.Service(CalculatorImpl)))
             webSocket(path) { receiveLoop(ContractSerializer, acceptorSessionFactory()) }
         }
     }

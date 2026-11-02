@@ -2,9 +2,9 @@ package ch.softappeal.yass2.remote.session
 
 import ch.softappeal.yass2.remote.CalculatorId
 import ch.softappeal.yass2.remote.CalculatorImpl
+import ch.softappeal.yass2.remote.Service
+import ch.softappeal.yass2.remote.Tunnel
 import ch.softappeal.yass2.remote.proxy
-import ch.softappeal.yass2.remote.service
-import ch.softappeal.yass2.remote.tunnel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -44,7 +44,7 @@ class SessionConnectorTest {
             }
             val acceptorSessionFactory = {
                 object : Session<Connection>() {
-                    override val serverTunnel = tunnel(CalculatorId.service(CalculatorImpl))
+                    override val serverTunnel = Tunnel(CalculatorId.Service(CalculatorImpl))
                     override suspend fun closed(e: Exception?) {
                         assertNull(e)
                         println("acceptorSession closed $opened")

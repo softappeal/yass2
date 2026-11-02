@@ -38,7 +38,7 @@
 * generates code (works on any platform and is fast) either with [KSP](https://kotlinlang.org/docs/ksp-overview.html)
   or with reflection
     * fast, compact and extendable binary serializer for high throughput and low latency
-    * extendable string-based serializers: TextSerializer, JsonSerializer and KotlinSerializer (serializes Kotlin source code)
+    * extendable text-based serializer
     * interceptor (around advice, aspect-oriented programming)
 
 * yass2 has multiple modules with the following dependencies
