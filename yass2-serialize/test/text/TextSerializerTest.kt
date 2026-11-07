@@ -289,45 +289,6 @@ class TextSerializerTest {
             SERIALIZER.fromString("A(a:null)")
         })
         assertNull((SERIALIZER.fromString("A()") as A).a)
-
-        // exception: the built-in types Boolean, String and List could be explicitly set to null
-        assertNull(
-            (SERIALIZER.fromString(
-                """
-                    TextBuiltIn(
-                        boolean: true
-                        booleanOptional: null
-                        string: "hello"
-                        stringOptional: null
-                    )
-                """.trimIndent()
-            ) as TextBuiltIn).booleanOptional
-        )
-        assertNull(
-            (SERIALIZER.fromString(
-                """
-                    TextBuiltIn(
-                        boolean: true
-                        booleanOptional: null
-                        string: "hello"
-                        stringOptional: null
-                    )
-                """.trimIndent()
-            ) as TextBuiltIn).stringOptional
-        )
-        assertNull(
-            (SERIALIZER.fromString(
-                """
-                    Example(
-                        int: 10
-                        any: Int(11)
-                        list: [
-                        ]
-                        listOptional: null
-                    )
-                """.trimIndent()
-            ) as Example).listOptional
-        )
     }
 
     @Test

@@ -243,11 +243,11 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
             skipWhitespace()
         }
 
-        private val propertyNameToValue = mutableMapOf<String, Any?>()
+        private val propertyNameToValue = mutableMapOf<String, Any>()
 
         public fun getProperty(name: String): Any? = propertyNameToValue[name]
 
-        private fun ClassTextEncoder<*>.addProperty(name: String, value: Any?) {
+        private fun ClassTextEncoder<*>.addProperty(name: String, value: Any) {
             check(!propertyNameToValue.containsKey(name)) { "duplicated property '${type.simpleName}.$name'" }
             propertyNameToValue[name] = value
         }
@@ -289,7 +289,7 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
                     readNextCodePointAndSkipWhitespace()
                     val propertyEncoderId = classEncoder.propertyEncoderId(propertyName)
                     val propertyValue = if (propertyEncoderId != NO_ENCODER_ID) encoder(propertyEncoderId).read(this) else {
-                        TextReader(this, nextCodePoint).readObject().apply { readNextCodePoint() }
+                        TextReader(this, nextCodePoint).readObject().apply { readNextCodePoint() }!!
                     }
                     skipWhitespace()
                     classEncoder.addProperty(propertyName, propertyValue)
