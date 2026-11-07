@@ -300,7 +300,6 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
             skipWhitespace()
             if (expectedCodePoint(QUOTE)) return readQuotedString()
             if (expectedCodePoint(LBRACKET)) return readList()
-
             val className = buildString {
                 while (!expectedCodePoint(LPAREN) && !isWhitespace()) {
                     addCodePoint(nextCodePoint)
@@ -312,7 +311,6 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
                     readNextCodePoint()
                 }
             }
-
             skipWhitespace()
             readNextCodePointAndSkipWhitespace()
             val encoder = encoder(className)
