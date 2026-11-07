@@ -56,6 +56,7 @@ class TextSerializerTest {
             "[]",
             "  [  ]",
         )
+        @Suppress("SpellCheckingInspection")
         check(
             listOf(
                 null,
@@ -71,7 +72,7 @@ class TextSerializerTest {
                     "hello"
                 ]
             """.trimIndent(),
-            """[null false true "hello"]""",
+            """[nullfalsetrue"hello"]""",
             """  [  null  false  true  "hello"  ]""",
         )
 
