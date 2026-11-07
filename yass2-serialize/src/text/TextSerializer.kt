@@ -67,7 +67,6 @@ public class ClassTextEncoder<T : Any>(
     type: KClass<T>,
     write: TextSerializer.TextWriter.(value: T) -> Unit,
     read: TextSerializer.TextReader.() -> T,
-    /** see [TextSerializer.NO_ENCODER_ID] */
     vararg propertyEncoderIds: Pair<String, Int>,
 ) : AbstractTextEncoder<T>(type, write, read) {
     private val propertyToEncoderId = propertyEncoderIds.toMap()
