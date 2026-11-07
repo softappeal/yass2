@@ -291,8 +291,8 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
                     val propertyValue = if (propertyEncoderId != NO_ENCODER_ID) encoder(propertyEncoderId).read(this) else {
                         TextReader(this, nextCodePoint).readObject().apply { readNextCodePoint() }!!
                     }
-                    skipWhitespace()
                     classEncoder.addProperty(propertyName, propertyValue)
+                    skipWhitespace()
                 }
                 return classEncoder.read(this)
             }
@@ -311,9 +311,9 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
                     }
                     readNextCodePoint()
                 }
-                skipWhitespace()
             }
 
+            skipWhitespace()
             readNextCodePointAndSkipWhitespace()
             val encoder = encoder(className)
             return if (encoder is ClassTextEncoder) readClass(encoder) else encoder.read(this)
