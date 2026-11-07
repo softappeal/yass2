@@ -124,12 +124,12 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
             repeat(indent) { writeByteArray(Tab) }
         }
 
-        private fun writeNewLine() {
-            writeAsciiChar(NL)
-        }
-
         private fun writeAsciiChar(asciiCodePoint: Int) {
             writeByte(asciiCodePoint.toByte())
+        }
+
+        private fun writeNewLine() {
+            writeAsciiChar(NL)
         }
 
         internal fun writeString(string: String) {
@@ -210,9 +210,7 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
         }
 
         public fun writeProperty(name: String, value: Any?, encoderId: Int) {
-            writeProperty(name, value) {
-                if (!writeBuiltIn(value)) write(encoder(encoderId), value!!)
-            }
+            writeProperty(name, value) { if (!writeBuiltIn(value)) write(encoder(encoderId), value!!) }
         }
     }
 
