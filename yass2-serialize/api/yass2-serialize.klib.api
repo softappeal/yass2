@@ -77,7 +77,7 @@ final class <#A: kotlin/Enum<#A>> ch.softappeal.yass2.serialize.text/EnumTextEnc
 }
 
 final class ch.softappeal.yass2.serialize.text/TextSerializer : ch.softappeal.yass2.serialize/Serializer { // ch.softappeal.yass2.serialize.text/TextSerializer|null[0]
-    constructor <init>(kotlin/Array<out ch.softappeal.yass2.serialize.text/AbstractTextEncoder<*>>...) // ch.softappeal.yass2.serialize.text/TextSerializer.<init>|<init>(kotlin.Array<out|ch.softappeal.yass2.serialize.text.AbstractTextEncoder<*>>...){}[0]
+    constructor <init>(kotlin/Boolean, kotlin/Array<out ch.softappeal.yass2.serialize.text/AbstractTextEncoder<*>>...) // ch.softappeal.yass2.serialize.text/TextSerializer.<init>|<init>(kotlin.Boolean;kotlin.Array<out|ch.softappeal.yass2.serialize.text.AbstractTextEncoder<*>>...){}[0]
 
     final fun (ch.softappeal.yass2.serialize/Reader).read(): kotlin/Any? // ch.softappeal.yass2.serialize.text/TextSerializer.read|read@ch.softappeal.yass2.serialize.Reader(){}[0]
     final fun (ch.softappeal.yass2.serialize/Writer).write(kotlin/Any?) // ch.softappeal.yass2.serialize.text/TextSerializer.write|write@ch.softappeal.yass2.serialize.Writer(kotlin.Any?){}[0]

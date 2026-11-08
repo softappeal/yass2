@@ -165,7 +165,7 @@ public final class ch/softappeal/yass2/serialize/text/TextSerializer : ch/softap
 	public static final field LIST_ENCODER_ID I
 	public static final field NO_ENCODER_ID I
 	public static final field STRING_ENCODER_ID I
-	public fun <init> ([Lch/softappeal/yass2/serialize/text/AbstractTextEncoder;)V
+	public fun <init> (Z[Lch/softappeal/yass2/serialize/text/AbstractTextEncoder;)V
 	public fun read (Lch/softappeal/yass2/serialize/Reader;)Ljava/lang/Object;
 	public fun write (Lch/softappeal/yass2/serialize/Writer;Ljava/lang/Object;)V
 }

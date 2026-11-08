@@ -167,8 +167,9 @@ internal fun CodeWriter.generateTextSerializer(
         }"
     }
 
-    writeFun("TextSerializer(): ${TextSerializer::class.qualifiedName}") {
+    writeFun("TextSerializer(compact: Boolean = true): ${TextSerializer::class.qualifiedName}") {
         writeNestedLine("${TextSerializer::class.qualifiedName}(", ")") {
+            writeNestedLine("compact,")
             writeNestedLine("// ${String::class.qualifiedName}: ${TextSerializer.STRING_ENCODER_ID}")
             writeNestedLine("// ${List::class.qualifiedName}: ${TextSerializer.LIST_ENCODER_ID}")
             var encoderId = TextSerializer.FIRST_ENCODER_ID

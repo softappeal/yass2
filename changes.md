@@ -6,6 +6,10 @@
 - `KotlinSerializer` and `JsonSerializer` removed
 - KSP code generator added
 
+## Changes
+
+- compact mode added to `TextSerializer`
+
 ## Internal
 
 - module `tests` removed and split to other modules

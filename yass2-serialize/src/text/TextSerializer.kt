@@ -65,7 +65,7 @@ public class ClassTextEncoder<T : Any>(
  * It reads/writes UTF-8 encoded text.
  * It has built-in encoders for `null`, [String] and [List].
  */
-public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Serializer {
+public class TextSerializer(private val compact: Boolean, vararg textEncoders: AbstractTextEncoder<*>) : Serializer {
 
     /** @suppress */
     @InternalSerializeApi public companion object {
@@ -103,6 +103,7 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
         private val indent: Int,
     ) : Writer by writer {
         private fun writeIndent() {
+            if (compact) return
             repeat(indent) { writeByteArray(Tab) }
         }
 
@@ -111,7 +112,7 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
         }
 
         private fun writeNewLine() {
-            writeAsciiChar(NL)
+            writeAsciiChar(if (compact) SP else NL)
         }
 
         internal fun writeString(string: String) {
@@ -180,7 +181,7 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
             writeIndent()
             writeString(name)
             writeAsciiChar(COLON)
-            writeAsciiChar(SP)
+            if (!compact) writeAsciiChar(SP)
             writeValue()
             writeNewLine()
         }

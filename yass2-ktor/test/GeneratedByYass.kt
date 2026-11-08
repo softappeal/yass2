@@ -185,8 +185,9 @@ public fun BinarySerializer(): ch.softappeal.yass2.serialize.binary.BinarySerial
         }
     }
 
-public fun TextSerializer(): ch.softappeal.yass2.serialize.text.TextSerializer =
+public fun TextSerializer(compact: Boolean = true): ch.softappeal.yass2.serialize.text.TextSerializer =
     ch.softappeal.yass2.serialize.text.TextSerializer(
+        compact,
         // kotlin.String: 0
         // kotlin.collections.List: 1
         ch.softappeal.yass2.serialize.text.IntTextEncoder, // 2

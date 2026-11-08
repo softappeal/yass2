@@ -38,7 +38,7 @@
 * generates code (works on any platform and is fast) either with [KSP](https://kotlinlang.org/docs/ksp-overview.html)
   or with reflection
     * fast, compact and extendable binary serializer for high throughput and low latency
-    * extendable text-based serializer
+    * extendable text-based serializer (NOTE: Attention: `DoubleTextEncoder` doesn't work for JS platform)
     * interceptor (around advice, aspect-oriented programming)
 
 * yass2 has multiple modules with the following dependencies

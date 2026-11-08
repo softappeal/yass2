@@ -132,11 +132,12 @@ class TextEncodersTest {
             assertFails { readBase("++2") }
         }
     }
+}
 
+abstract class DoubleTextEncodersTest {
     /** see [DoubleTextEncoder] */
-    @Suppress("unused")
-    // @Test
-    fun doubleNotJsPlatform() {
+    @Test
+    fun double() {
         with(DoubleTextEncoder) {
             check(0.0, "0.0")
             check(1.0, "1.0")

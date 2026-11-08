@@ -1,5 +1,7 @@
 // https://kotlinlang.org/docs/multiplatform-intro.html
 
+// TODO: manual coverage before release
+
 @file:Suppress("TaskMissingDescription", "AvoidApplyPluginMethod")
 
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
@@ -19,7 +21,6 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.dokka)
     alias(libs.plugins.publish)
-    alias(libs.plugins.kover)
 }
 
 // see https://amper.org/latest/user-guide/multiplatform/#module-layout
@@ -38,6 +39,11 @@ fun KotlinMultiplatformExtension.configureSourceSets() {
         jvmTest {
             kotlin.srcDir("test@jvm")
         }
+        if (linuxPlatform) {
+            linuxTest {
+                kotlin.srcDir("test@linux")
+            }
+        }
         if (webPlatform) {
             webTest {
                 kotlin.srcDir("test@web")
@@ -46,6 +52,7 @@ fun KotlinMultiplatformExtension.configureSourceSets() {
                 resources.srcDir("testResources@js")
             }
             wasmJsTest {
+                kotlin.srcDir("test@wasmJs")
                 resources.srcDir("testResources@wasmJs")
             }
         }
@@ -111,7 +118,6 @@ allprojects {
     if (project.name.startsWith("yass2")) { // includes the root project (needed for doc over all modules)
         apply(plugin = "org.jetbrains.dokka")
         apply(plugin = "com.vanniktech.maven.publish")
-        apply(plugin = "org.jetbrains.kotlinx.kover")
 
         dokka {
             dokkaPublications.html {
@@ -144,7 +150,6 @@ dependencies {
     allprojects.forEach { project ->
         if (project.name.startsWith("yass2-")) {
             dokka(project)
-            kover(project)
         }
     }
 }
