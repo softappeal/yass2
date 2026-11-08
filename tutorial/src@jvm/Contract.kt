@@ -89,7 +89,7 @@ interface NewsListener {
 
 // Define all the encoders needed by the contract.
 @TextEncoders(
-    // String and Boolean is built-in
+    // String is built-in
     IntTextEncoder::class,
     MyDateEncoder::class,
 )

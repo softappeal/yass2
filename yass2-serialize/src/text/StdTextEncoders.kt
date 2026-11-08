@@ -3,6 +3,12 @@ package ch.softappeal.yass2.serialize.text
 import kotlin.io.encoding.Base64
 import kotlin.reflect.KClass
 
+public object BooleanTextEncoder : TextEncoder<Boolean>(
+    Boolean::class,
+    { toString() },
+    { toBooleanStrict() },
+)
+
 public object IntTextEncoder : TextEncoder<Int>(
     Int::class,
     { toString() },

@@ -8,7 +8,6 @@ import ch.softappeal.yass2.remote.ValueReply
 import ch.softappeal.yass2.remote.session.Packet
 import ch.softappeal.yass2.serialize.ConcreteAndEnumClasses
 import ch.softappeal.yass2.serialize.binary.BinaryEncoders
-import ch.softappeal.yass2.serialize.binary.BooleanBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.StringBinaryEncoder
 import ch.softappeal.yass2.serialize.text.IntTextEncoder
@@ -62,7 +61,6 @@ interface GenericService<in A : Number, B, out C> {
     GenericService::class,
 )
 @BinaryEncoders(
-    BooleanBinaryEncoder::class,
     IntBinaryEncoder::class,
     StringBinaryEncoder::class,
 )

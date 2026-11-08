@@ -44,7 +44,7 @@ class BinarySerializerTest {
                 list = listOf(12, 13),
                 listOptional = null,
             ),
-            8,               // Example
+            7,               // Example
             20,              // int
             0,               // intOptional
             2, 22,           // any
@@ -62,7 +62,7 @@ class BinarySerializerTest {
                 list = listOf(12, 13),
                 listOptional = listOf(16, 17),
             ),
-            8,                 // Example
+            7,                 // Example
             20,                // int
             1, 28,             // intOptional
             2, 22,             // any
@@ -85,8 +85,8 @@ class BinarySerializerTest {
                     b = 2,
                 ),
             ),
-            7,         // Poly
-            6, 20, 40, // a
+            6,         // Poly
+            5, 20, 40, // a
             2, 4,      // b
         )
     }

@@ -124,6 +124,10 @@ public final class ch/softappeal/yass2/serialize/binary/StringBinaryEncoder : ch
 public class ch/softappeal/yass2/serialize/text/AbstractTextEncoder {
 }
 
+public final class ch/softappeal/yass2/serialize/text/BooleanTextEncoder : ch/softappeal/yass2/serialize/text/TextEncoder {
+	public static final field INSTANCE Lch/softappeal/yass2/serialize/text/BooleanTextEncoder;
+}
+
 public final class ch/softappeal/yass2/serialize/text/ByteArrayTextEncoder : ch/softappeal/yass2/serialize/text/TextEncoder {
 	public static final field INSTANCE Lch/softappeal/yass2/serialize/text/ByteArrayTextEncoder;
 }
@@ -157,7 +161,6 @@ public abstract interface annotation class ch/softappeal/yass2/serialize/text/Te
 }
 
 public final class ch/softappeal/yass2/serialize/text/TextSerializer : ch/softappeal/yass2/serialize/Serializer {
-	public static final field BOOLEAN_ENCODER_ID I
 	public static final field FIRST_ENCODER_ID I
 	public static final field LIST_ENCODER_ID I
 	public static final field NO_ENCODER_ID I

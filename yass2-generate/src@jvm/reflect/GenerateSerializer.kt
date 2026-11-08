@@ -152,7 +152,6 @@ internal fun CodeWriter.generateTextSerializer(
     class StringProperty(property: KProperty1<out Any, *>) : Property(property) {
         private val encoderId = when (classifier) {
             String::class -> TextSerializer.STRING_ENCODER_ID
-            Boolean::class -> TextSerializer.BOOLEAN_ENCODER_ID
             List::class -> TextSerializer.LIST_ENCODER_ID
             else -> {
                 val baseClassIndex = baseClasses.indexOfFirst { it == classifier }
@@ -166,7 +165,6 @@ internal fun CodeWriter.generateTextSerializer(
         fun propertyEncoderId() = "\"$name\" to ${
             if (
                 encoderId != TextSerializer.STRING_ENCODER_ID &&
-                encoderId != TextSerializer.BOOLEAN_ENCODER_ID &&
                 encoderId != TextSerializer.LIST_ENCODER_ID
             ) encoderId else TextSerializer.NO_ENCODER_ID
         }"
@@ -175,7 +173,6 @@ internal fun CodeWriter.generateTextSerializer(
     writeFun("TextSerializer(): ${TextSerializer::class.qualifiedName}") {
         writeNestedLine("${TextSerializer::class.qualifiedName}(", ")") {
             writeNestedLine("// ${String::class.qualifiedName}: ${TextSerializer.STRING_ENCODER_ID}")
-            writeNestedLine("// ${Boolean::class.qualifiedName}: ${TextSerializer.BOOLEAN_ENCODER_ID}")
             writeNestedLine("// ${List::class.qualifiedName}: ${TextSerializer.LIST_ENCODER_ID}")
             var encoderId = TextSerializer.FIRST_ENCODER_ID
             encoders.forEach { type -> writeNestedLine("${type.qualifiedName}, // ${encoderId++}") }

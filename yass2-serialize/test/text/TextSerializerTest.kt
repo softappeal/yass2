@@ -35,18 +35,14 @@ class TextSerializerTest {
             println(assertFails { SERIALIZER.fromString(string) })
             println()
         }
-        fail("nullX")
-        fail("null ")
-        fail("falseX")
-        fail("trueX")
         fail("\"hello")
         fail("[")
         fail("[x")
 
         check(
             null,
-            "null",
-            "  null",
+            "*",
+            "  *",
         )
 
         check(
@@ -61,31 +57,16 @@ class TextSerializerTest {
         check(
             listOf(
                 null,
-                false,
-                true,
                 "hello",
             ),
             """
                 [
-                    null
-                    false
-                    true
+                    *
                     "hello"
                 ]
             """.trimIndent(),
-            """[nullfalsetrue"hello"]""", // NOTE: built-in types (null, false, true) in lists are also parsed without whitespace
-            """  [  null  false  true  "hello"  ]""",
-        )
-
-        check(
-            false,
-            "false",
-            "  false",
-        )
-        check(
-            true,
-            "true",
-            "  true",
+            """[*"hello"]""",
+            """  [  *  "hello"  ]""",
         )
 
         check(
@@ -219,29 +200,22 @@ class TextSerializerTest {
     fun textBuiltIn() {
         check(
             TextBuiltIn(
-                boolean = true,
-                booleanOptional = null,
                 string = "hello",
                 stringOptional = null,
             ),
             """
                 TextBuiltIn(
-                    boolean: true
                     string: "hello"
                 )
             """.trimIndent()
         )
         check(
             TextBuiltIn(
-                boolean = true,
-                booleanOptional = false,
                 string = "hello",
                 stringOptional = "world",
             ),
             """
                 TextBuiltIn(
-                    boolean: true
-                    booleanOptional: false
                     string: "hello"
                     stringOptional: "world"
                 )
@@ -319,27 +293,9 @@ class TextSerializerTest {
     @Test
     fun nullableProperties() {
         println(assertFails {
-            SERIALIZER.fromString("A(a:null)")
+            SERIALIZER.fromString("A(a:*)")
         })
         assertNull((SERIALIZER.fromString("A()") as A).a)
-    }
-
-    @Test
-    fun builtInPrefix() {
-        class nullX
-
-        val serializer = TextSerializer(
-            IntTextEncoder,
-            object : TextEncoder<nullX>(
-                nullX::class,
-                { "" },
-                { nullX() },
-            ) {},
-        )
-
-        assertEquals(1, serializer.fromString("Int(1)"))
-        assertNull(serializer.fromString("null"))
-        println(assertFails { serializer.fromString("nullX()") }) // NOTE: base type names can't start with a built-in prefix: null, false, true
     }
 
     @Test

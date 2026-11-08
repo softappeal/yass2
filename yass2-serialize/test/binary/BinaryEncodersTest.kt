@@ -28,6 +28,14 @@ private fun <T : Any> BinaryEncoder<T>.check(value: T, vararg bytes: Int) {
 
 class BinaryEncodersTest {
     @Test
+    fun boolean() {
+        with(BooleanBinaryEncoder) {
+            check(false, 0)
+            check(true, 1)
+        }
+    }
+
+    @Test
     fun enum() {
         with(EnumBinaryEncoder(Gender::class, enumEntries())) {
             check(Gender.Female, 0)
@@ -83,14 +91,6 @@ class BinaryEncodersTest {
             check(Double.POSITIVE_INFINITY, 127, -16, 0, 0, 0, 0, 0, 0)
             check(Double.NEGATIVE_INFINITY, -1, -16, 0, 0, 0, 0, 0, 0)
             check(Double.NaN, 127, -8, 0, 0, 0, 0, 0, 0)
-        }
-    }
-
-    @Test
-    fun boolean() {
-        with(BooleanBinaryEncoder) {
-            check(false, 0)
-            check(true, 1)
         }
     }
 

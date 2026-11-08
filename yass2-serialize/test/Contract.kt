@@ -1,7 +1,6 @@
 package ch.softappeal.yass2.serialize
 
 import ch.softappeal.yass2.serialize.binary.BinaryEncoders
-import ch.softappeal.yass2.serialize.binary.BooleanBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.IntBinaryEncoder
 import ch.softappeal.yass2.serialize.binary.StringBinaryEncoder
 import ch.softappeal.yass2.serialize.text.IntTextEncoder
@@ -28,15 +27,12 @@ data class Example(
 )
 
 data class TextBuiltIn(
-    val boolean: Boolean,
-    val booleanOptional: Boolean?,
     val string: String,
     val stringOptional: String?,
 )
 
 @BinaryEncoders(
     IntBinaryEncoder::class,
-    BooleanBinaryEncoder::class,
     StringBinaryEncoder::class,
 )
 @TextEncoders(

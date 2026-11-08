@@ -132,6 +132,8 @@ final object ch.softappeal.yass2.serialize.binary/LongBinaryEncoder : ch.softapp
 
 final object ch.softappeal.yass2.serialize.binary/StringBinaryEncoder : ch.softappeal.yass2.serialize.binary/BinaryEncoder<kotlin/String> // ch.softappeal.yass2.serialize.binary/StringBinaryEncoder|null[0]
 
+final object ch.softappeal.yass2.serialize.text/BooleanTextEncoder : ch.softappeal.yass2.serialize.text/TextEncoder<kotlin/Boolean> // ch.softappeal.yass2.serialize.text/BooleanTextEncoder|null[0]
+
 final object ch.softappeal.yass2.serialize.text/ByteArrayTextEncoder : ch.softappeal.yass2.serialize.text/TextEncoder<kotlin/ByteArray> // ch.softappeal.yass2.serialize.text/ByteArrayTextEncoder|null[0]
 
 final object ch.softappeal.yass2.serialize.text/DoubleTextEncoder : ch.softappeal.yass2.serialize.text/TextEncoder<kotlin/Double> // ch.softappeal.yass2.serialize.text/DoubleTextEncoder|null[0]

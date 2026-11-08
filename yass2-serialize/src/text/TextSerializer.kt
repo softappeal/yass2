@@ -17,9 +17,7 @@ private const val RBRACKET = ']'
 private const val SP = ' '
 private const val BS = '\\'
 private const val NL = '\n'
-private const val NULL = "null"
-private const val TRUE = "true"
-private const val FALSE = "false"
+private const val NULL = '*'
 
 private val Tab = ByteArray(4) { SP.code.toByte() }
 
@@ -65,7 +63,7 @@ public class ClassTextEncoder<T : Any>(
 
 /**
  * It reads/writes UTF-8 encoded text.
- * It has built-in encoders for `null`, [String], [Boolean] and [List].
+ * It has built-in encoders for `null`, [String] and [List].
  */
 public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Serializer {
 
@@ -73,15 +71,13 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
     @InternalSerializeApi public companion object {
         public const val NO_ENCODER_ID: Int = -1
         public const val STRING_ENCODER_ID: Int = 0
-        public const val BOOLEAN_ENCODER_ID: Int = 1
-        public const val LIST_ENCODER_ID: Int = 2
-        public const val FIRST_ENCODER_ID: Int = 3
+        public const val LIST_ENCODER_ID: Int = 1
+        public const val FIRST_ENCODER_ID: Int = 2
     }
 
     // placeholders, methods are never called
     private fun baseEncoders() = listOf(
         AbstractTextEncoder(String::class, {}, { "" }),
-        AbstractTextEncoder(Boolean::class, {}, { false }),
         AbstractTextEncoder(List::class, {}, { listOf<Int>() }),
     )
 
@@ -155,9 +151,7 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
             }
 
             when (value) {
-                null -> writeString(NULL)
-                false -> writeString(FALSE)
-                true -> writeString(TRUE)
+                null -> writeAsciiChar(NULL)
                 is String -> writeQuotedString(value)
                 is List<*> -> writeList(value)
                 else -> return false
@@ -281,20 +275,10 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
             }
 
             skipWhitespace()
+            if (expectedAsciiChar(NULL)) return null
             if (expectedAsciiChar(QUOTE)) return readQuotedString()
             if (expectedAsciiChar(LBRACKET)) return readList()
-            val className = buildString {
-                while (!expectedAsciiChar(LPAREN) && !isWhitespace()) {
-                    addCodePoint(nextCodePoint)
-                    when (toString()) {
-                        NULL -> return null
-                        FALSE -> return false
-                        TRUE -> return true
-                    }
-                    readNextCodePoint()
-                }
-            }
-            skipWhitespace()
+            val className = readString(LPAREN)
             readNextCodePointAndSkipWhitespace()
             val encoder = encoder(className)
             return if (encoder is ClassTextEncoder) readClass(encoder) else encoder.read(this)

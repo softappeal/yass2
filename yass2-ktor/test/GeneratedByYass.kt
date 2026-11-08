@@ -188,11 +188,10 @@ public fun BinarySerializer(): ch.softappeal.yass2.serialize.binary.BinarySerial
 public fun TextSerializer(): ch.softappeal.yass2.serialize.text.TextSerializer =
     ch.softappeal.yass2.serialize.text.TextSerializer(
         // kotlin.String: 0
-        // kotlin.Boolean: 1
-        // kotlin.collections.List: 2
-        ch.softappeal.yass2.serialize.text.IntTextEncoder, // 3
+        // kotlin.collections.List: 1
+        ch.softappeal.yass2.serialize.text.IntTextEncoder, // 2
         ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-            ch.softappeal.yass2.ktor.DivideByZeroException::class, // 4
+            ch.softappeal.yass2.ktor.DivideByZeroException::class, // 3
             { i ->
             },
             {
@@ -202,11 +201,11 @@ public fun TextSerializer(): ch.softappeal.yass2.serialize.text.TextSerializer =
             },
         ),
         ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-            ch.softappeal.yass2.remote.Request::class, // 5
+            ch.softappeal.yass2.remote.Request::class, // 4
             { i ->
                 writeProperty("service", i.service, 0)
                 writeProperty("function", i.function, 0)
-                writeProperty("parameters", i.parameters, 2)
+                writeProperty("parameters", i.parameters, 1)
             },
             {
                 ch.softappeal.yass2.remote.Request(
@@ -222,7 +221,7 @@ public fun TextSerializer(): ch.softappeal.yass2.serialize.text.TextSerializer =
             "parameters" to -1,
         ),
         ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-            ch.softappeal.yass2.remote.ValueReply::class, // 6
+            ch.softappeal.yass2.remote.ValueReply::class, // 5
             { i ->
                 writeProperty("value", i.value)
             },
@@ -235,7 +234,7 @@ public fun TextSerializer(): ch.softappeal.yass2.serialize.text.TextSerializer =
             "value" to -1,
         ),
         ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-            ch.softappeal.yass2.remote.ExceptionReply::class, // 7
+            ch.softappeal.yass2.remote.ExceptionReply::class, // 6
             { i ->
                 writeProperty("exception", i.exception)
             },
@@ -248,9 +247,9 @@ public fun TextSerializer(): ch.softappeal.yass2.serialize.text.TextSerializer =
             "exception" to -1,
         ),
         ch.softappeal.yass2.serialize.text.ClassTextEncoder(
-            ch.softappeal.yass2.remote.session.Packet::class, // 8
+            ch.softappeal.yass2.remote.session.Packet::class, // 7
             { i ->
-                writeProperty("requestNumber", i.requestNumber, 3)
+                writeProperty("requestNumber", i.requestNumber, 2)
                 writeProperty("message", i.message)
             },
             {
@@ -260,7 +259,7 @@ public fun TextSerializer(): ch.softappeal.yass2.serialize.text.TextSerializer =
                 ).apply {
                 }
             },
-            "requestNumber" to 3,
+            "requestNumber" to 2,
             "message" to -1,
         ),
     )

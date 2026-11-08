@@ -19,6 +19,15 @@ private fun <T : Any> TextEncoder<T>.check(value: T, vararg results: String) {
 
 class TextEncodersTest {
     @Test
+    fun boolean() {
+        with(BooleanTextEncoder) {
+            check(false, "false")
+            check(true, "true")
+            assertFails { readBase("False") }
+        }
+    }
+
+    @Test
     fun enum() {
         with(EnumTextEncoder(Gender::class, Gender::valueOf)) {
             check(Gender.Male, "Male")
