@@ -8,35 +8,20 @@ import ch.softappeal.yass2.serialize.fromByteArray
 import ch.softappeal.yass2.serialize.toByteArray
 import kotlin.reflect.KClass
 
-private const val QUOTE = '"'.code
-private const val LPAREN = '('.code
-private const val RPAREN = ')'.code
-private const val COLON = ':'.code
-private const val LBRACKET = '['.code
-private const val RBRACKET = ']'.code
-private const val SP = ' '.code
-private const val BS = '\\'.code
-private const val NL = '\n'.code
-private const val CR = '\r'.code
-private const val TAB = '\t'.code
+private const val QUOTE = '"'
+private const val LPAREN = '('
+private const val RPAREN = ')'
+private const val COLON = ':'
+private const val LBRACKET = '['
+private const val RBRACKET = ']'
+private const val SP = ' '
+private const val BS = '\\'
+private const val NL = '\n'
 private const val NULL = "null"
 private const val TRUE = "true"
 private const val FALSE = "false"
 
-private fun Int.isWhitespace() = this == SP || this == TAB || this == NL || this == CR
-
-private const val S_BS = BS.toChar().toString()
-private const val S_BS_BS = S_BS + S_BS
-private const val S_QUOTE = QUOTE.toChar().toString()
-private const val S_BS_QUOTE = S_BS + S_QUOTE
-private const val S_NL = NL.toChar().toString()
-private const val S_BS_NL = S_BS + "n"
-private const val S_CR = CR.toChar().toString()
-private const val S_BS_CR = S_BS + "r"
-private const val S_TAB = TAB.toChar().toString()
-private const val S_BS_TAB = S_BS + "t"
-
-private val Tab = ByteArray(4) { SP.toByte() }
+private val Tab = ByteArray(4) { SP.code.toByte() }
 
 public open class AbstractTextEncoder<T : Any> internal constructor(
     internal val type: KClass<T>,
@@ -46,15 +31,15 @@ public open class AbstractTextEncoder<T : Any> internal constructor(
 
 public abstract class TextEncoder<T : Any>(
     type: KClass<T>,
-    /** NOTE: Result string must not contain whitespace or `)`. */
+    /** @return NOTE: must not contain whitespace or `)`. */
     internal val writeBase: T.() -> String,
     internal val readBase: String.() -> T,
 ) : AbstractTextEncoder<T>(
     type,
     { value ->
         writeString(writeBase(value).apply {
-            check(indexOfFirst { it.code.isWhitespace() || it.code == RPAREN } < 0) {
-                "'$this' must not contain whitespace or '${RPAREN.toChar()}'"
+            check(indexOfFirst { it.isWhitespace() || it == RPAREN } < 0) {
+                "'$this' must not contain whitespace or '$RPAREN'"
             }
         })
     },
@@ -63,6 +48,7 @@ public abstract class TextEncoder<T : Any>(
     },
 )
 
+/** NOTE: nullable properties can't be set explicitly to null; they are null if omitted */
 public class ClassTextEncoder<T : Any>(
     type: KClass<T>,
     write: TextSerializer.TextWriter.(value: T) -> Unit,
@@ -124,8 +110,8 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
             repeat(indent) { writeByteArray(Tab) }
         }
 
-        private fun writeAsciiChar(asciiCodePoint: Int) {
-            writeByte(asciiCodePoint.toByte())
+        private fun writeAsciiChar(asciiChar: Char) {
+            writeByte(asciiChar.code.toByte())
         }
 
         private fun writeNewLine() {
@@ -143,14 +129,14 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
 
             fun writeQuotedString(string: String) {
                 writeAsciiChar(QUOTE)
-                writeString(
-                    string
-                        .replace(S_BS, S_BS_BS) // must be first!
-                        .replace(S_QUOTE, S_BS_QUOTE)
-                        .replace(S_NL, S_BS_NL)
-                        .replace(S_CR, S_BS_CR)
-                        .replace(S_TAB, S_BS_TAB)
-                )
+                writeString(buildString {
+                    string.forEach { char ->
+                        if (char != QUOTE && char != BS) append(char) else {
+                            append(BS)
+                            append(if (char == QUOTE) QUOTE else BS)
+                        }
+                    }
+                })
                 writeAsciiChar(QUOTE)
             }
 
@@ -218,13 +204,13 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
         private val reader: Reader,
         private var nextCodePoint: Int,
     ) : Reader by reader {
-        private fun expectedCodePoint(codePoint: Int) = nextCodePoint == codePoint
+        private fun expectedAsciiChar(asciiChar: Char) = nextCodePoint.toChar() == asciiChar
 
         private fun readNextCodePoint() {
             nextCodePoint = readCodePoint()
         }
 
-        private fun isWhitespace() = nextCodePoint.isWhitespace()
+        private fun isWhitespace() = nextCodePoint.toChar().isWhitespace()
 
         private fun skipWhitespace() {
             while (isWhitespace()) readNextCodePoint()
@@ -235,8 +221,8 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
             skipWhitespace()
         }
 
-        internal fun readString(until: Int) = buildString {
-            while (!expectedCodePoint(until) && !isWhitespace()) {
+        internal fun readString(untilAsciiChar: Char) = buildString {
+            while (!expectedAsciiChar(untilAsciiChar) && !isWhitespace()) {
                 addCodePoint(nextCodePoint)
                 readNextCodePoint()
             }
@@ -258,15 +244,12 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
                 while (true) {
                     readNextCodePoint()
                     when {
-                        expectedCodePoint(QUOTE) -> break
-                        expectedCodePoint(BS) -> {
+                        expectedAsciiChar(QUOTE) -> break
+                        expectedAsciiChar(BS) -> {
                             readNextCodePoint()
                             when {
-                                expectedCodePoint(QUOTE) -> append(QUOTE.toChar())
-                                expectedCodePoint(BS) -> append(BS.toChar())
-                                expectedCodePoint('n'.code) -> append(NL.toChar())
-                                expectedCodePoint('r'.code) -> append(CR.toChar())
-                                expectedCodePoint('t'.code) -> append(TAB.toChar())
+                                expectedAsciiChar(QUOTE) -> append(QUOTE)
+                                expectedAsciiChar(BS) -> append(BS)
                                 else -> error("illegal escape with codePoint $nextCodePoint")
                             }
                         }
@@ -277,14 +260,14 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
 
             fun readList() = buildList {
                 readNextCodePointAndSkipWhitespace()
-                while (!expectedCodePoint(RBRACKET)) {
+                while (!expectedAsciiChar(RBRACKET)) {
                     add(readObject())
                     readNextCodePointAndSkipWhitespace()
                 }
             }
 
             fun readClass(classEncoder: ClassTextEncoder<*>): Any {
-                while (!expectedCodePoint(RPAREN)) {
+                while (!expectedAsciiChar(RPAREN)) {
                     val propertyName = readString(COLON)
                     readNextCodePointAndSkipWhitespace()
                     val propertyEncoderId = classEncoder.propertyEncoderId(propertyName)
@@ -298,10 +281,10 @@ public class TextSerializer(vararg textEncoders: AbstractTextEncoder<*>) : Seria
             }
 
             skipWhitespace()
-            if (expectedCodePoint(QUOTE)) return readQuotedString()
-            if (expectedCodePoint(LBRACKET)) return readList()
+            if (expectedAsciiChar(QUOTE)) return readQuotedString()
+            if (expectedAsciiChar(LBRACKET)) return readList()
             val className = buildString {
-                while (!expectedCodePoint(LPAREN) && !isWhitespace()) {
+                while (!expectedAsciiChar(LPAREN) && !isWhitespace()) {
                     addCodePoint(nextCodePoint)
                     when (toString()) {
                         NULL -> return null

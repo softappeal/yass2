@@ -15,7 +15,7 @@ public object LongTextEncoder : TextEncoder<Long>(
     { toLong() }
 )
 
-/** NOTE: Doesn't work for [whole numbers on the JS platform](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger). */
+/** NOTE: [DoubleTextEncoder] doesn't work for [whole numbers on the JS platform](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger). */
 public object DoubleTextEncoder : TextEncoder<Double>(
     Double::class,
     { toString() },

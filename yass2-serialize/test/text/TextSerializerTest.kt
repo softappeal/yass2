@@ -27,6 +27,7 @@ private fun check(value: Any?, serialized: String, vararg others: String) {
 }
 
 class TextSerializerTest {
+    @Suppress("SpellCheckingInspection")
     @Test
     fun builtIn() {
         fun fail(string: String) {
@@ -57,7 +58,6 @@ class TextSerializerTest {
             "[]",
             "  [  ]",
         )
-        @Suppress("SpellCheckingInspection")
         check(
             listOf(
                 null,
@@ -73,7 +73,7 @@ class TextSerializerTest {
                     "hello"
                 ]
             """.trimIndent(),
-            """[nullfalsetrue"hello"]""",
+            """[nullfalsetrue"hello"]""", // NOTE: built-in types (null, false, true) in lists are also parsed without whitespace
             """  [  null  false  true  "hello"  ]""",
         )
 
@@ -94,12 +94,45 @@ class TextSerializerTest {
             "  \t\n\r \"hello\"",
         )
         check(
-            " \" \\ \t \n \r ",
-            "\" \\\" \\\\ \\t \\n \\r \"",
+            " \" \\ ",
+            "\" \\\" \\\\ \"",
+            """" \" \\ """",
         )
         assertFailsWithMessage<IllegalStateException>("illegal escape with codePoint 36") {
             SERIALIZER.fromString("\"\\$\"")
         }
+        check(
+            "\u0000\u0001\u007F",
+            "\"\u0000\u0001\u007F\"",
+        )
+        check(
+            "\u0080",
+            "\"\u0080\"",
+        )
+        check(
+            "\u07FF",
+            "\"\u07FF\"",
+        )
+        check(
+            "\u0800",
+            "\"\u0800\"",
+        )
+        check(
+            "\uFFFF",
+            "\"\uFFFF\"",
+        )
+        check(
+            "\uD800\uDC00", // U+010000
+            "\"\uD800\uDC00\"",
+        )
+        check(
+            "\uD800\uDC01", // U+010001
+            "\"\uD800\uDC01\"",
+        )
+        check(
+            "\uDBFF\uDFFF", // U+10FFFF
+            "\"\uDBFF\uDFFF\"",
+        )
     }
 
     @Test
@@ -284,7 +317,7 @@ class TextSerializerTest {
     }
 
     @Test
-    fun nullableProperties() { // NOTE: nullable properties can't be set explicitly to null; they are null if omitted
+    fun nullableProperties() {
         println(assertFails {
             SERIALIZER.fromString("A(a:null)")
         })
@@ -292,7 +325,7 @@ class TextSerializerTest {
     }
 
     @Test
-    fun builtInPrefix() { // NOTE: base type names can't start with a built-in prefix: null, false, true
+    fun builtInPrefix() {
         class nullX
 
         val serializer = TextSerializer(
@@ -306,7 +339,7 @@ class TextSerializerTest {
 
         assertEquals(1, serializer.fromString("Int(1)"))
         assertNull(serializer.fromString("null"))
-        println(assertFails { serializer.fromString("nullX()") })
+        println(assertFails { serializer.fromString("nullX()") }) // NOTE: base type names can't start with a built-in prefix: null, false, true
     }
 
     @Test

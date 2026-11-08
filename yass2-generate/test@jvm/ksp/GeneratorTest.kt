@@ -18,8 +18,8 @@ import kotlin.test.assertTrue
 private fun compile(source: String) = KotlinCompilation().apply {
     useKsp2()
     classpaths = buildList {
-        fun add(module: String) { // TODO: remove gradle later
-            add(File("../$module/build/classes/kotlin/jvm/main")) // gradle
+        fun add(module: String) {
+            add(File("../$module/build/classes/kotlin/jvm/main")) // TODO: remove gradle later
             add(File("../build/artifacts/CompiledJvmArtifact/${module}jvm/kotlin-output")) // toolchain
         }
         add("yass2-remote")

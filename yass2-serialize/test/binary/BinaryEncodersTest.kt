@@ -108,7 +108,7 @@ class BinaryEncodersTest {
             check("\uD800\uDC00", 4, -16, -112, -128, -128) // U+010000
             check("\uD800\uDC01", 4, -16, -112, -128, -127) // U+010001
             check("\uDBFF\uDFFF", 4, -12, -113, -65, -65)   // U+10FFFF
-            assertFails { read(ByteArrayReader(byteArrayOf(1, -1))) }
+            println(assertFails { read(ByteArrayReader(byteArrayOf(1, -1))) })
         }
     }
 
