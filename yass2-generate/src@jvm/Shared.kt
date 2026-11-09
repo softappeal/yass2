@@ -26,7 +26,7 @@ internal inline fun <T> Iterable<T>.forEach(separator: () -> Unit, action: (T) -
 internal const val RemotePackage = "ch.softappeal.yass2.remote"
 
 internal const val Apply = ").apply {"
-internal const val CheckListElementTypes = "?.forEach {}"
+internal fun checkListElementTypes(elementType: String) = "?.forEach { it as $elementType }"
 
 internal fun Appendable.appendPackage(packageName: String) {
     append(

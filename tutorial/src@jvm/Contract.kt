@@ -15,8 +15,8 @@ import ch.softappeal.yass2.serialize.text.TextEncoder
 import ch.softappeal.yass2.serialize.text.TextEncoders
 
 /**
- * Shows how to implement an own base type.
- * In contrast to regular classes, own base types could implement a more efficient serializing.
+ * Shows how to implement an own type.
+ * In contrast to regular classes, own types could implement a more efficient serializing.
  */
 data class MyDate(val currentTimeMillis: Long)
 internal object MyDateEncoder : TextEncoder<MyDate>(

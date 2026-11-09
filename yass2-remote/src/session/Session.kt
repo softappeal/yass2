@@ -123,12 +123,12 @@ public suspend fun <C : Connection> C.receiveLoop(sessionFactory: SessionFactory
         .receiveLoop(receive)
 }
 
+/** Documents a [ServiceId] that must be implemented by initiator. */
 @Target(AnnotationTarget.PROPERTY)
 @MustBeDocumented
-/** Documents a [ServiceId] that must be implemented by initiator. */
 public annotation class MustBeImplementedByInitiator
 
+/** Documents a [ServiceId] that must be implemented by acceptor. */
 @Target(AnnotationTarget.PROPERTY)
 @MustBeDocumented
-/** Documents a [ServiceId] that must be implemented by acceptor. */
 public annotation class MustBeImplementedByAcceptor

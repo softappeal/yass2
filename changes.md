@@ -79,7 +79,7 @@
 
 ## Breaking changes
 
-- better ktor API
+- better Ktor API
 - fromByteArray and toByteArray moved
 - better keep-alive
 - generate.reflect.GenerateMode removed

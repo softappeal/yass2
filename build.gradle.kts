@@ -47,8 +47,10 @@ fun KotlinMultiplatformExtension.configureSourceSets() {
         if (webPlatform) {
             webTest {
                 kotlin.srcDir("test@web")
+                resources.srcDir("testResources@web")
             }
             jsTest {
+                kotlin.srcDir("test@js")
                 resources.srcDir("testResources@js")
             }
             wasmJsTest {
@@ -126,6 +128,7 @@ allprojects {
             dokkaSourceSets {
                 configureEach {
                     documentedVisibilities(VisibilityModifier.Public, VisibilityModifier.Protected)
+                    suppressAnnotatedWith.add("ch.softappeal.yass2.serialize.InternalSerializeApi")
                 }
             }
         }

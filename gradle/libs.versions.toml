@@ -8,7 +8,7 @@ ksp        = "2.3.13"        # https://github.com/google/ksp
 
 # build
 kct        = "0.14.0"        # https://github.com/ZacSweers/kotlin-compile-testing
-dokka      = "2.2.0"         # https://github.com/Kotlin/dokka
+dokka      = "2.3.0"         # https://github.com/Kotlin/dokka
 publish    = "0.37.0"        # https://github.com/vanniktech/gradle-maven-publish-plugin
 
 [libraries]

@@ -139,7 +139,7 @@ public fun BinarySerializer(): ch.softappeal.yass2.serialize.binary.BinarySerial
                             function = readRequired(3) as kotlin.String,
                             parameters = readRequired(1) as kotlin.collections.List<kotlin.Any?>,
                         ).apply {
-                            parameters?.forEach {}
+                            parameters?.forEach { it as kotlin.Any? }
                         }
                     }
                 ),
@@ -214,7 +214,7 @@ public fun TextSerializer(compact: Boolean = true): ch.softappeal.yass2.serializ
                     getProperty("function") as kotlin.String,
                     getProperty("parameters") as kotlin.collections.List<kotlin.Any?>,
                 ).apply {
-                    parameters?.forEach {}
+                    parameters?.forEach { it as kotlin.Any? }
                 }
             },
             "service" to -1,

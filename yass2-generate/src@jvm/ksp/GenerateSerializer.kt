@@ -4,8 +4,8 @@
 package ch.softappeal.yass2.generate.ksp
 
 import ch.softappeal.yass2.generate.Apply
-import ch.softappeal.yass2.generate.CheckListElementTypes
 import ch.softappeal.yass2.generate.CodeWriter
+import ch.softappeal.yass2.generate.checkListElementTypes
 import ch.softappeal.yass2.generate.duplicates
 import ch.softappeal.yass2.generate.hasNoDuplicates
 import ch.softappeal.yass2.generate.writeFun
@@ -74,7 +74,10 @@ private fun <P : Property> KSClassDeclaration.properties(createProperty: (proper
 
 private fun CodeWriter.checkListElementTypes(properties: List<Property>) {
     nested {
-        properties.forEach { if (it.typeQualifiedName == List::class.qualifiedName) writeNestedLine("${it.name}$CheckListElementTypes") }
+        properties.forEach {
+            if (it.typeQualifiedName != List::class.qualifiedName) return@forEach
+            writeNestedLine("${it.name}${checkListElementTypes(it.returnType.resolve().arguments[0].type.toType())}")
+        }
     }
     writeNestedLine("}")
 }

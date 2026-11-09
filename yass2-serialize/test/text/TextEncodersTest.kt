@@ -9,11 +9,11 @@ import kotlin.test.assertTrue
 
 private fun <T : Any> TextEncoder<T>.check(value: T, vararg results: String) {
     if (value is ByteArray) {
-        assertContentEquals(value, readBase(results[0]) as ByteArray)
-        assertEquals(results[0], writeBase(value))
+        assertContentEquals(value, read(results[0]) as ByteArray)
+        assertEquals(results[0], write(value))
     } else {
-        results.forEach { assertEquals(value, readBase(it)) }
-        assertTrue(results.any { it == writeBase(value) })
+        results.forEach { assertEquals(value, read(it)) }
+        assertTrue(results.any { it == write(value) })
     }
 }
 
@@ -23,7 +23,7 @@ class TextEncodersTest {
         with(BooleanTextEncoder) {
             check(false, "false")
             check(true, "true")
-            assertFails { readBase("False") }
+            assertFails { read("False") }
         }
     }
 
@@ -32,7 +32,7 @@ class TextEncodersTest {
         with(EnumTextEncoder(Gender::class, Gender::valueOf)) {
             check(Gender.Male, "Male")
             check(Gender.Female, "Female")
-            assertFails { readBase("Unknown") }
+            assertFails { read("Unknown") }
         }
     }
 
@@ -44,8 +44,8 @@ class TextEncodersTest {
             check(-1, "-1")
             check(Int.MAX_VALUE, "2147483647")
             check(Int.MIN_VALUE, "-2147483648")
-            assertFails { readBase("Unknown") }
-            assertFails { readBase("4123456789") }
+            assertFails { read("Unknown") }
+            assertFails { read("4123456789") }
         }
     }
 
@@ -57,8 +57,8 @@ class TextEncodersTest {
             check(-1L, "-1")
             check(Long.MAX_VALUE, "9223372036854775807")
             check(Long.MIN_VALUE, "-9223372036854775808")
-            assertFails { readBase("Unknown") }
-            assertFails { readBase("51515131515131515154") }
+            assertFails { read("Unknown") }
+            assertFails { read("51515131515131515154") }
         }
     }
 
@@ -71,9 +71,9 @@ class TextEncodersTest {
             check(byteArrayOf(0, 1), "AAE=")
             check(byteArrayOf(0, 1, 2), "AAEC")
             check(byteArrayOf(0, 1, 2, 3), "AAECAw==")
-            assertFails { readBase("AA==x") }
-            assertFails { readBase("*A==") }
-            assertFails { readBase("A*==") }
+            assertFails { read("AA==x") }
+            assertFails { read("*A==") }
+            assertFails { read("A*==") }
         }
     }
 
@@ -127,9 +127,9 @@ class TextEncodersTest {
                 "-1E-300",
                 "-1e-300",
             )
-            assertFails { readBase("invalidDouble") }
-            assertFails { readBase("1.3e") }
-            assertFails { readBase("++2") }
+            assertFails { read("invalidDouble") }
+            assertFails { read("1.3e") }
+            assertFails { read("++2") }
         }
     }
 }

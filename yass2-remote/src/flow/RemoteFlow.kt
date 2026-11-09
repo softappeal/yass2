@@ -4,6 +4,7 @@ import ch.softappeal.yass2.remote.AtomicInt
 import ch.softappeal.yass2.remote.ThreadSafeMap
 import ch.softappeal.yass2.remote.addSuppressed
 import ch.softappeal.yass2.remote.tryFinally
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -58,6 +59,8 @@ public interface FlowService<out F : Any, I> {
                     try {
                         flow.collect { channel.send(it) }
                         channel.send(null)
+                    } catch (e: CancellationException) {
+                        throw e
                     } catch (e: Exception) {
                         channel.send(e)
                     }

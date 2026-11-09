@@ -23,26 +23,26 @@ private val Tab = ByteArray(4) { SP.code.toByte() }
 
 public open class AbstractTextEncoder<T : Any> internal constructor(
     internal val type: KClass<T>,
-    internal val write: TextSerializer.TextWriter.(value: T) -> Unit,
-    internal val read: TextSerializer.TextReader.() -> T,
+    internal val abstractWrite: TextSerializer.TextWriter.(value: T) -> Unit,
+    internal val abstractRead: TextSerializer.TextReader.() -> T,
 )
 
 public abstract class TextEncoder<T : Any>(
     type: KClass<T>,
     /** @return NOTE: must not contain whitespace or `)`. */
-    internal val writeBase: T.() -> String,
-    internal val readBase: String.() -> T,
+    public val write: T.() -> String,
+    public val read: String.() -> T,
 ) : AbstractTextEncoder<T>(
     type,
     { value ->
-        writeString(writeBase(value).apply {
+        writeString(write(value).apply {
             check(indexOfFirst { it.isWhitespace() || it == RPAREN } < 0) {
                 "'$this' must not contain whitespace or '$RPAREN'"
             }
         })
     },
     {
-        readString(RPAREN).readBase()
+        readString(RPAREN).read()
     },
 )
 
@@ -67,7 +67,6 @@ public class ClassTextEncoder<T : Any>(
  */
 public class TextSerializer(private val compact: Boolean, vararg textEncoders: AbstractTextEncoder<*>) : Serializer {
 
-    /** @suppress */
     @InternalSerializeApi public companion object {
         public const val NO_ENCODER_ID: Int = -1
         public const val STRING_ENCODER_ID: Int = 0
@@ -76,12 +75,12 @@ public class TextSerializer(private val compact: Boolean, vararg textEncoders: A
     }
 
     // placeholders, methods are never called
-    private fun baseEncoders() = listOf(
+    private fun builtInEncoders() = listOf(
         AbstractTextEncoder(String::class, {}, { "" }),
         AbstractTextEncoder(List::class, {}, { listOf<Int>() }),
     )
 
-    private val encoders = (baseEncoders() + textEncoders).toTypedArray()
+    private val encoders = (builtInEncoders() + textEncoders).toTypedArray()
     private val typeToEncoder = HashMap<KClass<*>, AbstractTextEncoder<*>>(encoders.size)
     private val classNameToEncoder = HashMap<String, AbstractTextEncoder<*>>(encoders.size)
 
@@ -161,7 +160,7 @@ public class TextSerializer(private val compact: Boolean, vararg textEncoders: A
         }
 
         private fun write(encoder: AbstractTextEncoder<*>, value: Any) =
-            @Suppress("UNCHECKED_CAST") (encoder as AbstractTextEncoder<Any>).write(this, value)
+            @Suppress("UNCHECKED_CAST") (encoder as AbstractTextEncoder<Any>).abstractWrite(this, value)
 
         internal fun writeObject(value: Any?) {
             if (writeBuiltIn(value)) return
@@ -266,13 +265,13 @@ public class TextSerializer(private val compact: Boolean, vararg textEncoders: A
                     val propertyName = readString(COLON)
                     readNextCodePointAndSkipWhitespace()
                     val propertyEncoderId = classEncoder.propertyEncoderId(propertyName)
-                    val propertyValue = if (propertyEncoderId != NO_ENCODER_ID) encoder(propertyEncoderId).read(this) else {
+                    val propertyValue = if (propertyEncoderId != NO_ENCODER_ID) encoder(propertyEncoderId).abstractRead(this) else {
                         TextReader(this, nextCodePoint).readObject().apply { readNextCodePoint() }!!
                     }
                     classEncoder.addProperty(propertyName, propertyValue)
                     skipWhitespace()
                 }
-                return classEncoder.read(this)
+                return classEncoder.abstractRead(this)
             }
 
             skipWhitespace()
@@ -282,7 +281,7 @@ public class TextSerializer(private val compact: Boolean, vararg textEncoders: A
             val className = readString(LPAREN)
             readNextCodePointAndSkipWhitespace()
             val encoder = encoder(className)
-            return if (encoder is ClassTextEncoder) readClass(encoder) else encoder.read(this)
+            return if (encoder is ClassTextEncoder) readClass(encoder) else encoder.abstractRead(this)
         }
     }
 

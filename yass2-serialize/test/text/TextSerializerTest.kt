@@ -267,7 +267,7 @@ class TextSerializerTest {
     }
 
     @Test
-    fun writeBase() {
+    fun write() {
         fun write(string: String) = TextSerializer(
             true,
             object : TextEncoder<Long>(
@@ -278,15 +278,15 @@ class TextSerializerTest {
         ).toByteArray(0L)
         write("123")
 
-        fun checkBaseString(string: String, message: String) {
+        fun check(string: String, message: String) {
             assertFailsWithMessage<IllegalStateException>(message) { write(string) }
         }
-        checkBaseString(" ", "' ' must not contain whitespace or ')'")
-        checkBaseString(")", "')' must not contain whitespace or ')'")
+        check(" ", "' ' must not contain whitespace or ')'")
+        check(")", "')' must not contain whitespace or ')'")
     }
 
     @Test
-    fun readBase() {
+    fun read() {
         fun read(string: String) = SERIALIZER.fromString(string)
         read("Int(123)")
         read("Int(123 )")
@@ -311,6 +311,45 @@ class TextSerializerTest {
                             b: 20
                         )
                         b: A()
+                    )
+                """.trimIndent()
+            )
+        })
+        println(assertFails {
+            SERIALIZER.fromString(
+                """
+                    Poly(
+                        a: B(
+                            a: 10
+                            b: 20
+                        )
+                        b: *
+                    )
+                """.trimIndent()
+            )
+        })
+        println(assertFails {
+            SERIALIZER.fromString(
+                """
+                    Poly(
+                        a: B(
+                            a: 10
+                            b: 20
+                        )
+                        b: ""
+                    )
+                """.trimIndent()
+            )
+        })
+        println(assertFails {
+            SERIALIZER.fromString(
+                """
+                    Poly(
+                        a: B(
+                            a: 10
+                            b: 20
+                        )
+                        b: []
                     )
                 """.trimIndent()
             )
@@ -351,7 +390,60 @@ class TextSerializerTest {
 
 abstract class HackedTextSerializerTest {
     @Test
-    fun hackedList() { // TODO: doesn't work for all platforms
+    fun hackedListSimulated() {
+        fun test(element: Any?) {
+            val list = listOf(element)
+            @Suppress("UNCHECKED_CAST") val castedList = list as List<Int>
+            println(assertFails {
+                castedList.forEach {
+                    @Suppress("USELESS_CAST")
+                    it as Int
+                }
+            })
+        }
+        test(null)
+        test("")
+        test(A(1))
+        test(listOf<Int>())
+    }
+
+    @Test
+    fun hackedList() {
+        SERIALIZER.fromString(
+            """
+                [
+                    *
+                    ""
+                    A()
+                ]
+            """.trimIndent()
+        )
+        println(assertFails {
+            SERIALIZER.fromString(
+                """
+                    Example(
+                        int: 10
+                        any: Int(11)
+                        list: [
+                            *
+                        ]
+                    )
+                """.trimIndent()
+            )
+        })
+        println(assertFails {
+            SERIALIZER.fromString(
+                """
+                    Example(
+                        int: 10
+                        any: Int(11)
+                        list: [
+                            ""
+                        ]
+                    )
+                """.trimIndent()
+            )
+        })
         println(assertFails {
             SERIALIZER.fromString(
                 """
@@ -360,6 +452,19 @@ abstract class HackedTextSerializerTest {
                         any: Int(11)
                         list: [
                             A()
+                        ]
+                    )
+                """.trimIndent()
+            )
+        })
+        println(assertFails {
+            SERIALIZER.fromString(
+                """
+                    Example(
+                        int: 10
+                        any: Int(11)
+                        list: [
+                            []
                         ]
                     )
                 """.trimIndent()

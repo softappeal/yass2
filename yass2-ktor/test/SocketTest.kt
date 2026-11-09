@@ -52,6 +52,8 @@ private fun socketTest(testMode: TestMode) = runServer { tcp, serverSocket ->
             launch {
                 try {
                     clientSocket.handleRequest(ContractSerializer, serverTunnel)
+                } catch (e: CancellationException) {
+                    throw e
                 } catch (e: Exception) {
                     println("Exception in handleRequest: $e")
                 }

@@ -8,8 +8,8 @@ import kotlin.reflect.KClass
 
 public open class BinaryEncoder<T : Any>(
     internal val type: KClass<T>,
-    internal val write: Writer.(value: T) -> Unit,
-    internal val read: Reader.() -> T,
+    public val write: Writer.(value: T) -> Unit,
+    public val read: Reader.() -> T,
 )
 
 private fun Writer.write(encoder: BinaryEncoder<*>, value: Any) {
@@ -28,7 +28,6 @@ public inline fun <T : Any> Reader.readOptional(read: Reader.() -> T): T? = if (
 /** Has built-in encoders for `null` and [List]. */
 public abstract class BinarySerializer : Serializer {
 
-    /** @suppress */
     @InternalSerializeApi public companion object {
         public const val NO_ENCODER_ID: Int = -1
         private const val NULL_ENCODER_ID: Int = 0
@@ -36,7 +35,7 @@ public abstract class BinarySerializer : Serializer {
         public const val FIRST_ENCODER_ID: Int = 2
     }
 
-    private fun baseEncoders() = listOf(
+    private fun builtInEncoders() = listOf(
         BinaryEncoder(Unit::class, {}, {}), // placeholder for NULL_ENCODER_ID, methods are never called
         listEncoderId.encoder,
     )
@@ -47,7 +46,7 @@ public abstract class BinarySerializer : Serializer {
     private lateinit var typeToEncoderId: Map<KClass<*>, EncoderId>
 
     protected fun initialize(vararg binaryEncoders: BinaryEncoder<*>) {
-        encoders = (baseEncoders() + binaryEncoders).toTypedArray()
+        encoders = (builtInEncoders() + binaryEncoders).toTypedArray()
         typeToEncoderId = buildMap {
             encoders.forEachIndexed { encoderIndex, encoder ->
                 require(put(encoder.type, EncoderId(encoderIndex, encoder)) == null) { "duplicated type '${encoder.type}'" }

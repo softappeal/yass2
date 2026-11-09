@@ -83,8 +83,8 @@ public fun BinarySerializer(): ch.softappeal.yass2.serialize.binary.BinarySerial
                             list = readRequired(1) as kotlin.collections.List<kotlin.Int>,
                             listOptional = readOptional(1) as kotlin.collections.List<kotlin.Int>?,
                         ).apply {
-                            list?.forEach {}
-                            listOptional?.forEach {}
+                            list?.forEach { it as kotlin.Int }
+                            listOptional?.forEach { it as kotlin.Int }
                         }
                     }
                 ),
@@ -176,8 +176,8 @@ public fun TextSerializer(compact: Boolean = true): ch.softappeal.yass2.serializ
                     getProperty("list") as kotlin.collections.List<kotlin.Int>,
                     getProperty("listOptional") as kotlin.collections.List<kotlin.Int>?,
                 ).apply {
-                    list?.forEach {}
-                    listOptional?.forEach {}
+                    list?.forEach { it as kotlin.Int }
+                    listOptional?.forEach { it as kotlin.Int }
                 }
             },
             "int" to 2,

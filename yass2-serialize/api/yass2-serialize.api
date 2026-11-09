@@ -49,6 +49,8 @@ public abstract interface class ch/softappeal/yass2/serialize/Writer {
 
 public class ch/softappeal/yass2/serialize/binary/BinaryEncoder {
 	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;)V
+	public final fun getRead ()Lkotlin/jvm/functions/Function1;
+	public final fun getWrite ()Lkotlin/jvm/functions/Function2;
 }
 
 public abstract interface annotation class ch/softappeal/yass2/serialize/binary/BinaryEncoders : java/lang/annotation/Annotation {
@@ -154,6 +156,8 @@ public final class ch/softappeal/yass2/serialize/text/LongTextEncoder : ch/softa
 
 public abstract class ch/softappeal/yass2/serialize/text/TextEncoder : ch/softappeal/yass2/serialize/text/AbstractTextEncoder {
 	public fun <init> (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
+	public final fun getRead ()Lkotlin/jvm/functions/Function1;
+	public final fun getWrite ()Lkotlin/jvm/functions/Function1;
 }
 
 public abstract interface annotation class ch/softappeal/yass2/serialize/text/TextEncoders : java/lang/annotation/Annotation {

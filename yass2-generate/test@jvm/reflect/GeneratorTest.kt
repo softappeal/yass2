@@ -14,9 +14,9 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @Suppress("SameReturnValue")
-private fun map(): Map<Exception, RuntimeException>? = null
+private fun map(): Map<Exception?, RuntimeException>? = null
 private const val MapType =
-    "kotlin.collections.Map<kotlin.Exception /* = java.lang.Exception */, kotlin.RuntimeException /* = java.lang.RuntimeException */>?"
+    "kotlin.collections.Map<kotlin.Exception? /* = java.lang.Exception? */, kotlin.RuntimeException /* = java.lang.RuntimeException */>?"
 
 private class NotAnInterface
 
@@ -69,7 +69,7 @@ class GeneratorTest {
         assertEquals("12", "1 /*abc/**/2".removeComment())
         assertEquals("kotlin.Exception", "kotlin.Exception /* = java.lang.Exception */".removeComment())
         assertEquals(MapType, ::map.returnType.toString())
-        assertEquals("kotlin.collections.Map<kotlin.Exception, kotlin.RuntimeException>?", MapType.removeComment())
+        assertEquals("kotlin.collections.Map<kotlin.Exception?, kotlin.RuntimeException>?", MapType.removeComment())
         assertEquals(" 12 ", " 1  /*abc/* a b c * / */2 ".removeComment())
     }
 
