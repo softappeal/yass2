@@ -28,13 +28,17 @@ private fun TextSerializer.check(value: Any?, serialized: String, vararg others:
 
 private fun check(value: Any?, serialized: String, vararg others: String) = SERIALIZER.check(value, serialized, *others)
 
+private fun hacked(s: String) {
+    println(assertFails { SERIALIZER.fromString(s) })
+}
+
 class TextSerializerTest {
     @Suppress("SpellCheckingInspection")
     @Test
     fun builtIn() {
         fun fail(string: String) {
             println(">$string<")
-            println(assertFails { SERIALIZER.fromString(string) })
+            hacked(string)
             println()
         }
         fail("\"hello")
@@ -248,9 +252,7 @@ class TextSerializerTest {
         assertFailsWithMessage<IllegalStateException>("duplicated property 'A.a'") {
             SERIALIZER.fromString("A(a:1 a:1)")
         }
-        println(assertFails { // missing required property
-            SERIALIZER.fromString("B()")
-        })
+        hacked("B()") // missing required property
     }
 
     @Test
@@ -294,66 +296,8 @@ class TextSerializerTest {
 
     @Test
     fun nullableProperties() {
-        println(assertFails {
-            SERIALIZER.fromString("A(a:*)")
-        })
+        hacked("A(a:*)")
         assertNull((SERIALIZER.fromString("A()") as A).a)
-    }
-
-    @Test
-    fun hackedProperty() {
-        println(assertFails {
-            SERIALIZER.fromString(
-                """
-                    Poly(
-                        a: B(
-                            a: 10
-                            b: 20
-                        )
-                        b: A()
-                    )
-                """.trimIndent()
-            )
-        })
-        println(assertFails {
-            SERIALIZER.fromString(
-                """
-                    Poly(
-                        a: B(
-                            a: 10
-                            b: 20
-                        )
-                        b: *
-                    )
-                """.trimIndent()
-            )
-        })
-        println(assertFails {
-            SERIALIZER.fromString(
-                """
-                    Poly(
-                        a: B(
-                            a: 10
-                            b: 20
-                        )
-                        b: ""
-                    )
-                """.trimIndent()
-            )
-        })
-        println(assertFails {
-            SERIALIZER.fromString(
-                """
-                    Poly(
-                        a: B(
-                            a: 10
-                            b: 20
-                        )
-                        b: []
-                    )
-                """.trimIndent()
-            )
-        })
     }
 
     @Test
@@ -386,19 +330,23 @@ class TextSerializerTest {
             "[*Int(1)[]Poly(a:B(a:10 b:20)b:B(a:1 b:2))Example(int:10 any:Int(11)list:[Int(13)])]",
         )
     }
-}
 
-abstract class HackedTextSerializerTest {
+    @Test
+    fun hackedProperty() {
+        hacked("Poly( a: A() b: A()  )")
+        hacked("Poly( a: A() b: *    )")
+        hacked("Poly( a: A() b: \"\" )")
+        hacked("Poly( a: A() b: []   )")
+    }
+
+    @Suppress("USELESS_CAST", "UNCHECKED_CAST", "ReplaceManualRangeWithIndicesCalls")
     @Test
     fun hackedListSimulated() {
         fun test(element: Any?) {
             val list = listOf(element)
-            @Suppress("UNCHECKED_CAST") val castedList = list as List<Int>
+            val castedList = list as List<Int>
             println(assertFails {
-                castedList.forEach {
-                    @Suppress("USELESS_CAST")
-                    it as Int
-                }
+                castedList.let { for (i in 0..<it.size) it[i] as Int }
             })
         }
         test(null)
@@ -409,66 +357,16 @@ abstract class HackedTextSerializerTest {
 
     @Test
     fun hackedList() {
-        SERIALIZER.fromString(
-            """
-                [
-                    *
-                    ""
-                    A()
-                ]
-            """.trimIndent()
-        )
-        println(assertFails {
-            SERIALIZER.fromString(
-                """
-                    Example(
-                        int: 10
-                        any: Int(11)
-                        list: [
-                            *
-                        ]
-                    )
-                """.trimIndent()
-            )
-        })
-        println(assertFails {
-            SERIALIZER.fromString(
-                """
-                    Example(
-                        int: 10
-                        any: Int(11)
-                        list: [
-                            ""
-                        ]
-                    )
-                """.trimIndent()
-            )
-        })
-        println(assertFails {
-            SERIALIZER.fromString(
-                """
-                    Example(
-                        int: 10
-                        any: Int(11)
-                        list: [
-                            A()
-                        ]
-                    )
-                """.trimIndent()
-            )
-        })
-        println(assertFails {
-            SERIALIZER.fromString(
-                """
-                    Example(
-                        int: 10
-                        any: Int(11)
-                        list: [
-                            []
-                        ]
-                    )
-                """.trimIndent()
-            )
-        })
+        SERIALIZER.fromString("[ * \"\" A() ]")
+
+        hacked("Example( int: 10 any: Int(11) list: [ *    ] )")
+        hacked("Example( int: 10 any: Int(11) list: [ \"\" ] )")
+        hacked("Example( int: 10 any: Int(11) list: [ A()  ] )")
+        hacked("Example( int: 10 any: Int(11) list: [ []   ] )")
+
+        hacked("Example( int: 10 any: Int(11) list: [] listOptional: [ *    ] )")
+        hacked("Example( int: 10 any: Int(11) list: [] listOptional: [ \"\" ] )")
+        hacked("Example( int: 10 any: Int(11) list: [] listOptional: [ A()  ] )")
+        hacked("Example( int: 10 any: Int(11) list: [] listOptional: [ []   ] )")
     }
 }

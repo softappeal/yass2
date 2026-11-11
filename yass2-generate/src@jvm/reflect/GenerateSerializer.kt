@@ -3,8 +3,8 @@
 
 package ch.softappeal.yass2.generate.reflect
 
-import ch.softappeal.yass2.generate.Apply
 import ch.softappeal.yass2.generate.CodeWriter
+import ch.softappeal.yass2.generate.PropertyInfo
 import ch.softappeal.yass2.generate.checkListElementTypes
 import ch.softappeal.yass2.generate.duplicates
 import ch.softappeal.yass2.generate.hasNoDuplicates
@@ -76,13 +76,11 @@ private fun <P : Property> KClass<*>.properties(createProperty: (property: KProp
 }
 
 private fun CodeWriter.checkListElementTypes(properties: List<Property>) {
-    nested {
-        properties.forEach {
-            if (it.classifier != List::class) return@forEach
-            writeNestedLine("${it.name}${checkListElementTypes(it.returnType.arguments[0].type!!.toType())}")
-        }
-    }
-    writeNestedLine("}")
+    checkListElementTypes(
+        properties
+            .filter { it.classifier == List::class }
+            .map { PropertyInfo(it.name, it.returnType.arguments[0].type!!.toType()) }
+    )
 }
 
 internal fun CodeWriter.generateBinarySerializer(
@@ -133,7 +131,7 @@ internal fun CodeWriter.generateBinarySerializer(
                                 properties.forEach { writeNestedLine(it.writeObject("i.${it.name}")) }
                             }
                             writeNestedLine("{", "}") {
-                                writeNestedLine("${type.qualifiedName}(", Apply) {
+                                writeNestedLine("${type.qualifiedName}(", ")") {
                                     properties.forEach { writeNestedLine("${it.name} = ${it.readObject()} as ${it.returnType.toType()},") }
                                 }
                                 checkListElementTypes(properties)
@@ -194,7 +192,7 @@ internal fun CodeWriter.generateTextSerializer(
                         properties.forEach { writeNestedLine(it.writeProperty("i.${it.name}")) }
                     }
                     writeNestedLine("{", "},") {
-                        writeNestedLine("${type.qualifiedName}(", Apply) {
+                        writeNestedLine("${type.qualifiedName}(", ")") {
                             properties.forEach { writeNestedLine("getProperty(\"${it.name}\") as ${it.returnType.toType()},") }
                         }
                         checkListElementTypes(properties)

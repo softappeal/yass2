@@ -13,6 +13,7 @@
     "RedundantUpperBound",
     "UNNECESSARY_SAFE_CALL",
     "ForEachParameterNotUsed",
+    "ReplaceManualRangeWithIndicesCalls",
 )
 
 package ch.softappeal.yass2.ktor
@@ -122,8 +123,7 @@ public fun BinarySerializer(): ch.softappeal.yass2.serialize.binary.BinarySerial
                     },
                     {
                         ch.softappeal.yass2.ktor.DivideByZeroException(
-                        ).apply {
-                        }
+                        )
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
@@ -138,9 +138,10 @@ public fun BinarySerializer(): ch.softappeal.yass2.serialize.binary.BinarySerial
                             service = readRequired(3) as kotlin.String,
                             function = readRequired(3) as kotlin.String,
                             parameters = readRequired(1) as kotlin.collections.List<kotlin.Any?>,
-                        ).apply {
-                            parameters?.forEach { it as kotlin.Any? }
-                        }
+                        )
+                            .apply {
+                                parameters?.let { for (i in 0..<it.size) it[i] as kotlin.Any? }
+                            }
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
@@ -151,8 +152,7 @@ public fun BinarySerializer(): ch.softappeal.yass2.serialize.binary.BinarySerial
                     {
                         ch.softappeal.yass2.remote.ValueReply(
                             value = readObject() as kotlin.Any?,
-                        ).apply {
-                        }
+                        )
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
@@ -163,8 +163,7 @@ public fun BinarySerializer(): ch.softappeal.yass2.serialize.binary.BinarySerial
                     {
                         ch.softappeal.yass2.remote.ExceptionReply(
                             exception = readObject() as ch.softappeal.yass2.remote.ContractException,
-                        ).apply {
-                        }
+                        )
                     }
                 ),
                 ch.softappeal.yass2.serialize.binary.BinaryEncoder(
@@ -177,8 +176,7 @@ public fun BinarySerializer(): ch.softappeal.yass2.serialize.binary.BinarySerial
                         ch.softappeal.yass2.remote.session.Packet(
                             requestNumber = readRequired(2) as kotlin.Int,
                             message = readObject() as ch.softappeal.yass2.remote.Message,
-                        ).apply {
-                        }
+                        )
                     }
                 ),
             )
@@ -197,8 +195,7 @@ public fun TextSerializer(compact: Boolean = true): ch.softappeal.yass2.serializ
             },
             {
                 ch.softappeal.yass2.ktor.DivideByZeroException(
-                ).apply {
-                }
+                )
             },
         ),
         ch.softappeal.yass2.serialize.text.ClassTextEncoder(
@@ -213,9 +210,10 @@ public fun TextSerializer(compact: Boolean = true): ch.softappeal.yass2.serializ
                     getProperty("service") as kotlin.String,
                     getProperty("function") as kotlin.String,
                     getProperty("parameters") as kotlin.collections.List<kotlin.Any?>,
-                ).apply {
-                    parameters?.forEach { it as kotlin.Any? }
-                }
+                )
+                    .apply {
+                        parameters?.let { for (i in 0..<it.size) it[i] as kotlin.Any? }
+                    }
             },
             "service" to -1,
             "function" to -1,
@@ -229,8 +227,7 @@ public fun TextSerializer(compact: Boolean = true): ch.softappeal.yass2.serializ
             {
                 ch.softappeal.yass2.remote.ValueReply(
                     getProperty("value") as kotlin.Any?,
-                ).apply {
-                }
+                )
             },
             "value" to -1,
         ),
@@ -242,8 +239,7 @@ public fun TextSerializer(compact: Boolean = true): ch.softappeal.yass2.serializ
             {
                 ch.softappeal.yass2.remote.ExceptionReply(
                     getProperty("exception") as ch.softappeal.yass2.remote.ContractException,
-                ).apply {
-                }
+                )
             },
             "exception" to -1,
         ),
@@ -257,8 +253,7 @@ public fun TextSerializer(compact: Boolean = true): ch.softappeal.yass2.serializ
                 ch.softappeal.yass2.remote.session.Packet(
                     getProperty("requestNumber") as kotlin.Int,
                     getProperty("message") as ch.softappeal.yass2.remote.Message,
-                ).apply {
-                }
+                )
             },
             "requestNumber" to 2,
             "message" to -1,

@@ -25,8 +25,16 @@ internal inline fun <T> Iterable<T>.forEach(separator: () -> Unit, action: (T) -
 
 internal const val RemotePackage = "ch.softappeal.yass2.remote"
 
-internal const val Apply = ").apply {"
-internal fun checkListElementTypes(elementType: String) = "?.forEach { it as $elementType }"
+internal class PropertyInfo(val name: String, val type: String)
+
+internal fun CodeWriter.checkListElementTypes(infos: List<PropertyInfo>) {
+    if (infos.isEmpty()) return
+    nested {
+        writeNestedLine(".apply {", "}") {
+            infos.forEach { writeNestedLine("${it.name}?.let { for (i in 0..<it.size) it[i] as ${it.type} }") }
+        }
+    }
+}
 
 internal fun Appendable.appendPackage(packageName: String) {
     append(
@@ -46,6 +54,7 @@ internal fun Appendable.appendPackage(packageName: String) {
                 "RedundantUpperBound",
                 "UNNECESSARY_SAFE_CALL",
                 "ForEachParameterNotUsed",
+                "ReplaceManualRangeWithIndicesCalls",
             )
 
             package $packageName

@@ -13,6 +13,7 @@
     "RedundantUpperBound",
     "UNNECESSARY_SAFE_CALL",
     "ForEachParameterNotUsed",
+    "ReplaceManualRangeWithIndicesCalls",
 )
 
 package ch.softappeal.yass2.remote.flow
