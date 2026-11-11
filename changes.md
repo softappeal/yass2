@@ -9,6 +9,7 @@
 ## Changes
 
 - compact mode added to `TextSerializer`
+- target `macosArm64` added
 
 ## Internal
 

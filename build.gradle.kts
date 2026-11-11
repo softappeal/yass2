@@ -15,6 +15,7 @@ val allPlatforms = System.getProperty("os.name").lowercase().contains("linux")
 
 val webPlatform = allPlatforms
 val linuxPlatform = allPlatforms
+val macPlatform = allPlatforms
 
 plugins {
     alias(libs.plugins.multiplatform)
@@ -39,9 +40,9 @@ fun KotlinMultiplatformExtension.configureSourceSets() {
         jvmTest {
             kotlin.srcDir("test@jvm")
         }
-        if (linuxPlatform) {
-            linuxTest {
-                kotlin.srcDir("test@linux")
+        if (linuxPlatform || macPlatform) {
+            nativeTest {
+                kotlin.srcDir("test@native")
             }
         }
         if (webPlatform) {
@@ -92,6 +93,7 @@ allprojects {
             linuxX64()
             linuxArm64()
         }
+        if (macPlatform) macosArm64()
         configureSourceSets()
         compilerOptions {
             extraWarnings.set(true)

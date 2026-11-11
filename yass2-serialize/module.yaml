@@ -1,6 +1,6 @@
 product:
   type: kmp/lib
-  platforms: [ jvm, js, wasmJs, linuxX64, linuxArm64 ]
+  platforms: [ jvm, js, wasmJs, linuxX64, linuxArm64, macosArm64 ]
 
 apply:
   - //yass.module-template.yaml
