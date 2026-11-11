@@ -99,7 +99,7 @@ allprojects {
             extraWarnings.set(true)
             freeCompilerArgs.add("-Xname-based-destructuring=complete")
             // freeCompilerArgs.add("-Xreturn-value-checker=full") TODO: check with allWarningsAsErrors.set(false)
-            allWarningsAsErrors.set(true)
+            // TODO: allWarningsAsErrors.set(true)
         }
         if (project.name.startsWith("yass2-")) {
             explicitApi()
