@@ -1,5 +1,4 @@
 @file:OptIn(InternalSerializeApi::class)
-@file:Suppress("DuplicatedCode")
 
 package ch.softappeal.yass2.generate.ksp
 

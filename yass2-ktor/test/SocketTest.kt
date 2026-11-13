@@ -50,6 +50,7 @@ private fun socketTest(testMode: TestMode) = runServer { tcp, serverSocket ->
         while (true) {
             val clientSocket = serverSocket.accept()
             launch {
+                @Suppress("SuppressedCancellationException")
                 try {
                     clientSocket.handleRequest(ContractSerializer, serverTunnel)
                 } catch (e: CancellationException) {

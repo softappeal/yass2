@@ -63,7 +63,7 @@ public abstract class BinarySerializer : Serializer {
                 for (element in list) writeObject(element)
             },
             {
-                var size = readVarInt()
+                @Suppress("CanBeVal") var size = readVarInt()
                 ArrayList<Any?>(minOf(size, 100)).apply { // prevents easy out-of-memory attack
                     while (size-- > 0) add(readObject())
                 }

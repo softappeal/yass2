@@ -1,5 +1,3 @@
-@file:Suppress("KotlinConstantConditions")
-
 package ch.softappeal.yass2.remote
 
 import kotlin.test.Test

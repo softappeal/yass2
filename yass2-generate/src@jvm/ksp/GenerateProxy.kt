@@ -1,5 +1,3 @@
-@file:Suppress("DuplicatedCode")
-
 package ch.softappeal.yass2.generate.ksp
 
 import ch.softappeal.yass2.generate.CodeWriter

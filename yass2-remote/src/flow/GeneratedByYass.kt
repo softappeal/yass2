@@ -14,6 +14,7 @@
     "UNNECESSARY_SAFE_CALL",
     "ForEachParameterNotUsed",
     "ReplaceManualRangeWithIndicesCalls",
+    "DestructuringDeclaration",
 )
 
 package ch.softappeal.yass2.remote.flow

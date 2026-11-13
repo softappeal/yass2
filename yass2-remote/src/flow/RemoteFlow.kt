@@ -56,6 +56,7 @@ public interface FlowService<out F : Any, I> {
             collectIdToChannel.put(collectId, channel)
             this@FlowService.launch {
                 tryFinally({
+                    @Suppress("SuppressedCancellationException")
                     try {
                         flow.collect { channel.send(it) }
                         channel.send(null)

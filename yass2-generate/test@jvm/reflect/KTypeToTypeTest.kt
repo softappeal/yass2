@@ -14,6 +14,7 @@ private fun KType.toType(): String {
     fun Appendable.appendGenerics() {
         if (arguments.isEmpty()) return
         append('<')
+        @Suppress("DestructuringDeclaration")
         arguments.forEach({ append(", ") }) { argument ->
             when (argument.variance) {
                 null -> append('*')

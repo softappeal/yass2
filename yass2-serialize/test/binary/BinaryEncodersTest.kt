@@ -94,7 +94,6 @@ class BinaryEncodersTest {
         }
     }
 
-    @Suppress("SpellCheckingInspection")
     @Test
     fun string() {
         with(StringBinaryEncoder) {

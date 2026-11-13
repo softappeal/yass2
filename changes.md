@@ -1,4 +1,4 @@
-# TODO: Next Release
+# 31.0.0 (2026-11-13)
 
 ## Breaking changes
 
@@ -16,6 +16,13 @@
 - module `tests` removed and split to other modules
 
 ## Dependencies
+
+    Java 25.0.5
+
+    kotlin     = "2.4.21"        # https://github.com/JetBrains/kotlin
+    coroutines = "1.11.0"        # https://github.com/Kotlin/kotlinx.coroutines
+    ktor       = "3.6.1"         # https://github.com/ktorio/ktor
+    ksp        = "2.3.13"        # https://github.com/google/ksp
 
 # 30.0.0 (2026-10-11)
 

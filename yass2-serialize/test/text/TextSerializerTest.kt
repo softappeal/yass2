@@ -33,7 +33,6 @@ private fun hacked(s: String) {
 }
 
 class TextSerializerTest {
-    @Suppress("SpellCheckingInspection")
     @Test
     fun builtIn() {
         fun fail(string: String) {

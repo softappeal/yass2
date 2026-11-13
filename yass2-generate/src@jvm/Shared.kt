@@ -55,6 +55,7 @@ internal fun Appendable.appendPackage(packageName: String) {
                 "UNNECESSARY_SAFE_CALL",
                 "ForEachParameterNotUsed",
                 "ReplaceManualRangeWithIndicesCalls",
+                "DestructuringDeclaration",
             )
 
             package $packageName
